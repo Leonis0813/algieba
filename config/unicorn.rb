@@ -3,7 +3,7 @@ timeout 15
 preload_app true
 
 listen '/home/account/algieba/tmp/sockets/unicorn.sock'
-pid "/tmp/unicorn.pid"
+pid '/home/account/algieba/tmp/pids/unicorn.pid'
 
 before_fork do |server, worker|
   Signal.trap 'TERM' do
