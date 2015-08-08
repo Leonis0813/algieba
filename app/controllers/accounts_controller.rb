@@ -51,10 +51,19 @@ class AccountsController < ApplicationController
   end
 
   def delete
-    if check_request_body params
-
+    result = check_request_body params
+    if result.empty?
+      account = Account.new
+      result, obj = account.destroy params
+      if result
+        render :status => :no_content, :nothing => true
+      else
+        errors = obj.map{|param| {:error_code => "invalid_value_#{param}"} }
+        render :status => :bad_request, :json => errors        
+      end
     else
-
+      errors = result.map{|param| {:error_code => "absent_param_#{param}"} }
+      render :status => :bad_request, :json => errors
     end
   end
 
@@ -73,15 +82,15 @@ class AccountsController < ApplicationController
     case request_params[:action]
     when 'create'
       account = params[:accounts]
+      absent_params << :account_type unless account[:account_type]
       absent_params << :date unless account[:date]
       absent_params << :content unless account[:content]
       absent_params << :category unless account[:category]
       absent_params << :price unless account[:price]
     when 'read'
     when 'update'
-      absent_params << :with if not absent_params[:with] || request_params[:with].empty?
-    when :delete
-      return true
+      absent_params << :with if not request_params[:with] or request_params[:with].empty?
+    when 'delete'
     when :settle
       return true
     else
