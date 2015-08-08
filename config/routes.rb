@@ -56,4 +56,5 @@ Rails.application.routes.draw do
 
   post '/accounts' => 'accounts#create'
   get '/accounts' => 'accounts#read'
+  put '/accounts' => 'accounts#update'
 end
