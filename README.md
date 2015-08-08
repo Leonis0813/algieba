@@ -66,11 +66,11 @@
     URL: http://localhost/accounts
     JSON Body: {
         "account": {
-	    "account_type": <"income" or "expense">,
-	    "date": "yyyy-mm-dd",
-	    "content": <content>,
-	    "category": <category>,
-	    "price": <price>
+            "account_type": <"income" or "expense">,
+            "date": "yyyy-mm-dd",
+            "content": <content>,
+            "category": <category>,
+            "price": <price>
         }
     }
 
@@ -79,11 +79,11 @@
     URL: http://localhost/accounts
     JSON Body: {
         "condition": {
-	    "account_type": <"income" or "expense">,
-	    "category": <category>
+            "account_type": <"income" or "expense">,
+            "category": <category>
         },
         "with": {
-	    "category": <category>
+            "category": <category>
         }
     }
 
@@ -92,7 +92,7 @@
     URL: http://localhost/accounts
     JSON Body: {
     	"date": "yyyy-mm-dd",
-	"content": <content>
+        "content": <content>
     }
 
 #### GET /settlement
