@@ -47,13 +47,57 @@
 
 ## API
 
-|HTTP Method|Path        |Description     |Parameters                         |
-|:----------|:-----------|:---------------|:----------------------------------|
-|GET        |/accounts   |search accounts |conditions for select              |
-|POST       |/accounts   |regist account  |account infomations                |
-|PUT        |/accounts   |update accounts |conditions and values for update   |
-|DELETE     |/accounts   |delete accounts |conditions for delete              |
-|GET        |/settlement |settle up       |period(yearly or monthly or daily) |
+|HTTP Method|Path        |Description     |Parameters                               |
+|:----------|:-----------|:---------------|:----------------------------------------|
+|GET        |/accounts   |search accounts |conditions for select                    |
+|POST       |/accounts   |regist account  |account infomations                      |
+|PUT        |/accounts   |update accounts |conditions and values for update         |
+|DELETE     |/accounts   |delete accounts |conditions for delete                    |
+|GET        |/settlement |settle up       |period("yearly" or "monthly" or "daily") |
+
+### Examples
+
+#### GET /accounts
+
+    URL: http://localhost/accounts?account_type=income
+
+#### POST /accounts
+
+    URL: http://localhost/accounts
+    JSON Body: {
+        "account": {
+	    "account_type": <"income" or "expense">,
+	    "date": "yyyy-mm-dd",
+	    "content": <content>,
+	    "category": <category>,
+	    "price": <price>
+	}
+    }
+
+#### PUT /accounts
+
+    URL: http://localhost/accounts
+    JSON Body: {
+        "condition": {
+	    "account_type": <"income" or "expense">,
+	    "category": <category>
+	},
+        "with": {
+	    "category": <category>
+	}
+    }
+
+#### DELETE /accounts
+
+    URL: http://localhost/accounts
+    JSON Body: {
+    	"date": "yyyy-mm-dd",
+	"content": <content>
+    }
+
+#### GET /settlement
+
+    URL: http://localhost/settlement?period=monthly
 
 ## DB
 
