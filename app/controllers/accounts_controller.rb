@@ -68,10 +68,19 @@ class AccountsController < ApplicationController
   end
 
   def settle
-    if check_request_body params
-
+    result = check_request_body params
+    if result.empty?
+      account = Account.new
+      result, obj = account.settle params[:period]
+      if result
+        render :status => :ok, :json => obj
+      else
+        errors = obj.map{|param| {:error_code => "invalid_value_#{param}"} }
+        render :status => :bad_request, :json => errors        
+      end
     else
-
+      errors = result.map{|param| {:error_code => "absent_param_#{param}"} }
+      render :status => :bad_request, :json => errors
     end
   end
 
@@ -91,8 +100,8 @@ class AccountsController < ApplicationController
     when 'update'
       absent_params << :with if not request_params[:with] or request_params[:with].empty?
     when 'delete'
-    when :settle
-      return true
+    when 'settle'
+      absent_params << :period unless request_params[:period]
     else
       return false
     end

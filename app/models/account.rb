@@ -70,4 +70,46 @@ class Account < ActiveRecord::Base
       [false, account.errors.messages.keys]
     end
   end
+
+  def settle(period)
+    return [false, :period] unless period =~ /yearly|monthly|daily/
+
+    income_records = Account.where(:account_type => 'income').pluck(:date, :price).map do |record|
+      {:date => record.date, :price => record.price}
+    end
+    expense_records = Account.where(:account_type => 'expense').pluck(:date, :price).map do |record|
+      {:date => record.date, :price => record.price}
+    end
+
+    format = case period
+             when 'yearly'
+               '%Y'
+             when 'monthly'
+               '%Y-%m'
+             when 'daily'
+               '%Y-%m-%d'
+             end
+    grouped_income_records = income_records.group_by do |record|
+      record[:date].strftime(format)
+    end
+    grouped_expense_records = expense_records.group_by do |record|
+      record[:date].strftime(format)
+    end
+    
+    incomes = {}
+    expenses = {}
+    grouped_income_records.each do |period, prices|
+      incomes.merge!({period => prices.inject(0){|sum, price| sum + price }})
+    end
+    grouped_expense_records.each do |period, prices|
+      expenses.merge!({period => prices.inject(0){|sum, price| sum + price }})
+    end
+
+    periods = incomes.keys | expenses.keys
+    settlements = {}
+    periods.each do |period|
+      settlements.merge!({period => (incomes[period] || 0) - (expenses[period] || 0)})
+    end
+    [true, settlements]
+  end
 end
