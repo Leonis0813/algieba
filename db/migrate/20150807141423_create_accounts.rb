@@ -1,6 +1,7 @@
 class CreateAccounts < ActiveRecord::Migration
   def change
     create_table :accounts do |t|
+      t.string :type
       t.date :date
       t.string :content
       t.string :category

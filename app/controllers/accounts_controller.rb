@@ -17,10 +17,19 @@ class AccountsController < ApplicationController
   end
 
   def read
-    if check_request_body params
-
+    result = check_request_body params
+    if result.empty?
+      account = Account.new
+      result, obj = account.show params
+      if result
+        render :status => :ok, :json => obj
+      else
+        errors = obj.map{|param| {:error_code => "invalid_value_#{param}"} }
+        render :status => :bad_request, :json => errors
+      end
     else
-
+      errors = result.map{|param| {:error_code => "absent_param_#{param}"} }
+      render :status => :bad_request, :json => errors
     end
   end
 
@@ -59,8 +68,7 @@ class AccountsController < ApplicationController
       absent_params << :content unless account[:content]
       absent_params << :category unless account[:category]
       absent_params << :price unless account[:price]
-    when :read
-      return true
+    when 'read'
     when :update
       return true
     when :delete

@@ -14,6 +14,7 @@
 ActiveRecord::Schema.define(version: 20150807141423) do
 
   create_table "accounts", force: :cascade do |t|
+    t.string   "type"
     t.date     "date"
     t.string   "content"
     t.string   "category"

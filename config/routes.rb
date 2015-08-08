@@ -54,5 +54,6 @@ Rails.application.routes.draw do
   #     resources :products
   #   end
 
-  post 'create' => 'accounts#create'
+  post '/accounts' => 'accounts#create'
+  get '/accounts' => 'accounts#read'
 end
