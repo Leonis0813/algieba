@@ -72,7 +72,7 @@ class Account < ActiveRecord::Base
   end
 
   def settle(period)
-    return [false, :period] unless period =~ /yearly|monthly|daily/
+    return [false, [:period]] unless period =~ /yearly|monthly|daily/
 
     income_records = Account.where(:account_type => 'income').pluck(:date, :price).map do |record|
       {:date => record.date, :price => record.price}
