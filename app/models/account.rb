@@ -10,5 +10,6 @@ class Account < ActiveRecord::Base
       return [true, account]
     else
       return [false, account.errors.messages.keys]
+    end
   end
 end
