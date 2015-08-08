@@ -71,7 +71,7 @@
 	    "content": <content>,
 	    "category": <category>,
 	    "price": <price>
-	}
+        }
     }
 
 #### PUT /accounts
@@ -81,10 +81,10 @@
         "condition": {
 	    "account_type": <"income" or "expense">,
 	    "category": <category>
-	},
+        },
         "with": {
 	    "category": <category>
-	}
+        }
     }
 
 #### DELETE /accounts
