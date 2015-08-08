@@ -1,5 +1,6 @@
 class AccountsController < ApplicationController
   def create
+    params.permit!
     result = check_request_body params
     if result.empty?
       account = Account.new
@@ -17,6 +18,7 @@ class AccountsController < ApplicationController
   end
 
   def read
+    params.permit!
     result = check_request_body params
     if result.empty?
       account = Account.new
@@ -34,6 +36,7 @@ class AccountsController < ApplicationController
   end
 
   def update
+    params.permit!
     result = check_request_body params
     if result.empty?
       account = Account.new
@@ -51,6 +54,7 @@ class AccountsController < ApplicationController
   end
 
   def delete
+    params.permit!
     result = check_request_body params
     if result.empty?
       account = Account.new
@@ -68,6 +72,7 @@ class AccountsController < ApplicationController
   end
 
   def settle
+    params.permit!
     result = check_request_body params
     if result.empty?
       account = Account.new
