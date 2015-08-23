@@ -6,23 +6,21 @@
 
     CHANGELOG.md
     Gemfile
-    Gemfile.lock
     README.md
     Rakefile
-    app    -- assets
-           -- images
-           -- javascripts  -- ...
-           -- stylesheets  -- ...
+    app    -- assets       -- images
+              	           -- javascripts  -- ...
+           	           -- stylesheets  -- ...
            -- controllers  -- accounts_controller.rb
-                           -- application_controller.rb
+                           -- ...
            -- concerns
            -- helpers      -- accounts_helper.rb
-                           -- application_helper.rb
+                           -- ...
            -- mailers
            -- models       -- account.rb
                            -- concerns
            -- views        -- accounts
-                           -- layouts -- application.html.erb
+                           -- layouts -- ...
     bin    -- ...
     config -- environments -- ...
            -- initializers -- ...
@@ -43,7 +41,6 @@
            -- sessions
            -- sockets
     vendor -- assets       -- ...
-
 
 ## API
 
