@@ -2,8 +2,8 @@ worker_processes Integer(ENV["WEB_CONCURRENCY"] || 3)
 timeout 15
 preload_app true
 
-listen '/home/account/algieba/tmp/sockets/unicorn.sock'
-pid '/home/account/algieba/tmp/pids/unicorn.pid'
+listen File.expand_path('tmp/sockets/unicorn.sock', ENV['RAILS_ROOT'])
+pid File.expand_path('tmp/pids/unicorn.pid', ENV['RAILS_ROOT'])
 
 before_fork do |server, worker|
   Signal.trap 'TERM' do
