@@ -20,7 +20,7 @@ class Account < ActiveRecord::Base
     end
   end
 
-  def show(params)
+  def self.show(params = {})
     account = Account.new(:account_type => params[:account_type] || 'income',
                           :date => params[:date] || Date.parse('1980-01-01'),
                           :content => params[:content] || 'content',
@@ -46,7 +46,7 @@ class Account < ActiveRecord::Base
       conditions = condition.slice :account_type, :date, :content, :category, :price
       accounts = Account.where(conditions)
       accounts.each do |account|
-        return [false, account.errors.messages.keys] unless account.update with
+        return [false, account.errors.messages.keys] unless account.update_attributes with
       end
       [true, accounts]
     else
@@ -54,7 +54,7 @@ class Account < ActiveRecord::Base
     end
   end
 
-  def destroy(params)
+  def destroy(params = {})
     account = Account.new(:account_type => params[:account_type] || 'income',
                           :date => params[:date] || Date.parse('1980-01-01'),
                           :content => params[:content] || 'content',
@@ -63,9 +63,9 @@ class Account < ActiveRecord::Base
     if account.valid?
       conditions = params.slice :account_type, :date, :content, :category, :price
       Account.where(conditions).each do |account|
-        account.destroy
+        account.delete
       end
-      [true, nil]
+      [true, []]
     else
       [false, account.errors.messages.keys]
     end
@@ -75,10 +75,10 @@ class Account < ActiveRecord::Base
     return [false, [:period]] unless period =~ /yearly|monthly|daily/
 
     income_records = Account.where(:account_type => 'income').pluck(:date, :price).map do |record|
-      {:date => record.date, :price => record.price}
+      {:date => record.first, :price => record.last}
     end
     expense_records = Account.where(:account_type => 'expense').pluck(:date, :price).map do |record|
-      {:date => record.date, :price => record.price}
+      {:date => record.first, :price => record.last}
     end
 
     format = case period
@@ -89,6 +89,7 @@ class Account < ActiveRecord::Base
              when 'daily'
                '%Y-%m-%d'
              end
+
     grouped_income_records = income_records.group_by do |record|
       record[:date].strftime(format)
     end
@@ -98,10 +99,12 @@ class Account < ActiveRecord::Base
     
     incomes = {}
     expenses = {}
-    grouped_income_records.each do |period, prices|
+    grouped_income_records.each do |period, records|
+      prices = records.map{|record| record[:price] }
       incomes.merge!({period => prices.inject(0){|sum, price| sum + price }})
     end
-    grouped_expense_records.each do |period, prices|
+    grouped_expense_records.each do |period, records|
+      prices = records.map{|record| record[:price] }
       expenses.merge!({period => prices.inject(0){|sum, price| sum + price }})
     end
 

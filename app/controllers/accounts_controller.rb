@@ -21,8 +21,7 @@ class AccountsController < ApplicationController
     params.permit!
     result = check_request_body params
     if result.empty?
-      account = Account.new
-      result, obj = account.show params
+      result, obj = Account.show params
       if result
         render :status => :ok, :json => obj
       else
@@ -39,8 +38,7 @@ class AccountsController < ApplicationController
     params.permit!
     result = check_request_body params
     if result.empty?
-      account = Account.new
-      result, obj = account.update params
+      result, obj = Account.new.update params
       if result
         render :status => :ok, :json => obj
       else
@@ -57,8 +55,7 @@ class AccountsController < ApplicationController
     params.permit!
     result = check_request_body params
     if result.empty?
-      account = Account.new
-      result, obj = account.destroy params
+      result, obj = Account.new.destroy params
       if result
         render :status => :no_content, :nothing => true
       else
@@ -75,8 +72,7 @@ class AccountsController < ApplicationController
     params.permit!
     result = check_request_body params
     if result.empty?
-      account = Account.new
-      result, obj = account.settle params[:period]
+      result, obj = Account.new.settle params[:period]
       if result
         render :status => :ok, :json => obj
       else
