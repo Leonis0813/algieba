@@ -5,8 +5,10 @@ class AccountsController < ApplicationController
     if params[:accounts]
       required_column_names = [:account_type, :date, :content, :category, :price]
       columns = params[:accounts].slice *required_column_names
-      absent_columns = required_column_names.each do |key|
-        absent_columns << key unless columns[key]
+      absent_columns = [].tap do
+        required_column_names.each do |key|
+          absent_columns << key unless columns[key]
+        end
       end
       if absent_columns.empty?
         begin

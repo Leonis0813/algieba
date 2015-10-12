@@ -111,12 +111,10 @@ class Account < ActiveRecord::Base
             invalid_params << :date
           end
         end
-        if condition[:price] and
-           (
-            not condition[:price].is_a? Integer or
-            (condition[:price].is_a? Integer and condition[:price] <= 0)
-           )
-          invalid_params << :price
+        if condition[:price]
+          unless condition[:price] =~ /\A[1-9]\d*\z/
+            invalid_params << :price
+          end
         end
       end
     end
