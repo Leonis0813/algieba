@@ -5,9 +5,9 @@ class AccountsController < ApplicationController
     if params[:accounts]
       required_column_names = [:account_type, :date, :content, :category, :price]
       columns = params[:accounts].slice *required_column_names
-      absent_columns = [].tap do
+      absent_columns = [].tap do |arr|
         required_column_names.each do |key|
-          absent_columns << key unless columns[key]
+          arr << key unless columns[key]
         end
       end
       if absent_columns.empty?
@@ -25,7 +25,7 @@ class AccountsController < ApplicationController
         render :status => :bad_request, :json => absent_columns
       end
     else
-      render :status => :bad_request, :json => {:error_code => 'absent_param_accounts'}
+      render :status => :bad_request, :json => [{:error_code => 'absent_param_accounts'}]
     end
   end
 
@@ -53,7 +53,7 @@ class AccountsController < ApplicationController
         render :status => :bad_request, :json => errors        
       end
     else
-      render :status => :bad_request, :json => {:error_code => 'absent_param_with'}
+      render :status => :bad_request, :json => [{:error_code => 'absent_param_with'}]
     end
   end
 
@@ -77,10 +77,10 @@ class AccountsController < ApplicationController
       if result
         render :status => :ok, :json => obj
       else
-        render :status => :bad_request, :json => {:error_code => 'invalid_value_interval'}
+        render :status => :bad_request, :json => [{:error_code => 'invalid_value_interval'}]
       end
     else
-      render :status => :bad_request, :json => {:error_code => 'absent_param_interval'}
+      render :status => :bad_request, :json => [{:error_code => 'absent_param_interval'}]
     end
   end
 end
