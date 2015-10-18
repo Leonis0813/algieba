@@ -112,7 +112,7 @@ class Account < ActiveRecord::Base
           end
         end
         if condition[:price]
-          unless condition[:price] =~ /\A[1-9]\d*\z/
+          unless condition[:price].to_s =~ /\A[1-9]\d*\z/
             invalid_params << :price
           end
         end
