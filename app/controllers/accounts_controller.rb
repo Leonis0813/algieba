@@ -11,13 +11,21 @@ class AccountsController < ApplicationController
         end
       end
       if absent_columns.empty?
-        begin
-          account = Account.create!(columns)
-          render :status => :created, :json => account
-        rescue ActiveRecord::RecordInvalid => e
-          errors = e.record.errors.messages.keys.map do |column|
-            {:error_code => "invalid_value_#{column}"}
+        errors = [].tap do |array|
+          array << {:error_code => 'invalid_value_date'} unless columns[:date] =~ /\A\d{4}-\d{2}-\d{2}\z/
+          array << {:error_code => 'invalid_value_price'} unless columns[:price] =~ /\A[1-9]\d*\z/
+        end
+        if errors.empty?
+          begin
+            account = Account.create!(columns)
+            render :status => :created, :json => account
+          rescue ActiveRecord::RecordInvalid => e
+            errors = e.record.errors.messages.keys.map do |column|
+              {:error_code => "invalid_value_#{column}"}
+            end
+            render :status => :bad_request, :json => errors
           end
+        else
           render :status => :bad_request, :json => errors
         end
       else
