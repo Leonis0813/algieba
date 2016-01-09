@@ -47,66 +47,66 @@ describe Account, :type => :model do
 
   after(:all) { Account.delete_all }
 
-  context 'find by account_type' do
-    include_context 'get accounts', :account_type => 'income'
+  context '家計簿の種類で検索する' do
+    include_context '家計簿を取得する', :account_type => 'income'
     before(:all) { @expected_accounts = [@income.values] }
 
-    it_behaves_like 'get expected accounts', 1
+    it_behaves_like '家計簿が正しく取得されていることを確認する', :size => 1
   end
 
-  context 'find by date' do
-    include_context 'get accounts', :date => '1000-01-01'
+  context '日付で検索する' do
+    include_context '家計簿を取得する', :date => '1000-01-01'
     before(:all) { @expected_accounts = [@income.values, @expense.values] }
 
-    it_behaves_like 'get expected accounts', 2
+    it_behaves_like '家計簿が正しく取得されていることを確認する', :size => 2
   end
 
-  context 'find by content' do
-    include_context 'get accounts', :content => 'テスト用データ'
+  context '内容で検索する' do
+    include_context '家計簿を取得する', :content => 'テスト用データ'
     before(:all) { @expected_accounts = [@income.values, @expense.values] }
 
-    it_behaves_like 'get expected accounts', 2
+    it_behaves_like '家計簿が正しく取得されていることを確認する', :size => 2
   end
 
-  context 'find by category' do
-    include_context 'get accounts', :category => 'テスト'
+  context 'カテゴリで検索する' do
+    include_context '家計簿を取得する', :category => 'テスト'
     before(:all) { @expected_accounts = [@income.values, @expense.values] }
 
-    it_behaves_like 'get expected accounts', 2
+    it_behaves_like '家計簿が正しく取得されていることを確認する', :size => 2
   end
 
-  context 'find by price' do
-    include_context 'get accounts', :price => 100
+  context '金額で検索する' do
+    include_context '家計簿を取得する', :price => 100
     before(:all) { @expected_accounts = [@income.values, @expense.values] }
 
-    it_behaves_like 'get expected accounts', 2
+    it_behaves_like '家計簿が正しく取得されていることを確認する', :size => 2
   end
 
-  context 'find by account_type and category' do
-    include_context 'get accounts', :account_type => 'expense', :category => 'テスト'
+  context '家計簿の種類とカテゴリで検索する' do
+    include_context '家計簿を取得する', :account_type => 'expense', :category => 'テスト'
     before(:all) { @expected_accounts = [@expense.values] }
 
-    it_behaves_like 'get expected accounts', 1
+    it_behaves_like '家計簿が正しく取得されていることを確認する', :size => 1
   end
 
-  context 'find by content and price' do
-    include_context 'get accounts', :content => 'テスト用データ', :price => 100
+  context '内容と金額で検索する' do
+    include_context '家計簿を取得する', :content => 'テスト用データ', :price => 100
     before(:all) { @expected_accounts = [@income.values, @expense.values] }
 
-    it_behaves_like 'get expected accounts', 2
+    it_behaves_like '家計簿が正しく取得されていることを確認する', :size => 2
   end
 
-  context 'find by content and price' do
-    include_context 'get accounts', :content => 'テスト用データ', :price => 1
+  context '内容と金額で検索する' do
+    include_context '家計簿を取得する', :content => 'テスト用データ', :price => 1
     before(:all) { @expected_accounts = [] }
 
-    it_behaves_like 'get expected accounts', 0
+    it_behaves_like '家計簿が正しく取得されていることを確認する', :size => 0
   end
 
-  context 'find by no condition' do
-    include_context 'get accounts'
+  context '条件なしで検索する' do
+    include_context '家計簿を取得する'
     before(:all) { @expected_accounts = [@income.values, @expense.values] }
 
-    it_behaves_like 'get expected accounts', 2
+    it_behaves_like '家計簿が正しく取得されていることを確認する', :size => 2
   end
 end
