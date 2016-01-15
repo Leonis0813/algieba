@@ -23,6 +23,62 @@ describe AccountsController, :type => :controller do
         expect(pbody.slice(*account_keys)).to eq income
       end
     end
+
+    context '異常系' do
+      [
+        ['種類がない場合', ['account_type']],
+        ['日付がない場合', ['date']],
+        ['内容がない場合', ['content']],
+        ['カテゴリがない場合', ['category']],
+        ['金額がない場合', ['price']],
+        ['日付と金額がない場合', ['date', 'price']],
+        ['全ての項目がない場合', ['account_type', 'date', 'content', 'category', 'price']],
+      ].each do |description, deleted_keys|
+        context description do
+          res, pbody = nil, nil
+
+          before(:each) do
+            selected_keys = account_keys - deleted_keys
+            res ||= post :create, {:accounts => income.slice(*selected_keys)}
+            pbody ||= JSON.parse(res.body)
+            @res, @pbody = res, pbody
+          end
+
+          it_behaves_like '400エラーをチェックする', deleted_keys.map {|key| {'error_code' => "absent_param_#{key}"} }
+        end
+      end
+
+      context 'accounts パラメーターがない場合' do
+        res, pbody = nil, nil
+
+        before(:each) do
+          res ||= post :create, {}
+          pbody ||= JSON.parse(res.body)
+          @res, @pbody = res, pbody
+        end
+
+        it_behaves_like '400エラーをチェックする', [{'error_code' => 'absent_param_accounts'}]
+      end
+
+      [
+        ['不正な種類を指定する場合', {'account_type' => 'invalid_type'}],
+        ['不正な日付を指定する場合', {'date' => 'invalid_date'}],
+        ['不正な金額を指定する場合', {'price' => 'invalid_price'}],
+        ['不正な種類と金額を指定する場合', {'account_type' => 'invalid_type', 'price' => 'invalid_price'}],
+      ].each do |description, invalid_param|
+        context description do
+          res, pbody = nil, nil
+
+          before(:each) do
+            res ||= post :create, {:accounts => expense.merge(invalid_param)}
+            pbody ||= JSON.parse(res.body)
+            @res, @pbody = res, pbody
+          end
+
+          it_behaves_like '400エラーをチェックする', invalid_param.keys.map {|key| {'error_code' => "invalid_value_#{key}"} }
+        end
+      end
+    end
   end
 
   context 'read' do
@@ -53,6 +109,27 @@ describe AccountsController, :type => :controller do
             actual_accounts = pbody.map {|account| account.slice(*account_keys) }
             expect(actual_accounts).to eq expected_accounts
           end
+        end
+      end
+    end
+
+    context '異常系' do
+      [
+        ['不正な種類を指定する場合', {'account_type' => 'invalid_type'}],
+        ['不正な日付を指定する場合', {'date' => 'invalid_date'}],
+        ['不正な金額を指定する場合', {'price' => 'invalid_price'}],
+      ].each do |description, condition|
+        context description do
+          res, pbody = nil, nil
+
+          before(:each) do
+            [income, expense].each {|account| post :create, {:accounts => account} } unless res
+            res ||= get :read, condition
+            pbody ||= JSON.parse(res.body)
+            @res, @pbody = res, pbody
+          end
+
+          it_behaves_like '400エラーをチェックする', condition.keys.map {|key| {'error_code' => "invalid_value_#{key}"} }
         end
       end
     end
@@ -91,6 +168,56 @@ describe AccountsController, :type => :controller do
         end
       end
     end
+
+    context '異常系' do
+      [
+        ['不正な種類を指定する場合', {'account_type' => 'invalid_type'}, {'account_type' => 'expense'}],
+        ['不正な日付を指定する場合', {'date' => '01-01-1000'}, {'price' => 1000}],
+        ['不正な金額を指定する場合', {'price' => -1}, {'account_type' => 'expense'}],
+        ['不正な種類で更新する場合', nil, {'account_type' => 'invalid_type'}],
+        ['不正な日付で更新する場合', nil, {'date' => 'invalid_date'}],
+        ['不正な金額で更新する場合', nil, {'price' => 100.5}],
+      ].each do |description, condition, with|
+        context description do
+          res, pbody = nil, nil
+
+          before(:each) do
+            [income, expense].each {|account| post :create, {:accounts => account} } unless res
+            res ||= put :update, {:condition => condition, :with => with}.select {|key, value| value }
+            pbody ||= JSON.parse(res.body)
+            @res, @pbody = res, pbody
+          end
+
+          it_behaves_like '400エラーをチェックする', (condition || with).keys.map {|key| {'error_code' => "invalid_value_#{key}"} }
+        end
+      end
+
+      context '更新後の値がない場合' do
+        res, pbody = nil, nil
+
+        before(:each) do
+          [income, expense].each {|account| post :create, {:accounts => account} } unless res
+          res ||= put :update, {:with => {}}
+          pbody ||= JSON.parse(res.body)
+          @res, @pbody = res, pbody
+        end
+
+        it_behaves_like '400エラーをチェックする', [{'error_code' => 'invalid_value_with'}]
+      end
+
+      context 'with パラメーターがない場合' do
+        res, pbody = nil, nil
+
+        before(:each) do
+          [income, expense].each {|account| post :create, {:accounts => account} } unless res
+          res ||= put :update
+          pbody ||= JSON.parse(res.body)
+          @res, @pbody = res, pbody
+        end
+
+        it_behaves_like '400エラーをチェックする', [{'error_code' => 'absent_param_with'}]
+      end
+    end
   end
 
   context 'delete' do
@@ -115,6 +242,27 @@ describe AccountsController, :type => :controller do
           it 'ステータスコードが204であること' do
             expect(res.code).to eq '204'
           end
+        end
+      end
+    end
+
+    context '異常系' do
+      [
+        ['不正な種類を指定する場合', {'account_type' => 'invalid_type'}, {}],
+        ['不正な日付を指定する場合', {'date' => 'invalid_date'}, {'price' => 100}],
+        ['不正な金額を指定する場合', {'price' => 'invalid_price'}, {'category' => '機能テスト'}],
+      ].each do |description, invalid_condition, condition|
+        context description do
+          res, pbody = nil, nil
+
+          before(:each) do
+            [income, expense].each {|account| post :create, {:accounts => account} } unless res
+            res ||= delete :delete, condition.merge(invalid_condition)
+            pbody ||= JSON.parse(res.body)
+            @res, @pbody = res, pbody
+          end
+
+          it_behaves_like '400エラーをチェックする', invalid_condition.keys.map {|key| {'error_code' => "invalid_value_#{key}"} }
         end
       end
     end
@@ -144,6 +292,34 @@ describe AccountsController, :type => :controller do
             expect(pbody).to eq expected_settlement
           end
         end
+      end
+    end
+
+    context '異常系' do
+      context '不正な期間を指定する場合' do
+        res, pbody = nil, nil
+
+        before(:each) do
+          [income, expense].each {|account| post :create, {:accounts => account} } unless res
+          res ||= get :settle, {:interval => 'invalid_interval'}
+          pbody ||= JSON.parse(res.body)
+          @res, @pbody = res, pbody
+        end
+
+        it_behaves_like '400エラーをチェックする', [{'error_code' => 'invalid_value_interval'}]
+      end
+
+      context 'interval パラメーターがない場合' do
+        res, pbody = nil, nil
+
+        before(:each) do
+          [income, expense].each {|account| post :create, {:accounts => account} } unless res
+          res ||= get :settle
+          pbody ||= JSON.parse(res.body)
+          @res, @pbody = res, pbody
+        end
+
+        it_behaves_like '400エラーをチェックする', [{'error_code' => 'absent_param_interval'}]
       end
     end
   end
