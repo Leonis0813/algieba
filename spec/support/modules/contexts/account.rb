@@ -15,3 +15,12 @@ end
 shared_context 'Model: 収支を計算する' do |interval|
   before(:all) { @result, @settlement = Account.settle(interval) }
 end
+
+shared_context 'Controller: 家計簿を登録する' do |account|
+  before(:each) do
+    binding.pry
+    res ||= post :create, {:accounts => account}
+    pbody ||= JSON.parse(@res.body)
+    @res, @pbody = res, pbody
+  end
+end
