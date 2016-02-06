@@ -1,95 +1,6 @@
 # coding: utf-8
 require 'rails_helper'
 
-shared_context '家計簿を取得する' do |query = {}|
-  before(:all) { @result, @accounts = Account.show(query) }
-end
-
-shared_context '家計簿を更新する' do |condition, with|
-  before(:all) { @result, @accounts = Account.update({:condition => condition, :with => with}) }
-end
-
-shared_context '家計簿を削除する' do |condition|
-  before(:all) { @result, @accounts = Account.destroy(condition) }
-end
-
-shared_context '収支を計算する' do |interval|
-  before(:all) { @result, @settlement = Account.settle(interval) }
-end
-
-shared_examples '実行結果が正しいこと' do |result|
-  it { expect(@result).to be result }
-end
-
-shared_examples '取得した家計簿の数が正しいこと' do |size|
-  it { expect(@accounts.size).to eq size }
-end
-
-shared_examples '家計簿が正しく取得されていることを確認する' do |expected|
-  it_behaves_like '実行結果が正しいこと', true
-  it_behaves_like '取得した家計簿の数が正しいこと', expected[:size]
-
-  it '取得した家計簿が正しいこと' do
-    actual_accounts = @accounts.to_a.map do |account|
-      [account.account_type, account.date.strftime('%Y-%m-%d'), account.content, account.category, account.price]
-    end
-    expect(actual_accounts).to match_array expected[:accounts]
-  end
-end
-
-shared_examples '家計簿が正しく更新されていることを確認する' do |expected|
-  it_behaves_like '実行結果が正しいこと', true
-  it_behaves_like '取得した家計簿の数が正しいこと', expected[:size]
-
-  it '取得した家計簿が正しいこと' do
-    actual_accounts = @accounts.to_a.map do |account|
-      [account.account_type, account.date.strftime('%Y-%m-%d'), account.content, account.category, account.price]
-    end
-    expect(actual_accounts).to match_array @expected_accounts
-  end
-end
-
-shared_examples '家計簿が正しく削除されていることを確認する' do
-  it_behaves_like '実行結果が正しいこと', true
-
-  it '取得した家計簿が正しいこと' do
-    expect(@accounts).to match_array []
-  end
-end
-
-shared_examples '収支が正しく計算されていることを確認する' do |settlement|
-  it_behaves_like '実行結果が正しいこと', true
-
-  it '計算結果が正しいこと' do
-    expect(@settlement).to eq settlement
-  end
-end
-
-shared_examples '不正なパラメーターの種類が正しいこと' do |invalid_columns|
-  it { expect(@accounts).to eq invalid_columns }
-end
-
-shared_examples '家計簿の取得に失敗していることを確認する' do |invalid_columns|
-  it_behaves_like '実行結果が正しいこと', false
-  it_behaves_like '不正なパラメーターの種類が正しいこと', invalid_columns
-end
-
-shared_examples '家計簿の更新に失敗していることを確認する' do |invalid_columns|
-  it_behaves_like '実行結果が正しいこと', false
-  it_behaves_like '不正なパラメーターの種類が正しいこと', invalid_columns
-end
-
-shared_examples '家計簿の削除に失敗していることを確認する' do |invalid_columns|
-  it_behaves_like '実行結果が正しいこと', false
-  it_behaves_like '不正なパラメーターの種類が正しいこと', invalid_columns
-end
-
-shared_examples '収支の計算に失敗していることを確認する' do
-  it '結果がnilであること' do
-    expect(@result).to be nil
-  end
-end
-
 describe Account, :type => :model do
   income = {:account_type => 'income', :date => '1000-01-01', :content => 'テスト用データ', :category => 'テスト', :price => 100}
   expense = {:account_type => 'expense', :date => '1000-01-01', :content => 'テスト用データ', :category => 'テスト', :price => 100}
@@ -111,9 +22,9 @@ describe Account, :type => :model do
         ['条件を指定しない', {}, [income.values, expense.values]],
       ].each do |description, query, expected_accounts|
         context description do
-          include_context '家計簿を取得する', query
+          include_context 'Model: 家計簿を取得する', query
 
-          it_behaves_like '家計簿が正しく取得されていることを確認する', :size => expected_accounts.size, :accounts => expected_accounts
+          it_behaves_like 'Model: 家計簿が正しく取得されていることを確認する', :size => expected_accounts.size, :accounts => expected_accounts
         end
       end
     end
@@ -126,9 +37,9 @@ describe Account, :type => :model do
         ['不正な種類と金額を指定する', {:account_type => 'invalid_type', :date => '1000-01-01', :price => 'invalid_price'}, [:account_type, :price]],
       ].each do |description, query, invalid_columns|
         context description do
-          include_context '家計簿を取得する', query
+          include_context 'Model: 家計簿を取得する', query
 
-          it_behaves_like '家計簿の取得に失敗していることを確認する', invalid_columns
+          it_behaves_like 'Model: 家計簿の取得に失敗していることを確認する', invalid_columns
         end
       end
     end
@@ -152,9 +63,9 @@ describe Account, :type => :model do
             @expected_accounts = updated_accounts.map {|account| account.merge(with).values }
           end
           after(:all) { Account.delete_all }
-          include_context '家計簿を更新する', condition, with
+          include_context 'Model: 家計簿を更新する', condition, with
 
-          it_behaves_like '家計簿が正しく更新されていることを確認する', :size => updated_accounts.size
+          it_behaves_like 'Model: 家計簿が正しく更新されていることを確認する', :size => updated_accounts.size
         end
       end
     end
@@ -174,9 +85,9 @@ describe Account, :type => :model do
         context description do
           before(:all) { [income, expense].each {|account| Account.create(account) } }
           after(:all) { Account.delete_all }
-          include_context '家計簿を更新する', condition, with
+          include_context 'Model: 家計簿を更新する', condition, with
 
-          it_behaves_like '家計簿の更新に失敗していることを確認する', invalid_columns
+          it_behaves_like 'Model: 家計簿の更新に失敗していることを確認する', invalid_columns
         end
       end
     end
@@ -197,9 +108,9 @@ describe Account, :type => :model do
         context description do
           before(:all) { [income, expense].each {|account| Account.create(account) } }
           after(:all) { Account.delete_all }
-          include_context '家計簿を削除する', condition
+          include_context 'Model: 家計簿を削除する', condition
 
-          it_behaves_like '家計簿が正しく削除されていることを確認する'
+          it_behaves_like 'Model: 家計簿が正しく削除されていることを確認する'
         end
       end
     end
@@ -214,9 +125,9 @@ describe Account, :type => :model do
         context description do
           before(:all) { [income, expense].each {|account| Account.create(account) } }
           after(:all) { Account.delete_all }
-          include_context '家計簿を削除する', condition
+          include_context 'Model: 家計簿を削除する', condition
 
-          it_behaves_like '家計簿の削除に失敗していることを確認する', invalid_columns
+          it_behaves_like 'Model: 家計簿の削除に失敗していることを確認する', invalid_columns
         end
       end
     end
@@ -233,9 +144,9 @@ describe Account, :type => :model do
         ['日次を指定する', 'daily', {'1000-01-01' => 0}],
       ].each do |description, interval, settlement|
         context description do
-          include_context '収支を計算する', interval
+          include_context 'Model: 収支を計算する', interval
 
-          it_behaves_like '収支が正しく計算されていることを確認する', settlement
+          it_behaves_like 'Model: 収支が正しく計算されていることを確認する', settlement
         end
       end
     end
@@ -246,9 +157,9 @@ describe Account, :type => :model do
         ['nilを指定する', nil],
       ].each do |description, interval|
         context description do
-          include_context '収支を計算する', interval
+          include_context 'Model: 収支を計算する', interval
 
-          it_behaves_like '収支の計算に失敗していることを確認する'
+          it_behaves_like 'Model: 収支の計算に失敗していることを確認する'
         end
       end
     end
