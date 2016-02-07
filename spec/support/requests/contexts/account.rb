@@ -36,6 +36,9 @@ shared_context 'DELETE /accounts' do |condition|
   end
 end
 
-shared_context '収支を計算する' do
-
+shared_context 'GET /settlement' do |interval|
+  before(:all) do
+    @res = @hc.get("#{@base_url}/settlement", :interval => interval)
+    @pbody = JSON.parse(@res.body) rescue nil
+  end
 end

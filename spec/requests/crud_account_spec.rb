@@ -15,61 +15,31 @@ describe '家計簿を管理する', :type => :request do
 
   describe '家計簿を登録する' do
     include_context 'POST /accounts', valid_account
-    it_behaves_like '家計簿が正しく登録されていることを確認する'
+    it_behaves_like 'Request: 家計簿が正しく登録されていることを確認する'
   end
 
   describe '家計簿を検索する' do
     include_context 'GET /accounts', :content => 'システムテスト用データ'
-    it_behaves_like '家計簿が正しく検索されていることを確認する'
+    it_behaves_like 'Request: 家計簿が正しく検索されていることを確認する'
   end
 
   describe '家計簿を更新する' do
     include_context 'PUT /accounts', {:date => '1000-01-01'}, {:account_type => 'income'}
-    it_behaves_like '家計簿が正しく更新されていることを確認する'
+    it_behaves_like 'Request: 家計簿が正しく更新されていることを確認する'
   end
 
   describe '家計簿を検索する' do
     include_context 'GET /accounts', :account_type => 'income'
-    it_behaves_like '家計簿が正しく検索されていることを確認する'
+    it_behaves_like 'Request: 家計簿が正しく検索されていることを確認する'
   end
 
   describe '家計簿を削除する' do
     include_context 'DELETE /accounts', :category => 'システムテスト'
-    it_behaves_like '家計簿が正しく削除されていることを確認する'
+    it_behaves_like 'Request: 家計簿が正しく削除されていることを確認する'
   end
 
   describe '家計簿を検索する' do
     include_context 'GET /accounts', :price => 100
-    it_behaves_like '家計簿が正しく検索されていることを確認する'
-  end
-end
-
-describe '収支を計算する', :type => :request do
-  describe '家計簿を登録する' do
-
-  end
-
-  describe '家計簿を登録する' do
-
-  end
-
-  describe '家計簿を登録する' do
-
-  end
-
-  describe '家計簿を検索する' do
-
-  end
-
-  describe '収支を計算する' do
-
-  end
-
-  describe '収支を計算する' do
-
-  end
-
-  describe '収支を計算する' do
-
+    it_behaves_like 'Request: 家計簿が正しく検索されていることを確認する'
   end
 end
