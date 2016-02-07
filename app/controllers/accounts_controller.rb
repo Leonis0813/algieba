@@ -14,7 +14,7 @@ class AccountsController < ApplicationController
         errors = [].tap do |array|
           array << {:error_code => 'invalid_value_account_type'} unless columns[:account_type] =~ /income|expense/
           array << {:error_code => 'invalid_value_date'} unless columns[:date] =~ /\A\d{4}-\d{2}-\d{2}\z/
-          array << {:error_code => 'invalid_value_price'} unless columns[:price] =~ /\A[1-9]\d*\z/
+          array << {:error_code => 'invalid_value_price'} unless columns[:price].to_s =~ /\A[1-9]\d*\z/
         end
         if errors.empty?
           begin
