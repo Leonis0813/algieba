@@ -2,10 +2,6 @@
 require 'rails_helper'
 
 describe AccountsController, :type => :controller do
-  income = {'account_type' => 'income', 'date' => '1000-01-01', 'content' => '機能テスト用データ', 'category' => '機能テスト', 'price' => 100}
-  expense = {'account_type' => 'expense', 'date' => '1000-01-01', 'content' => '機能テスト用データ', 'category' => '機能テスト', 'price' => 100}
-  account_keys = %w[account_type date content category price]
-
   include_context 'Controller: 共通設定'
 
   context '正常系' do
@@ -20,12 +16,12 @@ describe AccountsController, :type => :controller do
     ].each do |description, condition|
       context description do
         before(:all) do
-          [income, expense].each {|account| @client.post('/accounts', {:accounts => account}) }
-          @res = @client.delete('/accounts', condition)
+          @test_account.each {|key, value| @client.post('/accounts', {:accounts => value}) }
+          @params = condition
         end
-        after(:all) { @client.delete('/accounts') }
-
+        include_context 'Controller: 家計簿を削除する'
         it_behaves_like 'Controller: 家計簿が正しく削除されていることを確認する'
+        include_context 'Controller: 後始末'
       end
     end
   end
@@ -38,13 +34,12 @@ describe AccountsController, :type => :controller do
     ].each do |description, invalid_condition, condition|
       context description do
         before(:all) do
-          [income, expense].each {|account| @client.post('/accounts', {:accounts => account}) }
-          @res = @client.delete('/accounts', condition.merge(invalid_condition))
-          @pbody = JSON.parse(@res.body)
+          @test_account.each {|key, value| @client.post('/accounts', {:accounts => value}) }
+          @params = condition.merge(invalid_condition)
         end
-        after(:all) { @client.delete('/accounts') }
-
+        include_context 'Controller: 家計簿を削除する'
         it_behaves_like '400エラーをチェックする', invalid_condition.keys.map {|key| "invalid_param_#{key}" }
+        include_context 'Controller: 後始末'
       end
     end
   end

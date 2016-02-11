@@ -74,19 +74,20 @@ shared_examples_for 'Model: 収支の計算に失敗していることを確認�
 end
 
 
-shared_examples_for 'Controller: 家計簿が正しく登録されていることを確認する' do |expected_account|
+shared_examples_for 'Controller: 家計簿が正しく登録されていることを確認する' do
   it_behaves_like 'ステータスコードが正しいこと', '201'
 
   it 'レスポンスの属性値が正しいこと' do
-    expect(@actual_account).to eq expected_account
+    expect(@pbody.slice(*@account_keys)).to eq @expected_account
   end
 end
 
-shared_examples_for 'Controller: 家計簿が正しく取得されていることを確認する' do |expected_accounts|
+shared_examples_for 'Controller: 家計簿が正しく取得されていることを確認する' do
   it_behaves_like 'ステータスコードが正しいこと', '200'
 
   it 'レスポンスの属性値が正しいこと' do
-    expect(@actual_accounts).to eq expected_accounts
+    @actual_accounts = @pbody.map {|account| account.slice(*@account_keys) }
+    expect(@actual_accounts).to eq @expected_accounts
   end
 end
 
@@ -94,6 +95,7 @@ shared_examples_for 'Controller: 家計簿が正しく更新されているこ�
   it_behaves_like 'ステータスコードが正しいこと', '200'
 
   it 'レスポンスの属性値が正しいこと' do
+    @actual_accounts = @pbody.map {|account| account.slice(*@account_keys) }
     expect(@actual_accounts).to eq @expected_accounts
   end
 end
