@@ -1,6 +1,9 @@
 algieba
 =======
 
+- 1.0.3:
+  - [FIX] remove invalid_value exception
+
 - 1.0.2:
   - [ADD] rspec
 
