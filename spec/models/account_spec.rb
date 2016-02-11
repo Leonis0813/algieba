@@ -80,7 +80,6 @@ describe Account, :type => :model do
         ['不正な日付を指定する', {:category => 'テスト'}, {:date => '1000-00-00'}, [:date]],
         ['不正な金額を指定する', {:price => 100}, {:price => -100}, [:price]],
         ['不正な種類と日付を指定する', {:account_type => 'income', :category => 'テスト'}, {:account_type => 'invalid_type', :date => 'invalid_date'}, [:account_type, :date]],
-        ['更新後の値を指定しない', {:account_type => 'expense', :category => 'テスト'}, {}, [:with]],
       ].each do |description, condition, with, invalid_columns|
         context description do
           before(:all) { [income, expense].each {|account| Account.create(account) } }
