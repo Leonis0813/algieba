@@ -1,7 +1,6 @@
 class AccountsController < ApplicationController
   def create
     params.permit!
-
     if params[:accounts]
       required_column_names = [:account_type, :date, :content, :category, :price]
       columns = params[:accounts].slice *required_column_names
@@ -12,9 +11,9 @@ class AccountsController < ApplicationController
       end
       if absent_columns.empty?
         errors = [].tap do |array|
-          array << {:error_code => 'invalid_value_account_type'} unless columns[:account_type] =~ /income|expense/
-          array << {:error_code => 'invalid_value_date'} unless columns[:date] =~ /\A\d{4}-\d{2}-\d{2}\z/
-          array << {:error_code => 'invalid_value_price'} unless columns[:price] =~ /\A[1-9]\d*\z/
+          array << {:error_code => 'invalid_param_account_type'} unless columns[:account_type] =~ /income|expense/
+          array << {:error_code => 'invalid_param_date'} unless columns[:date] =~ /\A\d{4}-\d{2}-\d{2}\z/
+          array << {:error_code => 'invalid_param_price'} unless columns[:price].to_s =~ /\A[1-9]\d*\z/
         end
         if errors.empty?
           begin
@@ -22,7 +21,7 @@ class AccountsController < ApplicationController
             render :status => :created, :json => account
           rescue ActiveRecord::RecordInvalid => e
             errors = e.record.errors.messages.keys.map do |column|
-              {:error_code => "invalid_value_#{column}"}
+              {:error_code => "invalid_param_#{column}"}
             end
             render :status => :bad_request, :json => errors
           end
@@ -45,7 +44,7 @@ class AccountsController < ApplicationController
     if result
       render :status => :ok, :json => obj
     else
-      errors = obj.map{|param| {:error_code => "invalid_value_#{param}"} }
+      errors = obj.map{|param| {:error_code => "invalid_param_#{param}"} }
       render :status => :bad_request, :json => errors
     end
   end
@@ -58,7 +57,7 @@ class AccountsController < ApplicationController
       if result
         render :status => :ok, :json => obj
       else
-        errors = obj.map{|param| {:error_code => "invalid_value_#{param}"} }
+        errors = obj.map{|param| {:error_code => "invalid_param_#{param}"} }
         render :status => :bad_request, :json => errors        
       end
     else
@@ -73,7 +72,7 @@ class AccountsController < ApplicationController
     if result
       render :status => :no_content, :nothing => true
     else
-      errors = obj.map{|param| {:error_code => "invalid_value_#{param}"} }
+      errors = obj.map{|param| {:error_code => "invalid_param_#{param}"} }
       render :status => :bad_request, :json => errors        
     end
   end
@@ -86,7 +85,7 @@ class AccountsController < ApplicationController
       if result
         render :status => :ok, :json => obj
       else
-        render :status => :bad_request, :json => [{:error_code => 'invalid_value_interval'}]
+        render :status => :bad_request, :json => [{:error_code => 'invalid_param_interval'}]
       end
     else
       render :status => :bad_request, :json => [{:error_code => 'absent_param_interval'}]
