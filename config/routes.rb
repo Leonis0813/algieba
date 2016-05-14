@@ -5,4 +5,6 @@ Rails.application.routes.draw do
   delete '/accounts' => 'accounts#delete'
 
   get '/settlement' => 'accounts#settle'
+
+  get '/' => 'accounts#register'
 end
