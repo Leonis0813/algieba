@@ -23,10 +23,10 @@ class AccountsController < ApplicationController
         if errors.empty?
           begin
             @account = Account.create!(columns)
-            if params[:from] == 'webapi'
-              render :status => :created, :json => @account
-            else
+            if params[:from] == 'browser'
               render
+            else
+              render :status => :created, :json => @account
             end
           rescue ActiveRecord::RecordInvalid => e
             errors = e.record.errors.messages.keys.map do |column|
