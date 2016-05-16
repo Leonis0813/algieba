@@ -1,4 +1,6 @@
 class AccountsController < ApplicationController
+  before_filter :basic, :only => [:register]
+
   def register
     @account = Account.new
     @all_accounts = Account.all
