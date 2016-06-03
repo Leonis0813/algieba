@@ -1,4 +1,11 @@
 class AccountsController < ApplicationController
+  before_filter :basic, :only => [:register]
+
+  def register
+    @account = Account.new
+    @all_accounts = Account.all
+  end
+
   def create
     params.permit!
     if params[:accounts]
@@ -17,8 +24,12 @@ class AccountsController < ApplicationController
         end
         if errors.empty?
           begin
-            account = Account.create!(columns)
-            render :status => :created, :json => account
+            @account = Account.create!(columns)
+            if params[:accounts][:from] == 'browser'
+              render
+            else
+              render :status => :created, :json => @account
+            end
           rescue ActiveRecord::RecordInvalid => e
             errors = e.record.errors.messages.keys.map do |column|
               {:error_code => "invalid_param_#{column}"}

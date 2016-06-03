@@ -1,0 +1,7 @@
+$("#append").after("\
+<tr><td><%= @account.account_type == 'income' ? '収入' : '支出' %></td>\
+<td><%= @account.date %></td>\
+<td><%= @account.content %></td>\
+<td><%= @account.category %></td>\
+<td><%= @account.price %></td></tr>\
+")

@@ -36,6 +36,8 @@ group :development, :test do
   gem 'rspec-rails'
   gem 'capybara'
   gem 'capybara-mechanize'
+  gem 'capybara-webkit'
+  gem 'headless'
 
   gem 'fuubar'
 
