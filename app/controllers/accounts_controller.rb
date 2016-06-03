@@ -25,7 +25,7 @@ class AccountsController < ApplicationController
         if errors.empty?
           begin
             @account = Account.create!(columns)
-            if params[:from] == 'browser'
+            if params[:accounts][:from] == 'browser'
               render
             else
               render :status => :created, :json => @account
