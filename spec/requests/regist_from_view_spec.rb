@@ -29,14 +29,14 @@ describe 'ブラウザから操作する', :type => :request, :js => true do
 
     describe '家計簿を登録する' do
       before(:each) { @current_row = page.all('table tr').count - 2 }
-      include_context '家計簿を入力する', default_inputs.merge(:date => '1000/01/01'), 'income'
+      include_context '家計簿を登録する', default_inputs.merge(:date => '1000/01/01'), 'income'
 
       it '家計簿の数が変わっていないこと' do
         expect(page.all('table tr').count - 2).to eq @current_row
       end
 
       describe '家計簿を登録する' do
-        include_context '家計簿を入力する', default_inputs, 'income'
+        include_context '家計簿を登録する', default_inputs, 'income'
         before(:each) { sleep 1 }
 
         it '家計簿の数が1つ増えていること' do
