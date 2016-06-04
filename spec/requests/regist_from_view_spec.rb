@@ -12,10 +12,14 @@ describe 'ブラウザから操作する', :type => :request, :js => true do
 
   default_inputs = {
     :date => '1000-01-01',
-    :content => 'システムテスト用データ',
+    :content => 'regist from view',
     :category => 'テスト',
     :price => '100',
   }
+
+  include_context '共通設定'
+
+  after(:all) { @hc.delete("#{@base_url}/accounts", default_inputs) }
 
   describe 'Webページを表示する' do
     before(:each) { page.driver.browser.authenticate('dev', '.dev') }
