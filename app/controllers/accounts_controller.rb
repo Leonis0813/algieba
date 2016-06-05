@@ -11,7 +11,9 @@ class AccountsController < ApplicationController
     check_absent_params_for_create
 
     begin
-      @account = Account.create!(params[:accounts].slice(*account_attributes))
+      accounts = params[:accounts].slice(*account_attributes)
+      accounts[:date] = 'invalid_date' unless accounts[:date] =~ /\d{4}-\d{2}-\d{2}/
+      @account = Account.create!(accounts)
       if params[:accounts][:from] == 'browser'
         render
       else
