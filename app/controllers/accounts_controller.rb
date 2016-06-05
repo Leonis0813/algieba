@@ -12,8 +12,11 @@ class AccountsController < ApplicationController
 
     begin
       @account = Account.create!(params[:accounts].slice(*account_attributes))
-      render if params[:accounts][:from] == 'browser'
-      render :status => :created, :json => @account
+      if params[:accounts][:from] == 'browser'
+        render
+      else
+        render :status => :created, :json => @account
+      end
     rescue ActiveRecord::RecordInvalid => e
       raise BadRequest.new(e.record.errors.messages.keys, 'invalid')
     end
