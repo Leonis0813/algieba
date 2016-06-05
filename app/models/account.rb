@@ -2,7 +2,7 @@ require 'date'
 
 class Account < ActiveRecord::Base
   validates :account_type, :presence => true, :format => { :with => /income|expense/ }
-  validates :date, :presence => true, :format => { :with => /\d{4}-\d{2}-\d{2}/ }
+  validates :date, :presence => true, :format => { :with => /\A\d{4}\-\d{2}\-\d{2}\z/ }
   validates :content, :presence => true
   validates :category, :presence => true
   validates :price, :presence => true, :numericality => { :only_integer => true, :greater_than_or_equal_to => 0 }
@@ -86,7 +86,22 @@ class Account < ActiveRecord::Base
       }
       account = Account.new(dummy_params)
       condition.each {|key, value| account.send("#{key}=", value) }
-      raise ActiveRecord::RecordInvalid.new(account) if account.invalid?
+      invalid_exception = ActiveRecord::RecordInvalid.new(account)
+      if condition[:date]
+        account.invalid?
+        if condition[:date] =~ /\d{4}-\d{2}-\d{2}/
+          begin
+            Date.parse(condition[:date])
+          rescue ArgumentError
+            invalid_exception.record.errors[:date] = 'is invalid'
+            raise invalid_exception
+          end
+        else
+          invalid_exception.record.errors[:date] = 'is invalid'
+          raise invalid_exception
+        end
+      end
+      raise invalid_exception if account.invalid?
     end
   end
 end
