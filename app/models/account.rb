@@ -2,56 +2,34 @@ require 'date'
 
 class Account < ActiveRecord::Base
   validates :account_type, :presence => true, :format => { :with => /income|expense/ }
-  validates :date, :presence => true, :format => { :with => /\d{4}-\d{2}-\d{2}/ }
+  validates :date, :presence => true, :format => { :with => /\A\d{4}\-\d{2}\-\d{2}\z/ }
   validates :content, :presence => true
   validates :category, :presence => true
   validates :price, :presence => true, :numericality => { :only_integer => true, :greater_than_or_equal_to => 0 }
 
   class << self
-    def show(params = {})
-      invalid_conditions = check_condition(params)
-      if invalid_conditions.empty?
-        conditions = params.slice :account_type, :date, :content, :category, :price
-        [true, Account.where(conditions)]
-      else
-        [false, invalid_conditions]
-      end
+    def show(condition = {})
+      check_condition(condition)
+      Account.where(condition)
     end
 
     def update(params)
-      condition = params[:condition] || {}
-      invalid_conditions = check_condition(condition)
-      return [false, invalid_conditions] unless invalid_conditions.empty?
+      condition, with = (params[:condition] || {}), params[:with]
+      check_condition(condition)
+      check_condition(with)
 
-      return [false, [:with]] if params[:with].empty?
-      with = params[:with]
-      invalid_values = check_condition(with)
-      return [false, invalid_values] unless invalid_values.empty?
-
-      conditions = condition.slice :account_type, :date, :content, :category, :price
-      accounts = Account.where(conditions)
-      accounts.each do |account|
-        account.update_attributes with
-      end
-      [true, accounts]
+      account_attributes = %i[ account_type date content category price ]
+      accounts = Account.where(condition.slice(*account_attributes))
+      accounts.map {|account| account.update_attributes(with) }
+      accounts
     end
 
-    def destroy(params = {})
-      invalid_conditions = check_condition(params)
-      if invalid_conditions.empty?
-        conditions = params.slice :account_type, :date, :content, :category, :price
-        Account.where(conditions).each do |account|
-          account.delete
-        end
-        [true, []]
-      else
-        [false, invalid_conditions]
-      end
+    def destroy(condition = {})
+      check_condition(condition)
+      Account.where(condition).each {|account| account.delete }
     end
 
     def settle(interval)
-      return nil unless interval =~ /yearly|monthly|daily/
-
       income_records = Account.where(:account_type => 'income').pluck(:date, :price).map do |record|
         {:date => record.first, :price => record.last}
       end
@@ -66,6 +44,8 @@ class Account < ActiveRecord::Base
                  '%Y-%m'
                when 'daily'
                  '%Y-%m-%d'
+               else
+                 raise Exception
                end
 
       grouped_income_records = income_records.group_by do |record|
@@ -91,32 +71,37 @@ class Account < ActiveRecord::Base
       periods.each do |period|
         settlements.merge!({period => (incomes[period] || 0) - (expenses[period] || 0)})
       end
-      [true, settlements]
+      settlements
     end
 
     private
+
     def check_condition(condition)
-      [].tap do |invalid_params|
-        if condition[:account_type] and
-           not (condition[:account_type] == 'income' or condition[:account_type] == 'expense')
-          invalid_params << :account_type
-        end
-        if condition[:date]
-          if condition[:date] =~ /\A\d{4}\-\d{2}\-\d{2}\z/
-            year, month, day = condition[:date].split('-')
-            unless 1 <= month.to_i and month.to_i <= 12 or 1 <= day.to_i and day.to_i <= 31
-              invalid_params << :date
-            end
-          else
-            invalid_params << :date
+      dummy_params = {
+        :account_type => 'income',
+        :date => '1000-01-01',
+        :content => 'dummy',
+        :category => 'dummy',
+        :price => 1,
+      }
+      account = Account.new(dummy_params)
+      condition.each {|key, value| account.send("#{key}=", value) }
+      invalid_exception = ActiveRecord::RecordInvalid.new(account)
+      if condition[:date]
+        account.invalid?
+        if condition[:date] =~ /\d{4}-\d{2}-\d{2}/
+          begin
+            Date.parse(condition[:date])
+          rescue ArgumentError
+            invalid_exception.record.errors[:date] = 'is invalid'
+            raise invalid_exception
           end
-        end
-        if condition[:price]
-          unless condition[:price].to_s =~ /\A[1-9]\d*\z/
-            invalid_params << :price
-          end
+        else
+          invalid_exception.record.errors[:date] = 'is invalid'
+          raise invalid_exception
         end
       end
+      raise invalid_exception if account.invalid?
     end
   end
 end
