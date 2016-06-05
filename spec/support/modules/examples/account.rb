@@ -41,24 +41,6 @@ shared_examples_for 'Model: 収支が正しく計算されていることを確�
   end
 end
 
-shared_examples_for 'Model: 不正なパラメーターの種類が正しいこと' do |invalid_columns|
-  it { expect(@accounts).to eq invalid_columns }
-end
-
-shared_examples_for 'Model: 家計簿の更新に失敗していることを確認する' do |invalid_columns|
-  it_behaves_like 'Model: 不正なパラメーターの種類が正しいこと', invalid_columns
-end
-
-shared_examples_for 'Model: 家計簿の削除に失敗していることを確認する' do |invalid_columns|
-  it_behaves_like 'Model: 不正なパラメーターの種類が正しいこと', invalid_columns
-end
-
-shared_examples_for 'Model: 収支の計算に失敗していることを確認する' do
-  it '結果がnilであること' do
-    expect(@result).to be nil
-  end
-end
-
 
 shared_examples_for 'Controller: 家計簿が正しく登録されていることを確認する' do
   it_behaves_like 'ステータスコードが正しいこと', '201'

@@ -86,6 +86,7 @@ describe Account, :type => :model do
         context description do
           before(:all) { [income, expense].each {|account| Account.create(account) } }
           after(:all) { Account.delete_all }
+
           it 'ActiveRecord::RecordInvalidが発生すること' do
             expect{ Account.update({:condition => condition, :with => with}) }.to raise_error(ActiveRecord::RecordInvalid) do |e|
               expect(e.record.errors.messages.keys).to eq invalid_columns
@@ -128,6 +129,7 @@ describe Account, :type => :model do
         context description do
           before(:all) { [income, expense].each {|account| Account.create(account) } }
           after(:all) { Account.delete_all }
+
           it 'ActiveRecord::RecordInvalidが発生すること' do
             expect{ Account.destroy(condition) }.to raise_error(ActiveRecord::RecordInvalid) do |e|
               expect(e.record.errors.messages.keys).to eq invalid_columns
