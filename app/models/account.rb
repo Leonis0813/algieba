@@ -31,8 +31,6 @@ class Account < ActiveRecord::Base
     end
 
     def settle(interval)
-      return nil unless interval =~ /yearly|monthly|daily/
-
       income_records = Account.where(:account_type => 'income').pluck(:date, :price).map do |record|
         {:date => record.first, :price => record.last}
       end
@@ -47,6 +45,8 @@ class Account < ActiveRecord::Base
                  '%Y-%m'
                when 'daily'
                  '%Y-%m-%d'
+               else
+                 raise Exception
                end
 
       grouped_income_records = income_records.group_by do |record|
@@ -72,7 +72,7 @@ class Account < ActiveRecord::Base
       periods.each do |period|
         settlements.merge!({period => (incomes[period] || 0) - (expenses[period] || 0)})
       end
-      [true, settlements]
+      settlements
     end
 
     private

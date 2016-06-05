@@ -53,16 +53,12 @@ class AccountsController < ApplicationController
 
   def settle
     params.permit!
+    check_absent_params_for_settle
 
-    if params[:interval]
-      result, obj = Account.settle params[:interval]
-      if result
-        render :status => :ok, :json => obj
-      else
-        render :status => :bad_request, :json => [{:error_code => 'invalid_param_interval'}]
-      end
-    else
-      render :status => :bad_request, :json => [{:error_code => 'absent_param_interval'}]
+    begin
+      render :status => :ok, :json => Account.settle(params[:interval])
+    rescue Exception
+      raise BadRequest.new(:interval, 'invalid')
     end
   end
 
@@ -74,6 +70,10 @@ class AccountsController < ApplicationController
 
   def permitted_params_update
     %i[ condition with ]
+  end
+
+  def permitted_values_settle
+    %i[ yearly monthly daily ]
   end
 
   def check_absent_params_for_create
@@ -91,5 +91,12 @@ class AccountsController < ApplicationController
     prefix = 'absent'
     raise BadRequest.new(:with, prefix) unless request.request_parameters.has_key?(:with)
     raise BadRequest.new(:with, prefix) unless request.request_parameters[:with].empty?
+  end
+
+  def check_absent_params_for_settle
+    raise BadRequest.new(:interval, 'absent') unless request.query_parameters.has_key?(:interval)
+    unless request.query_parameters[:interval].match(/#{permitted_values_settle.join('|')}/)
+      raise BadRequest.new(:interval, 'invalid')
+    end
   end
 end
