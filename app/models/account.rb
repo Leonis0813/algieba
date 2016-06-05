@@ -8,14 +8,9 @@ class Account < ActiveRecord::Base
   validates :price, :presence => true, :numericality => { :only_integer => true, :greater_than_or_equal_to => 0 }
 
   class << self
-    def show(params = {})
-      invalid_conditions = check_condition(params)
-      if invalid_conditions.empty?
-        conditions = params.slice :account_type, :date, :content, :category, :price
-        [true, Account.where(conditions)]
-      else
-        [false, invalid_conditions]
-      end
+    def show(condition = {})
+      check_condition(condition)
+      Account.where(condition)
     end
 
     def update(params)
@@ -95,28 +90,18 @@ class Account < ActiveRecord::Base
     end
 
     private
+
     def check_condition(condition)
-      [].tap do |invalid_params|
-        if condition[:account_type] and
-           not (condition[:account_type] == 'income' or condition[:account_type] == 'expense')
-          invalid_params << :account_type
-        end
-        if condition[:date]
-          if condition[:date] =~ /\A\d{4}\-\d{2}\-\d{2}\z/
-            year, month, day = condition[:date].split('-')
-            unless 1 <= month.to_i and month.to_i <= 12 or 1 <= day.to_i and day.to_i <= 31
-              invalid_params << :date
-            end
-          else
-            invalid_params << :date
-          end
-        end
-        if condition[:price]
-          unless condition[:price].to_s =~ /\A[1-9]\d*\z/
-            invalid_params << :price
-          end
-        end
-      end
+      dummy_params = {
+        :account_type => 'income',
+        :date => '1000-01-01',
+        :content => 'dummy',
+        :category => 'dummy',
+        :price => 1,
+      }
+      account = Account.new(dummy_params)
+      condition.each {|key, value| account.update_attribute(key, value) }
+      raise ActiveRecord::RecordInvalid,new(account) if account.invalid?
     end
   end
 end

@@ -21,13 +21,10 @@ class AccountsController < ApplicationController
 
   def read
     params.permit!
-
-    result, obj = Account.show params
-    if result
-      render :status => :ok, :json => obj
-    else
-      errors = obj.map{|param| {:error_code => "invalid_param_#{param}"} }
-      render :status => :bad_request, :json => errors
+    begin
+      render :status => :ok, :json => Account.show params.slice(*required_params_read)
+    rescue ActiveRecord::RecordInvalid => e
+      raise BadRequest.new(e.record.errors.messages.keys, 'invalid')
     end
   end
 
@@ -77,6 +74,10 @@ class AccountsController < ApplicationController
   private
 
   def required_params_create
+    %i[ account_type date content category price ]
+  end
+
+  def required_params_read
     %i[ account_type date content category price ]
   end
 
