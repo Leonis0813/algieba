@@ -19,15 +19,14 @@ class Account < ActiveRecord::Base
       check_condition(with)
 
       account_attributes = %i[ account_type date content category price ]
-      Account.where(condition.slice(*account_attributes)).map do |account|
-        account.update_attributes(with)
-        account.save!
-      end
+      accounts = Account.where(condition.slice(*account_attributes))
+      accounts.map {|account| account.update_attributes(with) }
+      accounts
     end
 
     def destroy(condition = {})
       check_condition(condition)
-      Account.where(conditions).each {|account| account.delete }
+      Account.where(condition).each {|account| account.delete }
     end
 
     def settle(interval)
@@ -85,7 +84,8 @@ class Account < ActiveRecord::Base
         :category => 'dummy',
         :price => 1,
       }
-      account = Account.new(dummy_params).update_attribute(condition)
+      account = Account.new(dummy_params)
+      condition.each {|key, value| account.send("#{key}=", value) }
       raise ActiveRecord::RecordInvalid.new(account) if account.invalid?
     end
   end
