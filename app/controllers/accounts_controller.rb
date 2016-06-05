@@ -11,7 +11,7 @@ class AccountsController < ApplicationController
     check_absent_params_for_create
 
     begin
-      @account = Account.create!(params[:accounts].slice(*required_params_create))
+      @account = Account.create!(params[:accounts].slice(*account_attributes))
       render if params[:accounts][:from] == 'browser'
       render :status => :created, :json => @account
     rescue ActiveRecord::RecordInvalid => e
@@ -21,8 +21,9 @@ class AccountsController < ApplicationController
 
   def read
     params.permit!
+
     begin
-      render :status => :ok, :json => Account.show params.slice(*required_params_read)
+      render :status => :ok, :json => Account.show(params.slice(*account_attributes))
     rescue ActiveRecord::RecordInvalid => e
       raise BadRequest.new(e.record.errors.messages.keys, 'invalid')
     end
@@ -30,17 +31,12 @@ class AccountsController < ApplicationController
 
   def update
     params.permit!
+    check_absent_params_for_update
 
-    if params[:with]
-      result, obj = Account.update params
-      if result
-        render :status => :ok, :json => obj
-      else
-        errors = obj.map{|param| {:error_code => "invalid_param_#{param}"} }
-        render :status => :bad_request, :json => errors        
-      end
-    else
-      render :status => :bad_request, :json => [{:error_code => 'absent_param_with'}]
+    begin
+      render :status => :ok, :json => Account.update(params.slice(*required_params_update))
+    rescue ActiveRecord::RecordInvalid => e
+      raise BadRequest.new(e.record.errors.messages.keys, 'invalid')
     end
   end
 
@@ -73,22 +69,28 @@ class AccountsController < ApplicationController
 
   private
 
-  def required_params_create
+  def account_attributes
     %i[ account_type date content category price ]
   end
 
-  def required_params_read
-    %i[ account_type date content category price ]
+  def permitted_params_update
+    %i[ condition with ]
   end
 
   def check_absent_params_for_create
     prefix = 'absent'
-    raise BadRequest.new('accounts', prefix) unless request.request_parameters.has_key?('accounts')
+    raise BadRequest.new(:accounts, prefix) unless request.request_parameters.has_key?(:accounts)
     errors = [].tap do |array|
       required_params_create.each do |param_key|
         array << param_key unless request.request_parameters[:accounts].has_key?(param_key)
       end
     end
     raise BadRequest.new(errors, prefix) unless errors.empty?
+  end
+
+  def check_absent_params_for_update
+    prefix = 'absent'
+    raise BadRequest.new(:with, prefix) unless request.request_parameters.has_key?(:with)
+    raise BadRequest.new(:with, prefix) unless request.request_parameters[:with].empty?
   end
 end

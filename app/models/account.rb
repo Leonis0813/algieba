@@ -14,21 +14,15 @@ class Account < ActiveRecord::Base
     end
 
     def update(params)
-      condition = params[:condition] || {}
-      invalid_conditions = check_condition(condition)
-      return [false, invalid_conditions] unless invalid_conditions.empty?
+      condition, with = (params[:condition] || {}), params[:with]
+      check_condition(condition)
+      check_condition(with)
 
-      return [false, [:with]] if params[:with].empty?
-      with = params[:with]
-      invalid_values = check_condition(with)
-      return [false, invalid_values] unless invalid_values.empty?
-
-      conditions = condition.slice :account_type, :date, :content, :category, :price
-      accounts = Account.where(conditions)
-      accounts.each do |account|
-        account.update_attributes with
+      account_attributes = %i[ account_type date content category price ]
+      Account.where(condition.slice(*account_attributes)).map do |account|
+        account.update_attributes(with)
+        account.save!
       end
-      [true, accounts]
     end
 
     def destroy(params = {})
