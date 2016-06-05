@@ -43,12 +43,11 @@ class AccountsController < ApplicationController
   def delete
     params.permit!
 
-    result, obj = Account.destroy params
-    if result
+    begin
+      Account.destroy params.slice(*account_attributes)
       render :status => :no_content, :nothing => true
-    else
-      errors = obj.map{|param| {:error_code => "invalid_param_#{param}"} }
-      render :status => :bad_request, :json => errors        
+    rescue ActiveRecord::RecordInvalid => e
+      raise BadRequest.new(e.record.errors.messages.keys, 'invalid')
     end
   end
 

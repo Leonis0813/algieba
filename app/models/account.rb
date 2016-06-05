@@ -25,17 +25,9 @@ class Account < ActiveRecord::Base
       end
     end
 
-    def destroy(params = {})
-      invalid_conditions = check_condition(params)
-      if invalid_conditions.empty?
-        conditions = params.slice :account_type, :date, :content, :category, :price
-        Account.where(conditions).each do |account|
-          account.delete
-        end
-        [true, []]
-      else
-        [false, invalid_conditions]
-      end
+    def destroy(condition = {})
+      check_condition(condition)
+      Account.where(conditions).each {|account| account.delete }
     end
 
     def settle(interval)
@@ -93,9 +85,8 @@ class Account < ActiveRecord::Base
         :category => 'dummy',
         :price => 1,
       }
-      account = Account.new(dummy_params)
-      condition.each {|key, value| account.update_attribute(key, value) }
-      raise ActiveRecord::RecordInvalid,new(account) if account.invalid?
+      account = Account.new(dummy_params).update_attribute(condition)
+      raise ActiveRecord::RecordInvalid.new(account) if account.invalid?
     end
   end
 end
