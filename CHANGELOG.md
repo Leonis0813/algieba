@@ -1,6 +1,10 @@
 algieba
 =======
 
+- 1.1.1:
+  - [ADD] exception class
+  - [FIX] request spec
+
 - 1.1.0:
   - [ADD] view for account registration
 
