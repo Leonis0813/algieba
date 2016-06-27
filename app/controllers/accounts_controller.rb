@@ -1,94 +1,107 @@
 class AccountsController < ApplicationController
+  before_filter :basic, :only => [:register]
+
+  def register
+    @account = Account.new
+    @all_accounts = Account.all
+  end
+
   def create
     params.permit!
-    if params[:accounts]
-      required_column_names = [:account_type, :date, :content, :category, :price]
-      columns = params[:accounts].slice *required_column_names
-      absent_columns = [].tap do |arr|
-        required_column_names.each do |key|
-          arr << key unless columns[key]
-        end
-      end
-      if absent_columns.empty?
-        errors = [].tap do |array|
-          array << {:error_code => 'invalid_param_account_type'} unless columns[:account_type] =~ /income|expense/
-          array << {:error_code => 'invalid_param_date'} unless columns[:date] =~ /\A\d{4}-\d{2}-\d{2}\z/
-          array << {:error_code => 'invalid_param_price'} unless columns[:price].to_s =~ /\A[1-9]\d*\z/
-        end
-        if errors.empty?
-          begin
-            account = Account.create!(columns)
-            render :status => :created, :json => account
-          rescue ActiveRecord::RecordInvalid => e
-            errors = e.record.errors.messages.keys.map do |column|
-              {:error_code => "invalid_param_#{column}"}
-            end
-            render :status => :bad_request, :json => errors
-          end
-        else
-          render :status => :bad_request, :json => errors
-        end
+    check_absent_params_for_create
+
+    begin
+      accounts = params[:accounts].slice(*account_attributes)
+      accounts[:date] = 'invalid_date' unless accounts[:date] =~ /\d{4}-\d{2}-\d{2}/
+      @account = Account.create!(accounts)
+      if params[:accounts][:from] == 'browser'
+        render
       else
-        absent_columns.map!{|column| {:error_code => "absent_param_#{column}"} }
-        render :status => :bad_request, :json => absent_columns
+        render :status => :created, :json => @account
       end
-    else
-      render :status => :bad_request, :json => [{:error_code => 'absent_param_accounts'}]
+    rescue ActiveRecord::RecordInvalid => e
+      raise BadRequest.new(e.record.errors.messages.keys, 'invalid')
     end
   end
 
   def read
     params.permit!
 
-    result, obj = Account.show params
-    if result
-      render :status => :ok, :json => obj
-    else
-      errors = obj.map{|param| {:error_code => "invalid_param_#{param}"} }
-      render :status => :bad_request, :json => errors
+    begin
+      render :status => :ok, :json => Account.show(params.slice(*account_attributes))
+    rescue ActiveRecord::RecordInvalid => e
+      raise BadRequest.new(e.record.errors.messages.keys, 'invalid')
     end
   end
 
   def update
     params.permit!
+    check_absent_params_for_update
 
-    if params[:with]
-      result, obj = Account.update params
-      if result
-        render :status => :ok, :json => obj
-      else
-        errors = obj.map{|param| {:error_code => "invalid_param_#{param}"} }
-        render :status => :bad_request, :json => errors        
-      end
-    else
-      render :status => :bad_request, :json => [{:error_code => 'absent_param_with'}]
+    begin
+      render :status => :ok, :json => Account.update(params.slice(*permitted_params_update))
+    rescue ActiveRecord::RecordInvalid => e
+      raise BadRequest.new(e.record.errors.messages.keys, 'invalid')
     end
   end
 
   def delete
     params.permit!
 
-    result, obj = Account.destroy params
-    if result
+    begin
+      Account.destroy params.slice(*account_attributes)
       render :status => :no_content, :nothing => true
-    else
-      errors = obj.map{|param| {:error_code => "invalid_param_#{param}"} }
-      render :status => :bad_request, :json => errors        
+    rescue ActiveRecord::RecordInvalid => e
+      raise BadRequest.new(e.record.errors.messages.keys, 'invalid')
     end
   end
 
   def settle
     params.permit!
+    check_absent_params_for_settle
 
-    if params[:interval]
-      result, obj = Account.settle params[:interval]
-      if result
-        render :status => :ok, :json => obj
-      else
-        render :status => :bad_request, :json => [{:error_code => 'invalid_param_interval'}]
+    begin
+      render :status => :ok, :json => Account.settle(params[:interval])
+    rescue Exception
+      raise BadRequest.new(:interval, 'invalid')
+    end
+  end
+
+  private
+
+  def account_attributes
+    %i[ account_type date content category price ]
+  end
+
+  def permitted_params_update
+    %i[ condition with ]
+  end
+
+  def permitted_values_settle
+    %i[ yearly monthly daily ]
+  end
+
+  def check_absent_params_for_create
+    request_params = request.request_parameters
+    raise BadRequest.new(:accounts, 'absent') unless request_params.has_key?(:accounts)
+    errors = [].tap do |array|
+      account_attributes.each do |param_key|
+        array << param_key unless request_params[:accounts].has_key?(param_key)
       end
-    else
-      render :status => :bad_request, :json => [{:error_code => 'absent_param_interval'}]
+    end
+    raise BadRequest.new(errors, 'absent') unless errors.empty?
+  end
+
+  def check_absent_params_for_update
+    request_params = request.request_parameters
+    raise BadRequest.new(:with, 'absent') unless request_params.has_key?(:with)
+    raise BadRequest.new(:with, 'absent') if request_params[:with].empty?
+  end
+
+  def check_absent_params_for_settle
+    raise BadRequest.new(:interval, 'absent') unless request.query_parameters.has_key?(:interval)
+    unless request.query_parameters[:interval].match(/#{permitted_values_settle.join('|')}/)
+      raise BadRequest.new(:interval, 'invalid')
     end
   end
 end

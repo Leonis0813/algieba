@@ -37,9 +37,11 @@ describe Account, :type => :model do
         ['不正な種類と金額を指定する', {:account_type => 'invalid_type', :date => '1000-01-01', :price => 'invalid_price'}, [:account_type, :price]],
       ].each do |description, query, invalid_columns|
         context description do
-          include_context 'Model: 家計簿を取得する', query
-
-          it_behaves_like 'Model: 家計簿の取得に失敗していることを確認する', invalid_columns
+          it 'ActiveRecord::RecordInvalidが発生すること' do
+            expect{ Account.show(query) }.to raise_error(ActiveRecord::RecordInvalid) do |e|
+              expect(e.record.errors.messages.keys).to eq invalid_columns
+            end
+          end
         end
       end
     end
@@ -84,9 +86,12 @@ describe Account, :type => :model do
         context description do
           before(:all) { [income, expense].each {|account| Account.create(account) } }
           after(:all) { Account.delete_all }
-          include_context 'Model: 家計簿を更新する', condition, with
 
-          it_behaves_like 'Model: 家計簿の更新に失敗していることを確認する', invalid_columns
+          it 'ActiveRecord::RecordInvalidが発生すること' do
+            expect{ Account.update({:condition => condition, :with => with}) }.to raise_error(ActiveRecord::RecordInvalid) do |e|
+              expect(e.record.errors.messages.keys).to eq invalid_columns
+            end
+          end
         end
       end
     end
@@ -95,21 +100,21 @@ describe Account, :type => :model do
   context 'destroy' do
     context '正常系' do
       [
-        ['種類を指定する', {:account_type => 'income'}],
-        ['日付を指定する', {:date => '1000-01-01'}],
-        ['内容を指定する', {:content => 'テスト用データ'}],
-        ['カテゴリを指定する', {:category => 'テスト'}],
-        ['金額を指定する', {:price => 100}],
-        ['日付と金額を指定する', {:date => '1000-01-01', :price => 100}],
-        ['日付と金額を指定する', {:date => '1000-01-01', :price => 1}],
-        ['条件を指定しない', {}],
-      ].each do |description, condition|
+        ['種類を指定する', {:account_type => 'income'}, [expense.values]],
+        ['日付を指定する', {:date => '1000-01-01'}, []],
+        ['内容を指定する', {:content => 'テスト用データ'}, []],
+        ['カテゴリを指定する', {:category => 'テスト'}, []],
+        ['金額を指定する', {:price => 100}, []],
+        ['日付と金額を指定する', {:date => '1000-01-01', :price => 100}, []],
+        ['日付と金額を指定する', {:date => '1000-01-01', :price => 1}, [income.values, expense.values]],
+        ['条件を指定しない', {}, []],
+      ].each do |description, condition, expected_accounts|
         context description do
           before(:all) { [income, expense].each {|account| Account.create(account) } }
           after(:all) { Account.delete_all }
           include_context 'Model: 家計簿を削除する', condition
 
-          it_behaves_like 'Model: 家計簿が正しく削除されていることを確認する'
+          it_behaves_like 'Model: 家計簿が正しく削除されていることを確認する', expected_accounts
         end
       end
     end
@@ -124,9 +129,12 @@ describe Account, :type => :model do
         context description do
           before(:all) { [income, expense].each {|account| Account.create(account) } }
           after(:all) { Account.delete_all }
-          include_context 'Model: 家計簿を削除する', condition
 
-          it_behaves_like 'Model: 家計簿の削除に失敗していることを確認する', invalid_columns
+          it 'ActiveRecord::RecordInvalidが発生すること' do
+            expect{ Account.destroy(condition) }.to raise_error(ActiveRecord::RecordInvalid) do |e|
+              expect(e.record.errors.messages.keys).to eq invalid_columns
+            end
+          end
         end
       end
     end
@@ -156,9 +164,9 @@ describe Account, :type => :model do
         ['nilを指定する', nil],
       ].each do |description, interval|
         context description do
-          include_context 'Model: 収支を計算する', interval
-
-          it_behaves_like 'Model: 収支の計算に失敗していることを確認する'
+          it 'Exceptionが発生すること' do
+            expect{ Account.settle(interval) }.to raise_error(Exception)
+          end
         end
       end
     end

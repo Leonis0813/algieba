@@ -9,7 +9,22 @@ describe '収支を計算する', :type => :request do
   ]
 
   include_context '共通設定'
-  after(:all) { @hc.delete("#{@base_url}/accounts", {:category => 'システムテスト'}) }
+
+  before(:all) do
+    res = @hc.get("#{@base_url}/accounts")
+    @accounts = JSON.parse(res.body)
+    @hc.delete("#{@base_url}/accounts")
+  end
+
+  after(:all) do
+    @hc.delete("#{@base_url}/accounts")
+    @accounts.each do |account|
+      body = {
+        :accounts => account.slice('account_type', 'date', 'content', 'category', 'price')
+      }.to_json
+      @hc.post("#{@base_url}/accounts", body, @content_type_json)
+    end
+  end
 
   accounts.each do |account|
     describe '家計簿を登録する' do
