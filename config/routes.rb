@@ -6,5 +6,5 @@ Rails.application.routes.draw do
 
   get '/settlement' => 'accounts#settle'
 
-  get '/' => 'accounts#register'
+  get '/' => 'accounts#manage'
 end

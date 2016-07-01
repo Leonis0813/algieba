@@ -1,7 +1,7 @@
 class AccountsController < ApplicationController
   before_filter :basic, :only => [:register]
 
-  def register
+  def manage
     @account = Account.new
     @all_accounts = Account.all
   end
