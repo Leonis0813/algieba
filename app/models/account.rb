@@ -7,26 +7,21 @@ class Account < ActiveRecord::Base
   validates :category, :presence => true
   validates :price, :presence => true, :numericality => { :only_integer => true, :greater_than_or_equal_to => 0 }
 
+  scope :account_type, ->(account_type) { where(:account_type => account_type) }
+  scope :date_before, ->(date) { where('date <= ?', date) }
+  scope :date_after, ->(date) { where('date >= ?', date) }
+  scope :content_equal, ->(content) { where(:content => content) }
+  scope :content_include, ->(content) { where('content LIKE %?%', content) }
+  scope :category, ->(category) { where(:category => category) }
+  scope :price_upper, ->(price) { where('price >= ?', price) }
+  scope :price_lower, ->(price) { where('price <= ?', price) }
+
   class << self
-    def show(condition = {})
+    def index(condition = {})
       check_condition(condition)
-      Account.where(condition)
-    end
-
-    def update(params)
-      condition, with = (params[:condition] || {}), params[:with]
-      check_condition(condition)
-      check_condition(with)
-
-      account_attributes = %i[ account_type date content category price ]
-      accounts = Account.where(condition.slice(*account_attributes))
-      accounts.map {|account| account.update_attributes(with) }
-      accounts
-    end
-
-    def destroy(condition = {})
-      check_condition(condition)
-      Account.where(condition).each {|account| account.delete }
+      permitted_parameters_for_index.inject(Account.all) do |accounts, query|
+        condition[query] ? accounts.send(query, condition[query]) : accounts
+      end
     end
 
     def settle(interval)
@@ -76,7 +71,12 @@ class Account < ActiveRecord::Base
 
     private
 
+    def permitted_parameters_for_index
+      %i[ account_type date_before date_after content_equal content_include category price_upper price_lower ]
+    end
+
     def check_condition(condition)
+      condition.slice!(*permitted_parameters_for_index)
       dummy_params = {
         :account_type => 'income',
         :date => '1000-01-01',
@@ -85,23 +85,33 @@ class Account < ActiveRecord::Base
         :price => 1,
       }
       account = Account.new(dummy_params)
-      condition.each {|key, value| account.send("#{key}=", value) }
       invalid_exception = ActiveRecord::RecordInvalid.new(account)
-      if condition[:date]
-        account.invalid?
-        if condition[:date] =~ /\d{4}-\d{2}-\d{2}/
-          begin
-            Date.parse(condition[:date])
-          rescue ArgumentError
-            invalid_exception.record.errors[:date] = 'is invalid'
-            raise invalid_exception
+
+      if condition[:account_type] and not condition[:account_type] =~ /\A(income|expense)\z/
+        invalid_exception.record.errors[:account_type] = 'is invalid'
+      end
+      
+      [:date_before, :date_after].each do |date_query|
+        if condition[date_query]
+          if condition[date_query] =~ /\d{4}-\d{2}-\d{2}/
+            begin
+              Date.parse(condition[date_query])
+            rescue ArgumentError
+              invalid_exception.record.errors[date_query] = 'is invalid'
+            end
+          else
+            invalid_exception.record.errors[date_query] = 'is invalid'
           end
-        else
-          invalid_exception.record.errors[:date] = 'is invalid'
-          raise invalid_exception
         end
       end
-      raise invalid_exception if account.invalid?
+
+      [:price_upper, :price_lower].each do |price_query|
+        if condition[price_query] and not condition[price_query] =~ /\A\d+\z/
+          invalid_exception.record.errors[price_query] = 'is invalid'
+        end
+      end
+
+      raise invalid_exception unless invalid_exception.record.errors.empty?
     end
   end
 end
