@@ -31,20 +31,20 @@ describe Account, :type => :model do
         [{:content_equal => 'モジュールテスト用データ1'}, [income]],
         [{:content_include => 'モジュールテスト'}, [income, expense]],
         [{:category => 'algieba'}, [income, expense]],
-        [{:price_upper => 100}, [income, expense]],
-        [{:price_lower => 100}, [expense]],
+        [{:price_upper => '100'}, [income, expense]],
+        [{:price_lower => '100'}, [expense]],
         [{:account_type => 'expense', :category => 'algieba'}, [expense]],
         [{:date_before => '1000-01-01', :content_include => 'テスト'}, [income]],
-        [{:content_equal => 'モジュールテスト用データ2', :price_upper => 1000}, []],
-        [{:date_after => '1000-01-01', :price_lower => 1000}, [income, expense]],
+        [{:content_equal => 'モジュールテスト用データ2', :price_upper => '1000'}, []],
+        [{:date_after => '1000-01-01', :price_lower => '1000'}, [income, expense]],
         [
           {
             :account_type => 'income',
             :date_before => '1000-01-10',
             :date_after => '1000-01-01',
             :content_include => 'モジュールテスト',
-            :price_upper => 100,
-            :price_lower => 1000,
+            :price_upper => '100',
+            :price_lower => '1000',
           },
           [income],
         ],
@@ -61,9 +61,24 @@ describe Account, :type => :model do
     context '異常系' do
       [
         ['不正な種類を指定する', {:account_type => 'invalid_type'}, [:account_type]],
-        ['不正な日付を指定する', {:date => '1000-00-00'}, [:date]],
-        ['不正な金額を指定する', {:price => -100}, [:price]],
-        ['不正な種類と金額を指定する', {:account_type => 'invalid_type', :date => '1000-01-01', :price => 'invalid_price'}, [:account_type, :price]],
+        ['不正な日付(date_before)を指定する', {:date_before => 'invalid_date_before'}, [:date_before]],
+        ['不正な日付(date_after)を指定する', {:date_after => '01-01-1000'}, [:date_after]],
+        ['不正な日付(date_after)を指定する', {:date_after => '1000-01-40'}, [:date_after]],
+        ['不正な金額(price_upper)を指定する', {:price_upper => 'invalid_price_upper'}, [:price_upper]],
+        ['不正な金額(price_lower)を指定する', {:price_lower => '-100'}, [:price_lower]],
+        ['不正な金額(price_lower)を指定する', {:price_lower => '100.0'}, [:price_lower]],
+        ['不正な種類を指定する', {:account_type => 'invalid_type', :content_equal => 'モジュールテスト用データ1'}, [:account_type]],
+        ['不正な日付と金額を指定する', {:date_after => '01-01-1000', :price_upper => '-100'}, [:date_after, :price_upper]],
+        [
+          '不正な種類と日付と金額を指定する',
+          {
+            :account_type => 'invalid_type',
+            :date_before => 'invalid_date',
+            :date_after => '1000-13-00',
+            :price_upper => '-100',
+            :price_lower => '0.0',
+          },
+          [:account_type, :date_before, :date_after, :price_upper, :price_lower],
       ].each do |description, query, invalid_columns|
         context description do
           it 'ActiveRecord::RecordInvalidが発生すること' do
