@@ -34,6 +34,16 @@ class AccountsController < ApplicationController
     end
   end
 
+  def index
+    params.permit!
+
+    begin
+      render :status => :ok, :json => Account.index(request.request_parameters)
+    rescue ActiveRecord::RecordInvalid => e
+      raise BadRequest.new(e.record.errors.messages.keys, 'invalid')
+    end
+  end
+
   def update
     params.permit!
 
