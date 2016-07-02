@@ -14,6 +14,7 @@ class ApplicationController < ActionController::Base
   end
 
   class NotFound < Exception ; end
+  class InternalServerError < Exception ; end
 
   rescue_from BadRequest do |e|
     render :status => :bad_request, :json => e.errors
@@ -21,6 +22,10 @@ class ApplicationController < ActionController::Base
 
   rescue_from NotFound do |e|
     head :not_found
+  end
+
+  rescue_from InternalServerError do |e|
+    head :internal_server_error
   end
 
   private

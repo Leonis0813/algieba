@@ -49,10 +49,12 @@ class AccountsController < ApplicationController
     params.permit!
 
     begin
-      Account.destroy params.slice(*account_attributes)
-      render :status => :no_content, :nothing => true
-    rescue ActiveRecord::RecordInvalid => e
-      raise BadRequest.new(e.record.errors.messages.keys, 'invalid')
+      Account.find(params[:id]).destroy!
+      head :no_content
+    rescue ActiveRecord::RecordNotFound => e
+      raise NotFound.new
+    rescue ActiveRecord::RecordNotDestroyed => e
+      raise InternalServerError.new
     end
   end
 
