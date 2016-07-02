@@ -1,5 +1,5 @@
 class AccountsController < ApplicationController
-  before_filter :basic, :only => [:register]
+  before_filter :basic, :only => [:manage]
 
   def manage
     @account = Account.new
@@ -36,12 +36,17 @@ class AccountsController < ApplicationController
 
   def update
     params.permit!
-    check_absent_params_for_update
 
     begin
-      render :status => :ok, :json => Account.update(params.slice(*permitted_params_update))
+      account = Account.find(params[:id])
+      account.update!(request.request_parameters.slice(*account_attributes))
+      render :status => :ok, :json => account
+    rescue ActiveRecord::RecordNotFound => e
+      raise NotFound.new
     rescue ActiveRecord::RecordInvalid => e
       raise BadRequest.new(e.record.errors.messages.keys, 'invalid')
+    rescue ActiveRecord::RecordNotSaved => e
+      raise InternalServerError.new
     end
   end
 
@@ -92,12 +97,6 @@ class AccountsController < ApplicationController
       end
     end
     raise BadRequest.new(errors, 'absent') unless errors.empty?
-  end
-
-  def check_absent_params_for_update
-    request_params = request.request_parameters
-    raise BadRequest.new(:with, 'absent') unless request_params.has_key?(:with)
-    raise BadRequest.new(:with, 'absent') if request_params[:with].empty?
   end
 
   def check_absent_params_for_settle
