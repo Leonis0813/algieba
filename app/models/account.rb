@@ -40,7 +40,7 @@ class Account < ActiveRecord::Base
                when 'daily'
                  '%Y-%m-%d'
                else
-                 raise Exception
+                 raise ArgumentError
                end
 
       grouped_income_records = income_records.group_by do |record|
