@@ -75,12 +75,11 @@ class AccountsController < ApplicationController
 
   def settle
     params.permit!
-    raise BadRequest.new(:interval, 'absent') unless request.query_parameters[:interval]
 
     begin
       render :status => :ok, :json => Account.settle(params[:interval])
-    rescue ArgumentError
-      raise BadRequest.new(:interval, 'invalid')
+    rescue ArgumentError => e
+      raise BadRequest.new(:interval, e.message)
     end
   end
 

@@ -39,8 +39,10 @@ class Account < ActiveRecord::Base
                  '%Y-%m'
                when 'daily'
                  '%Y-%m-%d'
+               when nil
+                 raise ArgumentError, 'absent'
                else
-                 raise ArgumentError
+                 raise ArgumentError, 'invalid'
                end
 
       grouped_income_records = income_records.group_by do |record|
