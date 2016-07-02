@@ -4,34 +4,14 @@ shared_examples_for 'Model: 取得した家計簿の数が正しいこと' do |s
   it { expect(@accounts.size).to eq size }
 end
 
-shared_examples_for 'Model: 家計簿が正しく取得されていることを確認する' do |expected|
-  it_behaves_like 'Model: 取得した家計簿の数が正しいこと', expected[:size]
+shared_examples_for 'Model: 家計簿が正しく検索されていることを確認する' do |expected_accounts|
+  it_behaves_like 'Model: 取得した家計簿の数が正しいこと', expected_accounts.size
 
   it '取得した家計簿が正しいこと' do
-    actual_accounts = @accounts.to_a.map do |account|
-      [account.account_type, account.date.strftime('%Y-%m-%d'), account.content, account.category, account.price]
+    actual_accounts = @accounts.to_a.map do |a|
+      [a.account_type, a.date.strftime('%Y-%m-%d'), a.content, a.category, a.price]
     end
-    expect(actual_accounts).to match_array expected[:accounts]
-  end
-end
-
-shared_examples_for 'Model: 家計簿が正しく更新されていることを確認する' do |expected|
-  it_behaves_like 'Model: 取得した家計簿の数が正しいこと', expected[:size]
-
-  it '取得した家計簿が正しいこと' do
-    actual_accounts = @accounts.to_a.map do |account|
-      [account.account_type, account.date.strftime('%Y-%m-%d'), account.content, account.category, account.price]
-    end
-    expect(actual_accounts).to match_array @expected_accounts
-  end
-end
-
-shared_examples_for 'Model: 家計簿が正しく削除されていることを確認する' do |expected_accounts|
-  it '取得した家計簿が正しいこと' do
-    actual_accounts = Account.show.to_a.map do |account|
-      [account.account_type, account.date.strftime('%Y-%m-%d'), account.content, account.category, account.price]
-    end
-    expect(actual_accounts).to match_array expected_accounts
+    expect(actual_accounts).to match_array expected_accounts.map {|a| a.values }
   end
 end
 

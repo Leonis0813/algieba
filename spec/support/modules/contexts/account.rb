@@ -1,15 +1,7 @@
 # coding: utf-8
 
 shared_context 'Model: 家計簿を取得する' do |query = {}|
-  before(:all) { @accounts = Account.show(query) }
-end
-
-shared_context 'Model: 家計簿を更新する' do |condition, with|
-  before(:all) { @accounts = Account.update({:condition => condition, :with => with}) }
-end
-
-shared_context 'Model: 家計簿を削除する' do |condition|
-  before(:all) { @accounts = Account.destroy(condition) }
+  before(:all) { @accounts = Account.index(query) }
 end
 
 shared_context 'Model: 収支を計算する' do |interval|
