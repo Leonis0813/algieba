@@ -24,13 +24,13 @@ class AccountsController < ApplicationController
     end
   end
 
-  def read
+  def show
     params.permit!
 
     begin
-      render :status => :ok, :json => Account.show(params.slice(*account_attributes))
-    rescue ActiveRecord::RecordInvalid => e
-      raise BadRequest.new(e.record.errors.messages.keys, 'invalid')
+      render :status => :ok, :json => Account.find(params[:id])
+    rescue ActiveRecord::RecordNotFound => e
+      raise NotFound.new
     end
   end
 
