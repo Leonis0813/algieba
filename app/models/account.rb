@@ -11,7 +11,7 @@ class Account < ActiveRecord::Base
   scope :date_before, ->(date) { where('date <= ?', date) }
   scope :date_after, ->(date) { where('date >= ?', date) }
   scope :content_equal, ->(content) { where(:content => content) }
-  scope :content_include, ->(content) { where('content LIKE %?%', content) }
+  scope :content_include, ->(content) { where('content LIKE ?', "%#{content}%") }
   scope :category, ->(category) { where(:category => category) }
   scope :price_upper, ->(price) { where('price >= ?', price) }
   scope :price_lower, ->(price) { where('price <= ?', price) }

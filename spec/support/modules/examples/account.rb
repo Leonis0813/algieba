@@ -11,7 +11,7 @@ shared_examples_for 'Model: 家計簿が正しく検索されていることを�
     actual_accounts = @accounts.to_a.map do |a|
       [a.account_type, a.date.strftime('%Y-%m-%d'), a.content, a.category, a.price]
     end
-    expect(actual_accounts).to match_array expected_accounts.map {|a| a.values }
+    expect(actual_accounts).to match_array expected_accounts.map {|a| a.except(:id).values }
   end
 end
 

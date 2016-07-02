@@ -79,10 +79,11 @@ describe Account, :type => :model do
             :price_lower => '0.0',
           },
           [:account_type, :date_before, :date_after, :price_upper, :price_lower],
+        ],
       ].each do |description, query, invalid_columns|
         context description do
           it 'ActiveRecord::RecordInvalidが発生すること' do
-            expect{ Account.show(query) }.to raise_error(ActiveRecord::RecordInvalid) do |e|
+            expect{ Account.index(query) }.to raise_error(ActiveRecord::RecordInvalid) do |e|
               expect(e.record.errors.messages.keys).to eq invalid_columns
             end
           end

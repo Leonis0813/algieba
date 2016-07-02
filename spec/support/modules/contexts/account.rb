@@ -1,6 +1,6 @@
 # coding: utf-8
 
-shared_context 'Model: 家計簿を取得する' do |query = {}|
+shared_context 'Model: 家計簿を検索する' do |query = {}|
   before(:all) { @accounts = Account.index(query) }
 end
 
