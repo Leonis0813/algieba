@@ -1,10 +1,4 @@
 Rails.application.routes.draw do
-  post '/accounts' => 'accounts#create'
-  get '/accounts' => 'accounts#read'
-  put '/accounts' => 'accounts#update'
-  delete '/accounts' => 'accounts#delete'
-
-  get '/settlement' => 'accounts#settle'
-
+  resources :accounts, :except => [:new, :edit]
   get '/' => 'accounts#manage'
 end
