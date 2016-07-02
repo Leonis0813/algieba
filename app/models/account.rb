@@ -1,7 +1,7 @@
 require 'date'
 
 class Account < ActiveRecord::Base
-  validates :account_type, :presence => true, :format => { :with => /income|expense/ }
+  validates :account_type, :presence => true, :format => { :with => /\A(income|expense)\z/ }
   validates :date, :presence => true, :format => { :with => /\A\d{4}\-\d{2}\-\d{2}\z/ }
   validates :content, :presence => true
   validates :category, :presence => true

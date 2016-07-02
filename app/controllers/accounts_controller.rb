@@ -12,7 +12,7 @@ class AccountsController < ApplicationController
 
     begin
       accounts = params[:accounts].slice(*account_attributes)
-      accounts[:date] = 'invalid_date' unless accounts[:date] =~ /\d{4}-\d{2}-\d{2}/
+      accounts[:date] = 'invalid_date' unless accounts[:date] =~ /\A\d{4}-\d{2}-\d{2}\z/
       @account = Account.create!(accounts)
       if params[:accounts][:from] == 'browser'
         render
@@ -80,23 +80,15 @@ class AccountsController < ApplicationController
     %i[ account_type date content category price ]
   end
 
-  def permitted_params_update
-    %i[ condition with ]
-  end
-
   def permitted_values_settle
     %i[ yearly monthly daily ]
   end
 
   def check_absent_params_for_create
     request_params = request.request_parameters
-    raise BadRequest.new(:accounts, 'absent') unless request_params.has_key?(:accounts)
-    errors = [].tap do |array|
-      account_attributes.each do |param_key|
-        array << param_key unless request_params[:accounts].has_key?(param_key)
-      end
-    end
-    raise BadRequest.new(errors, 'absent') unless errors.empty?
+    raise BadRequest.new(:accounts, 'absent') unless request_params[:accounts]
+    absent_keys = account_attributes - request_params[:accounts].slice(*account_attributes).keys
+    raise BadRequest.new(absent_keys, 'absent') unless absent_keys.empty?
   end
 
   def check_absent_params_for_settle
