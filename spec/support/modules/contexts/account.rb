@@ -12,6 +12,7 @@ shared_context 'Controller: 共通設定' do
   before(:all) do
     @test_account = {
       :income => {
+        :id => 1,
         :account_type => 'income',
         :date => '1000-01-01',
         :content => '機能テスト用データ1',
@@ -19,6 +20,7 @@ shared_context 'Controller: 共通設定' do
         :price => 1000,
       },
       :expense => {
+        :id => 2,
         :account_type => 'expense',
         :date => '1000-01-05',
         :content => '機能テスト用データ2',
