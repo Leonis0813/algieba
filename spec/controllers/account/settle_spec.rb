@@ -3,7 +3,6 @@ require 'rails_helper'
 
 describe AccountsController, :type => :controller do
   include_context 'Controller: 共通設定'
-
   before(:all) { @test_account.each {|_, value| @client.post('/accounts', {:accounts => value}) } }
   after(:all) { @test_account.each {|_, value| Account.find_by(value).delete } }
 
