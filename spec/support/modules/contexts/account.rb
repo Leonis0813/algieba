@@ -49,7 +49,7 @@ end
 
 shared_context 'Controller: 家計簿を更新する' do
   before(:all) do
-    @res = @client.put('/accounts', @params)
+    @res = @client.put("/accounts/#{@id}", @params)
     @pbody = JSON.parse(@res.body) rescue nil
   end
 end

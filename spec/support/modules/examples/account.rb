@@ -44,8 +44,8 @@ shared_examples_for 'Controller: 家計簿が正しく更新されているこ�
   it_behaves_like 'ステータスコードが正しいこと', '200'
 
   it 'レスポンスの属性値が正しいこと' do
-    @actual_accounts = @pbody.map {|account| account.slice(*@account_keys) }
-    expect(@actual_accounts).to eq @expected_accounts
+    actual_account = @pbody.slice(*@account_keys).symbolize_keys
+    expect(actual_account).to eq @expected_account
   end
 end
 
