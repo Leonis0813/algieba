@@ -9,7 +9,7 @@ describe AccountsController, :type => :controller do
   context '正常系' do
     before(:all) do
       @id = @test_account[:income][:id]
-      @expected_accounts = @test_account[:income]
+      @expected_accounts = @test_account[:income].except(:id)
     end
     include_context 'Controller: 家計簿を取得する'
     it_behaves_like 'Controller: 家計簿が正しく取得されていることを確認する'

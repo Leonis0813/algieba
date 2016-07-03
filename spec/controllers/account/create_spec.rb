@@ -7,9 +7,9 @@ describe AccountsController, :type => :controller do
   context '正常系' do
     before(:all) do
       @params = {:accounts => @test_account[:income]}
-      @expected_account = @test_account[:income]
+      @expected_account = @test_account[:income].except(:id)
     end
-    after(:all) { Account.where(@test_account[:income]).map(&:delete) }
+    after(:all) { Account.where(@test_account[:income].except(:id)).map(&:delete) }
     include_context 'Controller: 家計簿を登録する'
     it_behaves_like 'Controller: 家計簿が正しく登録されていることを確認する'
   end
