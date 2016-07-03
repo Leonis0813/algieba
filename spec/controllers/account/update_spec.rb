@@ -3,18 +3,28 @@ require 'rails_helper'
 
 describe AccountsController, :type => :controller do
   include_context 'Controller: 共通設定'
+  before(:all) do
+    @ids = [].tap do |arr|
+      @test_account.each do |_, value|
+        res = @client.post('/accounts', {:accounts => value})
+        arr << JSON.parse(res.body)['id']
+      end
+    end
+  end
+  after(:all) { @ids.each {|id| Account.find(id).delete } }
 
   context '正常系' do
     [
-      ['種類を指定して種類を更新する場合', {'account_type' => 'expense'}, {'account_type' => 'income'}, [:expense]],
-      ['日付を指定して内容を更新する場合', {'date' => '1000-01-01'}, {'content' => '更新後データ'}, [:income, :expense]],
-      ['内容を指定して金額を更新する場合', {'content' => '機能テスト用データ'}, {'price' => 10000}, [:income, :expense]],
-      ['カテゴリを指定して種類を更新する場合', {'category' => '機能テスト'}, {'account_type' => 'expense'}, [:income, :expense]],
+      ['種類を更新する場合', {:account_type => 'expense'}, [:expense]],
+      ['内容を更新する場合', {:content => '更新後データ'}, [:income, :expense]],
+      ['カテゴリを更新する場合', {:category => '更新後データ'}, [:income, :expense]],
+      ['金額を更新する場合', {:price => 10000}, [:income, :expense]],
+      ['種類を更新する場合', {'category' => '機能テスト'}, {'account_type' => 'expense'}, [:income, :expense]],
       ['金額を指定してカテゴリを更新する場合', {'price' => 100}, {'category' => '更新'}, [:income, :expense]],
       ['種類と金額を指定してカテゴリを更新する場合', {'account_type' => 'expense', 'price' => 100}, {'category' => '更新'}, [:expense]],
       ['条件を指定せずに金額を更新する場合', nil, {'price' => 10}, [:income, :expense]],
       ['条件を指定せずに内容とカテゴリを更新する場合', nil, {'content' => '更新後データ', 'category' => '更新'}, [:income, :expense]],
-    ].each do |description, condition, with, updated_accounts|
+    ].each do |description, params, updated_accounts|
       context description do
         before(:all) do
           @test_account.each {|key, value| @client.post('/accounts', {:accounts => value}) }
