@@ -26,7 +26,8 @@ shared_examples_for 'Controller: 家計簿が正しく登録されているこ�
   it_behaves_like 'ステータスコードが正しいこと', '201'
 
   it 'レスポンスの属性値が正しいこと' do
-    expect(@pbody.slice(*@account_keys)).to eq @expected_account
+    actual_account = @pbody.slice(*@account_keys).symbolize_keys
+    expect(actual_account).to eq @expected_account
   end
 end
 
