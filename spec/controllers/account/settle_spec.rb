@@ -4,16 +4,8 @@ require 'rails_helper'
 describe AccountsController, :type => :controller do
   include_context 'Controller: 共通設定'
 
-  before(:all) do
-    @ids = [].tap do |arr|
-      @test_account.each do |_, value|
-        res = @client.post('/accounts', {:accounts => value})
-        arr << JSON.parse(res.body)['id']
-      end
-    end
-  end
-
-  after(:all) { @ids.each {|id| @client.delete("/accounts/#{id}") } }
+  before(:all) { @test_account.each {|_, value| @client.post('/accounts', {:accounts => value}) } }
+  after(:all) { @test_account.each {|_, value| Account.find_by(value).delete } }
 
   context '正常系' do
     [
