@@ -60,7 +60,7 @@ class AccountsController < ApplicationController
     end
   end
 
-  def delete
+  def destroy
     params.permit!
 
     begin
@@ -92,7 +92,8 @@ class AccountsController < ApplicationController
   def check_absent_params_for_create
     request_params = request.request_parameters
     raise BadRequest.new(:accounts, 'absent') unless request_params[:accounts]
-    absent_keys = account_attributes - request_params[:accounts].slice(*account_attributes).keys
+    request_keys = request_params[:accounts].slice(*account_attributes).keys.map(&:to_sym)
+    absent_keys = account_attributes - request_keys
     raise BadRequest.new(absent_keys, 'absent') unless absent_keys.empty?
   end
 end
