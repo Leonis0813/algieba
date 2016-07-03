@@ -54,7 +54,7 @@ end
 
 shared_context 'Controller: 家計簿を削除する' do
   before(:all) do
-    @res = @client.delete('/accounts', @params)
+    @res = @client.delete("/accounts/#{@id}")
     @pbody = JSON.parse(@res.body) rescue nil
   end
 end
