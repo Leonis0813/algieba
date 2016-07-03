@@ -11,10 +11,22 @@ end
 shared_context 'Controller: 共通設定' do
   before(:all) do
     @test_account = {
-      :income => {'account_type' => 'income', 'date' => '1000-01-01', 'content' => '機能テスト用データ', 'category' => '機能テスト', 'price' => 100},
-      :expense => {'account_type' => 'expense', 'date' => '1000-01-01', 'content' => '機能テスト用データ', 'category' => '機能テスト', 'price' => 100},
+      :income => {
+        :account_type => 'income',
+        :date => '1000-01-01',
+        :content => '機能テスト用データ1',
+        :category => 'algieba',
+        :price => 1000,
+      },
+      :expense => {
+        :account_type => 'expense',
+        :date => '1000-01-05',
+        :content => '機能テスト用データ2',
+        :category => 'algieba',
+        :price => 100,
+      },
     }
-    @account_keys = %w[account_type date content category price]
+    @account_keys = %w[ account_type date content category price ]
     @client = Capybara.page.driver
   end
 end
