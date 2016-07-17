@@ -1,7 +1,7 @@
 # coding: utf-8
 require 'rails_helper'
 
-describe "accounts/register", :type => :view do
+describe "accounts/manage", :type => :view do
   before(:all) do
     @response = nil
     @account = Account.new

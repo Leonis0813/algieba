@@ -2,9 +2,10 @@
 
 shared_context '共通設定' do
   before(:all) do
-    @base_url = 'http://160.16.66.112:88'
+    @base_url = 'http://160.16.66.112:3000'
     @content_type_json = {'Content-Type' => 'application/json'}
     @hc = HTTPClient.new
+    @attributes = %w[ account_type date content category price ]
   end
 end
 
@@ -15,23 +16,30 @@ shared_context 'POST /accounts' do |account|
   end
 end
 
-shared_context 'GET /accounts' do |condition|
+shared_context 'GET /accounts/[:id]' do
   before(:all) do
-    @res = @hc.get("#{@base_url}/accounts", condition)
+    @res = @hc.get("#{@base_url}/accounts/#{@id}")
     @pbody = JSON.parse(@res.body) rescue nil
   end
 end
 
-shared_context 'PUT /accounts' do |condition, with|
+shared_context 'PUT /accounts/[:id]' do |params|
   before(:all) do
-    @res = @hc.put("#{@base_url}/accounts", {:condition => condition, :with => with}.to_json, @content_type_json)
+    @res = @hc.put("#{@base_url}/accounts/#{@id}", params.to_json, @content_type_json)
     @pbody = JSON.parse(@res.body) rescue nil
   end
 end
 
-shared_context 'DELETE /accounts' do |condition|
+shared_context 'GET /accounts' do |params|
   before(:all) do
-    @res = @hc.delete("#{@base_url}/accounts", condition)
+    @res = @hc.get("#{@base_url}/accounts", params.to_json)
+    @pbody = JSON.parse(@res.body) rescue nil
+  end
+end
+
+shared_context 'DELETE /accounts/[:id]' do
+  before(:all) do
+    @res = @hc.delete("#{@base_url}/accounts/#{@id}")
     @pbody = JSON.parse(@res.body) rescue nil
   end
 end

@@ -19,7 +19,11 @@ describe 'ブラウザから操作する', :type => :request, :js => true do
 
   include_context '共通設定'
 
-  after(:all) { @hc.delete("#{@base_url}/accounts", default_inputs) }
+  after(:all) do
+    res = @hc.get("#{@base_url}/accounts", :content_equal => 'regist from view')
+    id = JSON.parse(res.body).first['id']
+    @hc.delete("#{@base_url}/accounts/#{id}")
+  end
 
   describe 'Webページを表示する' do
     before(:each) { page.driver.browser.authenticate('dev', '.dev') }

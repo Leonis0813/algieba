@@ -1,15 +1,7 @@
 # coding: utf-8
 
-shared_context 'Model: 家計簿を取得する' do |query = {}|
-  before(:all) { @accounts = Account.show(query) }
-end
-
-shared_context 'Model: 家計簿を更新する' do |condition, with|
-  before(:all) { @accounts = Account.update({:condition => condition, :with => with}) }
-end
-
-shared_context 'Model: 家計簿を削除する' do |condition|
-  before(:all) { @accounts = Account.destroy(condition) }
+shared_context 'Model: 家計簿を検索する' do |query = {}|
+  before(:all) { @accounts = Account.index(query) }
 end
 
 shared_context 'Model: 収支を計算する' do |interval|
@@ -19,10 +11,24 @@ end
 shared_context 'Controller: 共通設定' do
   before(:all) do
     @test_account = {
-      :income => {'account_type' => 'income', 'date' => '1000-01-01', 'content' => '機能テスト用データ', 'category' => '機能テスト', 'price' => 100},
-      :expense => {'account_type' => 'expense', 'date' => '1000-01-01', 'content' => '機能テスト用データ', 'category' => '機能テスト', 'price' => 100},
+      :income => {
+        :id => 1,
+        :account_type => 'income',
+        :date => '1000-01-01',
+        :content => '機能テスト用データ1',
+        :category => 'algieba',
+        :price => 1000,
+      },
+      :expense => {
+        :id => 2,
+        :account_type => 'expense',
+        :date => '1000-01-05',
+        :content => '機能テスト用データ2',
+        :category => 'algieba',
+        :price => 100,
+      },
     }
-    @account_keys = %w[account_type date content category price]
+    @account_keys = %w[ account_type date content category price ]
     @client = Capybara.page.driver
   end
 end
@@ -36,6 +42,13 @@ end
 
 shared_context 'Controller: 家計簿を取得する' do
   before(:all) do
+    @res = @client.get("/accounts/#{@id}")
+    @pbody = JSON.parse(@res.body) rescue nil
+  end
+end
+
+shared_context 'Controller: 家計簿を検索する' do
+  before(:all) do
     @res = @client.get('/accounts', @params)
     @pbody = JSON.parse(@res.body) rescue nil
   end
@@ -43,14 +56,14 @@ end
 
 shared_context 'Controller: 家計簿を更新する' do
   before(:all) do
-    @res = @client.put('/accounts', @params)
+    @res = @client.put("/accounts/#{@id}", @params)
     @pbody = JSON.parse(@res.body) rescue nil
   end
 end
 
 shared_context 'Controller: 家計簿を削除する' do
   before(:all) do
-    @res = @client.delete('/accounts', @params)
+    @res = @client.delete("/accounts/#{@id}")
     @pbody = JSON.parse(@res.body) rescue nil
   end
 end

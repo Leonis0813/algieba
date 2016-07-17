@@ -13,11 +13,15 @@ describe '収支を計算する', :type => :request do
   before(:all) do
     res = @hc.get("#{@base_url}/accounts")
     @accounts = JSON.parse(res.body)
-    @hc.delete("#{@base_url}/accounts")
+    res = @hc.get("#{@base_url}/accounts")
+    ids = JSON.parse(res.body).map {|account| account['id'] }
+    ids.each {|id| @hc.delete("#{@base_url}/accounts/#{id}") }
   end
 
   after(:all) do
-    @hc.delete("#{@base_url}/accounts")
+    res = @hc.get("#{@base_url}/accounts")
+    ids = JSON.parse(res.body).map {|account| account['id'] }
+    ids.each {|id| @hc.delete("#{@base_url}/accounts/#{id}") }
     @accounts.each do |account|
       body = {
         :accounts => account.slice('account_type', 'date', 'content', 'category', 'price')
@@ -26,26 +30,26 @@ describe '収支を計算する', :type => :request do
     end
   end
 
-  accounts.each do |account|
-    describe '家計簿を登録する' do
+  describe '家計簿を登録する' do
+    accounts.each do |account|
       include_context 'POST /accounts', account
       it_behaves_like 'Request: 家計簿が正しく登録されていることを確認する'
     end
-  end
 
-  describe '家計簿を検索する' do
-    include_context 'GET /accounts'
-    it_behaves_like 'Request: 家計簿が正しく検索されていることを確認する'
-  end
+    describe '家計簿を検索する' do
+      include_context 'GET /accounts'
+      it_behaves_like 'Request: 家計簿が正しく検索されていることを確認する', accounts
 
-  [
-    ['yearly', {'1000' => 1000}],
-    ['monthly', {'1000-01' => 900, '1000-02' => 100}],
-    ['daily', {'1000-01-01' => 900, '1000-02-01' => 100}],
-  ].each do |interval, expected_settlement|
-    describe '収支を計算する' do
-      include_context 'GET /settlement', interval
-      it_behaves_like 'Request: 収支が正しく計算されていることを確認する', expected_settlement
+      [
+        ['yearly', {'1000' => 1000}],
+        ['monthly', {'1000-01' => 900, '1000-02' => 100}],
+        ['daily', {'1000-01-01' => 900, '1000-02-01' => 100}],
+      ].each do |interval, expected_settlement|
+        describe '収支を計算する' do
+          include_context 'GET /settlement', interval
+          it_behaves_like 'Request: 収支が正しく計算されていることを確認する', expected_settlement
+        end
+      end
     end
   end
 end

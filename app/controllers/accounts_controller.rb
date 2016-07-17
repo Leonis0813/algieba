@@ -1,7 +1,7 @@
 class AccountsController < ApplicationController
-  before_filter :basic, :only => [:register]
+  before_filter :basic, :only => [:manage]
 
-  def register
+  def manage
     @account = Account.new
     @all_accounts = Account.all
   end
@@ -12,7 +12,7 @@ class AccountsController < ApplicationController
 
     begin
       accounts = params[:accounts].slice(*account_attributes)
-      accounts[:date] = 'invalid_date' unless accounts[:date] =~ /\d{4}-\d{2}-\d{2}/
+      accounts[:date] = 'invalid_date' unless accounts[:date] =~ /\A\d{4}-\d{2}-\d{2}\z/
       @account = Account.create!(accounts)
       if params[:accounts][:from] == 'browser'
         render
@@ -24,11 +24,21 @@ class AccountsController < ApplicationController
     end
   end
 
-  def read
+  def show
     params.permit!
 
     begin
-      render :status => :ok, :json => Account.show(params.slice(*account_attributes))
+      render :status => :ok, :json => Account.find(params[:id])
+    rescue ActiveRecord::RecordNotFound => e
+      raise NotFound.new
+    end
+  end
+
+  def index
+    params.permit!
+
+    begin
+      render :status => :ok, :json => Account.index(request.query_parameters)
     rescue ActiveRecord::RecordInvalid => e
       raise BadRequest.new(e.record.errors.messages.keys, 'invalid')
     end
@@ -36,34 +46,42 @@ class AccountsController < ApplicationController
 
   def update
     params.permit!
-    check_absent_params_for_update
 
     begin
-      render :status => :ok, :json => Account.update(params.slice(*permitted_params_update))
+      account = Account.find(params[:id])
+      request_params = request.request_parameters
+      request_params[:date] = 'invalid_date' if request_params[:date] and not request_params[:date] =~ /\A\d{4}-\d{2}-\d{2}\z/
+      account.update!(request_params.slice(*account_attributes))
+      render :status => :ok, :json => account
+    rescue ActiveRecord::RecordNotFound => e
+      raise NotFound.new
     rescue ActiveRecord::RecordInvalid => e
       raise BadRequest.new(e.record.errors.messages.keys, 'invalid')
+    rescue ActiveRecord::RecordNotSaved => e
+      raise InternalServerError.new
     end
   end
 
-  def delete
+  def destroy
     params.permit!
 
     begin
-      Account.destroy params.slice(*account_attributes)
-      render :status => :no_content, :nothing => true
-    rescue ActiveRecord::RecordInvalid => e
-      raise BadRequest.new(e.record.errors.messages.keys, 'invalid')
+      Account.find(params[:id]).destroy!
+      head :no_content
+    rescue ActiveRecord::RecordNotFound => e
+      raise NotFound.new
+    rescue ActiveRecord::RecordNotDestroyed => e
+      raise InternalServerError.new
     end
   end
 
   def settle
     params.permit!
-    check_absent_params_for_settle
 
     begin
       render :status => :ok, :json => Account.settle(params[:interval])
-    rescue Exception
-      raise BadRequest.new(:interval, 'invalid')
+    rescue ArgumentError => e
+      raise BadRequest.new(:interval, e.message)
     end
   end
 
@@ -73,35 +91,11 @@ class AccountsController < ApplicationController
     %i[ account_type date content category price ]
   end
 
-  def permitted_params_update
-    %i[ condition with ]
-  end
-
-  def permitted_values_settle
-    %i[ yearly monthly daily ]
-  end
-
   def check_absent_params_for_create
     request_params = request.request_parameters
-    raise BadRequest.new(:accounts, 'absent') unless request_params.has_key?(:accounts)
-    errors = [].tap do |array|
-      account_attributes.each do |param_key|
-        array << param_key unless request_params[:accounts].has_key?(param_key)
-      end
-    end
-    raise BadRequest.new(errors, 'absent') unless errors.empty?
-  end
-
-  def check_absent_params_for_update
-    request_params = request.request_parameters
-    raise BadRequest.new(:with, 'absent') unless request_params.has_key?(:with)
-    raise BadRequest.new(:with, 'absent') if request_params[:with].empty?
-  end
-
-  def check_absent_params_for_settle
-    raise BadRequest.new(:interval, 'absent') unless request.query_parameters.has_key?(:interval)
-    unless request.query_parameters[:interval].match(/#{permitted_values_settle.join('|')}/)
-      raise BadRequest.new(:interval, 'invalid')
-    end
+    raise BadRequest.new(:accounts, 'absent') unless request_params[:accounts]
+    request_keys = request_params[:accounts].slice(*account_attributes).keys.map(&:to_sym)
+    absent_keys = account_attributes - request_keys
+    raise BadRequest.new(absent_keys, 'absent') unless absent_keys.empty?
   end
 end
