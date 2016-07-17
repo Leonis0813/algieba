@@ -1,6 +1,9 @@
 algieba
 =======
 
+- 2.0.0:
+  - [ADD] indexing api
+
 - 1.1.1:
   - [ADD] exception class
   - [FIX] request spec
