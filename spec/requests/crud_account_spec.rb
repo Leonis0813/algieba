@@ -6,7 +6,6 @@ describe '家計簿を管理する', :type => :request do
   invalid_account = {:account_type => 'expense', :date => '01-01-1000', :category => 'algieba', :price => 100}
 
   include_context '共通設定'
-  after(:all) { @hc.delete("#{@base_url}/accounts", {:category => 'システムテスト'}) }
 
   describe '家計簿を登録する' do
     include_context 'POST /accounts', invalid_account
