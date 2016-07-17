@@ -16,7 +16,7 @@ describe '家計簿を検索する', :type => :request do
 
     describe '家計簿を検索する' do
       include_context 'GET /accounts', :date_after => '1000-01-01'
-      it_behaves_like 'Request: 家計簿が正しく検索されていることを確認する'
+      it_behaves_like 'Request: 家計簿が正しく検索されていることを確認する', valid_accounts[0]
 
       describe '家計簿を登録する' do
         include_context 'POST /accounts', valid_accounts[1]
@@ -25,16 +25,16 @@ describe '家計簿を検索する', :type => :request do
 
         describe '家計簿を検索する' do
           include_context 'GET /accounts'
-          it_behaves_like 'Request: 家計簿が正しく検索されていることを確認する'
+          it_behaves_like 'Request: 家計簿が正しく検索されていることを確認する', valid_accounts
 
           describe '家計簿を更新する' do
             before(:all) { @id = @created_accounts.last['id'] }
             include_context 'PUT /accounts/[:id]', :account_type => 'income'
-            it_behaves_like 'Request: 家計簿が正しく更新されていることを確認する'
+            it_behaves_like 'Request: 家計簿が正しく更新されていることを確認する', valid_accounts[1].merge(:account_type => 'income')
 
             describe '家計簿を検索する' do
               include_context 'GET /accounts', :account_type => 'income'
-              it_behaves_like 'Request: 家計簿が正しく検索されていることを確認する'
+              it_behaves_like 'Request: 家計簿が正しく検索されていることを確認する', valid_accounts.map {|account| account.merge(:account_type => 'income') }
 
               describe '家計簿を削除する' do
                 valid_accounts.size.times do |i|
@@ -45,7 +45,7 @@ describe '家計簿を検索する', :type => :request do
 
                 describe '家計簿を検索する' do
                   include_context 'GET /accounts'
-                  it_behaves_like 'Request: 家計簿が正しく検索されていることを確認する'
+                  it_behaves_like 'Request: 家計簿が正しく検索されていることを確認する', []
                 end
               end
             end

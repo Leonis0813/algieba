@@ -5,6 +5,7 @@ shared_context '共通設定' do
     @base_url = 'http://160.16.66.112:3000'
     @content_type_json = {'Content-Type' => 'application/json'}
     @hc = HTTPClient.new
+    @attributes = %w[ account_type date content category price ]
   end
 end
 
