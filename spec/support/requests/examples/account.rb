@@ -10,17 +10,35 @@ shared_examples_for 'Request: 家計簿が正しく登録されていること�
   end
 end
 
-shared_examples_for 'Request: 家計簿が正しく検索されていることを確認する' do
+shared_examples_for 'Request: 家計簿が正しく取得されていることを確認する' do
   it_behaves_like 'ステータスコードが正しいこと', '200'
+
+  it 'idが正しいこと' do
+    expect(@pbody['id']).to eq @id
+  end
 
   %w[account_type date content category price].each do |key|
     it "レスポンスボディのキーに#{key}が含まれていること" do
-      @pbody.each {|account| expect(account.keys).to include key }
+      expect(@pbody.keys).to include key
     end
   end
 end
 
 shared_examples_for 'Request: 家計簿が正しく更新されていることを確認する' do
+  it_behaves_like 'ステータスコードが正しいこと', '200'
+
+  it 'idが正しいこと' do
+    expect(@pbody['id']).to eq @id
+  end
+
+  %w[account_type date content category price].each do |key|
+    it "レスポンスボディのキーに#{key}が含まれていること" do
+      expect(@pbody.keys).to include key
+    end
+  end
+end
+
+shared_examples_for 'Request: 家計簿が正しく検索されていることを確認する' do
   it_behaves_like 'ステータスコードが正しいこと', '200'
 
   %w[account_type date content category price].each do |key|

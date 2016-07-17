@@ -13,11 +13,15 @@ describe '収支を計算する', :type => :request do
   before(:all) do
     res = @hc.get("#{@base_url}/accounts")
     @accounts = JSON.parse(res.body)
-    @hc.delete("#{@base_url}/accounts")
+    res = @hc.get("#{@base_url}/accounts")
+    ids = JSON.parse(res.body).map {|account| account['id'] }
+    ids.each {|id| @hc.delete("#{@base_url}/accounts/#{id}") }
   end
 
   after(:all) do
-    @hc.delete("#{@base_url}/accounts")
+    res = @hc.get("#{@base_url}/accounts")
+    ids = JSON.parse(res.body).map {|account| account['id'] }
+    ids.each {|id| @hc.delete("#{@base_url}/accounts/#{id}") }
     @accounts.each do |account|
       body = {
         :accounts => account.slice('account_type', 'date', 'content', 'category', 'price')
