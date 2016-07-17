@@ -10,7 +10,7 @@ describe '家計簿を検索する', :type => :request do
   include_context '共通設定'
 
   describe '家計簿を登録する' do
-    include_context 'POST /accounts', valid_account[0]
+    include_context 'POST /accounts', valid_accounts[0]
     before(:all) { @created_accounts = [@pbody] }
     it_behaves_like 'Request: 家計簿が正しく登録されていることを確認する'
 
@@ -19,12 +19,12 @@ describe '家計簿を検索する', :type => :request do
       it_behaves_like 'Request: 家計簿が正しく検索されていることを確認する'
 
       describe '家計簿を登録する' do
-        include_context 'POST /accounts', valid_account[1]
+        include_context 'POST /accounts', valid_accounts[1]
         before(:all) { @created_accounts << @pbody }
         it_behaves_like 'Request: 家計簿が正しく登録されていることを確認する'
 
         describe '家計簿を更新する' do
-          before(:all) { @id = @created_account.last['id'] }
+          before(:all) { @id = @created_accounts.last['id'] }
           include_context 'PUT /accounts/[:id]', :account_type => 'income'
           it_behaves_like 'Request: 家計簿が正しく更新されていることを確認する'
 
@@ -34,8 +34,8 @@ describe '家計簿を検索する', :type => :request do
           end
 
           describe '家計簿を削除する' do
-            valid_account.size.time do |i|
-              before(:all) { @id = @created_account[i]['id'] }
+            valid_accounts.size.times do |i|
+              before(:all) { @id = @created_accounts[i]['id'] }
               include_context 'DELETE /accounts/[:id]'
               it_behaves_like 'Request: 家計簿が正しく削除されていることを確認する'
             end
