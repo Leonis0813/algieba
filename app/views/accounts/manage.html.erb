@@ -9,6 +9,7 @@
   <%= f.hidden_field :from, :value => 'browser' %>
 <% end %>
 <hr>
+<%= paginate @all_accounts %>
 <table border="1" width="100%">
   <tr>
     <td>種類</td><td>日付</td><td>内容</td><td>カテゴリ</td><td>金額</td>
