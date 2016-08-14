@@ -3,7 +3,7 @@ class AccountsController < ApplicationController
 
   def manage
     @account = Account.new
-    @all_accounts = Account.order(:date => :desc).page(params[:page])
+    @all_accounts = Account.order(:date => :desc).page(params[:page]).per(1)
   end
 
   def create
@@ -15,7 +15,7 @@ class AccountsController < ApplicationController
       accounts[:date] = 'invalid_date' unless accounts[:date] =~ /\A\d{4}-\d{2}-\d{2}\z/
       @account = Account.create!(accounts)
       if params[:accounts][:from] == 'browser'
-        render
+        render :nothing => true
       else
         render :status => :created, :json => @account
       end
