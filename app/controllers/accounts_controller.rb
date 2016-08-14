@@ -3,7 +3,7 @@ class AccountsController < ApplicationController
 
   def manage
     @account = Account.new
-    @all_accounts = Account.order(:date => :desc).page(params[:page]).per(1)
+    @all_accounts = Account.order(:date => :desc).page(params[:page])
   end
 
   def create
