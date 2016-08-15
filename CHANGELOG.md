@@ -1,6 +1,9 @@
 algieba
 =======
 
+- 2.1.1:
+  - [FIX] routing error for assets
+
 - 2.1.0:
   - [ADD] pagination
 
