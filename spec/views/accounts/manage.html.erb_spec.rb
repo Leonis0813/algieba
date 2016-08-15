@@ -43,12 +43,50 @@ describe "accounts/manage", :type => :view do
   end
 
   context '家計簿が1件登録されている場合' do
-    it '家計簿が1件表示されていること'
-    it 'ページングボタンが表示されていないこと'
+    before(:all) do
+      param = {
+        :account_type => 'income',
+        :date => '1000-01-01',
+        :content => 'モジュールテスト用データ',
+        :category => 'algieba',
+        :price => 100,
+      }
+      Account.create!(param)
+      @all_accounts = Account.order(:date => :desc).page(1)
+    end
+
+    after(:all) { Account.delete_all }
+
+    it '家計簿が1件表示されていること' do
+      expect(@response).to have_xpath('//table/tr/td', {:text => '収入', :count => 1})
+    end
+
+    it 'ページングボタンが表示されていないこと' do
+      expect(@response).not_to have_xpath("//nav[@class='paginate']")
+    end
   end
 
   context '家計簿が51件登録されている場合' do
-    it '家計簿が50件表示されていること'
-    it 'ページングボタンが表示されていること'
+    before(:all) do
+      param = {
+        :account_type => 'income',
+        :date => '1000-01-01',
+        :content => 'モジュールテスト用データ',
+        :category => 'algieba',
+        :price => 100,
+      }
+      51.times { Account.create!(param) }
+      @all_accounts = Account.order(:date => :desc).page(1)
+    end
+
+    after(:all) { Account.delete_all }
+
+    it '家計簿が50件表示されていること' do
+      expect(@response).to have_xpath('//table/tr/td', {:text => '収入', :count => 50})
+    end
+
+    it 'ページングボタンが表示されていること' do
+      expect(@response).to have_xpath("//nav[@class='pagination']")
+    end
   end
 end
