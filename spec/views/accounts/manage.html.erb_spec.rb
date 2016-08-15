@@ -3,9 +3,8 @@ require 'rails_helper'
 
 describe "accounts/manage", :type => :view do
   before(:all) do
-    @response = nil
     @account = Account.new
-    @all_accounts = Account.all
+    @all_accounts = Account.order(:date => :desc).page(1)
   end
 
   before(:each) do
