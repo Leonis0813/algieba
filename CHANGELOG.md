@@ -1,6 +1,9 @@
 algieba
 =======
 
+- 2.1.0:
+  - [ADD] pagination
+
 - 2.0.0:
   - [ADD] indexing api
 
