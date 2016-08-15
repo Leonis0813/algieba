@@ -42,7 +42,13 @@ describe "accounts/manage", :type => :view do
     end
   end
 
-  it '<tr id="append">があること' do
-    expect(@response).to have_xpath('//table/tr[@id="append"]')
+  context '家計簿が1件登録されている場合' do
+    it '家計簿が1件表示されていること'
+    it 'ページングボタンが表示されていないこと'
+  end
+
+  context '家計簿が51件登録されている場合' do
+    it '家計簿が50件表示されていること'
+    it 'ページングボタンが表示されていること'
   end
 end
