@@ -1,4 +1,5 @@
-<%= form_for @account, {:as => :accounts, :remote => true} do |f| %>
+<div id="accounts">
+  <%= form_for @account, {:as => :accounts, :remote => true} do |f| %>
   日付：<%= f.text_field :date %>
   内容：<%= f.text_field :content %>
   カテゴリ：<%= f.text_field :category %>
@@ -7,14 +8,15 @@
   <%= f.radio_button :account_type, 'expense', {:checked => true} %> 支出
   <%= f.submit '登録' %>
   <%= f.hidden_field :from, :value => 'browser' %>
-<% end %>
-<hr>
-<table border="1" width="100%">
-  <tr>
-    <td>種類</td><td>日付</td><td>内容</td><td>カテゴリ</td><td>金額</td>
-  </tr>
-  <tr id="append"></tr>
-  <% @all_accounts.each do |account| %>
+  <% end %>
+  <hr>
+
+  <%= paginate @all_accounts %>
+  <table border="1" width="100%">
+    <tr>
+      <td>種類</td><td>日付</td><td>内容</td><td>カテゴリ</td><td>金額</td>
+    </tr>
+    <% @all_accounts.each do |account| %>
     <tr>
       <td><%= account.account_type == 'income' ? '収入' : '支出' %></td>
       <td><%= account.date %></td>
@@ -22,5 +24,6 @@
       <td><%= account.category %></td>
       <td><%= account.price %></td>
     </tr>
-  <% end %>
-</table>
+    <% end %>
+  </table>
+</div>

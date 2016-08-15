@@ -1,3 +1,14 @@
-// Place all the styles related to the accounts controller here.
-// They will automatically be included in application.css.
-// You can use Sass (SCSS) here: http://sass-lang.com/
+@mixin a_common {
+  a {
+    text-decoration: none;
+    color: #ff0000;
+  }
+}
+
+span.prev {
+  @include a_common;
+}
+
+span.next {
+  @include a_common;
+}
