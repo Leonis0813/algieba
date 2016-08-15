@@ -2,6 +2,27 @@
 require 'rails_helper'
 
 describe "accounts/manage", :type => :view do
+  param = {
+    :account_type => 'income',
+    :date => '1000-01-01',
+    :content => 'モジュールテスト用データ',
+    :category => 'algieba',
+    :price => 100,
+  }
+
+  shared_context '家計簿を登録する' do |num|
+    before(:all) do
+      num.times { Account.create!(param) }
+      @all_accounts = Account.order(:date => :desc).page(1)
+    end
+
+    after(:all) { Account.delete_all }
+  end
+
+  shared_examples '表示されている家計簿の数が正しいこと' do |expected_size|
+    it { expect(@response).to have_xpath('//table/tr/td', {:text => '収入', :count => expected_size}) }
+  end
+
   before(:all) do
     @account = Account.new
     @all_accounts = Account.order(:date => :desc).page(1)
@@ -43,23 +64,9 @@ describe "accounts/manage", :type => :view do
   end
 
   context '家計簿が1件登録されている場合' do
-    before(:all) do
-      param = {
-        :account_type => 'income',
-        :date => '1000-01-01',
-        :content => 'モジュールテスト用データ',
-        :category => 'algieba',
-        :price => 100,
-      }
-      Account.create!(param)
-      @all_accounts = Account.order(:date => :desc).page(1)
-    end
+    include_context '家計簿を登録する', 1
 
-    after(:all) { Account.delete_all }
-
-    it '家計簿が1件表示されていること' do
-      expect(@response).to have_xpath('//table/tr/td', {:text => '収入', :count => 1})
-    end
+    it_behaves_like '表示されている家計簿の数が正しいこと', 1
 
     it 'ページングボタンが表示されていないこと' do
       expect(@response).not_to have_xpath("//nav[@class='paginate']")
@@ -67,23 +74,9 @@ describe "accounts/manage", :type => :view do
   end
 
   context '家計簿が51件登録されている場合' do
-    before(:all) do
-      param = {
-        :account_type => 'income',
-        :date => '1000-01-01',
-        :content => 'モジュールテスト用データ',
-        :category => 'algieba',
-        :price => 100,
-      }
-      51.times { Account.create!(param) }
-      @all_accounts = Account.order(:date => :desc).page(1)
-    end
+    include_context '家計簿を登録する', 51
 
-    after(:all) { Account.delete_all }
-
-    it '家計簿が50件表示されていること' do
-      expect(@response).to have_xpath('//table/tr/td', {:text => '収入', :count => 50})
-    end
+    it_behaves_like '表示されている家計簿の数が正しいこと', 50
 
     it 'ページングボタンが表示されていること' do
       expect(@response).to have_xpath("//nav[@class='pagination']")
