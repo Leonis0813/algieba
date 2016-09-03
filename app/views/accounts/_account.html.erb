@@ -1,4 +1,4 @@
-<% @all_accounts.each do |account| %>
+<% @accounts.each do |account| %>
 <tr>
   <td><%= account.account_type == 'income' ? '収入' : '支出' %></td>
   <td><%= account.date %></td>

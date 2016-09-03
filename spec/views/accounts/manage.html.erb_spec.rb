@@ -13,7 +13,7 @@ describe "accounts/manage", :type => :view do
   shared_context '家計簿を登録する' do |num|
     before(:all) do
       num.times { Account.create!(param) }
-      @all_accounts = Account.order(:date => :desc).page(1)
+      @accounts = Account.order(:date => :desc).page(1)
     end
 
     after(:all) { Account.delete_all }
@@ -25,7 +25,7 @@ describe "accounts/manage", :type => :view do
 
   before(:all) do
     @account = Account.new
-    @all_accounts = Account.order(:date => :desc).page(1)
+    @accounts = Account.order(:date => :desc).page(1)
   end
 
   before(:each) do
