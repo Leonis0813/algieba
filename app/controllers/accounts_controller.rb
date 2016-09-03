@@ -14,10 +14,10 @@ class AccountsController < ApplicationController
       accounts = params[:accounts].slice(*account_attributes)
       accounts[:date] = 'invalid_date' unless accounts[:date] =~ /\A\d{4}-\d{2}-\d{2}\z/
       @account = Account.create!(accounts)
-      if params[:accounts][:from] == 'browser'
-        render :nothing => true
-      else
-        render :status => :created
+
+      respond_to do |format|
+        format.json { render :status => :created }
+        format.js { @accounts = Account.order(:date => :desc).page(params[:page]) }
       end
     rescue ActiveRecord::RecordInvalid => e
       raise BadRequest.new(e.record.errors.messages.keys, 'invalid')
