@@ -1,7 +1,7 @@
 <div id="accounts">
   <%= form_for @account, {:as => :accounts, :remote => true} do |f| %>
   日付：<%= f.text_field :date %>
-  内容：<%= f.text_field :content %>
+  内容：<%= f.text_field :content, :size => 100 %>
   カテゴリ：<%= f.text_field :category %>
   金額：<%= f.text_field :price %>
   <%= f.radio_button :account_type, 'income' %> 収入
