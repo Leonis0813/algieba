@@ -17,7 +17,7 @@ class AccountsController < ApplicationController
       if params[:accounts][:from] == 'browser'
         render :nothing => true
       else
-        render :status => :created, :json => @account
+        render :status => :created
       end
     rescue ActiveRecord::RecordInvalid => e
       raise BadRequest.new(e.record.errors.messages.keys, 'invalid')
