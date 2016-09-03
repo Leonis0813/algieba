@@ -15,13 +15,5 @@
   <tr>
     <th>種類</th><th>日付</th><th>内容</th><th>カテゴリ</th><th>金額</th>>
   </tr>
-  <% @all_accounts.each do |account| %>
-  <tr>
-    <td><%= account.account_type == 'income' ? '収入' : '支出' %></td>
-    <td><%= account.date %></td>
-    <td><%= account.content %></td>
-    <td><%= account.category %></td>
-    <td><%= account.price %></td>
-  </tr>
-  <% end %>
+  <%= render 'account' %>
 </table>
