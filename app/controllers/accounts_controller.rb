@@ -50,7 +50,7 @@ class AccountsController < ApplicationController
     begin
       account = Account.find(params[:id])
       request_params = request.request_parameters
-      request_params[:date] = 'invalid_date' if request_params[:date] and not request_params[:date] =~ /\A\d{4}-\d{2}-\d{2}\z/
+      request_params[:date] = 'invalid_date' if request_params[:date] and not request_params[:date].match(/\A\d{4}-\d{2}-\d{2}\z/)
       account.update!(request_params.slice(*account_attributes))
       render :status => :ok, :json => account
     rescue ActiveRecord::RecordNotFound => e

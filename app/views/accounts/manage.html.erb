@@ -1,11 +1,11 @@
 <%= form_for @account, {:as => :accounts, :remote => true} do |f| %>
-日付：<%= f.text_field :date %>
-内容：<%= f.text_field :content, :size => 100 %>
-カテゴリ：<%= f.text_field :category %>
-金額：<%= f.text_field :price %>
-<%= f.radio_button :account_type, 'income' %> 収入
-<%= f.radio_button :account_type, 'expense', {:checked => true} %> 支出
-<%= f.submit '登録' %>
+  日付：<%= f.text_field :date %>
+  内容：<%= f.text_field :content, :size => 100 %>
+  カテゴリ：<%= f.text_field :category %>
+  金額：<%= f.text_field :price %>
+  <%= f.radio_button :account_type, 'income' %> 収入
+  <%= f.radio_button :account_type, 'expense', {:checked => true} %> 支出
+  <%= f.submit '登録' %>
 <% end %>
 <hr>
 
