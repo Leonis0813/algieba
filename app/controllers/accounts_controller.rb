@@ -3,7 +3,7 @@ class AccountsController < ApplicationController
 
   def manage
     @account = Account.new
-    @accounts = Account.order(:date => :desc).page(params[:page]).per(20)
+    @accounts = Account.order(:date => :desc).page(params[:page])
   end
 
   def create
@@ -17,7 +17,7 @@ class AccountsController < ApplicationController
 
       respond_to do |format|
         format.json { render :status => :created }
-        format.js { @accounts = Account.order(:date => :desc).page(params[:page]).per(20) }
+        format.js { @accounts = Account.order(:date => :desc).page(params[:page]) }
       end
     rescue ActiveRecord::RecordInvalid => e
       raise BadRequest.new(e.record.errors.messages.keys, 'invalid')
