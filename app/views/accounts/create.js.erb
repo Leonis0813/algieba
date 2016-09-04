@@ -1,2 +1,2 @@
-$('#accounts').empty();
-$('#accounts').append("<%= j render 'account' %>");
+$('#accounts').html("<%= j(render 'account') %>");
+$('#paginate').html("<%= j(paginate @accounts, {:params => {:action => 'manage', :accounts => {}, :commit => {}, :utf8 => {}}}) %>");
