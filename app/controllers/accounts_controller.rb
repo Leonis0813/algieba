@@ -12,7 +12,7 @@ class AccountsController < ApplicationController
 
     begin
       accounts = params[:accounts].slice(*account_attributes)
-      accounts[:date] = 'invalid_date' unless accounts[:date],match(/\A\d{4}-\d{2}-\d{2}\z/)
+      accounts[:date] = 'invalid_date' unless accounts[:date].match(/\A\d{4}-\d{2}-\d{2}\z/)
       @account = Account.create!(accounts)
 
       respond_to do |format|
