@@ -43,7 +43,7 @@ describe Account, :type => :model do
       ].each do |interval, expected_message|
         context "#{interval || 'nil'}を指定する場合" do
           it 'Exceptionが発生すること' do
-            expect{ Account.settle(interval) }.to raise_error(ArgumentError) do |e|
+            expect{ Account.settle(interval) }.to raise_error(BadRequest) do |e|
               expect(e.message).to eq expected_message
             end
           end
