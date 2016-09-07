@@ -1,8 +1,8 @@
 class Account < ActiveRecord::Base
-  validates :account_type, :date, :content, :category, :price, :presence => true
-  validates :account_type, :inclusion => {:in => %w[ income expense ]}
-  validates :date, :format => {:with => /\A\d{4}-\d{2}-\d{2}\z/}
-  validates :price, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0}
+  validates :account_type, :date, :content, :category, :price, :presence => {:message => 'absent'}
+  validates :account_type, :inclusion => {:in => %w[ income expense ], :message => 'invalid'}
+  validates :date, :format => {:with => /\A\d{4}-\d{2}-\d{2}\z/, :message => 'invalid'}
+  validates :price, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0, :message => 'invalid'}
 
   scope :account_type, ->(account_type) { where(:account_type => account_type) }
   scope :date_before, ->(date) { where('date <= ?', date) }
@@ -15,10 +15,7 @@ class Account < ActiveRecord::Base
 
   class << self
     def index(condition = {})
-      check_condition(condition)
-      permitted_parameters_for_index.inject(Account.all) do |accounts, query|
-        condition[query] ? accounts.send(query, condition[query]) : accounts
-      end
+      condition.inject(Account.all) {|accounts, c| accounts.send(query, c) }
     end
 
     def settle(interval)
@@ -68,51 +65,6 @@ class Account < ActiveRecord::Base
           settlements.merge!(period => (incomes[period].to_i - expenses[period].to_i))
         end
       end
-    end
-
-    private
-
-    def permitted_parameters_for_index
-      %i[ account_type date_before date_after content_equal content_include category price_upper price_lower ]
-    end
-
-    def check_condition(condition)
-      condition.slice!(*permitted_parameters_for_index)
-      dummy_params = {
-        :account_type => 'income',
-        :date => '1000-01-01',
-        :content => 'dummy',
-        :category => 'dummy',
-        :price => 1,
-      }
-      account = Account.new(dummy_params)
-      invalid_exception = ActiveRecord::RecordInvalid.new(account)
-
-      if condition[:account_type] and not condition[:account_type] =~ /\A(income|expense)\z/
-        invalid_exception.record.errors[:account_type] = 'is invalid'
-      end
-
-      [:date_before, :date_after].each do |date_query|
-        if condition[date_query]
-          if condition[date_query] =~ /\d{4}-\d{2}-\d{2}/
-            begin
-              Date.parse(condition[date_query])
-            rescue ArgumentError
-              invalid_exception.record.errors[date_query] = 'is invalid'
-            end
-          else
-            invalid_exception.record.errors[date_query] = 'is invalid'
-          end
-        end
-      end
-
-      [:price_upper, :price_lower].each do |price_query|
-        if condition[price_query] and not condition[price_query] =~ /\A\d+\z/
-          invalid_exception.record.errors[price_query] = 'is invalid'
-        end
-      end
-
-      raise invalid_exception unless invalid_exception.record.errors.empty?
     end
   end
 end
