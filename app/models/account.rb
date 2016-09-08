@@ -14,10 +14,6 @@ class Account < ActiveRecord::Base
   scope :price_lower, ->(price) { where('price <= ?', price) }
 
   class << self
-    def index(condition = {})
-      condition.inject(Account.all) {|accounts, c| accounts.send(query, c) }
-    end
-
     def settle(interval)
       income_records = Account.where(:account_type => 'income').pluck(:date, :price).map do |date, price|
         {:date => date, :price => price}
@@ -35,9 +31,9 @@ class Account < ActiveRecord::Base
                when 'daily'
                  '%Y-%m-%d'
                when nil
-                 raise BadRequest.new('interval', 'absent')
+                 raise BadRequest.new(:interval, 'absent')
                else
-                 raise BadRequest.new('interval', 'invalid')
+                 raise BadRequest.new(:interval, 'invalid')
                end
 
       grouped_income_records = income_records.group_by do |record|

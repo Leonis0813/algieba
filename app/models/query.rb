@@ -1,4 +1,4 @@
-class Index
+class Query
   include ActiveModel::Model
 
   attr_accessor :account_type
@@ -7,8 +7,8 @@ class Index
   attr_accessor :category
   attr_accessor :price_upper, :price_lower
 
-  validates :account_type, :inclusion => {:in => %w[ income expense ]}, :allow_nil => true
-  validates :price_upper, :price_lower, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0}, :allow_nil => true
+  validates :account_type, :inclusion => {:in => %w[ income expense ], :message => 'invalid'}, :allow_nil => true
+  validates :price_upper, :price_lower, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0, :message => 'invalid'}, :allow_nil => true
   validate :date_valid?
 
   def date_valid?
