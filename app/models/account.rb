@@ -30,10 +30,6 @@ class Account < ActiveRecord::Base
                  '%Y-%m'
                when 'daily'
                  '%Y-%m-%d'
-               when nil
-                 raise BadRequest.new(:interval, 'absent')
-               else
-                 raise BadRequest.new(:interval, 'invalid')
                end
 
       grouped_income_records = income_records.group_by do |record|

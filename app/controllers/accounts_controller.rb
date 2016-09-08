@@ -37,7 +37,7 @@ class AccountsController < ApplicationController
       end
       render :status => :ok
     else
-      raise BadRequest.new(queries.errors.messages.keys, 'invalid')
+      raise BadRequest.new(query.errors.messages.keys, 'invalid')
     end
   end
 
@@ -66,8 +66,13 @@ class AccountsController < ApplicationController
   end
 
   def settle
-    @settlement = Account.settle(params.permit(:interval))
-    render :status => :ok
+    query = Settlement.new(params.permit(:interval))
+    if query.valid?
+      @settlement = Account.settle(query.interval)
+      render :status => :ok
+    else
+      raise BadRequest.new(query.errors.messages.keys, 'invalid')
+    end
   end
 
   private
