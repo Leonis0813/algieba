@@ -1,4 +1,4 @@
-class Error::BadRequest < StandardError
+class BadRequest < StandardError
   attr_accessor :errors
 
   def initialize(errors, prefix)
