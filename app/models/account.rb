@@ -1,7 +1,6 @@
 class Account < ActiveRecord::Base
-  validates :account_type, :date, :content, :category, :price, :presence => {:message => 'absent'}
   validates :account_type, :inclusion => {:in => %w[ income expense ], :message => 'invalid'}
-  validates :date, :format => {:with => /\A\d{4}-\d{2}-\d{2}\z/, :message => 'invalid'}
+  validates :date, :presence => {:message => 'invalid'}
   validates :price, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0, :message => 'invalid'}
 
   scope :account_type, ->(account_type) { where(:account_type => account_type) }

@@ -7,15 +7,22 @@ class AccountsController < ApplicationController
   end
 
   def create
-    @account = Account.new(params.require(:accounts).permit(*account_params))
+    begin
+      attributes = params.require(:accounts).permit(*account_params)
+      absent_keys = account_params - attributes.keys
+      raise BadRequest.new(absent_keys, 'absent') unless absent_keys.empty?
 
-    if @account.save
-      respond_to do |format|
-        format.json { render :status => :created }
-        format.js { @accounts = Account.order(:date => :desc).page(params[:page]) }
+      @account = Account.new(attributes)
+      if @account.save
+        respond_to do |format|
+          format.json { render :status => :created }
+          format.js { @accounts = Account.order(:date => :desc).page(params[:page]) }
+        end
+      else
+        raise BadRequest.new(@account.errors.messages.keys, 'invalid')
       end
-    else
-      raise BadRequest.new(@account.errors.messages.keys, 'invalid')
+    rescue ActionController::ParameterMissing
+      raise BadRequest.new(:accounts, 'absent')
     end
   end
 
