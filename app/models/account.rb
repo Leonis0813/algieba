@@ -15,11 +15,11 @@ class Account < ActiveRecord::Base
 
   class << self
     def settle(interval)
-      income_records = Account.where(:account_type => 'income').pluck(:date, :price).map do |date, price|
+      income_records = Account.account_type('income').pluck(:date, :price).map do |date, price|
         {:date => date, :price => price}
       end
 
-      expense_records = Account.where(:account_type => 'expense').pluck(:date, :price).map do |date, price|
+      expense_records = Account.account_type('expense').pluck(:date, :price).map do |date, price|
         {:date => date, :price => price}
       end
 
@@ -32,24 +32,20 @@ class Account < ActiveRecord::Base
                  '%Y-%m-%d'
                end
 
-      grouped_income_records = income_records.group_by do |record|
-        record[:date].strftime(format)
+      incomes = {}.tap do |income|
+        grouped_income_records = income_records.group_by {|record| record[:date].strftime(format) }
+
+        grouped_income_records.each do |period, records|
+          income.merge!(period => records.map{|record| record[:price] }.inject(:+))
+        end
       end
 
-      grouped_expense_records = expense_records.group_by do |record|
-        record[:date].strftime(format)
-      end
+      expenses = {}.tap do |expense|
+        grouped_expense_records = expense_records.group_by {|record| record[:date].strftime(format) }
 
-      incomes, expenses = {}, {}
-
-      grouped_income_records.each do |period, records|
-        prices = records.map{|record| record[:price] }
-        incomes.merge!({period => prices.inject(0){|sum, price| sum + price }})
-      end
-
-      grouped_expense_records.each do |period, records|
-        prices = records.map{|record| record[:price] }
-        expenses.merge!({period => prices.inject(0){|sum, price| sum + price }})
+        grouped_expense_records.each do |period, records|
+          expense.merge!(period => records.map{|record| record[:price] }.inject(:+))
+        end
       end
 
       {}.tap do |settlements|
