@@ -49,23 +49,13 @@ describe Account, :type => :model do
     end
 
     describe '異常系' do
-      [
-        {:account_type => 'invalid_type'},
-        {:date => 'invalid_date'},
-        {:price => 'invalid_price'},
-        {:price => 1.0},
-        {:price => -1},
-        {:account_type => 'invalid_type', :date => 'invalid_date'},
-        {:account_type => 'invalid_type', :price => 'invalid_price'},
-        {:account_type => 'invalid_type', :price => 1.0},
-        {:account_type => 'invalid_type', :price => -1},
-        {:date => 'invalid_date', :price => 'invalid_price'},
-        {:date => 'invalid_date', :price => 1.0},
-        {:date => 'invalid_date', :price => -1},
-        {:account_type => 'invalid_type', :date => 'invalid_date', :price => 'invalid_price'},
-        {:account_type => 'invalid_type', :date => 'invalid_date', :price => 1.0},
-        {:account_type => 'invalid_type', :date => 'invalid_date', :price => -1},
-      ].each do |invalid_params|
+      invalid_params = {
+        :account_type => 'invalid_type',
+        :date => ['invalid_date', '1000-13-01', '1000-01-00', '1000-13-00'],
+        :price => ['invalid_price', 1.0, -1],
+      }
+
+      CommonHelper.generate_test_case(invalid_params).each do |invalid_params|
         context "#{invalid_params.keys.join(',')}が不正な場合" do
           include_context 'Accountオブジェクトを検証する', valid_params.merge(invalid_params)
 
