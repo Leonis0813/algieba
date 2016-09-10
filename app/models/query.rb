@@ -16,7 +16,6 @@ class Query
 
     [[:date_before, date_before], [:date_after, date_after]].each do |date_symbol, date_value|
       begin
-        errors.add(date_symbol, 'invalid') if date_value and not date_value.match(/\A\d{4}-\d{2}-\d{2}\z/)
         Date.parse(date_value) if date_value
       rescue ArgumentError => e
         errors.add(date_symbol, 'invalid')
