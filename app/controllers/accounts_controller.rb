@@ -9,7 +9,7 @@ class AccountsController < ApplicationController
   def create
     begin
       attributes = params.require(:accounts).permit(*account_params)
-      absent_keys = account_params - attributes.keys
+      absent_keys = account_params - attributes.symbolize_keys.keys
       raise BadRequest.new(absent_keys, 'absent') unless absent_keys.empty?
 
       @account = Account.new(attributes)
