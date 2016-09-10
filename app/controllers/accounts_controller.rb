@@ -15,7 +15,7 @@ class AccountsController < ApplicationController
       @account = Account.new(attributes)
       if @account.save
         respond_to do |format|
-          format.json { render :status => :created }
+          format.json { render :status => :created, :template => 'accounts/account' }
           format.js { @accounts = Account.order(:date => :desc).page(params[:page]) }
         end
       else
@@ -27,10 +27,12 @@ class AccountsController < ApplicationController
   end
 
   def show
-    begin
-      @account = Account.find(params.permit(:id))
-      render :status => :ok
-    rescue ActiveRecord::RecordNotFound => e
+    @account = Account.find_by(params.permit(:id))
+    if @account
+      respond_to do |format|
+        format.json { render :status => :ok, :template => 'accounts/account' }
+      end
+    else
       raise NotFound.new
     end
   end
