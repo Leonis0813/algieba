@@ -76,9 +76,11 @@ class AccountsController < ApplicationController
     query = Settlement.new(params.permit(:interval))
     if query.valid?
       @settlement = Account.settle(query.interval)
-      render :status => :ok
+      respond_to do |format|
+        format.json { render :status => :ok }
+      end
     else
-      raise BadRequest.new(query.errors.messages.keys, 'invalid')
+      raise BadRequest.new(:interval, query.errors.messages[:interval].first)
     end
   end
 

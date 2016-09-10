@@ -22,7 +22,7 @@ describe AccountsController, :type => :controller do
 
   context '異常系' do
     context '不正な期間を指定する場合' do
-      before(:all) { @params = {:interval => 'invalid_internal'} }
+      before(:all) { @params = {:interval => 'invalid_interval'} }
       include_context 'Controller: 収支を計算する'
       it_behaves_like '400エラーをチェックする', ['invalid_param_interval']
     end

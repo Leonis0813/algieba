@@ -70,7 +70,7 @@ end
 
 shared_context 'Controller: 収支を計算する' do
   before(:all) do
-    @res = @client.get('/settlement', @params)
+    @res = @client.get('/settlement.json', @params)
     @pbody = JSON.parse(@res.body) rescue nil
   end
 end
