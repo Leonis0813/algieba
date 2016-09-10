@@ -64,13 +64,11 @@ class AccountsController < ApplicationController
   end
 
   def destroy
-    begin
-      Account.find(params.permit(:id)).destroy!
+    @account = Account.find_by(params.permit(:id)).try(:destroy)
+    if @account
       head :no_content
-    rescue ActiveRecord::RecordNotFound => e
+    else
       raise NotFound.new
-    rescue ActiveRecord::RecordNotDestroyed => e
-      raise InternalServerError.new
     end
   end
 
