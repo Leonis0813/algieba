@@ -61,13 +61,6 @@ shared_context 'Controller: 家計簿を更新する' do
   end
 end
 
-shared_context 'Controller: 家計簿を削除する' do
-  before(:all) do
-    @res = @client.delete("/accounts/#{@id}")
-    @pbody = JSON.parse(@res.body) rescue nil
-  end
-end
-
 shared_context 'Controller: 後始末' do
   after(:all) { @client.delete('/accounts') }
 end

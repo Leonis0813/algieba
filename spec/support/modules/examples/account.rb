@@ -57,7 +57,3 @@ shared_examples_for 'Controller: 家計簿が正しく更新されているこ�
     expect(actual_account).to eq @expected_account
   end
 end
-
-shared_examples_for 'Controller: 家計簿が正しく削除されていることを確認する' do
-  it_behaves_like 'ステータスコードが正しいこと', '204'
-end
