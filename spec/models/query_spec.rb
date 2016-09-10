@@ -43,8 +43,9 @@ describe Query, :type => :model do
         :price_lower => ['invalid_price', 1.0, -1],
       }
 
-      CommonHelper.generate_test_case(invalid_params).each do |params|
-        context "クエリに#{invalid_params.keys.join(',')}を指定した場合" do
+      test_cases = CommonHelper.generate_test_case(invalid_params) << {:date_before => '1000-01-01', :date_after => '1000-01-02'}
+      test_cases.each do |params|
+        context "クエリに#{params.keys.join(',')}を指定した場合" do
           include_context 'Queryオブジェクトを検証する', valid_params.merge(params)
 
           it_behaves_like '検証結果が正しいこと', false
