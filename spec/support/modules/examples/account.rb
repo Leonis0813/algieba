@@ -61,11 +61,3 @@ end
 shared_examples_for 'Controller: 家計簿が正しく削除されていることを確認する' do
   it_behaves_like 'ステータスコードが正しいこと', '204'
 end
-
-shared_examples_for 'Controller: 収支が正しく計算されていることを確認する' do |expected_settlement|
-  it_behaves_like 'ステータスコードが正しいこと', '200'
-
-  it '計算結果が正しいこと' do
-    expect(@pbody).to eq expected_settlement
-  end
-end
