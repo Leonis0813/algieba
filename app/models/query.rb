@@ -21,7 +21,7 @@ class Query
         errors.add(date_symbol, 'invalid')
       end
     end
-    return if errors.any?
+    return if errors.messages.include?(:date_before) or errors.messages.include?(:date_after)
 
     if date_before and date_after and Date.parse(date_before) < Date.parse(date_after)
       errors.add(:date_before, 'invalid')
