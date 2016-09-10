@@ -51,14 +51,16 @@ class AccountsController < ApplicationController
   end
 
   def update
-    begin
-      @account = Account.find(params[:id])
+    @account = Account.find_by(params.permit(:id))
+    if @account
       if @account.update(params.permit(*account_params))
-        render :status => :ok
+        respond_to do |format|
+          format.json { render :status => :ok, :template => 'accounts/account' }
+        end
       else
         raise BadRequest.new(@account.errors.messages.keys, 'invalid')
       end
-    rescue ActiveRecord::RecordNotFound => e
+    else
       raise NotFound.new
     end
   end

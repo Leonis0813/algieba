@@ -33,7 +33,7 @@ describe AccountsController, :type => :controller do
   context '異常系' do
     [
       ['不正な種類を指定する場合', :income, {:account_type => 'invalid_type'}],
-      ['不正な日付を指定する場合', :income, {:date => '01-01-1000'}],
+      ['不正な日付を指定する場合', :income, {:date => 'invalid_date'}],
       ['不正な金額を指定する場合', :income, {:price => -1}],
       ['不正な種類，日付，金額で更新する場合', :income, {:account_type => 'invalid_type', :date => 'invalid_date', :price => 100.0}],
     ].each do |description, updated_account, params|
