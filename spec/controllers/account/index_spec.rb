@@ -49,13 +49,12 @@ describe AccountsController, :type => :controller do
     [
       {:account_type => 'invalid_type'},
       {:date_before => 'invalid_date'},
-      {:date_before => '01-01-1000'},
       {:date_after => '1000-13-01'},
       {:price_upper => 'invalid_price'},
       {:price_upper => -100},
       {:price_lower => 100.0},
       {:account_type => 'invalid_type', :date_after => 'invalid_date'},
-      {:date_before => '01-01-1000', :price_lower => 'invalid_price'},
+      {:date_before => '01-13-1000', :price_lower => 'invalid_price'},
       {:account_type => 'invalid_type', :date_after => 'invalid_date', :price_upper => -100},
     ].each do |query|
       context "#{query.keys.join(',')}が不正な場合" do

@@ -44,7 +44,9 @@ class AccountsController < ApplicationController
         value = query.send(key)
         value ? accounts.send(key, value) : accounts
       end
-      render :status => :ok
+      respond_to do |format|
+        format.json { render :status => :ok, :template => 'accounts/accounts' }
+      end
     else
       raise BadRequest.new(query.errors.messages.keys, 'invalid')
     end
