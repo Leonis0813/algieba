@@ -33,6 +33,7 @@ shared_context 'Controller: 共通設定' do
   end
 end
 
-shared_context 'Controller: 後始末' do
-  after(:all) { @client.delete('/accounts') }
+shared_context '事前準備: 家計簿を登録する' do
+  before(:all) { @test_account.each {|_, value| Account.create!(value) } }
+  after(:all) { @test_account.each {|_, value| Account.find_by(value).try(:delete) } }
 end

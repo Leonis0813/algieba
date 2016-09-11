@@ -24,12 +24,12 @@ describe AccountsController, :type => :controller do
       ['更新しない場合', :income, {}],
     ].each do |description, updated_account, params|
       context description do
+        include_context '事前準備: 家計簿を登録する'
+
         before(:all) do
-          @test_account.each {|_, value| Account.create!(value) }
           @id = @test_account[updated_account][:id]
           @expected_account = @test_account[updated_account].merge(params).except(:id)
         end
-        after(:all) { @test_account.each {|_, value| Account.find(value[:id]).delete } }
 
         include_context '家計簿を更新する', nil, params
 
@@ -51,12 +51,12 @@ describe AccountsController, :type => :controller do
       ['不正な種類，日付，金額で更新する場合', :income, {:account_type => 'invalid_type', :date => 'invalid_date', :price => 100.0}],
     ].each do |description, updated_account, params|
       context description do
+        include_context '事前準備: 家計簿を登録する'
+
         before(:all) do
-          @test_account.each {|_, value| Account.create!(value) }
           @id = @test_account[updated_account][:id]
           @expected_account = @test_account[updated_account].merge(params).except(:id)
         end
-        after(:all) { @test_account.each {|_, value| Account.find(value[:id]).delete } }
 
         include_context '家計簿を更新する', nil, params
 

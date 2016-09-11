@@ -10,8 +10,7 @@ describe AccountsController, :type => :controller do
   end
 
   include_context 'Controller: 共通設定'
-  before(:all) { @test_account.each {|_, value| Account.create!(value) } }
-  after(:all) { @test_account.each {|_, value| Account.find_by(value).try(:delete) } }
+  include_context '事前準備: 家計簿を登録する'
 
   context '正常系' do
     before(:all) { @id = @test_account[:income][:id] }
