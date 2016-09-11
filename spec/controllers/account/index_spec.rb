@@ -4,12 +4,11 @@ require 'rails_helper'
 describe AccountsController, :type => :controller do
   shared_context '家計簿を検索する' do |params|
     before(:all) do
-      @res = @client.get('/accounts.json', params || @params)
+      @res = client.get('/accounts.json', params)
       @pbody = JSON.parse(@res.body) rescue nil
     end
   end
 
-  include_context 'Controller: 共通設定'
   include_context '事前準備: 家計簿を登録する'
 
   context '正常系' do
@@ -45,8 +44,8 @@ describe AccountsController, :type => :controller do
         it_behaves_like 'ステータスコードが正しいこと', '200'
 
         it 'レスポンスの属性値が正しいこと' do
-          actual_accounts = @pbody.map {|account| account.slice(*@account_keys).symbolize_keys }
-          expected_accounts = expected_account_types.map {|key| @test_account[key].except(:id) }
+          actual_accounts = @pbody.map {|account| account.slice(*account_params).symbolize_keys }
+          expected_accounts = expected_account_types.map {|key| test_account[key].except(:id) }
           expect(actual_accounts).to eq expected_accounts
         end
       end

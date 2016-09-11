@@ -4,12 +4,11 @@ require 'rails_helper'
 describe AccountsController, :type => :controller do
   shared_context '収支を計算する' do |params = {}|
     before(:all) do
-      @res = @client.get('/settlement.json', params)
+      @res = client.get('/settlement.json', params)
       @pbody = JSON.parse(@res.body) rescue nil
     end
   end
 
-  include_context 'Controller: 共通設定'
   include_context '事前準備: 家計簿を登録する'
 
   describe '正常系' do

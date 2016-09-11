@@ -4,12 +4,10 @@ require 'rails_helper'
 describe AccountsController, :type => :controller do
   shared_context '家計簿を更新する' do |id, params|
     before(:all) do
-      @res = @client.put("/accounts/#{id || @id}.json", params || @params)
+      @res = client.put("/accounts/#{id}.json", params)
       @pbody = JSON.parse(@res.body) rescue nil
     end
   end
-
-  include_context 'Controller: 共通設定'
 
   context '正常系' do
     [
@@ -25,16 +23,13 @@ describe AccountsController, :type => :controller do
 
       context description do
         include_context '事前準備: 家計簿を登録する'
-
-        before(:all) { @id = @test_account[:income][:id] }
-
-        include_context '家計簿を更新する', nil, params
+        include_context '家計簿を更新する', CommonHelper.test_account[:income][:id], params
 
         it_behaves_like 'ステータスコードが正しいこと', '200'
 
         it 'レスポンスの属性値が正しいこと' do
-          actual_account = @pbody.slice(*@account_keys).symbolize_keys
-          expected_account = @test_account[:income].merge(params).except(:id)
+          actual_account = @pbody.slice(*account_params).symbolize_keys
+          expected_account = test_account[:income].merge(params).except(:id)
           expect(actual_account).to eq expected_account
         end
       end
@@ -50,11 +45,7 @@ describe AccountsController, :type => :controller do
     ].each do |params|
       context "#{params.keys.join(',')}が不正な場合" do
         include_context '事前準備: 家計簿を登録する'
-
-        before(:all) { @id = @test_account[:income][:id] }
-
-        include_context '家計簿を更新する', nil, params
-
+        include_context '家計簿を更新する', CommonHelper.test_account[:income][:id], params
         it_behaves_like '400エラーをチェックする', params.map {|key, _| "invalid_param_#{key}" }
       end
     end
