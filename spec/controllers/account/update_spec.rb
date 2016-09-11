@@ -2,6 +2,13 @@
 require 'rails_helper'
 
 describe AccountsController, :type => :controller do
+  shared_context '家計簿を更新する' do |id, params|
+    before(:all) do
+      @res = @client.put("/accounts/#{id || @id}.json", params || @params)
+      @pbody = JSON.parse(@res.body) rescue nil
+    end
+  end
+
   include_context 'Controller: 共通設定'
 
   context '正常系' do
@@ -20,12 +27,18 @@ describe AccountsController, :type => :controller do
         before(:all) do
           @test_account.each {|_, value| Account.create!(value) }
           @id = @test_account[updated_account][:id]
-          @params = params
           @expected_account = @test_account[updated_account].merge(params).except(:id)
         end
         after(:all) { @test_account.each {|_, value| Account.find(value[:id]).delete } }
-        include_context 'Controller: 家計簿を更新する'
-        it_behaves_like 'Controller: 家計簿が正しく更新されていることを確認する'
+
+        include_context '家計簿を更新する', nil, params
+
+        it_behaves_like 'ステータスコードが正しいこと', '200'
+
+        it 'レスポンスの属性値が正しいこと' do
+          actual_account = @pbody.slice(*@account_keys).symbolize_keys
+          expect(actual_account).to eq @expected_account
+        end
       end
     end
   end
@@ -41,22 +54,19 @@ describe AccountsController, :type => :controller do
         before(:all) do
           @test_account.each {|_, value| Account.create!(value) }
           @id = @test_account[updated_account][:id]
-          @params = params
           @expected_account = @test_account[updated_account].merge(params).except(:id)
         end
         after(:all) { @test_account.each {|_, value| Account.find(value[:id]).delete } }
-        include_context 'Controller: 家計簿を更新する'
+
+        include_context '家計簿を更新する', nil, params
+
         it_behaves_like '400エラーをチェックする', params.map {|key, _| "invalid_param_#{key}" }
       end
     end
 
     context '存在しないidを指定した場合' do
-      before(:all) do
-        @id = 100
-        @params = {:account_type => 'expense'}
-      end
-      include_context 'Controller: 家計簿を更新する'
-      it_behaves_like '404エラーをチェックする'
+      include_context '家計簿を更新する', 100, {:account_type => 'expense'}
+      it_behaves_like 'ステータスコードが正しいこと', '404'
     end
   end
 end
