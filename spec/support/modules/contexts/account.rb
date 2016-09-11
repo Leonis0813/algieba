@@ -1,9 +1,5 @@
 # coding: utf-8
 
-shared_context 'Model: 家計簿を検索する' do |query = {}|
-  before(:all) { @accounts = Account.index(query) }
-end
-
 shared_context 'Model: 収支を計算する' do |interval|
   before(:all) { @settlement = Account.settle(interval) }
 end
