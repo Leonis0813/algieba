@@ -21,16 +21,6 @@ shared_examples_for 'Model: 収支が正しく計算されていることを確�
   end
 end
 
-
-shared_examples_for 'Controller: 家計簿が正しく登録されていることを確認する' do
-  it_behaves_like 'ステータスコードが正しいこと', '201'
-
-  it 'レスポンスの属性値が正しいこと' do
-    actual_account = @pbody.slice(*@account_keys).symbolize_keys
-    expect(actual_account).to eq @expected_account
-  end
-end
-
 shared_examples_for 'Controller: 家計簿が正しく検索されていることを確認する' do
   it_behaves_like 'ステータスコードが正しいこと', '200'
 

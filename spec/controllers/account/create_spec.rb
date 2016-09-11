@@ -2,6 +2,13 @@
 require 'rails_helper'
 
 describe AccountsController, :type => :controller do
+  shared_context '家計簿を登録する' do |params|
+    before(:all) do
+      @res = @client.post('/accounts.json', params || @params)
+      @pbody = JSON.parse(@res.body) rescue nil
+    end
+  end
+
   include_context 'Controller: 共通設定'
 
   context '正常系' do
@@ -10,8 +17,15 @@ describe AccountsController, :type => :controller do
       @expected_account = @test_account[:income].except(:id)
     end
     after(:all) { Account.where(@test_account[:income].except(:id)).map(&:delete) }
-    include_context 'Controller: 家計簿を登録する'
-    it_behaves_like 'Controller: 家計簿が正しく登録されていることを確認する'
+
+    include_context '家計簿を登録する'
+
+    it_behaves_like 'ステータスコードが正しいこと', '201'
+
+    it 'レスポンスの属性値が正しいこと' do
+      actual_account = @pbody.slice(*@account_keys).symbolize_keys
+      expect(actual_account).to eq @expected_account
+    end
   end
 
   context '異常系' do
@@ -28,15 +42,16 @@ describe AccountsController, :type => :controller do
           selected_keys = @account_keys.map(&:to_sym) - deleted_keys
           @params = {:accounts => @test_account[:income].slice(*selected_keys)}
         end
-        include_context 'Controller: 家計簿を登録する'
+
+        include_context '家計簿を登録する'
+
         it_behaves_like '400エラーをチェックする', deleted_keys.map {|key| "absent_param_#{key}" }
       end
     end
 
     [{}, {:accounts => {}}].each do |params|
       context 'accounts パラメーターがない場合' do
-        before(:all) { @params = params }
-        include_context 'Controller: 家計簿を登録する'
+        include_context '家計簿を登録する', params
         it_behaves_like '400エラーをチェックする', ['absent_param_accounts']
       end
     end
@@ -49,7 +64,7 @@ describe AccountsController, :type => :controller do
     ].each do |description, invalid_param|
       context description do
         before(:all) { @params = {:accounts => @test_account[:expense].merge(invalid_param)} }
-        include_context 'Controller: 家計簿を登録する'
+        include_context '家計簿を登録する'
         it_behaves_like '400エラーをチェックする', invalid_param.keys.map {|key| "invalid_param_#{key}" }
       end
     end
