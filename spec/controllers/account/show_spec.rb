@@ -13,17 +13,16 @@ describe AccountsController, :type => :controller do
   include_context '事前準備: 家計簿を登録する'
 
   context '正常系' do
-    before(:all) do
-      @id = @test_account[:income][:id]
-      @expected_accounts = @test_account[:income].except(:id)
-    end
+    before(:all) { @id = @test_account[:income][:id] }
+
     include_context '家計簿を取得する'
 
     it_behaves_like 'ステータスコードが正しいこと', '200'
 
     it 'レスポンスの属性値が正しいこと' do
       actual_account = @pbody.slice(*@account_keys).symbolize_keys
-      expect(actual_account).to eq @expected_accounts
+      expected_accounts = @test_account[:income].except(:id)
+      expect(actual_account).to eq expected_accounts
     end
   end
 

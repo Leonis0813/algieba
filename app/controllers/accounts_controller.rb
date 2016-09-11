@@ -15,8 +15,8 @@ class AccountsController < ApplicationController
       @account = Account.new(attributes)
       if @account.save
         respond_to do |format|
-          format.json { render :status => :created, :template => 'accounts/account' }
-          format.js { @accounts = Account.order(:date => :desc).page(params[:page]) }
+          format.json {render :status => :created, :template => 'accounts/account'}
+          format.js {@accounts = Account.order(:date => :desc).page(params[:page])}
         end
       else
         raise BadRequest.new(@account.errors.messages.keys, 'invalid')
@@ -30,7 +30,7 @@ class AccountsController < ApplicationController
     @account = Account.find_by(params.permit(:id))
     if @account
       respond_to do |format|
-        format.json { render :status => :ok, :template => 'accounts/account' }
+        format.json {render :status => :ok, :template => 'accounts/account'}
       end
     else
       raise NotFound.new
@@ -45,7 +45,7 @@ class AccountsController < ApplicationController
         value ? accounts.send(key, value) : accounts
       end
       respond_to do |format|
-        format.json { render :status => :ok, :template => 'accounts/accounts' }
+        format.json {render :status => :ok, :template => 'accounts/accounts'}
       end
     else
       raise BadRequest.new(query.errors.messages.keys, 'invalid')
@@ -57,7 +57,7 @@ class AccountsController < ApplicationController
     if @account
       if @account.update(params.permit(*account_params))
         respond_to do |format|
-          format.json { render :status => :ok, :template => 'accounts/account' }
+          format.json {render :status => :ok, :template => 'accounts/account'}
         end
       else
         raise BadRequest.new(@account.errors.messages.keys, 'invalid')
@@ -81,7 +81,7 @@ class AccountsController < ApplicationController
     if query.valid?
       @settlement = Account.settle(query.interval)
       respond_to do |format|
-        format.json { render :status => :ok }
+        format.json {render :status => :ok}
       end
     else
       raise BadRequest.new(:interval, query.errors.messages[:interval].first)
