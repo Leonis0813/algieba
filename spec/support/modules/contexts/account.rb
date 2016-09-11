@@ -1,9 +1,5 @@
 # coding: utf-8
 
-shared_context 'Model: 収支を計算する' do |interval|
-  before(:all) { @settlement = Account.settle(interval) }
-end
-
 shared_context 'Controller: 共通設定' do
   before(:all) do
     @test_account = {

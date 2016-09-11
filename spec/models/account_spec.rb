@@ -18,8 +18,11 @@ describe Account, :type => :model do
         ['daily', {'1000-01-01' => 1000, '1000-01-05' => -100}],
       ].each do |interval, settlement|
         context "#{interval}を指定する場合" do
-          include_context 'Model: 収支を計算する', interval
-          it_behaves_like 'Model: 収支が正しく計算されていることを確認する', settlement
+          before(:all) { @settlement = Account.settle(interval) }
+
+          it '計算結果が正しいこと' do
+            expect(@settlement).to eq settlement
+          end
         end
       end
     end
