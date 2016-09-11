@@ -7,15 +7,11 @@ describe 'ブラウザから操作する', :type => :request, :js => true do
       inputs.each {|key, value| fill_in "accounts_#{key}", :with => value.to_s }
       choose "accounts_account_type_#{account_type}"
       find(:xpath, '//form/input[@value="登録"]').click
+      sleep 1
     end
   end
 
-  default_inputs = {
-    :date => '1000-01-01',
-    :content => 'regist from view',
-    :category => 'テスト',
-    :price => 100,
-  }
+  default_inputs = {:date => '1000-01-01', :content => 'regist from view', :category => 'テスト', :price => 100}
 
   include_context '共通設定'
 
@@ -23,7 +19,7 @@ describe 'ブラウザから操作する', :type => :request, :js => true do
     res = @hc.get("#{@base_url}/accounts")
     size = JSON.parse(res.body).size
     account = default_inputs.merge(:account_type => 'income')
-    (49 - size).times do
+    (Kaminari.config.default_per_page - 1 - size).times do
       @hc.post("#{@base_url}/accounts", {:accounts => account}.to_json, @content_type_json)
     end
   end
@@ -45,7 +41,7 @@ describe 'ブラウザから操作する', :type => :request, :js => true do
     end
 
     it '入力欄の下に家計簿が表示されていること' do
-      expect(page).to have_xpath('//table/tbody/tr', :count => 49 + 1)
+      expect(page).to have_xpath('//table/tbody/tr', :count => Kaminari.config.default_per_page - 1)
     end
 
     it 'ページングボタンが表示されていないこと' do
@@ -53,26 +49,26 @@ describe 'ブラウザから操作する', :type => :request, :js => true do
     end
 
     describe '家計簿を登録する' do
-      include_context '家計簿を登録する', default_inputs.merge(:date => '1000/01/01'), 'income'
-      before(:each) { sleep 1 }
+      include_context '家計簿を登録する', default_inputs.merge(:date => 'invalid_date'), 'income'
 
       it '家計簿の数が変わっていないこと' do
-        expect(page).to have_xpath('//table/tbody/tr', :count => 50)
+        expect(page).to have_xpath('//table/tbody/tr', :count => Kaminari.config.default_per_page - 1)
         expect(page).not_to have_xpath('//nav[@class="pagination"]')
       end
 
       describe '家計簿を登録する' do
         include_context '家計簿を登録する', default_inputs, 'income'
-        before(:each) { sleep 1 }
 
         it '家計簿の数が1つ増えていること' do
-          expect(page).to have_xpath('//table/tbody/tr', :count => 51)
+          expect(page).to have_xpath('//table/tbody/tr', :count => Kaminari.config.default_per_page)
           expect(page).not_to have_xpath('//nav[@class="pagination"]')
         end
 
         describe '家計簿を登録する' do
+          include_context '家計簿を登録する', default_inputs, 'income'
+
           it '表示されている家計簿の数が増えていないこと' do
-            expect(page).to have_xpath('//table/tbody/tr', :count => 51)
+            expect(page).to have_xpath('//table/tbody/tr', :count => Kaminari.config.default_per_page)
             expect(page).to have_xpath('//nav[@class="pagination"]')
           end
         end
