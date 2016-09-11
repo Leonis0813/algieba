@@ -22,15 +22,13 @@ describe AccountsController, :type => :controller do
       [{:category => 'algieba'}, [:income, :expense]],
       [{:price_upper => 100}, [:income, :expense]],
       [{:price_lower => 100}, [:expense]],
-      [{:account_type => 'expense', :category => 'algieba'}, [:expense]],
-      [{:date_before => '1000-01-01', :content_include => 'テスト'}, [:income]],
-      [{:date_after => '1000-01-05', :price_upper => 100}, [:expense]],
       [
         {
           :account_type => 'income',
           :date_before => '1000-01-10',
           :date_after => '1000-01-01',
           :content_equal => '機能テスト用データ1',
+          :content_include => '機能テスト',
           :category => 'algieba',
           :price_upper => 100,
           :price_lower => 1000,
@@ -38,18 +36,18 @@ describe AccountsController, :type => :controller do
         [:income],
       ],
       [{}, [:income, :expense]],
-    ].each do |query, expected_accounts|
+    ].each do |query, expected_account_types|
       description = query.empty? ? '何も指定しない場合' : "#{query.keys.join(',')}を指定する場合"
-      context description do
-        before(:all) { @expected_accounts = expected_accounts.map {|key| @test_account[key].except(:id) } }
 
+      context description do
         include_context '家計簿を検索する', query
 
         it_behaves_like 'ステータスコードが正しいこと', '200'
 
         it 'レスポンスの属性値が正しいこと' do
           actual_accounts = @pbody.map {|account| account.slice(*@account_keys).symbolize_keys }
-          expect(actual_accounts).to eq @expected_accounts
+          expected_accounts = expected_account_types.map {|key| @test_account[key].except(:id) }
+          expect(actual_accounts).to eq expected_accounts
         end
       end
     end
@@ -59,13 +57,10 @@ describe AccountsController, :type => :controller do
     [
       {:account_type => 'invalid_type'},
       {:date_before => 'invalid_date'},
-      {:date_after => '1000-13-01'},
+      {:date_after => 'invalid_date'},
       {:price_upper => 'invalid_price'},
-      {:price_upper => -100},
-      {:price_lower => 100.0},
-      {:account_type => 'invalid_type', :date_after => 'invalid_date'},
-      {:date_before => '01-13-1000', :price_lower => 'invalid_price'},
-      {:account_type => 'invalid_type', :date_after => 'invalid_date', :price_upper => -100},
+      {:price_lower => 'invalid_price'},
+      {:account_type => 'invalid_type', :date_before => 'invalid_date', :date_after => 'invalid_date', :price_upper => 'invalid_price', :price_lower => 'invalid_price'},
     ].each do |query|
       context "#{query.keys.join(',')}が不正な場合" do
         include_context '家計簿を検索する', query
