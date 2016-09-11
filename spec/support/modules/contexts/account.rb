@@ -1,31 +1,5 @@
 # coding: utf-8
-
-shared_context 'Controller: 共通設定' do
-  before(:all) do
-    @test_account = {
-      :income => {
-        :id => 1,
-        :account_type => 'income',
-        :date => '1000-01-01',
-        :content => '機能テスト用データ1',
-        :category => 'algieba',
-        :price => 1000,
-      },
-      :expense => {
-        :id => 2,
-        :account_type => 'expense',
-        :date => '1000-01-05',
-        :content => '機能テスト用データ2',
-        :category => 'algieba',
-        :price => 100,
-      },
-    }
-    @account_keys = %w[ account_type date content category price ]
-    @client = Capybara.page.driver
-  end
-end
-
 shared_context '事前準備: 家計簿を登録する' do
-  before(:all) { @test_account.each {|_, value| Account.create!(value) } }
-  after(:all) { @test_account.each {|_, value| Account.find_by(value[:id]).try(:delete) } }
+  before(:all) { CommonHelper.test_account.each {|_, value| Account.create!(value) } }
+  after(:all) { CommonHelper.test_account.each {|_, value| Account.find_by(value[:id]).try(:delete) } }
 end
