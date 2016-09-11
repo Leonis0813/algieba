@@ -40,13 +40,6 @@ shared_context 'Controller: 家計簿を登録する' do
   end
 end
 
-shared_context 'Controller: 家計簿を取得する' do
-  before(:all) do
-    @res = @client.get("/accounts/#{@id}.json")
-    @pbody = JSON.parse(@res.body) rescue nil
-  end
-end
-
 shared_context 'Controller: 家計簿を検索する' do
   before(:all) do
     @res = @client.get('/accounts.json', @params)
