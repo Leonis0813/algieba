@@ -16,7 +16,3 @@ shared_examples '400エラーをチェックする' do |error_codes|
     expect(@pbody).to match_array error_codes.map {|e| {'error_code' => e} }
   end
 end
-
-shared_examples '404エラーをチェックする' do
-  it_behaves_like 'ステータスコードが正しいこと', '404'
-end
