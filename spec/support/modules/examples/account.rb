@@ -20,12 +20,3 @@ shared_examples_for 'Model: 収支が正しく計算されていることを確�
     expect(@settlement).to eq settlement
   end
 end
-
-shared_examples_for 'Controller: 家計簿が正しく検索されていることを確認する' do
-  it_behaves_like 'ステータスコードが正しいこと', '200'
-
-  it 'レスポンスの属性値が正しいこと' do
-    actual_accounts = @pbody.map {|account| account.slice(*@account_keys).symbolize_keys }
-    expect(actual_accounts).to eq @expected_accounts
-  end
-end

@@ -2,6 +2,13 @@
 require 'rails_helper'
 
 describe AccountsController, :type => :controller do
+  shared_context '家計簿を検索する' do |params|
+    before(:all) do
+      @res = @client.get('/accounts.json', params || @params)
+      @pbody = JSON.parse(@res.body) rescue nil
+    end
+  end
+
   include_context 'Controller: 共通設定'
   before(:all) { @test_account.each {|_, value| Account.create!(value) } }
   after(:all) { @test_account.each {|_, value| Account.find_by(value).delete } }
@@ -35,12 +42,16 @@ describe AccountsController, :type => :controller do
     ].each do |query, expected_accounts|
       description = query.empty? ? '何も指定しない場合' : "#{query.keys.join(',')}を指定する場合"
       context description do
-        before(:all) do
-          @params = query
-          @expected_accounts = expected_accounts.map {|key| @test_account[key].except(:id) }
+        before(:all) { @expected_accounts = expected_accounts.map {|key| @test_account[key].except(:id) } }
+
+        include_context '家計簿を検索する', query
+
+        it_behaves_like 'ステータスコードが正しいこと', '200'
+
+        it 'レスポンスの属性値が正しいこと' do
+          actual_accounts = @pbody.map {|account| account.slice(*@account_keys).symbolize_keys }
+          expect(actual_accounts).to eq @expected_accounts
         end
-        include_context 'Controller: 家計簿を検索する'
-        it_behaves_like 'Controller: 家計簿が正しく検索されていることを確認する'
       end
     end
   end
@@ -58,8 +69,7 @@ describe AccountsController, :type => :controller do
       {:account_type => 'invalid_type', :date_after => 'invalid_date', :price_upper => -100},
     ].each do |query|
       context "#{query.keys.join(',')}が不正な場合" do
-        before(:all) { @params = query }
-        include_context 'Controller: 家計簿を検索する'
+        include_context '家計簿を検索する', query
         it_behaves_like '400エラーをチェックする', query.map {|key, _| "invalid_param_#{key}" }
       end
     end
