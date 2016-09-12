@@ -3,99 +3,98 @@ class AccountsController < ApplicationController
 
   def manage
     @account = Account.new
-    @all_accounts = Account.order(:date => :desc).page(params[:page])
+    @accounts = Account.order(:date => :desc).page(params[:page])
   end
 
   def create
-    params.permit!
-    check_absent_params_for_create
-
     begin
-      accounts = params[:accounts].slice(*account_attributes)
-      accounts[:date] = 'invalid_date' unless accounts[:date] =~ /\A\d{4}-\d{2}-\d{2}\z/
-      @account = Account.create!(accounts)
-      if params[:accounts][:from] == 'browser'
-        render :nothing => true
+      attributes = params.require(:accounts).permit(*account_params)
+      absent_keys = account_params - attributes.symbolize_keys.keys
+      raise BadRequest.new(absent_keys, 'absent') unless absent_keys.empty?
+
+      @account = Account.new(attributes)
+      if @account.save
+        respond_to do |format|
+          format.json {render :status => :created, :template => 'accounts/account'}
+          format.js {@accounts = Account.order(:date => :desc).page(params[:page])}
+        end
       else
-        render :status => :created, :json => @account
+        raise BadRequest.new(@account.errors.messages.keys, 'invalid')
       end
-    rescue ActiveRecord::RecordInvalid => e
-      raise BadRequest.new(e.record.errors.messages.keys, 'invalid')
+    rescue ActionController::ParameterMissing
+      raise BadRequest.new(:accounts, 'absent')
     end
   end
 
   def show
-    params.permit!
-
-    begin
-      render :status => :ok, :json => Account.find(params[:id])
-    rescue ActiveRecord::RecordNotFound => e
+    @account = Account.find_by(params.permit(:id))
+    if @account
+      respond_to do |format|
+        format.json {render :status => :ok, :template => 'accounts/account'}
+      end
+    else
       raise NotFound.new
     end
   end
 
   def index
-    params.permit!
-
-    begin
-      render :status => :ok, :json => Account.index(request.query_parameters)
-    rescue ActiveRecord::RecordInvalid => e
-      raise BadRequest.new(e.record.errors.messages.keys, 'invalid')
+    query = Query.new(params.permit(*index_params))
+    if query.valid?
+      @accounts = index_params.inject(Account.all) do |accounts, key|
+        value = query.send(key)
+        value ? accounts.send(key, value) : accounts
+      end
+      respond_to do |format|
+        format.json {render :status => :ok, :template => 'accounts/accounts'}
+      end
+    else
+      raise BadRequest.new(query.errors.messages.keys, 'invalid')
     end
   end
 
   def update
-    params.permit!
-
-    begin
-      account = Account.find(params[:id])
-      request_params = request.request_parameters
-      request_params[:date] = 'invalid_date' if request_params[:date] and not request_params[:date] =~ /\A\d{4}-\d{2}-\d{2}\z/
-      account.update!(request_params.slice(*account_attributes))
-      render :status => :ok, :json => account
-    rescue ActiveRecord::RecordNotFound => e
+    @account = Account.find_by(params.permit(:id))
+    if @account
+      if @account.update(params.permit(*account_params))
+        respond_to do |format|
+          format.json {render :status => :ok, :template => 'accounts/account'}
+        end
+      else
+        raise BadRequest.new(@account.errors.messages.keys, 'invalid')
+      end
+    else
       raise NotFound.new
-    rescue ActiveRecord::RecordInvalid => e
-      raise BadRequest.new(e.record.errors.messages.keys, 'invalid')
-    rescue ActiveRecord::RecordNotSaved => e
-      raise InternalServerError.new
     end
   end
 
   def destroy
-    params.permit!
-
-    begin
-      Account.find(params[:id]).destroy!
+    @account = Account.find_by(params.permit(:id)).try(:destroy)
+    if @account
       head :no_content
-    rescue ActiveRecord::RecordNotFound => e
+    else
       raise NotFound.new
-    rescue ActiveRecord::RecordNotDestroyed => e
-      raise InternalServerError.new
     end
   end
 
   def settle
-    params.permit!
-
-    begin
-      render :status => :ok, :json => Account.settle(params[:interval])
-    rescue ArgumentError => e
-      raise BadRequest.new(:interval, e.message)
+    query = Settlement.new(params.permit(:interval))
+    if query.valid?
+      @settlement = Account.settle(query.interval)
+      respond_to do |format|
+        format.json {render :status => :ok}
+      end
+    else
+      raise BadRequest.new(:interval, query.errors.messages[:interval].first)
     end
   end
 
   private
 
-  def account_attributes
+  def account_params
     %i[ account_type date content category price ]
   end
 
-  def check_absent_params_for_create
-    request_params = request.request_parameters
-    raise BadRequest.new(:accounts, 'absent') unless request_params[:accounts]
-    request_keys = request_params[:accounts].slice(*account_attributes).keys.map(&:to_sym)
-    absent_keys = account_attributes - request_keys
-    raise BadRequest.new(absent_keys, 'absent') unless absent_keys.empty?
+  def index_params
+    %i[ account_type date_before date_after content_equal content_include category price_upper price_lower ]
   end
 end

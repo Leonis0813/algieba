@@ -2,54 +2,58 @@
 require 'rails_helper'
 
 describe AccountsController, :type => :controller do
-  include_context 'Controller: 共通設定'
+  shared_context '家計簿を登録する' do |params|
+    before(:all) do
+      @res = client.post('/accounts.json', params)
+      @pbody = JSON.parse(@res.body) rescue nil
+    end
+  end
 
   context '正常系' do
-    before(:all) do
-      @params = {:accounts => @test_account[:income]}
-      @expected_account = @test_account[:income].except(:id)
+    after(:all) { Account.where(test_account[:income].except(:id)).delete_all }
+
+    include_context '家計簿を登録する', {:accounts => CommonHelper.test_account[:income]}
+
+    it_behaves_like 'ステータスコードが正しいこと', '201'
+
+    it 'レスポンスの属性値が正しいこと' do
+      actual_account = @pbody.slice(*account_params).symbolize_keys
+      expected_account = test_account[:income].except(:id)
+      expect(actual_account).to eq expected_account
     end
-    after(:all) { Account.where(@test_account[:income].except(:id)).map(&:delete) }
-    include_context 'Controller: 家計簿を登録する'
-    it_behaves_like 'Controller: 家計簿が正しく登録されていることを確認する'
   end
 
   context '異常系' do
-    [
-      ['種類がない場合', [:account_type]],
-      ['日付がない場合', [:date]],
-      ['内容がない場合', [:content]],
-      ['カテゴリがない場合', [:category]],
-      ['金額がない場合', [:price]],
-      ['日付と金額がない場合', [:date, :price]],
-    ].each do |description, deleted_keys|
-      context description do
-        before(:all) do
-          selected_keys = @account_keys.map(&:to_sym) - deleted_keys
-          @params = {:accounts => @test_account[:income].slice(*selected_keys)}
-        end
-        include_context 'Controller: 家計簿を登録する'
+    account_params = CommonHelper.account_params.map(&:to_sym)
+    test_cases = [].tap do |tests|
+      (account_params.size - 1).times {|i| tests << account_params.combination(i + 1).to_a }
+    end.flatten(1)
+
+    test_cases.each do |deleted_keys|
+      context "#{deleted_keys.join(',')}がない場合" do
+        selected_keys = account_params - deleted_keys
+
+        include_context '家計簿を登録する', {:accounts => CommonHelper.test_account[:income].slice(*selected_keys)}
+
         it_behaves_like '400エラーをチェックする', deleted_keys.map {|key| "absent_param_#{key}" }
       end
     end
 
-    [{}, {:accounts => {}}].each do |params|
+    [nil, {}, {:accounts => nil}, {:accounts => {}}].each do |params|
       context 'accounts パラメーターがない場合' do
-        before(:all) { @params = params }
-        include_context 'Controller: 家計簿を登録する'
+        include_context '家計簿を登録する', params
         it_behaves_like '400エラーをチェックする', ['absent_param_accounts']
       end
     end
 
     [
-      ['不正な種類を指定する場合', {:account_type => 'invalid_type'}],
-      ['不正な日付を指定する場合', {:date => 'invalid_date'}],
-      ['不正な金額を指定する場合', {:price => 'invalid_price'}],
-      ['不正な種類と金額を指定する場合', {:account_type => 'invalid_type', :price => 'invalid_price'}],
-    ].each do |description, invalid_param|
-      context description do
-        before(:all) { @params = {:accounts => @test_account[:expense].merge(invalid_param)} }
-        include_context 'Controller: 家計簿を登録する'
+      {:account_type => 'invalid_type'},
+      {:date => 'invalid_date'},
+      {:price => 'invalid_price'},
+      {:account_type => 'invalid_type', :date => 'invalid_date', :price => 'invalid_price'},
+    ].each do |invalid_param|
+      context "#{invalid_param.keys.join(',')}が不正な場合" do
+        include_context '家計簿を登録する', {:accounts => CommonHelper.test_account[:expense].merge(invalid_param)}
         it_behaves_like '400エラーをチェックする', invalid_param.keys.map {|key| "invalid_param_#{key}" }
       end
     end

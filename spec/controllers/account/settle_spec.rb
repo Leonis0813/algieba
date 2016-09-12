@@ -2,34 +2,43 @@
 require 'rails_helper'
 
 describe AccountsController, :type => :controller do
-  include_context 'Controller: 共通設定'
-  before(:all) { @test_account.each {|_, value| Account.create!(value) } }
-  after(:all) { @test_account.each {|_, value| Account.find_by(value).delete } }
+  shared_context '収支を計算する' do |params = {}|
+    before(:all) do
+      @res = client.get('/settlement.json', params)
+      @pbody = JSON.parse(@res.body) rescue nil
+    end
+  end
 
-  context '正常系' do
+  include_context '事前準備: 家計簿を登録する'
+
+  describe '正常系' do
     [
       ['yearly', {'1000' => 900}],
       ['monthly', {'1000-01' => 900}],
       ['daily', {'1000-01-01' => 1000, '1000-01-05' => -100}],
     ].each do |interval, expected_settlement|
       context "#{interval}を指定する場合" do
-        before(:all) { @params = {:interval => interval} }
-        include_context 'Controller: 収支を計算する'
-        it_behaves_like 'Controller: 収支が正しく計算されていることを確認する', expected_settlement
+        include_context '収支を計算する', {:interval => interval}
+
+        it_behaves_like 'ステータスコードが正しいこと', '200'
+
+        it '計算結果が正しいこと' do
+          expect(@pbody).to eq expected_settlement
+        end
       end
     end
   end
 
-  context '異常系' do
-    context '不正な期間を指定する場合' do
-      before(:all) { @params = {:interval => 'invalid_internal'} }
-      include_context 'Controller: 収支を計算する'
-      it_behaves_like '400エラーをチェックする', ['invalid_param_interval']
+  describe '異常系' do
+    [[nil, 'absent'], ['invalid_interval', 'invalid']].each do |interval, message|
+      context "#{interval || 'nil'}を指定する場合" do
+        include_context '収支を計算する', {:interval => interval}
+        it_behaves_like '400エラーをチェックする', ["#{message}_param_interval"]
+      end
     end
 
     context 'interval パラメーターがない場合' do
-      before(:all) { @params = {} }
-      include_context 'Controller: 収支を計算する'
+      include_context '収支を計算する'
       it_behaves_like '400エラーをチェックする', ['absent_param_interval']
     end
   end
