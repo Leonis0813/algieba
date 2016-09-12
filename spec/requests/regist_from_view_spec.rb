@@ -13,21 +13,19 @@ describe 'ブラウザから操作する', :type => :request, :js => true do
 
   default_inputs = {:date => '1000-01-01', :content => 'regist from view', :category => 'テスト', :price => 100}
 
-  include_context '共通設定'
-
   before(:all) do
-    res = @hc.get("#{@base_url}/accounts")
+    res = http_client.get("#{base_url}/accounts")
     size = JSON.parse(res.body).size
     account = default_inputs.merge(:account_type => 'income')
     (Kaminari.config.default_per_page - 1 - size).times do
-      @hc.post("#{@base_url}/accounts", {:accounts => account}.to_json, @content_type_json)
+      http_client.post("#{base_url}/accounts", {:accounts => account}.to_json, content_type_json)
     end
   end
 
   after(:all) do
-    res = @hc.get("#{@base_url}/accounts", :content_equal => 'regist from view')
+    res = http_client.get("#{base_url}/accounts", :content_equal => 'regist from view')
     accounts = JSON.parse(res.body)
-    accounts.each {|account| @hc.delete("#{@base_url}/accounts/#{account['id']}") }
+    accounts.each {|account| http_client.delete("#{base_url}/accounts/#{account['id']}") }
   end
 
   describe 'Webページを表示する' do

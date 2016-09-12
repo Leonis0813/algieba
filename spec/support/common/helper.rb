@@ -1,5 +1,17 @@
 # coding: utf-8
 module CommonHelper
+  def http_client
+    @http_client ||= HTTPClient.new
+  end
+
+  def base_url
+    'http://160.16.66.112:3000'
+  end
+
+  def content_type_json
+    {'Content-Type' => 'application/json'}
+  end
+
   def client
     @client ||= Capybara.page.driver
   end

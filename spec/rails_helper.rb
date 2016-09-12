@@ -15,7 +15,7 @@ Dir[Rails.root.join('spec/support/**/*.rb')].each {|f| require f }
 # If you are not using ActiveRecord, you can remove this line.
 ActiveRecord::Migration.maintain_test_schema!
 
-Capybara.app_host = 'http://160.16.66.112:88'
+Capybara.app_host = 'http://160.16.66.112:3000'
 Capybara.javascript_driver = :webkit
 Headless.new.start
 
@@ -28,7 +28,7 @@ end
 
 Capybara::Webkit.configure do |config|
   config.block_unknown_urls
-  config.allow_url('http://160.16.66.112:88')
+  config.allow_url('http://160.16.66.112:3000')
 end
 
 module Capybara::Webkit

@@ -4,13 +4,7 @@ require 'rails_helper'
 describe "accounts/manage", :type => :view do
   html = nil
   per_page = 1
-  param = {
-    :account_type => 'income',
-    :date => '1000-01-01',
-    :content => 'モジュールテスト用データ',
-    :category => 'algieba',
-    :price => 100,
-  }
+  param = {:account_type => 'income', :date => '1000-01-01', :content => 'モジュールテスト用データ', :category => 'algieba', :price => 100}
 
   shared_context 'HTML初期化' do
     before(:all) { html = nil }
