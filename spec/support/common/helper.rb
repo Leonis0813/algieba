@@ -5,7 +5,7 @@ module CommonHelper
   end
 
   def base_url
-    'http://160.16.66.112:3000'
+    'http://160.16.66.112:88'
   end
 
   def content_type_json
