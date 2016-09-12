@@ -1,6 +1,11 @@
 algieba
 =======
 
+- 2.1.2:
+  - [FIX]: XHR error
+  - [CHANGE] input width for content
+  - [REFACTOR] error handling
+
 - 2.1.1:
   - [FIX] routing error for assets
 
