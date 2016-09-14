@@ -14,6 +14,7 @@ class AccountsController < ApplicationController
 
       @account = Account.new(attributes)
       if @account.save
+        request.format = :js if request.xhr?
         respond_to do |format|
           format.json {render :status => :created, :template => 'accounts/account'}
           format.js {@accounts = Account.order(:date => :desc).page(params[:page])}
