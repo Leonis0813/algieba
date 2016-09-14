@@ -1,8 +1,11 @@
 algieba
 =======
 
+- 2.1.3:
+  - [FIX] default format
+
 - 2.1.2:
-  - [FIX]: XHR error
+  - [FIX] XHR error
   - [CHANGE] input width for content
   - [REFACTOR] error handling
 
