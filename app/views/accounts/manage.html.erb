@@ -1,0 +1,25 @@
+<%= form_for @account, {:as => :accounts, :remote => true} do |f| %>
+  日付：<%= f.text_field :date %>
+  内容：<%= f.text_field :content, :size => 100 %>
+  カテゴリ：<%= f.text_field :category %>
+  金額：<%= f.text_field :price %>
+  <%= f.radio_button :account_type, 'income' %> 収入
+  <%= f.radio_button :account_type, 'expense', {:checked => true} %> 支出
+  <%= f.submit '登録' %>
+<% end %>
+<hr>
+
+<div id="pagination">
+  <%= paginate @accounts %>
+</div>
+
+<table border="1" width="100%">
+  <thead>
+    <tr>
+      <th>種類</th><th>日付</th><th>内容</th><th>カテゴリ</th><th>金額</th>
+    </tr>
+  </thead>
+  <tbody id="accounts">
+    <%= render @accounts %>
+  </tbody>
+</table>

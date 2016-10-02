@@ -1,7 +1,2 @@
-$("#append").after("\
-<tr><td><%= @account.account_type == 'income' ? '収入' : '支出' %></td>\
-<td><%= @account.date %></td>\
-<td><%= @account.content %></td>\
-<td><%= @account.category %></td>\
-<td><%= @account.price %></td></tr>\
-")
+$('#accounts').html("<%= j(render @accounts) %>");
+$('#pagination').html("<%= j(paginate @accounts, {:params => {:action => 'manage', :accounts => {}, :commit => {}, :utf8 => {}}}) %>");

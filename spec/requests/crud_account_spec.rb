@@ -2,44 +2,81 @@
 require 'rails_helper'
 
 describe '家計簿を管理する', :type => :request do
-  valid_account = {:account_type => 'expense', :date => '1000-01-01', :content => 'システムテスト用データ', :category => 'システムテスト', :price => 100}
-  invalid_account = {:account_type => 'expense', :date => '01-01-1000', :category => 'システムテスト', :price => 100}
+  valid_account = {:account_type => 'expense', :date => '1000-01-01', :content => 'システムテスト用データ', :category => 'algieba', :price => 100}
+  invalid_account = {:account_type => 'expense', :date => 'invalid_date', :category => 'algieba', :price => 100}
 
-  include_context '共通設定'
-  after(:all) { @hc.delete("#{@base_url}/accounts", {:category => 'システムテスト'}) }
+  shared_context 'GET /accounts/[:id]' do
+    before(:all) do
+      @res = http_client.get("#{base_url}/accounts/#{@id}")
+      @pbody = JSON.parse(@res.body) rescue nil
+    end
+  end
 
   describe '家計簿を登録する' do
     include_context 'POST /accounts', invalid_account
     it_behaves_like '400エラーをチェックする', ['absent_param_content']
-  end
 
-  describe '家計簿を登録する' do
-    include_context 'POST /accounts', valid_account
-    it_behaves_like 'Request: 家計簿が正しく登録されていることを確認する'
-  end
+    describe '家計簿を登録する' do
+      include_context 'POST /accounts', valid_account
 
-  describe '家計簿を検索する' do
-    include_context 'GET /accounts', :content => 'システムテスト用データ'
-    it_behaves_like 'Request: 家計簿が正しく検索されていることを確認する'
-  end
+      before(:all) { @created_account = @pbody }
 
-  describe '家計簿を更新する' do
-    include_context 'PUT /accounts', {:date => '1000-01-01'}, {:account_type => 'income'}
-    it_behaves_like 'Request: 家計簿が正しく更新されていることを確認する'
-  end
+      it_behaves_like 'ステータスコードが正しいこと', '201'
 
-  describe '家計簿を検索する' do
-    include_context 'GET /accounts', :account_type => 'income'
-    it_behaves_like 'Request: 家計簿が正しく検索されていることを確認する'
-  end
+      CommonHelper.account_params.each do |key|
+        it "レスポンスボディのキーに#{key}が含まれていること" do
+          expect(@pbody.keys).to include key
+        end
+      end
 
-  describe '家計簿を削除する' do
-    include_context 'DELETE /accounts', :category => 'システムテスト'
-    it_behaves_like 'Request: 家計簿が正しく削除されていることを確認する'
-  end
+      describe '家計簿を取得する' do
+        before(:all) { @id = @created_account['id'] }
 
-  describe '家計簿を検索する' do
-    include_context 'GET /accounts', :price => 100
-    it_behaves_like 'Request: 家計簿が正しく検索されていることを確認する'
+        include_context 'GET /accounts/[:id]'
+
+        it_behaves_like 'ステータスコードが正しいこと', '200'
+
+        it '取得された家計簿が正しいこと' do
+          actual_account = @pbody.slice(*account_params).symbolize_keys
+          expect(actual_account).to eq valid_account
+        end
+
+        describe '家計簿を更新する' do
+          before(:all) do
+            @res = http_client.put("#{base_url}/accounts/#{@created_account['id']}", {:account_type => 'income'}.to_json, content_type_json)
+            @pbody = JSON.parse(@res.body) rescue nil
+          end
+
+          it_behaves_like 'ステータスコードが正しいこと', '200'
+
+          it '更新された家計簿が正しいこと' do
+            actual_account = @pbody.slice(*account_params).symbolize_keys
+            expect(actual_account).to eq valid_account.merge(:account_type => 'income')
+          end
+
+          describe '家計簿を検索する' do
+            include_context 'GET /accounts', {:account_type => 'income'}
+            it_behaves_like 'Request: 家計簿が正しく検索されていることを確認する', valid_account.merge(:account_type => 'income')
+
+            describe '家計簿を削除する' do
+              before(:all) do
+                @res = http_client.delete("#{base_url}/accounts/#{@created_account['id']}")
+                @pbody = JSON.parse(@res.body) rescue nil
+              end
+
+              it_behaves_like 'ステータスコードが正しいこと', '204'
+
+              describe '家計簿を取得する' do
+                before(:all) { @id = @created_account['id'] }
+
+                include_context 'GET /accounts/[:id]'
+
+                it_behaves_like 'ステータスコードが正しいこと', '404'
+              end
+            end
+          end
+        end
+      end
+    end
   end
 end

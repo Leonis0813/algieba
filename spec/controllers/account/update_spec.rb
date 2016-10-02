@@ -2,70 +2,57 @@
 require 'rails_helper'
 
 describe AccountsController, :type => :controller do
-  include_context 'Controller: 共通設定'
+  shared_context '家計簿を更新する' do |id, params|
+    before(:all) do
+      @res = client.put("/accounts/#{id}.json", params)
+      @pbody = JSON.parse(@res.body) rescue nil
+    end
+  end
 
   context '正常系' do
     [
-      ['種類を指定して種類を更新する場合', {'account_type' => 'expense'}, {'account_type' => 'income'}, [:expense]],
-      ['日付を指定して内容を更新する場合', {'date' => '1000-01-01'}, {'content' => '更新後データ'}, [:income, :expense]],
-      ['内容を指定して金額を更新する場合', {'content' => '機能テスト用データ'}, {'price' => 10000}, [:income, :expense]],
-      ['カテゴリを指定して種類を更新する場合', {'category' => '機能テスト'}, {'account_type' => 'expense'}, [:income, :expense]],
-      ['金額を指定してカテゴリを更新する場合', {'price' => 100}, {'category' => '更新'}, [:income, :expense]],
-      ['種類と金額を指定してカテゴリを更新する場合', {'account_type' => 'expense', 'price' => 100}, {'category' => '更新'}, [:expense]],
-      ['条件を指定せずに金額を更新する場合', nil, {'price' => 10}, [:income, :expense]],
-      ['条件を指定せずに内容とカテゴリを更新する場合', nil, {'content' => '更新後データ', 'category' => '更新'}, [:income, :expense]],
-    ].each do |description, condition, with, updated_accounts|
+      {:account_type => 'expense'},
+      {:date => '1000-01-02'},
+      {:content => '更新後データ'},
+      {:category => 'updated'},
+      {:price => 1},
+      {:account_type => 'expense', :date => '1000-01-02', :content => '更新後データ', :category => 'updated', :price => 1},
+      {},
+    ].each do |params|
+      description = params.empty? ? '更新しない場合' : "#{params.keys.join(',')}を更新する場合"
+
       context description do
-        before(:all) do
-          @test_account.each {|key, value| @client.post('/accounts', {:accounts => value}) }
-          @params = {:condition => condition, :with => with}.select {|key, value| value }
-          @expected_accounts = updated_accounts.map {|type| @test_account[type].merge(with) }
+        include_context '事前準備: 家計簿を登録する'
+        include_context '家計簿を更新する', CommonHelper.test_account[:income][:id], params
+
+        it_behaves_like 'ステータスコードが正しいこと', '200'
+
+        it 'レスポンスの属性値が正しいこと' do
+          actual_account = @pbody.slice(*account_params).symbolize_keys
+          expected_account = test_account[:income].merge(params).except(:id)
+          expect(actual_account).to eq expected_account
         end
-        include_context 'Controller: 家計簿を更新する'
-        it_behaves_like 'Controller: 家計簿が正しく更新されていることを確認する'
-        include_context 'Controller: 後始末'
       end
     end
   end
 
   context '異常系' do
     [
-      ['不正な種類を指定する場合', {'account_type' => 'invalid_type'}, {'account_type' => 'expense'}],
-      ['不正な日付を指定する場合', {'date' => '01-01-1000'}, {'price' => 1000}],
-      ['不正な金額を指定する場合', {'price' => -1}, {'account_type' => 'expense'}],
-      ['不正な種類で更新する場合', nil, {'account_type' => 'invalid_type'}],
-      ['不正な日付で更新する場合', nil, {'date' => 'invalid_date'}],
-      ['不正な金額で更新する場合', nil, {'price' => 100.5}],
-    ].each do |description, condition, with|
-      context description do
-        before(:all) do
-          @test_account.each {|key, value| @client.post('/accounts', {:accounts => value}) }
-          @params = {:condition => condition, :with => with}.select{|key, value| value }
-        end
-        include_context 'Controller: 家計簿を更新する'
-        it_behaves_like '400エラーをチェックする', (condition || with).keys.map {|key| "invalid_param_#{key}" }
-        include_context 'Controller: 後始末'
+      {:account_type => 'invalid_type'},
+      {:date => 'invalid_date'},
+      {:price => 'invalid_price'},
+      {:account_type => 'invalid_type', :date => 'invalid_date', :price => 'invalid_price'},
+    ].each do |params|
+      context "#{params.keys.join(',')}が不正な場合" do
+        include_context '事前準備: 家計簿を登録する'
+        include_context '家計簿を更新する', CommonHelper.test_account[:income][:id], params
+        it_behaves_like '400エラーをチェックする', params.map {|key, _| "invalid_param_#{key}" }
       end
     end
 
-    context '更新後の値がない場合' do
-      before(:all) do
-        @test_account.each {|key, value| @client.post('/accounts', {:accounts => value}) }
-        @params = {:with => {}}
-      end
-      include_context 'Controller: 家計簿を更新する'
-      it_behaves_like '400エラーをチェックする', ['absent_param_with']
-      include_context 'Controller: 後始末'
-    end
-
-    context 'with パラメーターがない場合' do
-      before(:all) do
-        @test_account.each {|key, value| @client.post('/accounts', {:accounts => value}) }
-        @params = {}
-      end
-      include_context 'Controller: 家計簿を更新する'
-      it_behaves_like '400エラーをチェックする', ['absent_param_with']
-      include_context 'Controller: 後始末'
+    context '存在しないidを指定した場合' do
+      include_context '家計簿を更新する', 100, {:account_type => 'expense'}
+      it_behaves_like 'ステータスコードが正しいこと', '404'
     end
   end
 end

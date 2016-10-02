@@ -1,40 +1,25 @@
-require 'date'
-
 class Account < ActiveRecord::Base
-  validates :account_type, :presence => true, :format => { :with => /income|expense/ }
-  validates :date, :presence => true, :format => { :with => /\A\d{4}\-\d{2}\-\d{2}\z/ }
-  validates :content, :presence => true
-  validates :category, :presence => true
-  validates :price, :presence => true, :numericality => { :only_integer => true, :greater_than_or_equal_to => 0 }
+  validates :account_type, :inclusion => {:in => %w[ income expense ], :message => 'invalid'}
+  validates :date, :presence => {:message => 'invalid'}
+  validates :price, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0, :message => 'invalid'}
+
+  scope :account_type, ->(account_type) { where(:account_type => account_type) }
+  scope :date_before, ->(date) { where('date <= ?', date) }
+  scope :date_after, ->(date) { where('date >= ?', date) }
+  scope :content_equal, ->(content) { where(:content => content) }
+  scope :content_include, ->(content) { where('content LIKE ?', "%#{content}%") }
+  scope :category, ->(category) { where(:category => category) }
+  scope :price_upper, ->(price) { where('price >= ?', price) }
+  scope :price_lower, ->(price) { where('price <= ?', price) }
 
   class << self
-    def show(condition = {})
-      check_condition(condition)
-      Account.where(condition)
-    end
-
-    def update(params)
-      condition, with = (params[:condition] || {}), params[:with]
-      check_condition(condition)
-      check_condition(with)
-
-      account_attributes = %i[ account_type date content category price ]
-      accounts = Account.where(condition.slice(*account_attributes))
-      accounts.map {|account| account.update_attributes(with) }
-      accounts
-    end
-
-    def destroy(condition = {})
-      check_condition(condition)
-      Account.where(condition).each {|account| account.delete }
-    end
-
     def settle(interval)
-      income_records = Account.where(:account_type => 'income').pluck(:date, :price).map do |record|
-        {:date => record.first, :price => record.last}
+      income_records = Account.account_type('income').pluck(:date, :price).map do |date, price|
+        {:date => date, :price => price}
       end
-      expense_records = Account.where(:account_type => 'expense').pluck(:date, :price).map do |record|
-        {:date => record.first, :price => record.last}
+
+      expense_records = Account.account_type('expense').pluck(:date, :price).map do |date, price|
+        {:date => date, :price => price}
       end
 
       format = case interval
@@ -44,64 +29,29 @@ class Account < ActiveRecord::Base
                  '%Y-%m'
                when 'daily'
                  '%Y-%m-%d'
-               else
-                 raise Exception
                end
 
-      grouped_income_records = income_records.group_by do |record|
-        record[:date].strftime(format)
-      end
-      grouped_expense_records = expense_records.group_by do |record|
-        record[:date].strftime(format)
-      end
-    
-      incomes = {}
-      expenses = {}
-      grouped_income_records.each do |period, records|
-        prices = records.map{|record| record[:price] }
-        incomes.merge!({period => prices.inject(0){|sum, price| sum + price }})
-      end
-      grouped_expense_records.each do |period, records|
-        prices = records.map{|record| record[:price] }
-        expenses.merge!({period => prices.inject(0){|sum, price| sum + price }})
-      end
+      incomes = {}.tap do |income|
+        grouped_income_records = income_records.group_by {|record| record[:date].strftime(format) }
 
-      periods = incomes.keys | expenses.keys
-      settlements = {}
-      periods.each do |period|
-        settlements.merge!({period => (incomes[period] || 0) - (expenses[period] || 0)})
-      end
-      settlements
-    end
-
-    private
-
-    def check_condition(condition)
-      dummy_params = {
-        :account_type => 'income',
-        :date => '1000-01-01',
-        :content => 'dummy',
-        :category => 'dummy',
-        :price => 1,
-      }
-      account = Account.new(dummy_params)
-      condition.each {|key, value| account.send("#{key}=", value) }
-      invalid_exception = ActiveRecord::RecordInvalid.new(account)
-      if condition[:date]
-        account.invalid?
-        if condition[:date] =~ /\d{4}-\d{2}-\d{2}/
-          begin
-            Date.parse(condition[:date])
-          rescue ArgumentError
-            invalid_exception.record.errors[:date] = 'is invalid'
-            raise invalid_exception
-          end
-        else
-          invalid_exception.record.errors[:date] = 'is invalid'
-          raise invalid_exception
+        grouped_income_records.each do |period, records|
+          income.merge!(period => records.map{|record| record[:price] }.inject(:+))
         end
       end
-      raise invalid_exception if account.invalid?
+
+      expenses = {}.tap do |expense|
+        grouped_expense_records = expense_records.group_by {|record| record[:date].strftime(format) }
+
+        grouped_expense_records.each do |period, records|
+          expense.merge!(period => records.map{|record| record[:price] }.inject(:+))
+        end
+      end
+
+      {}.tap do |settlements|
+        (incomes.keys | expenses.keys).each do |period|
+          settlements.merge!(period => (incomes[period].to_i - expenses[period].to_i))
+        end
+      end
     end
   end
 end
