@@ -1,7 +1,11 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the rake db:seed (or created alongside the db with db:setup).
-#
-# Examples:
-#
-#   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
-#   Mayor.create(name: 'Emanuel', city: cities.first)
+# coding: utf-8
+[
+  Account.new(:id => 1, :account_type => 'expense', :date => '1000-01-01', :content => 'システムテスト用データ', :category => 'zosma', :price => 100),
+  Account.new(:id => 2, :account_type => 'income', :date => '1000-01-01', :content => 'システムテスト用データ', :category => 'zosma', :price => 100),
+].each do |account|
+  begin
+    account.save!
+  rescue ActiveRecord::RecordNotUnique => e
+    puts "[Warning] #{e.message}"
+  end
+end
