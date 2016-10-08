@@ -1,6 +1,11 @@
 algieba
 =======
 
+- 2.1.4:
+  - [ADD] favicon
+  - [FIX] query for paging
+  - [ADD] initial data
+
 - 2.1.3:
   - [FIX] default format
 
