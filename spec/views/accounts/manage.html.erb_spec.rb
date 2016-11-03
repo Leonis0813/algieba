@@ -41,19 +41,19 @@ describe "accounts/manage", :type => :view do
     end
 
     it '前のページへのボタンが表示されていないこと' do
-      expect(html).not_to have_xpath("//nav/span[@class='prev']/a", :text => I18n.t('views.pagination.previous'))
+      expect(html).not_to have_xpath("//nav/li/span[@class='prev']/a", :text => I18n.t('views.pagination.previous'))
     end
 
     it '1ページ目が表示されていること' do
-      expect(html).to have_xpath("//nav/span[@class='page current']", :text => 1)
+      expect(html).to have_xpath("//nav/li/span[@class='page current']", :text => 1)
     end
 
     it '2ページ目が表示されていること' do
-      expect(html).to have_xpath("//nav/span[@class='page']/a[@href='/?page=2']", :text => 2)
+      expect(html).to have_xpath("//nav/li/span[@class='page']/a[@href='/?page=2']", :text => 2)
     end
 
     it '次のページへのボタンが表示されていること' do
-      expect(html).to have_xpath("//nav/span[@class='next']/a[@href='/?page=2']", :text => I18n.t('views.pagination.next'))
+      expect(html).to have_xpath("//nav/li/span[@class='next']/a[@href='/?page=2']", :text => I18n.t('views.pagination.next'))
     end
   end
 
@@ -104,7 +104,7 @@ describe "accounts/manage", :type => :view do
     end
 
     it '<table>タグがあること' do
-      expect(html).to have_selector('table[class="table table-hover table-custom"]')
+      expect(html).to have_selector('table[class="table table-hover"]')
     end
 
     %w[ 種類 日付 内容 カテゴリ 金額 ].each do |header|
@@ -148,7 +148,7 @@ describe "accounts/manage", :type => :view do
     it_behaves_like 'ページネーションが正しく表示されていること'
 
     it 'リンクが省略されていること' do
-      expect(html).to have_xpath("//nav/span[@class='page gap']", :text => I18n.t('views.pagination.truncate'))
+      expect(html).to have_xpath("//nav/li/span[@class='page gap']", :text => I18n.t('views.pagination.truncate'))
     end
   end
 end
