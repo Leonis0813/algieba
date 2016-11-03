@@ -2,16 +2,17 @@
 require 'rails_helper'
 
 describe 'ブラウザから操作する', :type => :request, :js => true do
+  default_inputs = {:date => '1000-01-01', :content => 'regist from view', :category => 'テスト', :price => 100}
+  color = {'収入' => 'success', '支出' => 'danger'}
+
   shared_context '家計簿を登録する' do |inputs, account_type|
     before(:each) do
       inputs.each {|key, value| fill_in "accounts_#{key}", :with => value.to_s }
       choose "accounts_account_type_#{account_type}"
-      find(:xpath, '//form/input[@value="登録"]').click
+      find(:xpath, '//form/span/input[@value="登録"]').click
       sleep 1
     end
   end
-
-  default_inputs = {:date => '1000-01-01', :content => 'regist from view', :category => 'テスト', :price => 100}
 
   before(:all) do
     res = http_client.get("#{base_url}/accounts")
@@ -34,7 +35,7 @@ describe 'ブラウザから操作する', :type => :request, :js => true do
 
     %w[ date content category price ].each do |column|
       it "入力欄(id=accounts_#{column})が全て空白であること" do
-        expect(page).to have_xpath("//form/input[@id='accounts_#{column}']", :text => '')
+        expect(page).to have_xpath("//form/span/input[@id='accounts_#{column}']", :text => '')
       end
     end
 
@@ -55,19 +56,29 @@ describe 'ブラウザから操作する', :type => :request, :js => true do
       end
 
       describe '家計簿を登録する' do
-        include_context '家計簿を登録する', default_inputs, 'income'
+        include_context '家計簿を登録する', default_inputs, 'expense'
 
         it '家計簿の数が1つ増えていること' do
           expect(page).to have_xpath('//table/tbody/tr', :count => Kaminari.config.default_per_page)
           expect(page).not_to have_xpath('//nav[@class="pagination"]')
+
+          page.find_all(:xpath, '//table/tbody/tr').each do |account|
+            type = account.find_all('td').first.text
+            expect(account).to have_xpath("../tr[@class='#{color[type]}']")
+          end
         end
 
         describe '家計簿を登録する' do
           include_context '家計簿を登録する', default_inputs, 'income'
 
-          it '表示されている家計簿の数が増えていないこと' do
+          it '表示されている家計簿の数が変わっていないこと' do
             expect(page).to have_xpath('//table/tbody/tr', :count => Kaminari.config.default_per_page)
             expect(page).to have_xpath('//nav[@class="pagination"]')
+
+            page.find_all(:xpath, '//table/tbody/tr').each do |account|
+              type = account.find_all('td').first.text
+              expect(account).to have_xpath("../tr[@class='#{color[type]}']")
+            end
           end
         end
       end
