@@ -12,3 +12,18 @@ span.prev {
 span.next {
   @include a_common;
 }
+
+form {
+  padding: 10px
+}
+
+.input-custom {
+  padding: 0px 5px;
+}
+
+.table-custom {
+  width: 100%;
+  padding: 10px;
+  border-spacing: 0;
+  border-collapse: separate;
+}

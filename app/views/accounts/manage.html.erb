@@ -1,25 +1,32 @@
-<%= form_for @account, {:as => :accounts, :remote => true} do |f| %>
-  日付：<%= f.text_field :date %>
-  内容：<%= f.text_field :content, :size => 100 %>
-  カテゴリ：<%= f.text_field :category %>
-  金額：<%= f.text_field :price %>
-  <%= f.radio_button :account_type, 'income' %> 収入
-  <%= f.radio_button :account_type, 'expense', {:checked => true} %> 支出
-  <%= f.submit '登録' %>
+<%= form_for @account, {:as => :accounts, :remote => true, :html => {:class => 'form-inline'}} do |f| %>
+  <% [[:date, {}], [:content,  {:size => 100, :class => 'form-control'}], [:category, {}], [:price, {}]].each do |attribute, options| %>
+    <span class='input-custom'>
+      <%= f.label attribute, t("views.account.#{attribute}").html_safe + '：' %><%= f.text_field attribute, {:class => 'form-control'}.merge(options) %>
+    </span>
+  <% end %>
+  <% [[:income, {}], [:expense, {:checked => true}]].each do |account_type, options| %>
+    <span class='input-custom'>
+      <%= f.radio_button :account_type, account_type, options %><%= f.label "account_type_#{account_type}", t("views.account.#{account_type}").html_safe %>
+    </span>
+  <% end %>
+  <span class='input-custom'><%= f.submit t('views.submit').html_safe, :class => 'btn btn-primary' %></span>
 <% end %>
+
 <hr>
 
-<div id="pagination">
+<div id='pagination'>
   <%= paginate @accounts %>
 </div>
 
-<table border="1" width="100%">
+<table class='table table-hover table-custom'>
   <thead>
     <tr>
-      <th>種類</th><th>日付</th><th>内容</th><th>カテゴリ</th><th>金額</th>
+      <% %w[ type date content category price ].each do |attribute| %>
+        <th><%= t("views.account.#{attribute}").html_safe %></th>
+      <% end %>
     </tr>
   </thead>
-  <tbody id="accounts">
+  <tbody id='accounts'>
     <%= render @accounts %>
   </tbody>
 </table>

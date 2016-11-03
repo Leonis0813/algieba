@@ -20,7 +20,19 @@ describe "accounts/manage", :type => :view do
   end
 
   shared_examples '表示されている家計簿の数が正しいこと' do |expected_size|
-    it { expect(html).to have_xpath('//table/tbody/tr/td', {:text => '収入', :count => expected_size}) }
+    it { expect(html).to have_xpath('//table/tbody/tr/td', {:text => I18n.t('views.account.income'), :count => expected_size}) }
+  end
+
+  shared_examples '家計簿の背景色が正しいこと' do
+    it do
+      matched_data = html.gsub("\n", '').match(/<tr class="(?<color>.*?)">\s*<td>(?<account_type>.*?)<\/td>/)
+      case matched_data[:account_type]
+      when I18n.t('views.account.income')
+        expect(matched_data[:color]).to eq('success')
+      when I18n.t('views.account.expense')
+        expect(matched_data[:color]).to eq('danger')
+      end
+    end
   end
 
   shared_examples 'ページネーションが正しく表示されていること' do
@@ -56,27 +68,31 @@ describe "accounts/manage", :type => :view do
     html ||= response
   end
 
-  context '静的コンテンツのテスト' do
+  describe '静的コンテンツのテスト' do
     include_context 'HTML初期化'
 
     it '<form>タグがあること' do
-      expect(html).to have_selector('form[action="/accounts"][data-remote="true"][method="post"]')
+      expect(html).to have_selector('form[action="/accounts"][data-remote="true"][method="post"][class="form-inline"]')
     end
 
     %w[ date content category price ].each do |attribute|
       it "accounts[#{attribute}]を含む<input>タグがあること" do
-        expect(html).to have_selector("input[type='text'][name='accounts[#{attribute}]']", :text => '')
+        expect(html).to have_selector("//span[class='input-custom']/input[type='text'][name='accounts[#{attribute}]'][class='form-control']", :text => '')
       end
     end
 
     %w[ income expense ].each do |account_type|
       it "value=#{account_type}を持つラジオボタンがあること" do
-        expect(html).to have_selector("input[type='radio'][value='#{account_type}']")
+        expect(html).to have_selector("//span[class='input-custom']/input[type='radio'][value='#{account_type}']")
       end
     end
 
     it '支出が選択されていること' do
       expect(html).to have_selector('input[type="radio"][value="expense"][checked="checked"]')
+    end
+
+    it '登録ボタンがあること' do
+      expect(html).to have_selector('//form/span[class="input-custom"]/input[type="submit"][class="btn btn-primary"]')
     end
 
     it '<hr>タグがあること' do
@@ -88,7 +104,7 @@ describe "accounts/manage", :type => :view do
     end
 
     it '<table>タグがあること' do
-      expect(html).to have_selector('table[width="100%"]')
+      expect(html).to have_selector('table[class="table table-hover table-custom"]')
     end
 
     %w[ 種類 日付 内容 カテゴリ 金額 ].each do |header|
@@ -107,6 +123,7 @@ describe "accounts/manage", :type => :view do
     include_context '家計簿を登録する', 1
 
     it_behaves_like '表示されている家計簿の数が正しいこと', 1
+    it_behaves_like '家計簿の背景色が正しいこと'
 
     it 'ページングボタンが表示されていないこと' do
       expect(html).not_to have_xpath("//nav[@class='paginate']")
@@ -118,6 +135,7 @@ describe "accounts/manage", :type => :view do
     include_context '家計簿を登録する', per_page + 1
 
     it_behaves_like '表示されている家計簿の数が正しいこと', per_page
+    it_behaves_like '家計簿の背景色が正しいこと'
     it_behaves_like 'ページネーションが正しく表示されていること'
   end
 
@@ -126,6 +144,7 @@ describe "accounts/manage", :type => :view do
     include_context '家計簿を登録する', per_page + 9
 
     it_behaves_like '表示されている家計簿の数が正しいこと', per_page
+    it_behaves_like '家計簿の背景色が正しいこと'
     it_behaves_like 'ページネーションが正しく表示されていること'
 
     it 'リンクが省略されていること' do
