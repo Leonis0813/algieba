@@ -1,6 +1,9 @@
 algieba
 =======
 
+- 2.1.5:
+  - [CHANGE] management view
+
 - 2.1.4:
   - [ADD] favicon
   - [FIX] query for paging
