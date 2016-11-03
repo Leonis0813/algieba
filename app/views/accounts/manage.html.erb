@@ -1,26 +1,17 @@
 <%= form_for @account, {:as => :accounts, :remote => true, :html => {:class => 'form-inline'}} do |f| %>
-  <span class='input-custom'>
-    <%= f.label :date, '日付：' %><%= f.text_field :date, :class => 'form-control' %>
-  </span>
-  <span class='input-custom'>
-    <%= f.label :content, '内容：' %><%= f.text_field :content, {:size => 100, :class => 'form-control'} %>
-  </span>
-  <span class='input-custom'>
-    <%= f.label :category, 'カテゴリ：' %><%= f.text_field :category, :class => 'form-control' %>
-  </span>
-  <span class='input-custom'>
-    <%= f.label :price, '金額：' %><%= f.text_field :price, :class => 'form-control' %>
-  </span>
-  <span class='input-custom'>
-    <%= f.radio_button :account_type, 'income' %><%= f.label :account_type_income, '収入' %>
-  </span>
-  <span class='input-custom'>
-    <%= f.radio_button :account_type, 'expense', {:checked => true} %><%= f.label :account_type_expense, '支出' %>
-  </span>
-  <span class='input-custom'>
-    <%= f.submit '登録', :class => 'btn btn-primary' %>
-  </span>
+  <% [[:date, {}], [:content,  {:size => 100, :class => 'form-control'}], [:category, {}], [:price, {}]].each do |attribute, options| %>
+    <span class='input-custom'>
+      <%= f.label attribute, t("views.account.#{attribute}").html_safe + '：' %><%= f.text_field attribute, {:class => 'form-control'}.merge(options) %>
+    </span>
+  <% end %>
+  <% [[:income, {}], [:expense, {:checked => true}]].each do |account_type, options| %>
+    <span class='input-custom'>
+      <%= f.radio_button :account_type, account_type, options %><%= f.label "account_type_#{account_type}", t("views.account.#{account_type}").html_safe %>
+    </span>
+  <% end %>
+  <span class='input-custom'><%= f.submit t('views.submit').html_safe, :class => 'btn btn-primary' %></span>
 <% end %>
+
 <hr>
 
 <div id='pagination'>
@@ -30,7 +21,9 @@
 <table class='table table-hover table-custom'>
   <thead>
     <tr>
-      <th>種類</th><th>日付</th><th>内容</th><th>カテゴリ</th><th>金額</th>
+      <% %w[ type date content category price ].each do |attribute| %>
+        <th><%= t("views.account.#{attribute}").html_safe %></th>
+      <% end %>
     </tr>
   </thead>
   <tbody id='accounts'>
