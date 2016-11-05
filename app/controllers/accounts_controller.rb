@@ -1,5 +1,6 @@
 class AccountsController < ApplicationController
-  before_filter :check_login_user, :only => [:manage]
+  before_action :check_user, :only => [:manage]
+  before_action :check_client, :except => [:manage]
 
   def manage
     @account = Account.new

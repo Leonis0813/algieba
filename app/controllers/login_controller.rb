@@ -1,5 +1,5 @@
 class LoginController < ApplicationController
-  before_filter :check_login_user, :except => [:authenticate_user]
+  before_filter :check_user, :except => [:authenticate_user]
 
   def authenticate_user
     login_user = User.find_by(user_param)
