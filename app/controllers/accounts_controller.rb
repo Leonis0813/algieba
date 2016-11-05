@@ -2,8 +2,12 @@ class AccountsController < ApplicationController
   before_filter :basic, :only => [:manage]
 
   def manage
-    @account = Account.new
-    @accounts = Account.order(:date => :desc).page(params[:page])
+    if login_user
+      @account = Account.new
+      @accounts = Account.order(:date => :desc).page(params[:page])
+    else
+      redirect_to login_path
+    end
   end
 
   def create
