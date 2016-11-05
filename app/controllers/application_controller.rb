@@ -3,6 +3,23 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :null_session
 
+  def check_login_user
+    if session[:ticket]
+      if login_user
+        redirect_to_management_url
+      else
+        redirect_to_unless_login_url
+      end
+    else
+      redirect_to_unless_login_url
+    end
+  end
+
+  def redirect_to_management_url
+    session[:ticket] = Base64.strict_encode64("#{login_user[:user_id]}:#{login_user[:password]}")
+    redirect_to :controller => 'accounts', :action => 'manage'
+  end
+
   rescue_from BadRequest do |e|
     render :status => :bad_request, :json => e.errors
   end
@@ -17,9 +34,13 @@ class ApplicationController < ActionController::Base
 
   private
 
-  def basic
-    authenticate_or_request_with_http_basic do |user, pass|
-      user == 'dev' && pass == '.dev'
-    end
+  def login_user
+    ticket = Base64.strict_decode64(session[:ticket])
+    user_id, password = ticket.split(':')
+    User.find_by(:user_id => user_id, :password => password)
+  end
+
+  def redirect_to_unless_login_url
+    redirect_to login_url unless request.path_info == login_path
   end
 end
