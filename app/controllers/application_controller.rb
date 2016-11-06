@@ -5,13 +5,16 @@ class ApplicationController < ActionController::Base
 
   def check_user
     if session[:ticket]
-      if login_user
-        redirect_to_management_url
+      ticket = Base64.strict_decode64(session[:ticket])
+      user_id, password = ticket.split(':')
+      if User.find_by(:user_id => user_id, :password => password)
+        logger.info ("Login_user: #{user_id}")
+        redirect_unless '/'
       else
-        redirect_to_unless_login_url
+        redirect_unless login_path
       end
     else
-      redirect_to_unless_login_url
+      redirect_unless login_path
     end
   end
 
@@ -22,8 +25,7 @@ class ApplicationController < ActionController::Base
   end
 
   def redirect_to_management_url
-    session[:ticket] = Base64.strict_encode64("#{login_user[:user_id]}:#{login_user[:password]}")
-    redirect_to :controller => 'accounts', :action => 'manage'
+
   end
 
   rescue_from BadRequest do |e|
@@ -44,13 +46,7 @@ class ApplicationController < ActionController::Base
 
   private
 
-  def login_user
-    ticket = Base64.strict_decode64(session[:ticket])
-    user_id, password = ticket.split(':')
-    User.find_by(:user_id => user_id, :password => password)
-  end
-
-  def redirect_to_unless_login_url
-    redirect_to login_url unless request.path_info == login_path
+  def redirect_unless(path)
+    redirect_to path unless request.path_info == path
   end
 end
