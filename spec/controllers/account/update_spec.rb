@@ -2,9 +2,8 @@
 require 'rails_helper'
 
 describe AccountsController, :type => :controller do
-  shared_context '家計簿を更新する' do |id, params|
+  shared_context '家計簿を更新する' do |id, params = {}|
     before(:all) do
-      client.header('Authorization', app_auth_header)
       @res = client.put("/accounts/#{id}.json", params)
       @pbody = JSON.parse(@res.body) rescue nil
     end
@@ -26,6 +25,7 @@ describe AccountsController, :type => :controller do
 
       context description do
         include_context '事前準備: 家計簿を登録する'
+        before(:all) { client.header('Authorization', app_auth_header) }
         include_context '家計簿を更新する', CommonHelper.test_account[:income][:id], params
 
         it_behaves_like 'ステータスコードが正しいこと', '200'
@@ -41,11 +41,8 @@ describe AccountsController, :type => :controller do
 
   describe '異常系' do
     context 'Authorizationヘッダーがない場合' do
-      before(:all) do
-        client.header('Authorization', nil)
-        @res = client.post('/accounts.json', {:accounts => CommonHelper.test_account[:income]})
-        @pbody = JSON.parse(@res.body) rescue nil
-      end
+      before(:all) { client.header('Authorization', nil) }
+      include_context '家計簿を更新する', CommonHelper.test_account[:income][:id]
       it_behaves_like '400エラーをチェックする', ['absent_header']
     end
 

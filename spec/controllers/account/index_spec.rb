@@ -2,9 +2,8 @@
 require 'rails_helper'
 
 describe AccountsController, :type => :controller do
-  shared_context '家計簿を検索する' do |params|
+  shared_context '家計簿を検索する' do |params = {}|
     before(:all) do
-      client.header('Authorization', app_auth_header)
       @res = client.get('/accounts.json', params)
       @pbody = JSON.parse(@res.body) rescue nil
     end
@@ -41,6 +40,7 @@ describe AccountsController, :type => :controller do
       description = query.empty? ? '何も指定しない場合' : "#{query.keys.join(',')}を指定する場合"
 
       context description do
+        before(:all) { client.header('Authorization', app_auth_header) }
         include_context '家計簿を検索する', query
 
         it_behaves_like 'ステータスコードが正しいこと', '200'
@@ -56,11 +56,8 @@ describe AccountsController, :type => :controller do
 
   describe '異常系' do
     context 'Authorizationヘッダーがない場合' do
-      before(:all) do
-        client.header('Authorization', nil)
-        @res = client.post('/accounts.json', {:accounts => CommonHelper.test_account[:income]})
-        @pbody = JSON.parse(@res.body) rescue nil
-      end
+      before(:all) { client.header('Authorization', nil) }
+      include_context '家計簿を検索する'
       it_behaves_like '400エラーをチェックする', ['absent_header']
     end
 

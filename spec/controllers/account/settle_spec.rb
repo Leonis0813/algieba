@@ -4,7 +4,6 @@ require 'rails_helper'
 describe AccountsController, :type => :controller do
   shared_context '収支を計算する' do |params = {}|
     before(:all) do
-      client.header('Authorization', app_auth_header)
       @res = client.get('/settlement.json', params)
       @pbody = JSON.parse(@res.body) rescue nil
     end
@@ -20,6 +19,7 @@ describe AccountsController, :type => :controller do
       ['daily', {'1000-01-01' => 1000, '1000-01-05' => -100}],
     ].each do |interval, expected_settlement|
       context "#{interval}を指定する場合" do
+        before(:all) { client.header('Authorization', app_auth_header) }
         include_context '収支を計算する', {:interval => interval}
 
         it_behaves_like 'ステータスコードが正しいこと', '200'
@@ -33,11 +33,8 @@ describe AccountsController, :type => :controller do
 
   describe '異常系' do
     context 'Authorizationヘッダーがない場合' do
-      before(:all) do
-        client.header('Authorization', nil)
-        @res = client.post('/accounts.json', {:accounts => CommonHelper.test_account[:income]})
-        @pbody = JSON.parse(@res.body) rescue nil
-      end
+      before(:all) { client.header('Authorization', nil) }
+      include_context '収支を計算する', :interval => 'yearly'
       it_behaves_like '400エラーをチェックする', ['absent_header']
     end
 
