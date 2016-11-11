@@ -4,6 +4,7 @@ require 'rails_helper'
 describe AccountsController, :type => :controller do
   shared_context '家計簿を更新する' do |id, params|
     before(:all) do
+      client.header('Authorization', app_auth_header)
       @res = client.put("/accounts/#{id}.json", params)
       @pbody = JSON.parse(@res.body) rescue nil
     end

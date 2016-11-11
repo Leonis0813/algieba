@@ -4,6 +4,7 @@ require 'rails_helper'
 describe AccountsController, :type => :controller do
   shared_context '家計簿を削除する' do |id|
     before(:all) do
+      client.header('Authorization', app_auth_header)
       @res = client.delete("/accounts/#{id}")
       @pbody = JSON.parse(@res.body) rescue nil
     end
