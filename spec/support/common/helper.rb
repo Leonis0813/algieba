@@ -74,5 +74,5 @@ module CommonHelper
     end.flatten
   end
 
-  module_function :client, :test_account, :account_params, :generate_test_case
+  module_function :client, :app_auth_header, :test_account, :account_params, :generate_test_case
 end
