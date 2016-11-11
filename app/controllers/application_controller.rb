@@ -4,8 +4,8 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :null_session
 
   def check_user
-    if session[:ticket]
-      ticket = Base64.strict_decode64(session[:ticket])
+    if cookies[:algieba]
+      ticket = Base64.strict_decode64(cookies[:algieba])
       user_id, password = ticket.split(':')
       if User.find_by(:user_id => user_id, :password => password)
         logger.info ("Login_user: #{user_id}")

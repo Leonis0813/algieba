@@ -4,7 +4,7 @@ class LoginController < ApplicationController
   def authenticate_user
     login_user = User.find_by(user_param)
     if login_user
-      session[:ticket] = Base64.strict_encode64("#{login_user[:user_id]}:#{login_user[:password]}")
+      cookies[:algieba] = Base64.strict_encode64("#{login_user[:user_id]}:#{login_user[:password]}")
       redirect_to :controller => 'accounts', :action => 'manage'
     else
       redirect_to login_url
