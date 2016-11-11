@@ -1,14 +1,16 @@
 # coding: utf-8
 shared_context 'POST /accounts' do |account|
   before(:all) do
-    @res = http_client.post("#{base_url}/accounts", {:accounts => account}.to_json, content_type_json)
+    header = {'Authorization' => app_auth_header}.merge(content_type_json)
+    @res = http_client.post("#{base_url}/accounts", {:accounts => account}.to_json, header)
     @pbody = JSON.parse(@res.body) rescue nil
   end
 end
 
 shared_context 'GET /accounts' do |params = {}|
   before(:all) do
-    @res = http_client.get("#{base_url}/accounts", params.to_json)
+    header = {'Authorization' => app_auth_header}
+    @res = http_client.get("#{base_url}/accounts", params.to_json, header)
     @pbody = JSON.parse(@res.body) rescue nil
   end
 end

@@ -9,19 +9,22 @@ describe '収支を計算する', :type => :request do
   ]
 
   before(:all) do
-    res = http_client.get("#{base_url}/accounts")
+    header = {'Authorization' => app_auth_header}
+    res = http_client.get("#{base_url}/accounts", nil, header)
     @accounts = JSON.parse(res.body)
-    ids = JSON.parse(res.body).map {|account| account['id'] }
-    ids.each {|id| http_client.delete("#{base_url}/accounts/#{id}") }
+    @accounts.each {|account| http_client.delete("#{base_url}/accounts/#{account['id']}", header) }
   end
 
   after(:all) do
-    res = http_client.get("#{base_url}/accounts")
+    header = {'Authorization' => app_auth_header}
+    res = http_client.get("#{base_url}/accounts", nil, header)
     ids = JSON.parse(res.body).map {|account| account['id'] }
-    ids.each {|id| http_client.delete("#{base_url}/accounts/#{id}") }
+    ids.each {|id| http_client.delete("#{base_url}/accounts/#{id}", header) }
+
+    header = {'Authorization' => app_auth_header}.merge(content_type_json)
     @accounts.each do |account|
       body = {:accounts => account.slice(*account_params)}.to_json
-      http_client.post("#{base_url}/accounts", body, content_type_json)
+      http_client.post("#{base_url}/accounts", body, header)
     end
   end
 
@@ -39,7 +42,8 @@ describe '収支を計算する', :type => :request do
       ].each do |interval, expected_settlement|
         describe '収支を計算する' do
           before(:all) do
-            @res = http_client.get("#{base_url}/settlement", :interval => interval)
+            header = {'Authorization' => app_auth_header}
+            @res = http_client.get("#{base_url}/settlement", {:interval => interval}, header)
             @pbody = JSON.parse(@res.body) rescue nil
           end
 
