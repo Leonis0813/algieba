@@ -4,10 +4,13 @@ require 'rails_helper'
 describe AccountsController, :type => :controller do
   shared_context '家計簿を登録する' do |params|
     before(:all) do
+      client.header('Authorization', app_auth_header)
       @res = client.post('/accounts.json', params)
       @pbody = JSON.parse(@res.body) rescue nil
     end
   end
+
+  include_context '事前準備: クライアントアプリを作成する'
 
   context '正常系' do
     after(:all) { Account.where(test_account[:income].except(:id)).delete_all }

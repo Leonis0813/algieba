@@ -9,6 +9,8 @@ describe AccountsController, :type => :controller do
     end
   end
 
+  include_context '事前準備: クライアントアプリを作成する'
+
   context '正常系' do
     [
       {:account_type => 'expense'},
