@@ -12,7 +12,7 @@ describe AccountsController, :type => :controller do
 
   include_context '事前準備: クライアントアプリを作成する'
 
-  context '正常系' do
+  describe '正常系' do
     after(:all) { Account.where(test_account[:income].except(:id)).delete_all }
 
     include_context '家計簿を登録する', {:accounts => CommonHelper.test_account[:income]}
@@ -26,7 +26,16 @@ describe AccountsController, :type => :controller do
     end
   end
 
-  context '異常系' do
+  describe '異常系' do
+    context 'Authorizationヘッダーがない場合' do
+      before(:all) do
+        client.header('Authorization', nil)
+        @res = client.post('/accounts.json', {:accounts => CommonHelper.test_account[:income]})
+        @pbody = JSON.parse(@res.body) rescue nil
+      end
+      it_behaves_like '400エラーをチェックする', ['absent_header']
+    end
+
     account_params = CommonHelper.account_params.map(&:to_sym)
     test_cases = [].tap do |tests|
       (account_params.size - 1).times {|i| tests << account_params.combination(i + 1).to_a }

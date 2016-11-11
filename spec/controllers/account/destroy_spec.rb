@@ -13,13 +13,24 @@ describe AccountsController, :type => :controller do
   include_context '事前準備: クライアントアプリを作成する'
   include_context '事前準備: 家計簿を登録する'
 
-  context '正常系' do
+  describe '正常系' do
     include_context '家計簿を削除する', CommonHelper.test_account[:income][:id]
     it_behaves_like 'ステータスコードが正しいこと', '204'
   end
 
-  context '異常系' do
-    include_context '家計簿を削除する', 100
-    it_behaves_like 'ステータスコードが正しいこと', '404'
+  describe '異常系' do
+    context 'Authorizationヘッダーがない場合' do
+      before(:all) do
+        client.header('Authorization', nil)
+        @res = client.post('/accounts.json', {:accounts => CommonHelper.test_account[:income]})
+        @pbody = JSON.parse(@res.body) rescue nil
+      end
+      it_behaves_like '400エラーをチェックする', ['absent_header']
+    end
+
+    context '存在しないidを指定した場合' do
+      include_context '家計簿を削除する', 100
+      it_behaves_like 'ステータスコードが正しいこと', '404'
+    end
   end
 end

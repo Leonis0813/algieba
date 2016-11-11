@@ -13,7 +13,7 @@ describe AccountsController, :type => :controller do
   include_context '事前準備: クライアントアプリを作成する'
   include_context '事前準備: 家計簿を登録する'
 
-  context '正常系' do
+  describe '正常系' do
     [
       [{:account_type => 'income'}, [:income]],
       [{:date_before => '1000-01-01'}, [:income]],
@@ -54,7 +54,16 @@ describe AccountsController, :type => :controller do
     end
   end
 
-  context '異常系' do
+  describe '異常系' do
+    context 'Authorizationヘッダーがない場合' do
+      before(:all) do
+        client.header('Authorization', nil)
+        @res = client.post('/accounts.json', {:accounts => CommonHelper.test_account[:income]})
+        @pbody = JSON.parse(@res.body) rescue nil
+      end
+      it_behaves_like '400エラーをチェックする', ['absent_header']
+    end
+
     [
       {:account_type => 'invalid_type'},
       {:date_before => 'invalid_date'},

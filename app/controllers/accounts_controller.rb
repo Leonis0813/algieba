@@ -11,7 +11,7 @@ class AccountsController < ApplicationController
     begin
       attributes = params.require(:accounts).permit(*account_params)
       absent_keys = account_params - attributes.symbolize_keys.keys
-      raise BadRequest.new(absent_keys, 'absent') unless absent_keys.empty?
+      raise BadRequest.new(absent_keys.map {|key| "absent_param_#{key}" }) unless absent_keys.empty?
 
       @account = Account.new(attributes)
       if @account.save
@@ -21,10 +21,10 @@ class AccountsController < ApplicationController
           format.js {@accounts = Account.order(:date => :desc).page(params[:page])}
         end
       else
-        raise BadRequest.new(@account.errors.messages.keys, 'invalid')
+        raise BadRequest.new(@account.errors.messages.keys.map {|key| "invalid_param_#{key}" })
       end
     rescue ActionController::ParameterMissing
-      raise BadRequest.new(:accounts, 'absent')
+      raise BadRequest.new('absent_param_accounts')
     end
   end
 
@@ -50,7 +50,7 @@ class AccountsController < ApplicationController
         format.json {render :status => :ok, :template => 'accounts/accounts'}
       end
     else
-      raise BadRequest.new(query.errors.messages.keys, 'invalid')
+      raise BadRequest.new(query.errors.messages.keys.map {|key| "invalid_param_#{key}" })
     end
   end
 
@@ -62,7 +62,7 @@ class AccountsController < ApplicationController
           format.json {render :status => :ok, :template => 'accounts/account'}
         end
       else
-        raise BadRequest.new(@account.errors.messages.keys, 'invalid')
+        raise BadRequest.new(@account.errors.messages.keys.map {|key| "invalid_param_#{key}" })
       end
     else
       raise NotFound.new
@@ -86,7 +86,7 @@ class AccountsController < ApplicationController
         format.json {render :status => :ok}
       end
     else
-      raise BadRequest.new(:interval, query.errors.messages[:interval].first)
+      raise BadRequest.new("#{query.errors.messages[:interval].first}_param_interval")
     end
   end
 

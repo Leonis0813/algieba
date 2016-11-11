@@ -19,13 +19,10 @@ class ApplicationController < ActionController::Base
   end
 
   def check_client
+    raise BadRequest.new('absent_header') unless request.headers['Authorization']
     credential = request.headers['Authorization'].match(/Basic (.+)/)[1]
     application_id, application_key = Base64.strict_decode64(credential).split(':')
     raise Unauthorized.new unless Client.find_by(:application_id => application_id, :application_key => application_key)
-  end
-
-  def redirect_to_management_url
-
   end
 
   rescue_from BadRequest do |e|

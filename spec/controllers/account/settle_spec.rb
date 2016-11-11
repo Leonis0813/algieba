@@ -32,6 +32,15 @@ describe AccountsController, :type => :controller do
   end
 
   describe '異常系' do
+    context 'Authorizationヘッダーがない場合' do
+      before(:all) do
+        client.header('Authorization', nil)
+        @res = client.post('/accounts.json', {:accounts => CommonHelper.test_account[:income]})
+        @pbody = JSON.parse(@res.body) rescue nil
+      end
+      it_behaves_like '400エラーをチェックする', ['absent_header']
+    end
+
     [[nil, 'absent'], ['invalid_interval', 'invalid']].each do |interval, message|
       context "#{interval || 'nil'}を指定する場合" do
         include_context '収支を計算する', {:interval => interval}
