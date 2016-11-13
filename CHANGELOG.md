@@ -1,6 +1,9 @@
 algieba
 =======
 
+- 2.2.0:
+  - [ADD] user and app authentication
+
 - 2.1.5:
   - [CHANGE] management view
 
