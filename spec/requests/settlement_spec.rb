@@ -2,24 +2,30 @@
 require 'rails_helper'
 
 describe '収支を計算する', :type => :request do
-  accounts = [
-    {:account_type => 'income', :date => '1000-02-01', :content => 'システムテスト用データ', :category => 'システムテスト', :price => 100},
-    {:account_type => 'income', :date => '1000-01-01', :content => 'システムテスト用データ', :category => 'システムテスト', :price => 1000},
-    {:account_type => 'expense', :date => '1000-01-01', :content => 'システムテスト用データ', :category => 'システムテスト', :price => 100},
-  ]
+  account = {
+    :account_type => 'income',
+    :date => '1000-01-01',
+    :content => 'システムテスト用データ',
+    :category => 'システムテスト',
+    :price => 100,
+  }
+  account_keys = CommonHelper.account_params + %w[ id created_at updated_at ]
 
   before(:all) do
     header = {'Authorization' => app_auth_header}
     res = http_client.get("#{base_url}/accounts", nil, header)
     @accounts = JSON.parse(res.body)
-    @accounts.each {|account| http_client.delete("#{base_url}/accounts/#{account['id']}", header) }
+    @accounts.each do |account|
+      http_client.delete("#{base_url}/accounts/#{account['id']}", nil, header)
+    end
   end
 
   after(:all) do
     header = {'Authorization' => app_auth_header}
     res = http_client.get("#{base_url}/accounts", nil, header)
-    ids = JSON.parse(res.body).map {|account| account['id'] }
-    ids.each {|id| http_client.delete("#{base_url}/accounts/#{id}", header) }
+    JSON.parse(res.body).each do |account|
+      http_client.delete("#{base_url}/accounts/#{account['id']}", nil, header)
+    end
 
     header = {'Authorization' => app_auth_header}.merge(content_type_json)
     @accounts.each do |account|
@@ -29,17 +35,17 @@ describe '収支を計算する', :type => :request do
   end
 
   describe '家計簿を登録する' do
-    accounts.each {|account| include_context 'POST /accounts', account }
+    include_context 'POST /accounts', account
 
     describe '家計簿を検索する' do
       include_context 'GET /accounts'
-      it_behaves_like 'Request: 家計簿が正しく検索されていることを確認する', accounts
+      it_behaves_like 'レスポンスボディのキーが正しいこと', account_keys
 
       [
-        ['yearly', {'1000' => 1000}],
-        ['monthly', {'1000-01' => 900, '1000-02' => 100}],
-        ['daily', {'1000-01-01' => 900, '1000-02-01' => 100}],
-      ].each do |interval, expected_settlement|
+        ['yearly', /\d{4}/],
+        ['monthly', /\d{4}-\d{2}/],
+        ['daily', /\d{4}-\d{2}-\d{2}/],
+      ].each do |interval, regex|
         describe '収支を計算する' do
           before(:all) do
             header = {'Authorization' => app_auth_header}
@@ -49,8 +55,8 @@ describe '収支を計算する', :type => :request do
 
           it_behaves_like 'ステータスコードが正しいこと', '200'
 
-          it '計算結果が正しいこと' do
-            expect(@pbody).to eq expected_settlement
+          it 'レスポンスボディのキーのフォーマットが正しいこと' do
+            @pbody.keys.each {|key| expect(key).to match(regex) }
           end
         end
       end

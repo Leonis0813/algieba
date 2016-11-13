@@ -15,11 +15,8 @@ shared_context 'GET /accounts' do |params = {}|
   end
 end
 
-shared_examples_for 'Request: 家計簿が正しく検索されていることを確認する' do |expected_accounts|
-  it_behaves_like 'ステータスコードが正しいこと', '200'
-
-  it '検索された家計簿が正しいこと' do
-    actual_accounts = @pbody.map {|account| account.slice(*account_params).symbolize_keys }
-    expect(actual_accounts).to eq Array.wrap(expected_accounts)
+shared_examples 'レスポンスボディのキーが正しいこと' do |account_keys|
+  it do
+    Array.wrap(@pbody).each {|account| expect(account.keys.sort).to eq account_keys.sort }
   end
 end
