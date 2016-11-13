@@ -12,6 +12,12 @@ module CommonHelper
     {'Content-Type' => 'application/json'}
   end
 
+  def app_auth_header
+    return @app_auth_header if @app_auth_header
+    credential = Base64.strict_encode64("#{Settings.application_id}:#{Settings.application_key}")
+    @app_auth_header = "Basic #{credential}"
+  end
+
   def client
     @client ||= Capybara.page.driver
   end
@@ -68,5 +74,5 @@ module CommonHelper
     end.flatten
   end
 
-  module_function :client, :test_account, :account_params, :generate_test_case
+  module_function :client, :app_auth_header, :test_account, :account_params, :generate_test_case
 end

@@ -2,16 +2,18 @@
 require 'rails_helper'
 
 describe AccountsController, :type => :controller do
-  shared_context '家計簿を検索する' do |params|
+  shared_context '家計簿を検索する' do |params = {}, app_auth_header = CommonHelper.app_auth_header|
     before(:all) do
+      client.header('Authorization', app_auth_header)
       @res = client.get('/accounts.json', params)
       @pbody = JSON.parse(@res.body) rescue nil
     end
   end
 
+  include_context '事前準備: クライアントアプリを作成する'
   include_context '事前準備: 家計簿を登録する'
 
-  context '正常系' do
+  describe '正常系' do
     [
       [{:account_type => 'income'}, [:income]],
       [{:date_before => '1000-01-01'}, [:income]],
@@ -52,14 +54,25 @@ describe AccountsController, :type => :controller do
     end
   end
 
-  context '異常系' do
+  describe '異常系' do
+    context 'Authorizationヘッダーがない場合' do
+      include_context '家計簿を検索する', {}, nil
+      it_behaves_like '400エラーをチェックする', ['absent_header']
+    end
+
     [
       {:account_type => 'invalid_type'},
       {:date_before => 'invalid_date'},
       {:date_after => 'invalid_date'},
       {:price_upper => 'invalid_price'},
       {:price_lower => 'invalid_price'},
-      {:account_type => 'invalid_type', :date_before => 'invalid_date', :date_after => 'invalid_date', :price_upper => 'invalid_price', :price_lower => 'invalid_price'},
+      {
+        :account_type => 'invalid_type',
+        :date_before => 'invalid_date',
+        :date_after => 'invalid_date',
+        :price_upper => 'invalid_price',
+        :price_lower => 'invalid_price',
+      },
     ].each do |query|
       context "#{query.keys.join(',')}が不正な場合" do
         include_context '家計簿を検索する', query

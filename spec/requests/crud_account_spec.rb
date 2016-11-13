@@ -7,7 +7,8 @@ describe '家計簿を管理する', :type => :request do
 
   shared_context 'GET /accounts/[:id]' do
     before(:all) do
-      @res = http_client.get("#{base_url}/accounts/#{@id}")
+      header = {'Authorization' => app_auth_header}
+      @res = http_client.get("#{base_url}/accounts/#{@id}", nil, header)
       @pbody = JSON.parse(@res.body) rescue nil
     end
   end
@@ -43,7 +44,8 @@ describe '家計簿を管理する', :type => :request do
 
         describe '家計簿を更新する' do
           before(:all) do
-            @res = http_client.put("#{base_url}/accounts/#{@created_account['id']}", {:account_type => 'income'}.to_json, content_type_json)
+            header = {'Authorization' => app_auth_header}.merge(content_type_json)
+            @res = http_client.put("#{base_url}/accounts/#{@created_account['id']}", {:account_type => 'income'}.to_json, header)
             @pbody = JSON.parse(@res.body) rescue nil
           end
 
@@ -60,7 +62,8 @@ describe '家計簿を管理する', :type => :request do
 
             describe '家計簿を削除する' do
               before(:all) do
-                @res = http_client.delete("#{base_url}/accounts/#{@created_account['id']}")
+                header = {'Authorization' => app_auth_header}
+                @res = http_client.delete("#{base_url}/accounts/#{@created_account['id']}", header)
                 @pbody = JSON.parse(@res.body) rescue nil
               end
 
