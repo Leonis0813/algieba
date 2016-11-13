@@ -11,7 +11,7 @@
 end
 
 [
-  {:user_id => 'test_user_id', :password => 'test_user_pass'},
+  {:id => 1, :user_id => 'test_user_id', :password => 'test_user_pass'},
 ].each do |params|
   begin
     User.create!(params)
@@ -21,7 +21,7 @@ end
 end
 
 [
-  {:application_id => 'test_app_id', :application_key => 'test_app_key'},
+  {:id => 1, :application_id => 'test_app_id', :application_key => 'test_app_key'},
 ].each do |params|
   begin
     Client.create!(params)
