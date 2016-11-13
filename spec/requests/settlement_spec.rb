@@ -9,7 +9,6 @@ describe '収支を計算する', :type => :request do
     :category => 'システムテスト',
     :price => 100,
   }
-  account_keys = CommonHelper.account_params + %w[ id created_at updated_at ]
 
   before(:all) do
     header = {'Authorization' => app_auth_header}
@@ -39,7 +38,7 @@ describe '収支を計算する', :type => :request do
 
     describe '家計簿を検索する' do
       include_context 'GET /accounts'
-      it_behaves_like 'レスポンスボディのキーが正しいこと', account_keys
+      it_behaves_like 'レスポンスボディのキーが正しいこと', AccountHelper.response_keys
 
       [
         ['yearly', /\d{4}/],

@@ -4,7 +4,6 @@ require 'rails_helper'
 describe '家計簿を管理する', :type => :request do
   valid_account = {:account_type => 'expense', :date => '1000-01-01', :content => 'システムテスト用データ', :category => 'algieba', :price => 100}
   invalid_account = {:account_type => 'expense', :date => 'invalid_date', :category => 'algieba', :price => 100}
-  account_keys = CommonHelper.account_params + %w[ id created_at updated_at ]
 
   shared_context 'GET /accounts/[:id]' do
     before(:all) do
@@ -22,13 +21,13 @@ describe '家計簿を管理する', :type => :request do
       include_context 'POST /accounts', valid_account
       before(:all) { @created_account = @pbody }
       it_behaves_like 'ステータスコードが正しいこと', '201'
-      it_behaves_like 'レスポンスボディのキーが正しいこと', account_keys
+      it_behaves_like 'レスポンスボディのキーが正しいこと', AccountHelper.response_keys
 
       describe '家計簿を取得する' do
         before(:all) { @id = @created_account['id'] }
         include_context 'GET /accounts/[:id]'
         it_behaves_like 'ステータスコードが正しいこと', '200'
-        it_behaves_like 'レスポンスボディのキーが正しいこと', account_keys
+        it_behaves_like 'レスポンスボディのキーが正しいこと', AccountHelper.response_keys
 
         describe '家計簿を更新する' do
           before(:all) do
@@ -38,7 +37,7 @@ describe '家計簿を管理する', :type => :request do
           end
 
           it_behaves_like 'ステータスコードが正しいこと', '200'
-          it_behaves_like 'レスポンスボディのキーが正しいこと', account_keys
+          it_behaves_like 'レスポンスボディのキーが正しいこと', AccountHelper.response_keys
 
           it '家計簿が更新されていること' do
             expect(@pbody['account_type']).to eq 'income'
@@ -47,7 +46,7 @@ describe '家計簿を管理する', :type => :request do
           describe '家計簿を検索する' do
             include_context 'GET /accounts', {:account_type => 'income'}
             it_behaves_like 'ステータスコードが正しいこと', '200'
-            it_behaves_like 'レスポンスボディのキーが正しいこと', account_keys
+            it_behaves_like 'レスポンスボディのキーが正しいこと', AccountHelper.response_keys
 
             describe '家計簿を削除する' do
               before(:all) do

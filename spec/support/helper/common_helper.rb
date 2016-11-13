@@ -22,31 +22,6 @@ module CommonHelper
     @client ||= Capybara.page.driver
   end
 
-  def test_account
-    @test_account ||= {
-      :income => {
-        :id => 1,
-        :account_type => 'income',
-        :date => '1000-01-01',
-        :content => '機能テスト用データ1',
-        :category => 'algieba',
-        :price => 1000,
-      },
-      :expense => {
-        :id => 2,
-        :account_type => 'expense',
-        :date => '1000-01-05',
-        :content => '機能テスト用データ2',
-        :category => 'algieba',
-        :price => 100,
-      }
-    }
-  end
-
-  def account_params
-    @account_params ||= %w[ account_type date content category price ]
-  end
-
   def generate_test_case(params)
     [].tap do |test_cases|
       params.keys.size.times do |i|
@@ -74,5 +49,5 @@ module CommonHelper
     end.flatten
   end
 
-  module_function :client, :app_auth_header, :test_account, :account_params, :generate_test_case
+  module_function :client, :app_auth_header, :generate_test_case
 end
