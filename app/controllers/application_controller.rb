@@ -5,8 +5,7 @@ class ApplicationController < ActionController::Base
 
   def check_user
     if cookies[:algieba]
-      ticket = Base64.strict_decode64(cookies[:algieba])
-      user_id, password = ticket.split(':')
+      user_id, password = parse_cookie
       if User.find_by(:user_id => user_id, :password => password)
         logger.info ("Login_user: #{user_id}")
         redirect_unless '/'
@@ -19,6 +18,10 @@ class ApplicationController < ActionController::Base
   end
 
   def check_client
+    if cookies[:algieba]
+      user_id, password = parse_cookie
+      return if User.find_by(:user_id => user_id, :password => password)
+    end
     raise BadRequest.new('absent_header') unless request.headers['Authorization']
     credential = request.headers['Authorization'].match(/Basic (.+)/)[1]
     application_id, application_key = Base64.strict_decode64(credential).split(':')
@@ -42,6 +45,10 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def parse_cookie
+    Base64.strict_decode64(cookies[:algieba]).split(':')
+  end
 
   def redirect_unless(path)
     redirect_to path unless request.path_info == path
