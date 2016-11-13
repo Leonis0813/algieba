@@ -5,8 +5,6 @@ require File.expand_path('../../config/environment', __FILE__)
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 require 'spec_helper'
 require 'rspec/rails'
-require 'capybara/rails'
-require 'capybara/rspec'
 # Add additional requires below this line. Rails is not loaded until this point!
 
 Dir[Rails.root.join('spec/support/**/*.rb')].each {|f| require f }
@@ -15,30 +13,7 @@ Dir[Rails.root.join('spec/support/**/*.rb')].each {|f| require f }
 # If you are not using ActiveRecord, you can remove this line.
 ActiveRecord::Migration.maintain_test_schema!
 
-Capybara.app_host = 'http://160.16.66.112:88'
-Capybara.javascript_driver = :webkit
 Headless.new.start
-
-module Capybara
-  class << self
-    alias_method :old_reset_sessions!, :reset_sessions!
-    def reset_sessions!; end
-  end
-end
-
-Capybara::Webkit.configure do |config|
-  config.block_unknown_urls
-  config.allow_url('http://160.16.66.112:88')
-end
-
-module Capybara::Webkit
-  class Driver < Capybara::Driver::Base
-    def reset!; end
-    def browser
-      @browser
-    end
-  end
-end
 
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
@@ -69,6 +44,5 @@ RSpec.configure do |config|
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
   config.run_all_when_everything_filtered = true
-  config.include Capybara::DSL
   config.include CommonHelper
 end
