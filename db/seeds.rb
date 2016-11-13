@@ -8,7 +8,7 @@ when 'development'
     Client.new(:id => 1, :application_id => 'test_app_id', :application_key => 'test_app_key'),
   ].each do |object|
     begin
-      object.create!(params)
+      object.save!
     rescue ActiveRecord::RecordNotUnique => e
       puts "[Warning] #{e.message}"
     end
@@ -18,7 +18,7 @@ when 'production'
     User.new(:id => 1, :user_id => 'leonis', :password => '0qpalzm1'),
   ].each do |object|
     begin
-      object.create!(params)
+      object.save!
     rescue ActiveRecord::RecordNotUnique => e
       puts "[Warning] #{e.message}"
     end
