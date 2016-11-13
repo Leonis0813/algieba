@@ -23,6 +23,7 @@ group :development, :test do
   gem 'capybara-mechanize'
   gem 'capybara-webkit'
   gem 'headless'
+  gem 'selenium-webdriver', '2.53.4'
 
   gem 'fuubar'
 
