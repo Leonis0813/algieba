@@ -25,7 +25,7 @@ describe Client, :type => :model do
     before(:all) do
       RSpec::Mocks.with_temporary_scope do
         allow(SecureRandom).to receive(:hex).and_return(created_client[:application_key], expected)
-        @actual = Client.generate_application_id
+        @actual = Client.generate_application_key
       end
     end
 
