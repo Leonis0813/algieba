@@ -32,7 +32,7 @@ describe AccountsController, :type => :controller do
 
       context description do
         include_context '事前準備: 家計簿を登録する'
-        include_context '家計簿を更新する', CommonHelper.test_account[:income][:id], params
+        include_context '家計簿を更新する', AccountHelper.test_account[:income][:id], params
 
         it_behaves_like 'ステータスコードが正しいこと', '200'
 
@@ -47,7 +47,7 @@ describe AccountsController, :type => :controller do
 
   describe '異常系' do
     context 'Authorizationヘッダーがない場合' do
-      include_context '家計簿を更新する', CommonHelper.test_account[:income][:id], {}, nil
+      include_context '家計簿を更新する', AccountHelper.test_account[:income][:id], {}, nil
       it_behaves_like '400エラーをチェックする', ['absent_header']
     end
 
@@ -59,7 +59,7 @@ describe AccountsController, :type => :controller do
     ].each do |params|
       context "#{params.keys.join(',')}が不正な場合" do
         include_context '事前準備: 家計簿を登録する'
-        include_context '家計簿を更新する', CommonHelper.test_account[:income][:id], params
+        include_context '家計簿を更新する', AccountHelper.test_account[:income][:id], params
         it_behaves_like '400エラーをチェックする', params.map {|key, _| "invalid_param_#{key}" }
       end
     end

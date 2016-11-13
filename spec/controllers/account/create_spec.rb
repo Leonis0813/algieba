@@ -14,7 +14,7 @@ describe AccountsController, :type => :controller do
 
   describe '正常系' do
     after(:all) { Account.where(test_account[:income].except(:id)).delete_all }
-    include_context '家計簿を登録する', {:accounts => CommonHelper.test_account[:income]}
+    include_context '家計簿を登録する', {:accounts => AccountHelper.test_account[:income]}
 
     it_behaves_like 'ステータスコードが正しいこと', '201'
 
@@ -27,11 +27,11 @@ describe AccountsController, :type => :controller do
 
   describe '異常系' do
     context 'Authorizationヘッダーがない場合' do
-      include_context '家計簿を登録する', {:accounts => CommonHelper.test_account[:income]}, nil
+      include_context '家計簿を登録する', {:accounts => AccountHelper.test_account[:income]}, nil
       it_behaves_like '400エラーをチェックする', ['absent_header']
     end
 
-    account_params = CommonHelper.account_params.map(&:to_sym)
+    account_params = AccountHelper.account_params.map(&:to_sym)
     test_cases = [].tap do |tests|
       (account_params.size - 1).times {|i| tests << account_params.combination(i + 1).to_a }
     end.flatten(1)
@@ -39,7 +39,7 @@ describe AccountsController, :type => :controller do
     test_cases.each do |deleted_keys|
       context "#{deleted_keys.join(',')}がない場合" do
         selected_keys = account_params - deleted_keys
-        include_context '家計簿を登録する', {:accounts => CommonHelper.test_account[:income].slice(*selected_keys)}
+        include_context '家計簿を登録する', {:accounts => AccountHelper.test_account[:income].slice(*selected_keys)}
         it_behaves_like '400エラーをチェックする', deleted_keys.map {|key| "absent_param_#{key}" }
       end
     end
@@ -58,7 +58,7 @@ describe AccountsController, :type => :controller do
       {:account_type => 'invalid_type', :date => 'invalid_date', :price => 'invalid_price'},
     ].each do |invalid_param|
       context "#{invalid_param.keys.join(',')}が不正な場合" do
-        include_context '家計簿を登録する', {:accounts => CommonHelper.test_account[:expense].merge(invalid_param)}
+        include_context '家計簿を登録する', {:accounts => AccountHelper.test_account[:expense].merge(invalid_param)}
         it_behaves_like '400エラーをチェックする', invalid_param.keys.map {|key| "invalid_param_#{key}" }
       end
     end

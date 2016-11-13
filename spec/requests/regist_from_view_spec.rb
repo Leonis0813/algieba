@@ -1,7 +1,7 @@
 # coding: utf-8
 require 'rails_helper'
 
-describe 'ブラウザから操作する', :type => :request, :js => true do
+describe 'ブラウザから操作する', :type => :request do
   default_inputs = {:date => '1000-01-01', :content => 'regist from view', :category => 'テスト', :price => 100}
   color = {'収入' => 'success', '支出' => 'danger'}
 
@@ -23,7 +23,9 @@ describe 'ブラウザから操作する', :type => :request, :js => true do
   end
 
   shared_examples 'ページングボタンが表示されていないこと' do
-    it { expect{ @driver.find_element(:xpath, '//nav[@class="pagination"]') }.to raise_error Selenium::WebDriver::Error::NoSuchElementError }
+    it do
+      expect{ @driver.find_element(:xpath, '//nav[@class="pagination"]') }.to raise_error Selenium::WebDriver::Error::NoSuchElementError
+    end
   end
 
   shared_examples 'ページングボタンが表示されていること' do

@@ -14,7 +14,7 @@ describe AccountsController, :type => :controller do
   include_context '事前準備: 家計簿を登録する'
 
   describe '正常系' do
-    include_context '家計簿を取得する', CommonHelper.test_account[:income][:id]
+    include_context '家計簿を取得する', AccountHelper.test_account[:income][:id]
 
     it_behaves_like 'ステータスコードが正しいこと', '200'
 
@@ -27,7 +27,7 @@ describe AccountsController, :type => :controller do
 
   describe '異常系' do
     context 'Authorizationヘッダーがない場合' do
-      include_context '家計簿を取得する', CommonHelper.test_account[:income][:id], nil
+      include_context '家計簿を取得する', AccountHelper.test_account[:income][:id], nil
       it_behaves_like '400エラーをチェックする', ['absent_header']
     end
 
