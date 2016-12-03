@@ -23,4 +23,15 @@ when 'production'
       puts "[Warning] #{e.message}"
     end
   end
+
+  [
+   Client.new(:id => 1, :application_id => '68c58a4f26cb84bd', :application_key => 'a469856b9b1b873a5230a0e1b36ee170'),
+   Client.new(:id => 2, :application_id => '506a160d625ce4ce', :application_key => '63676749f84adaf76f698f35ed3dacaf'),
+  ].each do |object|
+    begin
+      object.save!
+    rescue ActiveRecord::RecordNotUnique => e
+      puts "[Warning] #{e.message}"
+    end
+  end
 end
