@@ -1,6 +1,9 @@
 algieba
 =======
 
+- 2.2.1:
+  - [REFACTOR] change model name
+
 - 2.2.0:
   - [ADD] user and app authentication
 
