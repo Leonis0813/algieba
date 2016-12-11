@@ -13,6 +13,16 @@ form {
   padding: 10px
 }
 
+.row {
+  margin: 0px;
+  padding: 0px 10px;
+}
+
+.row-center {
+  display: flex;
+  align-items: center;
+}
+
 .input-custom {
   padding: 0px 5px;
 }

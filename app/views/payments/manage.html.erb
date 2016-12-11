@@ -14,8 +14,13 @@
 
 <hr>
 
-<div id='pagination'>
-  <%= paginate @payments %>
+<div id='pagination' class='row row-center'>
+  <div style='padding: 0px 10px'>
+    <h4><%= @payments.total_count %>件中<%= @payments.offset_value + 1 %>〜<%= @payments.offset_value + @payments.size %>件を表示</h4>
+  </div>
+  <div style='padding: 0px 10px'>
+    <%= paginate @payments %>
+  </div>
 </div>
 
 <table class='table table-hover'>
