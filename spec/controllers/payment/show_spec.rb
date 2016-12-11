@@ -1,11 +1,11 @@
 # coding: utf-8
 require 'rails_helper'
 
-describe AccountsController, :type => :controller do
+describe PaymentsController, :type => :controller do
   shared_context '家計簿を取得する' do |id, app_auth_header = CommonHelper.app_auth_header|
     before(:all) do
       client.header('Authorization', app_auth_header)
-      @res = client.get("/accounts/#{id}.json")
+      @res = client.get("/payments/#{id}.json")
       @pbody = JSON.parse(@res.body) rescue nil
     end
   end
@@ -14,20 +14,20 @@ describe AccountsController, :type => :controller do
   include_context '事前準備: 家計簿を登録する'
 
   describe '正常系' do
-    include_context '家計簿を取得する', AccountHelper.test_account[:income][:id]
+    include_context '家計簿を取得する', PaymentHelper.test_payment[:income][:id]
 
     it_behaves_like 'ステータスコードが正しいこと', '200'
 
     it 'レスポンスの属性値が正しいこと' do
-      actual_account = @pbody.slice(*account_params).symbolize_keys
-      expected_accounts = test_account[:income].except(:id)
-      expect(actual_account).to eq expected_accounts
+      actual_payment = @pbody.slice(*payment_params).symbolize_keys
+      expected_payments = test_payment[:income].except(:id)
+      expect(actual_payment).to eq expected_payments
     end
   end
 
   describe '異常系' do
     context 'Authorizationヘッダーがない場合' do
-      include_context '家計簿を取得する', AccountHelper.test_account[:income][:id], nil
+      include_context '家計簿を取得する', PaymentHelper.test_payment[:income][:id], nil
       it_behaves_like '400エラーをチェックする', ['absent_header']
     end
 

@@ -1,11 +1,11 @@
 # coding: utf-8
 require 'rails_helper'
 
-describe AccountsController, :type => :controller do
+describe PaymentsController, :type => :controller do
   shared_context '家計簿を検索する' do |params = {}, app_auth_header = CommonHelper.app_auth_header|
     before(:all) do
       client.header('Authorization', app_auth_header)
-      @res = client.get('/accounts.json', params)
+      @res = client.get('/payments.json', params)
       @pbody = JSON.parse(@res.body) rescue nil
     end
   end
@@ -15,7 +15,7 @@ describe AccountsController, :type => :controller do
 
   describe '正常系' do
     [
-      [{:account_type => 'income'}, [:income]],
+      [{:payment_type => 'income'}, [:income]],
       [{:date_before => '1000-01-01'}, [:income]],
       [{:date_after => '1000-01-05'}, [:expense]],
       [{:content_equal => '機能テスト用データ1'}, [:income]],
@@ -25,7 +25,7 @@ describe AccountsController, :type => :controller do
       [{:price_lower => 100}, [:expense]],
       [
         {
-          :account_type => 'income',
+          :payment_type => 'income',
           :date_before => '1000-01-10',
           :date_after => '1000-01-01',
           :content_equal => '機能テスト用データ1',
@@ -37,7 +37,7 @@ describe AccountsController, :type => :controller do
         [:income],
       ],
       [{}, [:income, :expense]],
-    ].each do |query, expected_account_types|
+    ].each do |query, expected_payment_types|
       description = query.empty? ? '何も指定しない場合' : "#{query.keys.join(',')}を指定する場合"
 
       context description do
@@ -46,9 +46,9 @@ describe AccountsController, :type => :controller do
         it_behaves_like 'ステータスコードが正しいこと', '200'
 
         it 'レスポンスの属性値が正しいこと' do
-          actual_accounts = @pbody.map {|account| account.slice(*account_params).symbolize_keys }
-          expected_accounts = expected_account_types.map {|key| test_account[key].except(:id) }
-          expect(actual_accounts).to eq expected_accounts
+          actual_payments = @pbody.map {|payment| payment.slice(*payment_params).symbolize_keys }
+          expected_payments = expected_payment_types.map {|key| test_payment[key].except(:id) }
+          expect(actual_payments).to eq expected_payments
         end
       end
     end
@@ -61,13 +61,13 @@ describe AccountsController, :type => :controller do
     end
 
     [
-      {:account_type => 'invalid_type'},
+      {:payment_type => 'invalid_type'},
       {:date_before => 'invalid_date'},
       {:date_after => 'invalid_date'},
       {:price_upper => 'invalid_price'},
       {:price_lower => 'invalid_price'},
       {
-        :account_type => 'invalid_type',
+        :payment_type => 'invalid_type',
         :date_before => 'invalid_date',
         :date_after => 'invalid_date',
         :price_upper => 'invalid_price',
