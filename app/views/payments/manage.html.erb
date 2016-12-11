@@ -1,0 +1,32 @@
+<%= form_for @payment, {:as => :payments, :remote => true, :html => {:class => 'form-inline'}} do |f| %>
+  <% [[:date, {}], [:content,  {:size => 100, :class => 'form-control'}], [:category, {}], [:price, {}]].each do |attribute, options| %>
+    <span class='input-custom'>
+      <%= f.label attribute, t("views.payment.#{attribute}").html_safe + '：' %><%= f.text_field attribute, {:class => 'form-control'}.merge(options) %>
+    </span>
+  <% end %>
+  <% [[:income, {}], [:expense, {:checked => true}]].each do |payment_type, options| %>
+    <span class='input-custom'>
+      <%= f.radio_button :payment_type, payment_type, options %><%= f.label "payment_type_#{payment_type}", t("views.payment.#{payment_type}").html_safe %>
+    </span>
+  <% end %>
+  <span class='input-custom'><%= f.submit t('views.submit').html_safe, :class => 'btn btn-primary' %></span>
+<% end %>
+
+<hr>
+
+<div id='pagination'>
+  <%= paginate @payments %>
+</div>
+
+<table class='table table-hover'>
+  <thead>
+    <tr>
+      <% %w[ type date content category price ].each do |attribute| %>
+        <th><%= t("views.payment.#{attribute}").html_safe %></th>
+      <% end %>
+    </tr>
+  </thead>
+  <tbody id='payments'>
+    <%= render @payments %>
+  </tbody>
+</table>

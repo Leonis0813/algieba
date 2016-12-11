@@ -1,10 +1,10 @@
 # coding: utf-8
-module AccountHelper
-  def test_account
-    @test_account ||= {
+module PaymentHelper
+  def test_payment
+    @test_payment ||= {
       :income => {
         :id => 1,
-        :account_type => 'income',
+        :payment_type => 'income',
         :date => '1000-01-01',
         :content => '機能テスト用データ1',
         :category => 'algieba',
@@ -12,7 +12,7 @@ module AccountHelper
       },
       :expense => {
         :id => 2,
-        :account_type => 'expense',
+        :payment_type => 'expense',
         :date => '1000-01-05',
         :content => '機能テスト用データ2',
         :category => 'algieba',
@@ -21,13 +21,13 @@ module AccountHelper
     }
   end
 
-  def account_params
-    @account_params ||= %w[ account_type date content category price ]
+  def payment_params
+    @payment_params ||= %w[ payment_type date content category price ]
   end
 
   def response_keys
-    account_params + %w[ id created_at updated_at ]
+    payment_params + %w[ id created_at updated_at ]
   end
 
-  module_function :test_account, :account_params, :response_keys
+  module_function :test_payment, :payment_params, :response_keys
 end

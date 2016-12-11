@@ -20,7 +20,7 @@ describe Query, :type => :model do
 
     describe '正常系' do
       valid_params = {
-        :account_type => 'income',
+        :payment_type => 'income',
         :date_before => ['1000-01-01', '1000/01/01', '01-01-1000', '01/01/1000', '10000101'],
         :date_after => ['1000-01-01', '1000/01/01', '01-01-1000', '01/01/1000', '10000101'],
         :content_equal => 'content',
@@ -38,9 +38,9 @@ describe Query, :type => :model do
     end
 
     describe '異常系' do
-      valid_params = {:account_type => 'income', :date_before => '1000-01-01'}
+      valid_params = {:payment_type => 'income', :date_before => '1000-01-01'}
       invalid_params = {
-        :account_type => 'invalid_type',
+        :payment_type => 'invalid_type',
         :date_before => ['invalid_date', '1000-13-01', '1000-01-00', '1000-13-00'],
         :date_after => ['invalid_date', '1000-13-01', '1000-01-00', '1000-13-00'],
         :price_upper => ['invalid_price', 1.0, -1],

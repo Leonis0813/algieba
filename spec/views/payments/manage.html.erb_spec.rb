@@ -1,10 +1,10 @@
 # coding: utf-8
 require 'rails_helper'
 
-describe "accounts/manage", :type => :view do
+describe "payments/manage", :type => :view do
   html = nil
   per_page = 1
-  param = {:account_type => 'income', :date => '1000-01-01', :content => 'モジュールテスト用データ', :category => 'algieba', :price => 100}
+  param = {:payment_type => 'income', :date => '1000-01-01', :content => 'モジュールテスト用データ', :category => 'algieba', :price => 100}
 
   shared_context 'HTML初期化' do
     before(:all) { html = nil }
@@ -12,24 +12,24 @@ describe "accounts/manage", :type => :view do
 
   shared_context '家計簿を登録する' do |num|
     before(:all) do
-      num.times { Account.create!(param) }
-      @accounts = Account.order(:date => :desc).page(1)
+      num.times { Payment.create!(param) }
+      @payments = Payment.order(:date => :desc).page(1)
     end
 
-    after(:all) { Account.delete_all }
+    after(:all) { Payment.delete_all }
   end
 
   shared_examples '表示されている家計簿の数が正しいこと' do |expected_size|
-    it { expect(html).to have_xpath('//table/tbody/tr/td', {:text => I18n.t('views.account.income'), :count => expected_size}) }
+    it { expect(html).to have_xpath('//table/tbody/tr/td', {:text => I18n.t('views.payment.income'), :count => expected_size}) }
   end
 
   shared_examples '家計簿の背景色が正しいこと' do
     it do
-      matched_data = html.gsub("\n", '').match(/<tr class="(?<color>.*?)">\s*<td>(?<account_type>.*?)<\/td>/)
-      case matched_data[:account_type]
-      when I18n.t('views.account.income')
+      matched_data = html.gsub("\n", '').match(/<tr class="(?<color>.*?)">\s*<td>(?<payment_type>.*?)<\/td>/)
+      case matched_data[:payment_type]
+      when I18n.t('views.payment.income')
         expect(matched_data[:color]).to eq('success')
-      when I18n.t('views.account.expense')
+      when I18n.t('views.payment.expense')
         expect(matched_data[:color]).to eq('danger')
       end
     end
@@ -58,8 +58,8 @@ describe "accounts/manage", :type => :view do
   end
 
   before(:all) do
-    @account = Account.new
-    @accounts = Account.order(:date => :desc).page(1)
+    @payment = Payment.new
+    @payments = Payment.order(:date => :desc).page(1)
     Kaminari.config.default_per_page = per_page
   end
 
@@ -72,18 +72,18 @@ describe "accounts/manage", :type => :view do
     include_context 'HTML初期化'
 
     it '<form>タグがあること' do
-      expect(html).to have_selector('form[action="/accounts"][data-remote="true"][method="post"][class="form-inline"]')
+      expect(html).to have_selector('form[action="/payments"][data-remote="true"][method="post"][class="form-inline"]')
     end
 
     %w[ date content category price ].each do |attribute|
-      it "accounts[#{attribute}]を含む<input>タグがあること" do
-        expect(html).to have_selector("//span[class='input-custom']/input[type='text'][name='accounts[#{attribute}]'][class='form-control']", :text => '')
+      it "payments[#{attribute}]を含む<input>タグがあること" do
+        expect(html).to have_selector("//span[class='input-custom']/input[type='text'][name='payments[#{attribute}]'][class='form-control']", :text => '')
       end
     end
 
-    %w[ income expense ].each do |account_type|
-      it "value=#{account_type}を持つラジオボタンがあること" do
-        expect(html).to have_selector("//span[class='input-custom']/input[type='radio'][value='#{account_type}']")
+    %w[ income expense ].each do |payment_type|
+      it "value=#{payment_type}を持つラジオボタンがあること" do
+        expect(html).to have_selector("//span[class='input-custom']/input[type='radio'][value='#{payment_type}']")
       end
     end
 
@@ -114,7 +114,7 @@ describe "accounts/manage", :type => :view do
     end
 
     it "<table>タグ内に<tbody>があること" do
-      expect(html).to have_selector('tbody[id="accounts"]')
+      expect(html).to have_selector('tbody[id="payments"]')
     end
   end
 

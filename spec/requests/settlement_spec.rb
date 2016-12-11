@@ -2,8 +2,8 @@
 require 'rails_helper'
 
 describe '収支を計算する', :type => :request do
-  account = {
-    :account_type => 'income',
+  payment = {
+    :payment_type => 'income',
     :date => '1000-01-01',
     :content => 'システムテスト用データ',
     :category => 'システムテスト',
@@ -12,33 +12,33 @@ describe '収支を計算する', :type => :request do
 
   before(:all) do
     header = {'Authorization' => app_auth_header}
-    res = http_client.get("#{base_url}/accounts", nil, header)
-    @accounts = JSON.parse(res.body)
-    @accounts.each do |account|
-      http_client.delete("#{base_url}/accounts/#{account['id']}", nil, header)
+    res = http_client.get("#{base_url}/payments", nil, header)
+    @payments = JSON.parse(res.body)
+    @payments.each do |payment|
+      http_client.delete("#{base_url}/payments/#{payment['id']}", nil, header)
     end
   end
 
   after(:all) do
     header = {'Authorization' => app_auth_header}
-    res = http_client.get("#{base_url}/accounts", nil, header)
-    JSON.parse(res.body).each do |account|
-      http_client.delete("#{base_url}/accounts/#{account['id']}", nil, header)
+    res = http_client.get("#{base_url}/payments", nil, header)
+    JSON.parse(res.body).each do |payment|
+      http_client.delete("#{base_url}/payments/#{payment['id']}", nil, header)
     end
 
     header = {'Authorization' => app_auth_header}.merge(content_type_json)
-    @accounts.each do |account|
-      body = {:accounts => account.slice(*account_params)}.to_json
-      http_client.post("#{base_url}/accounts", body, header)
+    @payments.each do |payment|
+      body = {:payments => payment.slice(*payment_params)}.to_json
+      http_client.post("#{base_url}/payments", body, header)
     end
   end
 
   describe '家計簿を登録する' do
-    include_context 'POST /accounts', account
+    include_context 'POST /payments', payment
 
     describe '家計簿を検索する' do
-      include_context 'GET /accounts'
-      it_behaves_like 'レスポンスボディのキーが正しいこと', AccountHelper.response_keys
+      include_context 'GET /payments'
+      it_behaves_like 'レスポンスボディのキーが正しいこと', PaymentHelper.response_keys
 
       [
         ['yearly', /\d{4}/],

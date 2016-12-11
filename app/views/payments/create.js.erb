@@ -1,0 +1,2 @@
+$('#payments').html("<%= j(render @payments) %>");
+$('#pagination').html("<%= j(paginate @payments, {:params => {:action => 'manage', :payments => {}, :commit => {}, :utf8 => {}, :format => {}}}) %>");

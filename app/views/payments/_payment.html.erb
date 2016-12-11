@@ -1,0 +1,7 @@
+<tr class="<%= payment.payment_type == 'income' ? 'success' : 'danger' %>">
+  <td><%= payment.payment_type == 'income' ? '収入' : '支出' %></td>
+  <td><%= payment.date %></td>
+  <td><%= payment.content %></td>
+  <td><%= payment.category %></td>
+  <td><%= payment.price %></td>
+</tr>

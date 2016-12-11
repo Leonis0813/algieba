@@ -1,9 +1,9 @@
-class Account < ActiveRecord::Base
-  validates :account_type, :inclusion => {:in => %w[ income expense ], :message => 'invalid'}
+class Payment < ActiveRecord::Base
+  validates :payment_type, :inclusion => {:in => %w[ income expense ], :message => 'invalid'}
   validates :date, :presence => {:message => 'invalid'}
   validates :price, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0, :message => 'invalid'}
 
-  scope :account_type, ->(account_type) { where(:account_type => account_type) }
+  scope :payment_type, ->(payment_type) { where(:payment_type => payment_type) }
   scope :date_before, ->(date) { where('date <= ?', date) }
   scope :date_after, ->(date) { where('date >= ?', date) }
   scope :content_equal, ->(content) { where(:content => content) }
@@ -14,11 +14,11 @@ class Account < ActiveRecord::Base
 
   class << self
     def settle(interval)
-      income_records = Account.account_type('income').pluck(:date, :price).map do |date, price|
+      income_records = Payment.payment_type('income').pluck(:date, :price).map do |date, price|
         {:date => date, :price => price}
       end
 
-      expense_records = Account.account_type('expense').pluck(:date, :price).map do |date, price|
+      expense_records = Payment.payment_type('expense').pluck(:date, :price).map do |date, price|
         {:date => date, :price => price}
       end
 
