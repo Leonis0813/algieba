@@ -12,6 +12,6 @@ shared_context '事前準備: クライアントアプリを作成する' do
 end
 
 shared_context '事前準備: 家計簿を登録する' do
-  before(:all) { test_account.each {|_, value| Account.create!(value) } }
-  after(:all) { test_account.each {|_, value| Account.find_by(value[:id]).try(:delete) } }
+  before(:all) { test_payment.each {|_, value| Payment.create!(value) } }
+  after(:all) { test_payment.each {|_, value| Payment.find_by(value[:id]).try(:delete) } }
 end
