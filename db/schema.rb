@@ -11,9 +11,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161105070905) do
+ActiveRecord::Schema.define(version: 20161211042729) do
 
-  create_table "accounts", force: :cascade do |t|
+  create_table "clients", force: :cascade do |t|
+    t.string   "application_id",  limit: 255
+    t.string   "application_key", limit: 255
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "payments", force: :cascade do |t|
     t.string   "account_type", limit: 255
     t.date     "date"
     t.string   "content",      limit: 255
@@ -21,13 +28,6 @@ ActiveRecord::Schema.define(version: 20161105070905) do
     t.integer  "price",        limit: 4
     t.datetime "created_at",               null: false
     t.datetime "updated_at",               null: false
-  end
-
-  create_table "clients", force: :cascade do |t|
-    t.string   "application_id",  limit: 255
-    t.string   "application_key", limit: 255
-    t.datetime "created_at"
-    t.datetime "updated_at"
   end
 
   create_table "users", force: :cascade do |t|
