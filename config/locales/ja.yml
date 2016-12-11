@@ -25,7 +25,7 @@ ja:
       previous: '◀'
       next: '▶'
       truncate: '...'
-    account:
+    payment:
       type: '種類'
       income: '収入'
       expense: '支出'
