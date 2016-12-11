@@ -5,19 +5,7 @@
   }
 }
 
-span.first {
-  @include a_common;
-}
-
-span.prev {
-  @include a_common;
-}
-
-span.next {
-  @include a_common;
-}
-
-span.last {
+span.first, span.prev, span.next, span.last {
   @include a_common;
 }
 
