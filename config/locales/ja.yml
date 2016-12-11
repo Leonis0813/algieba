@@ -22,8 +22,10 @@
 ja:
   views:
     pagination:
+      first: '◀◀'
       previous: '◀'
       next: '▶'
+      last: '▶▶'
       truncate: '...'
     payment:
       type: '種類'
