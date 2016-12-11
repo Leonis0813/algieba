@@ -1,1 +1,1 @@
-json.(@account, :id, :account_type, :date, :content, :category, :price, :created_at, :updated_at)
+json.(@payment, :id, :payment_type, :date, :content, :category, :price, :created_at, :updated_at)
