@@ -37,7 +37,11 @@ describe "payments/manage", :type => :view do
 
   shared_examples 'ページネーションが正しく表示されていること' do
     it 'ページングボタンが表示されていること' do
-      expect(html).to have_xpath("//nav[@class='pagination']")
+      expect(html).to have_xpath("//div[@class='row row-center']/div[@id='pagination']/nav[@class='pagination']")
+    end
+
+    it '先頭のページへのボタンが表示されていないこと' do
+      expect(html).not_to have_xpath("//nav/li/span[@class='first']/a", :text => I18n.t('views.pagination.first'))
     end
 
     it '前のページへのボタンが表示されていないこと' do
@@ -54,6 +58,10 @@ describe "payments/manage", :type => :view do
 
     it '次のページへのボタンが表示されていること' do
       expect(html).to have_xpath("//nav/li/span[@class='next']/a[@href='/?page=2']", :text => I18n.t('views.pagination.next'))
+    end
+
+    it '最後のページへのボタンが表示されていること' do
+      expect(html).to have_xpath("//nav/li/span[@class='last']/a", :text => I18n.t('views.pagination.last'))
     end
   end
 
@@ -77,7 +85,8 @@ describe "payments/manage", :type => :view do
 
     %w[ date content category price ].each do |attribute|
       it "payments[#{attribute}]を含む<input>タグがあること" do
-        expect(html).to have_selector("//span[class='input-custom']/input[type='text'][name='payments[#{attribute}]'][class='form-control']", :text => '')
+        xpath = "//span[class='input-custom']/input[type='text'][name='payments[#{attribute}]'][class='form-control'][required='required']"
+        expect(html).to have_selector(xpath, :text => '')
       end
     end
 
@@ -95,12 +104,24 @@ describe "payments/manage", :type => :view do
       expect(html).to have_selector('//form/span[class="input-custom"]/input[type="submit"][class="btn btn-primary"]')
     end
 
+    it 'リセットボタンがあること' do
+      expect(html).to have_selector('//form/span[class="input-custom"]/input[type="reset"][class="btn btn-primary"]')
+    end
+
     it '<hr>タグがあること' do
       expect(html).to have_selector('hr')
     end
 
-    it '<div>タグがあること' do
-      expect(html).to have_selector('div[id="pagination"]')
+    it 'ページング情報を表示するブロックがあること' do
+      expect(html).to have_selector('div[class="row row-center"]')
+    end
+
+    it '件数を表示するブロックがあること' do
+      expect(html).to have_selector('div[class="row row-center"]/div[id="total_count"]')
+    end
+
+    it 'リンクを表示するブロックがあること' do
+      expect(html).to have_selector('div[class="row row-center"]/div[id="pagination"]')
     end
 
     it '<table>タグがあること' do
@@ -126,7 +147,7 @@ describe "payments/manage", :type => :view do
     it_behaves_like '家計簿の背景色が正しいこと'
 
     it 'ページングボタンが表示されていないこと' do
-      expect(html).not_to have_xpath("//nav[@class='paginate']")
+      expect(html).not_to have_xpath("//div[@class='row row-center']/div[@id='pagination']/nav[@class='pagination']")
     end
   end
 
