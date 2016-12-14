@@ -1,6 +1,12 @@
 algieba
 =======
 
+- 2.3.0:
+  - [ADD] reset button
+  - [ADD] error notification
+  - [ADD] total count
+  - [ADD] links for first & last page
+
 - 2.2.1:
   - [REFACTOR] change model name
 
