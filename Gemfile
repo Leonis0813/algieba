@@ -16,6 +16,7 @@ gem 'config'
 gem 'therubyracer'
 gem 'less-rails'
 gem 'twitter-bootstrap-rails'
+gem 'bootbox-rails'
 
 group :development, :test do
   gem 'rspec-rails'

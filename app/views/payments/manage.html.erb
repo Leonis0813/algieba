@@ -1,7 +1,7 @@
 <%= form_for @payment, {:as => :payments, :remote => true, :html => {:class => 'form-inline'}} do |f| %>
   <% [[:date, {}], [:content,  {:size => 100, :class => 'form-control'}], [:category, {}], [:price, {}]].each do |attribute, options| %>
     <span class='input-custom'>
-      <%= f.label attribute, t("views.payment.#{attribute}").html_safe + '：' %><%= f.text_field attribute, {:class => 'form-control'}.merge(options) %>
+      <%= f.label attribute, t("views.payment.#{attribute}").html_safe + '：' %><%= f.text_field attribute, {:class => 'form-control', :required => true}.merge(options) %>
     </span>
   <% end %>
   <% [[:income, {}], [:expense, {:checked => true}]].each do |payment_type, options| %>
@@ -10,12 +10,18 @@
     </span>
   <% end %>
   <span class='input-custom'><%= f.submit t('views.submit').html_safe, :class => 'btn btn-primary' %></span>
+  <span class='input-custom'><%= f.submit t('views.reset'), :type => 'reset', :class => 'btn btn-primary' %></span>
 <% end %>
 
 <hr>
 
-<div id='pagination'>
-  <%= paginate @payments %>
+<div class='row row-center'>
+  <div id='total_count' style='padding: 0px 10px'>
+    <h4><%= @payments.total_count %>件中<%= @payments.offset_value + 1 %>〜<%= @payments.offset_value + @payments.size %>件を表示</h4>
+  </div>
+  <div id='pagination' style='padding: 0px 10px'>
+    <%= paginate @payments %>
+  </div>
 </div>
 
 <table class='table table-hover'>

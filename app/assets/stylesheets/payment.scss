@@ -5,16 +5,22 @@
   }
 }
 
-span.prev {
-  @include a_common;
-}
-
-span.next {
+span.first, span.prev, span.next, span.last {
   @include a_common;
 }
 
 form {
   padding: 10px
+}
+
+.row {
+  margin: 0px;
+  padding: 0px 10px;
+}
+
+.row-center {
+  display: flex;
+  align-items: center;
 }
 
 .input-custom {
