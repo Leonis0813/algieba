@@ -1,0 +1,28 @@
+@mixin a_common {
+  a {
+    text-decoration: none;
+    color: #ff0000;
+  }
+}
+
+span.first, span.prev, span.next, span.last {
+  @include a_common;
+}
+
+form {
+  padding: 10px
+}
+
+.row {
+  margin: 0px;
+  padding: 0px 10px;
+}
+
+.row-center {
+  display: flex;
+  align-items: center;
+}
+
+.input-custom {
+  padding: 0px 5px;
+}

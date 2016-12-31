@@ -1,0 +1,18 @@
+ja:
+  views:
+    pagination:
+      first: '◀◀'
+      previous: '◀'
+      next: '▶'
+      last: '▶▶'
+      truncate: '...'
+    payment:
+      type: '種類'
+      income: '収入'
+      expense: '支出'
+      date: '日付'
+      content: '内容'
+      category: 'カテゴリ'
+      price: '金額'
+    submit: '登録'
+    reset: 'リセット'

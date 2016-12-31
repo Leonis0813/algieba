@@ -11,6 +11,12 @@ gem 'jbuilder', '~> 2.0'
 gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'unicorn'
 gem 'kaminari'
+gem 'config'
+
+gem 'therubyracer'
+gem 'less-rails'
+gem 'twitter-bootstrap-rails'
+gem 'bootbox-rails'
 
 group :development, :test do
   gem 'rspec-rails'
@@ -18,6 +24,7 @@ group :development, :test do
   gem 'capybara-mechanize'
   gem 'capybara-webkit'
   gem 'headless'
+  gem 'selenium-webdriver', '2.53.4'
 
   gem 'fuubar'
 

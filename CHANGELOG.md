@@ -1,6 +1,26 @@
 algieba
 =======
 
+- 2.3.0:
+  - [ADD] reset button
+  - [ADD] error notification
+  - [ADD] total count
+  - [ADD] links for first & last page
+
+- 2.2.1:
+  - [REFACTOR] change model name
+
+- 2.2.0:
+  - [ADD] user and app authentication
+
+- 2.1.5:
+  - [CHANGE] management view
+
+- 2.1.4:
+  - [ADD] favicon
+  - [FIX] query for paging
+  - [ADD] initial data
+
 - 2.1.3:
   - [FIX] default format
 
