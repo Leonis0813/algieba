@@ -8,14 +8,14 @@ default: &default
 development:
   <<: *default
   username: development
-  database: algieba_development
+  database: algieba
 
 test:
   <<: *default
   username: test
-  database: algieba_test
+  database: algieba
 
 production:
   <<: *default
   username: production
-  database: algieba_production
+  database: algieba
