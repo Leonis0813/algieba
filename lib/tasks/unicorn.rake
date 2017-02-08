@@ -2,10 +2,11 @@ namespace :unicorn do
   ##
   # Tasks
   ##
-  desc 'Start unicorn for development env.'
+  desc 'Start unicorn'
   task(:start) {
     config = "#{rails_root}/config/unicorn.rb"
-    sh "bundle exec unicorn_rails -c #{config} -E development -D"
+    ENV['RAILS_ENV'] ||= 'development'
+    sh "bundle exec unicorn_rails -c #{config} -E #{ENV['RAILS_ENV']} -D"
   }
 
   desc 'Stop unicorn'
