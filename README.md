@@ -15,22 +15,25 @@
 
 ### Examples
 
+#### POST /payments
+
+- with request body below
+
+    ```json
+    {
+      "payments": {
+        "payment_type": "<income or expense>",
+        "date": "<yyyy-mm-dd>",
+        "content": "<content>",
+        "category": "<category>",
+        "price": <price>
+      }
+    }
+    ```
+
 #### GET /accounts
 
     URL: http://localhost/accounts?account_type=income
-
-#### POST /accounts
-
-    URL: http://localhost/accounts
-    JSON Body: {
-        "account": {
-            "account_type": <"income" or "expense">,
-            "date": "yyyy-mm-dd",
-            "content": <content>,
-            "category": <category>,
-            "price": <price>
-        }
-    }
 
 #### PUT /accounts
 
