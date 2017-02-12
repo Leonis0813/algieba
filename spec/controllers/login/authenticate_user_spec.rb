@@ -2,7 +2,7 @@
 require 'rails_helper'
 
 describe LoginController, :type => :controller do
-  test_user_params = {:user_id => 'test_user_id', :password => 'test_user_pass'}
+  test_user_params = {:user_id => 'login_user_id', :password => 'login_user_pass'}
 
   shared_context 'ログインする' do |params|
     before(:all) { @res = client.post('/login', params) }
@@ -31,7 +31,7 @@ describe LoginController, :type => :controller do
       it 'cookieがセットされていること' do
         expect(@user_cookie).to be
 
-        ticket = @user_cookie.match(/\Aalgieba=(?<ticket>.+)\z/)[:ticket]
+        ticket = URI.decode(@user_cookie.match(/\Aalgieba=(?<ticket>.+)\z/)[:ticket])
         user_id, password = Base64.strict_decode64(ticket).split(':')
         expect({:user_id => user_id, :password => password}).to eq test_user_params
       end
