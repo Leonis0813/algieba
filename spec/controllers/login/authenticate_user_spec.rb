@@ -30,6 +30,7 @@ describe LoginController, :type => :controller do
 
       it 'cookieがセットされていること' do
         expect(@user_cookie).to be
+
         ticket = URI.decode(@user_cookie.match(/\Aalgieba=(?<ticket>.+)\z/)[:ticket])
         user_id, password = Base64.strict_decode64(ticket).split(':')
         expect({:user_id => user_id, :password => password}).to eq test_user_params
