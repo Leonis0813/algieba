@@ -1,56 +1,17 @@
 # algieba
 
-**application for account management**
+**algieba provides Web API for account management**
 
-## Directory Structure
+## APIs
 
-    CHANGELOG.md
-    Gemfile
-    README.md
-    Rakefile
-    app    -- assets       -- images
-              	           -- javascripts  -- ...
-           	           -- stylesheets  -- ...
-           -- controllers  -- accounts_controller.rb
-                           -- ...
-           -- concerns
-           -- helpers      -- accounts_helper.rb
-                           -- ...
-           -- mailers
-           -- models       -- account.rb
-                           -- concerns
-           -- views        -- accounts
-                           -- layouts -- ...
-    bin    -- ...
-    config -- environments -- ...
-           -- initializers -- ...
-           -- locales      -- ...
-           -- ...
-    config.ru
-    db     -- migrate      -- ...
-           -- ...
-    lib    -- ...
-    log    -- ...
-    public -- ...
-    test   -- controllers  -- accounts_controller_test.rb
-           -- fixtures     -- accounts.yml
-           -- models       -- account_test.rb
-           -- ...
-    tmp    -- cache        -- assets
-           -- pids         -- server.pid
-           -- sessions
-           -- sockets
-    vendor -- assets       -- ...
-
-## API
-
-|HTTP Method|Path        |Description     |Parameters                               |
-|:----------|:-----------|:---------------|:----------------------------------------|
-|GET        |/accounts   |search accounts |conditions for select                    |
-|POST       |/accounts   |regist account  |account infomations                      |
-|PUT        |/accounts   |update accounts |conditions and values for update         |
-|DELETE     |/accounts   |delete accounts |conditions for delete                    |
-|GET        |/settlement |settle up       |period("yearly" or "monthly" or "daily") |
+|HTTP Method|Path           |Description    |
+|:----------|:--------------|:--------------|
+|POST       |/payments      |create payment |
+|GET        |/payments/[:id]|read payment   |
+|GET        |/payments      |search payments|
+|PUT        |/payments/[:id]|update payment |
+|DELETE     |/payments/[:id]|delete payment |
+|GET        |/settlement    |settle up      |
 
 ### Examples
 
