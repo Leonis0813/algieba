@@ -34,7 +34,7 @@ sudo chef-client -z -r algieba -E production
 
 ## Development
 
-- Usage
+- Install
 
 ```
 git clone https://github.com/Leonis0813/algieba.git
