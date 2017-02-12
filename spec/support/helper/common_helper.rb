@@ -5,7 +5,7 @@ module CommonHelper
   end
 
   def base_url
-    'http://160.16.66.112:88'
+    ENV['REMOTE_HOST']
   end
 
   def content_type_json
