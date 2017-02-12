@@ -26,7 +26,7 @@ describe LoginController, :type => :controller do
       end
 
       it_behaves_like 'ステータスコードが正しいこと', '302'
-      it_behaves_like 'Locationヘッダーが正しいこと', 'http://160.16.66.112/'
+      it_behaves_like 'Locationヘッダーが正しいこと', "#{Capybara.app_host}/"
 
       it 'cookieがセットされていること' do
         expect(@user_cookie).to be
@@ -43,7 +43,7 @@ describe LoginController, :type => :controller do
       include_context 'ログインする', test_user_params
 
       it_behaves_like 'ステータスコードが正しいこと', '302'
-      it_behaves_like 'Locationヘッダーが正しいこと', 'http://160.16.66.112/login'
+      it_behaves_like 'Locationヘッダーが正しいこと', "#{Capybara.app_host}/login"
 
       it 'cookieがセットされていないこと' do
         expect(client.response.headers).not_to include('Set-Cookie')

@@ -12,7 +12,7 @@ Dir[Rails.root.join('spec/support/**/*.rb')].each {|f| require f }
 # Checks for pending migration and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove this line.
 ActiveRecord::Migration.maintain_test_schema!
-Capybara.app_host = 'http://160.16.66.112:88'
+Capybara.app_host = 'http://localhost'
 Headless.new.start
 
 RSpec.configure do |config|
