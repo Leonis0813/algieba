@@ -1,6 +1,10 @@
 algieba
 =======
 
+- 2.3.1:
+  - [ADD] rake task for unicorn
+  - [CHANGE] remote host when request spec
+
 - 2.3.0:
   - [ADD] reset button
   - [ADD] error notification
