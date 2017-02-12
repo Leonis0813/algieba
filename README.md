@@ -2,6 +2,14 @@
 
 **algieba provides Web API for account management**
 
+## Requirements
+
+- Ruby 2.2.0
+- bundler(gem)
+- RVM
+- MySQL
+- web server software like Apache, Nginx
+
 ## APIs
 
 |HTTP Method|Path           |Description    |
@@ -13,61 +21,25 @@
 |DELETE     |/payments/[:id]|delete payment |
 |GET        |/settlement    |settle up      |
 
-### Examples
+## Deployment
 
-#### POST /payments
+- Use https://github.com/Leonis0813/subra
 
-- with request body below
+```
+git clone https://github.com/Leonis0813/subra.git
+cd subra
+./install_chef.sh <your centos version>
+sudo chef-client -z -r algieba -E production
+```
 
-    ```json
-    {
-      "payments": {
-        "payment_type": "<income or expense>",
-        "date": "<yyyy-mm-dd>",
-        "content": "<content>",
-        "category": "<category>",
-        "price": <price>
-      }
-    }
-    ```
+## Development
 
-#### GET /accounts
+- Usage
 
-    URL: http://localhost/accounts?account_type=income
-
-#### PUT /accounts
-
-    URL: http://localhost/accounts
-    JSON Body: {
-        "condition": {
-            "account_type": <"income" or "expense">,
-            "category": <category>
-        },
-        "with": {
-            "category": <category>
-        }
-    }
-
-#### DELETE /accounts
-
-    URL: http://localhost/accounts
-    JSON Body: {
-    	"date": "yyyy-mm-dd",
-        "content": <content>
-    }
-
-#### GET /settlement
-
-    URL: http://localhost/settlement?period=monthly
-
-## DB
-
-- Account table
-
-|Column Name  |Type    |Description                            |
-|:------------|:-------|:--------------------------------------|
-|account_type |varchar |descript "income" or "expense"         |
-|date         |date    |date which has a income or expense     |
-|content      |varchar |description of the account             |
-|category     |varchar |tags to classify accounts              |
-|price        |integer |amount of income or expense            |
+```
+git clone https://github.com/Leonis0813/algieba.git
+cd algieba
+bundle install
+bundle exec rake db:create
+bundle exec rake db:migrate
+```
