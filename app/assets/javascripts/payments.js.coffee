@@ -10,3 +10,13 @@ $ ->
         title: 'エラー',
         message: '<div class="text-center alert alert-danger">' + error_codes.join(', ') + ' が不正です</div>',
       })
+  $('.btn').click ->
+    $.ajax({
+      type: "GET",
+      url: "/payments/" + $(this).attr('value')
+    }).done((msg)->
+      $.ajax({
+        type: "GET",
+        url: "/payments"
+      })
+    )
