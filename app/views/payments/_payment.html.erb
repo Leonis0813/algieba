@@ -1,11 +1,12 @@
+<% td_class = payment.payment_type == 'income' ? 'success' : 'danger' %>
 <tr>
-  <td class="<%= payment.payment_type == 'income' ? 'success' : 'danger' %>"><%= payment.payment_type == 'income' ? '収入' : '支出' %></td>
-  <td class="<%= payment.payment_type == 'income' ? 'success' : 'danger' %>"><%= payment.date %></td>
-  <td class="<%= payment.payment_type == 'income' ? 'success' : 'danger' %>"><%= payment.content %></td>
-  <td class="<%= payment.payment_type == 'income' ? 'success' : 'danger' %>"><%= payment.category %></td>
-  <td class="<%= payment.payment_type == 'income' ? 'success' : 'danger' %>"><%= payment.price %></td>
+  <td class='<%= td_class %>'><%= payment.payment_type == 'income' ? '収入' : '支出' %></td>
+  <td class='<%= td_class %>'><%= payment.date %></td>
+  <td class='<%= td_class %>'><%= payment.content %></td>
+  <td class='<%= td_class %>'><%= payment.category %></td>
+  <td class='<%= td_class %>'><%= payment.price %></td>
   <td width='16' class='delete'>
-    <%= button_tag(:class => 'btn btn-default btn-mini', :height => 16, :value => "#{payment.id}") do %>
+    <%= button_tag(:class => 'btn btn-default btn-mini', :height => 16, :value => payment.id) do %>
       <%= image_tag 'trash.png', :size => '16x16' %>
     <% end %>
   </td>
