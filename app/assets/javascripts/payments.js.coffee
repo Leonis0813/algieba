@@ -1,5 +1,11 @@
 $ ->
   $('#new_payments')
+    .on 'ajax:success', (event, xhr, status, error) ->
+      location.reload()
+      return
+
+$ ->
+  $('#new_payments')
     .on 'ajax:error', (event, xhr, status, error) ->
       ja = {date: '日付', price: '金額'}
       error_codes = []
@@ -10,8 +16,17 @@ $ ->
         title: 'エラー',
         message: '<div class="text-center alert alert-danger">' + error_codes.join(', ') + ' が不正です</div>',
       })
-  $('#delete').click ->
-    $.ajax({
-      type: 'DELETE',
-      url: '/payments/' + $(this).attr('value')
-    })
+
+$ ->
+  $('.delete')
+    .on 'click', ->
+      console.log(document)
+      $.ajax({
+        type: 'DELETE',
+        url: '/payments/' + $(this).children('button').attr('value')
+      }).done((data) ->
+        location.reload()
+        return
+      )
+      return
+    return

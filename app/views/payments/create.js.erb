@@ -1,3 +1,4 @@
 $('#total_count').html("<h4><%= @payments.total_count %>件中<%= @payments.offset_value + 1 %>〜<%= @payments.offset_value + @payments.size %>件を表示</h4>");
 $('#pagination').html("<%= j(paginate @payments, {:params => {:action => 'manage', :payments => {}, :commit => {}, :utf8 => {}, :format => {}}})%>");
 $('#payments').html("<%= j(render @payments) %>");
+location.reload();

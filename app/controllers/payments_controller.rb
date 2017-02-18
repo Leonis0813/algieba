@@ -72,7 +72,11 @@ class PaymentsController < ApplicationController
   def destroy
     @payment = Payment.find_by(params.permit(:id)).try(:destroy)
     if @payment
-      head :no_content
+      request.format = :js if request.xhr?
+      respond_to do |format|
+        format.json {head :no_content}
+        format.js {@payments = Payment.order(:date => :desc).page(params[:page])}
+      end
     else
       raise NotFound.new
     end
