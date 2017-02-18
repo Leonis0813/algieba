@@ -1,4 +1,4 @@
-<tr id='<%= "payment#{payment.id}" %>'>
+<tr>
   <td class="<%= payment.payment_type == 'income' ? 'success' : 'danger' %>"><%= payment.payment_type == 'income' ? '収入' : '支出' %></td>
   <td class="<%= payment.payment_type == 'income' ? 'success' : 'danger' %>"><%= payment.date %></td>
   <td class="<%= payment.payment_type == 'income' ? 'success' : 'danger' %>"><%= payment.content %></td>

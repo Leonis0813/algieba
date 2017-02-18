@@ -15,10 +15,8 @@ class PaymentsController < ApplicationController
 
       @payment = Payment.new(attributes)
       if @payment.save
-        request.format = :js if request.xhr?
         respond_to do |format|
           format.json {render :status => :created, :template => 'payments/payment'}
-          format.js {@payments = Payment.order(:date => :desc).page(params[:page])}
         end
       else
         raise BadRequest.new(@payment.errors.messages.keys.map {|key| "invalid_param_#{key}" })
@@ -72,10 +70,8 @@ class PaymentsController < ApplicationController
   def destroy
     @payment = Payment.find_by(params.permit(:id)).try(:destroy)
     if @payment
-      request.format = :js if request.xhr?
       respond_to do |format|
         format.json {head :no_content}
-        format.js {@payments = Payment.order(:date => :desc).page(params[:page])}
       end
     else
       raise NotFound.new
