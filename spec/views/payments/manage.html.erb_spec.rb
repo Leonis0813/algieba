@@ -25,7 +25,7 @@ describe "payments/manage", :type => :view do
 
   shared_examples '家計簿の背景色が正しいこと' do
     it do
-      matched_data = html.gsub("\n", '').match(/<tr class="(?<color>.*?)">\s*<td>(?<payment_type>.*?)<\/td>/)
+      matched_data = html.gsub("\n", '').match(/<td\s*class='(?<color>.*?)'\s*>(?<payment_type>.*?)<\/td>/)
       case matched_data[:payment_type]
       when I18n.t('views.payment.income')
         expect(matched_data[:color]).to eq('success')
