@@ -26,7 +26,7 @@ describe 'ブラウザから操作する', :type => :request do
   end
 
   shared_examples '表示されている件数が正しいこと' do |total, from, to|
-    it { expect(@driver.find_element(:id, 'total_count').text).to eq "#{total}件中#{from}〜#{to}件を表示" }
+    it { expect(@driver.find_element(:xpath, '//div[@class="row row-center"]/div').text).to eq "#{total}件中#{from}〜#{to}件を表示" }
   end
 
   shared_examples 'ページングボタンが表示されていないこと' do
@@ -47,7 +47,7 @@ describe 'ブラウザから操作する', :type => :request do
     it do
       @driver.find_elements(:xpath, '//table/tbody/tr').each do |element|
         type = element.find_element(:xpath, './td').text
-        expect(element.find_element(:xpath, "../tr[@class='#{color[type]}']")).to be
+        expect(element.find_element(:xpath, "./td[@class='#{color[type]}']")).to be
       end
     end
   end
