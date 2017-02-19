@@ -26,7 +26,7 @@ describe 'ブラウザから操作する', :type => :request do
   end
 
   shared_examples '表示されている件数が正しいこと' do |total, from, to|
-    it { expect(@driver.find_element(:id, 'total_count').text).to eq "#{total}件中#{from}〜#{to}件を表示" }
+    it { expect(@driver.find_element(:xpath, '//div[@class="row row-center"]/div').text).to eq "#{total}件中#{from}〜#{to}件を表示" }
   end
 
   shared_examples 'ページングボタンが表示されていないこと' do
@@ -47,7 +47,7 @@ describe 'ブラウザから操作する', :type => :request do
     it do
       @driver.find_elements(:xpath, '//table/tbody/tr').each do |element|
         type = element.find_element(:xpath, './td').text
-        expect(element.find_element(:xpath, "../tr[@class='#{color[type]}']")).to be
+        expect(element.find_element(:xpath, "./td[@class='#{color[type]}']")).to be
       end
     end
   end
@@ -139,16 +139,30 @@ describe 'ブラウザから操作する', :type => :request do
               it_behaves_like '家計簿の数が正しいこと', per_page
               it_behaves_like '背景色が正しいこと'
 
-              describe '2ページ目にアクセスする' do
+              describe '家計簿を削除する' do
                 before(:all) do
-                  @driver.find_element(:xpath, '//span[@class="next"]').click
-                  wait = Selenium::WebDriver::Wait.new(:timeout => 10)
-                  wait.until { URI.parse(@driver.current_url).query == 'page=2' }
+                  @driver.find_element(:xpath, '//td[@class="delete"]/button').click
+                  sleep 1
                 end
-                it_behaves_like '表示されている件数が正しいこと', per_page + 1, per_page + 1, per_page + 1
-                it_behaves_like 'ページングボタンが表示されていること'
-                it_behaves_like '家計簿の数が正しいこと', 1
+                it_behaves_like '表示されている件数が正しいこと', per_page, 1, per_page
+                it_behaves_like 'ページングボタンが表示されていないこと'
+                it_behaves_like '家計簿の数が正しいこと', per_page
                 it_behaves_like '背景色が正しいこと'
+
+                describe '2ページ目にアクセスする' do
+                  include_context 'リセットボタンを押す'
+                  include_context '家計簿を登録する', default_inputs, 'income'
+                  before(:all) do
+                    @driver.find_element(:xpath, '//span[@class="next"]').click
+                    wait = Selenium::WebDriver::Wait.new(:timeout => 10)
+                    wait.until { URI.parse(@driver.current_url).query == 'page=2' }
+                  end
+
+                  it_behaves_like '表示されている件数が正しいこと', per_page + 1, per_page + 1, per_page + 1
+                  it_behaves_like 'ページングボタンが表示されていること'
+                  it_behaves_like '家計簿の数が正しいこと', 1
+                  it_behaves_like '背景色が正しいこと'
+                end
               end
             end
           end
