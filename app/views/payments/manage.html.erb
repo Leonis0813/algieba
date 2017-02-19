@@ -16,10 +16,10 @@
 <hr>
 
 <div class='row row-center'>
-  <div id='total_count' style='padding: 0px 10px'>
+  <div style='padding: 0px 10px'>
     <h4><%= @payments.total_count %>件中<%= @payments.offset_value + 1 %>〜<%= @payments.offset_value + @payments.size %>件を表示</h4>
   </div>
-  <div id='pagination' style='padding: 0px 10px'>
+  <div style='padding: 0px 10px'>
     <%= paginate @payments %>
   </div>
 </div>
@@ -32,7 +32,7 @@
       <% end %>
     </tr>
   </thead>
-  <tbody id='payments'>
+  <tbody>
     <%= render @payments %>
   </tbody>
 </table>
