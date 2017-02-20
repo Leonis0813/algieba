@@ -1,6 +1,9 @@
 algieba
 =======
 
+- 2.4.0:
+  - [ADD] delete button to ui
+
 - 2.3.1:
   - [ADD] rake task for unicorn
   - [CHANGE] remote host when request spec
