@@ -1,7 +1,13 @@
-<tr class="<%= payment.payment_type == 'income' ? 'success' : 'danger' %>">
-  <td><%= payment.payment_type == 'income' ? '収入' : '支出' %></td>
-  <td><%= payment.date %></td>
-  <td><%= payment.content %></td>
-  <td><%= payment.category %></td>
-  <td><%= payment.price %></td>
+<% td_class = payment.payment_type == 'income' ? 'success' : 'danger' %>
+<tr>
+  <td class='<%= td_class %>'><%= payment.payment_type == 'income' ? '収入' : '支出' %></td>
+  <td class='<%= td_class %>'><%= payment.date %></td>
+  <td class='<%= td_class %>'><%= payment.content %></td>
+  <td class='<%= td_class %>'><%= payment.category %></td>
+  <td class='<%= td_class %>'><%= payment.price %></td>
+  <td width='16' class='delete'>
+    <%= button_tag(:class => 'btn btn-default btn-mini', :height => 16, :value => payment.id) do %>
+      <%= image_tag 'trash.png', :size => '16x16' %>
+    <% end %>
+  </td>
 </tr>

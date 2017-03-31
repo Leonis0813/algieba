@@ -23,9 +23,13 @@ describe "payments/manage", :type => :view do
     it { expect(html).to have_xpath('//table/tbody/tr/td', {:text => I18n.t('views.payment.income'), :count => expected_size}) }
   end
 
+  shared_examples '削除ボタンが表示されていること' do
+    it { expect(html).to have_xpath('//table/tbody/tr/td/button/img') }
+  end
+
   shared_examples '家計簿の背景色が正しいこと' do
     it do
-      matched_data = html.gsub("\n", '').match(/<tr class="(?<color>.*?)">\s*<td>(?<payment_type>.*?)<\/td>/)
+      matched_data = html.gsub("\n", '').match(/<td\s*class='(?<color>.*?)'\s*>(?<payment_type>.*?)<\/td>/)
       case matched_data[:payment_type]
       when I18n.t('views.payment.income')
         expect(matched_data[:color]).to eq('success')
@@ -36,7 +40,7 @@ describe "payments/manage", :type => :view do
   end
 
   shared_examples 'ページネーションが正しく表示されていること' do
-    nav_xpath = '//div[class="row row-center"]/div[id="pagination"]/nav[class="pagination"]'
+    nav_xpath = '//div[class="row row-center"]/div/nav[class="pagination"]'
 
     it 'ページングボタンが表示されていること' do
       expect(html).to have_selector(nav_xpath)
@@ -128,11 +132,11 @@ describe "payments/manage", :type => :view do
       end
 
       it '件数を表示するブロックがあること' do
-        expect(html).to have_selector("#{row_xpath}/div[id='total_count']")
+        expect(html).to have_selector("#{row_xpath}/div")
       end
 
       it 'リンクを表示するブロックがあること' do
-        expect(html).to have_selector("#{row_xpath}/div[id='pagination']")
+        expect(html).to have_selector("#{row_xpath}/div")
       end
     end
 
@@ -155,7 +159,7 @@ describe "payments/manage", :type => :view do
 
       describe '<tbody>' do
         it '<tbody>があること' do
-          expect(html).to have_selector("#{table_xpath}/tbody[id='payments']")
+          expect(html).to have_selector("#{table_xpath}/tbody")
         end
       end
     end
@@ -166,7 +170,9 @@ describe "payments/manage", :type => :view do
       include_context 'HTML初期化'
       include_context '家計簿を登録する', per_page
 
+
       it_behaves_like '表示されている家計簿の数が正しいこと', per_page
+      it_behaves_like '削除ボタンが表示されていること'
       it_behaves_like '家計簿の背景色が正しいこと'
 
       it 'ページングボタンが表示されていないこと' do
@@ -179,6 +185,7 @@ describe "payments/manage", :type => :view do
       include_context '家計簿を登録する', per_page + 1
 
       it_behaves_like '表示されている家計簿の数が正しいこと', per_page
+      it_behaves_like '削除ボタンが表示されていること'
       it_behaves_like '家計簿の背景色が正しいこと'
       it_behaves_like 'ページネーションが正しく表示されていること'
     end
@@ -188,6 +195,7 @@ describe "payments/manage", :type => :view do
       include_context '家計簿を登録する', per_page + 9
 
       it_behaves_like '表示されている家計簿の数が正しいこと', per_page
+      it_behaves_like '削除ボタンが表示されていること'
       it_behaves_like '家計簿の背景色が正しいこと'
       it_behaves_like 'ページネーションが正しく表示されていること'
 
