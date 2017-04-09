@@ -3,7 +3,7 @@
   <td class='<%= td_class %>'><%= payment.payment_type == 'income' ? '収入' : '支出' %></td>
   <td class='<%= td_class %>'><%= payment.date %></td>
   <td class='<%= td_class %>'><%= payment.content %></td>
-  <td class='<%= td_class %>'><%= payment.category %></td>
+  <td class='<%= td_class %>'><%= payment.categories.pluck(:name).join(',') %></td>
   <td class='<%= td_class %>'><%= payment.price %></td>
   <td width='16' class='delete'>
     <%= button_tag(:class => 'btn btn-default btn-mini', :height => 16, :value => payment.id) do %>
