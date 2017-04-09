@@ -27,6 +27,7 @@ ActiveRecord::Schema.define(version: 20170409010109) do
     t.integer "payment_id",  limit: 4, null: false
   end
 
+  add_index "categories_payments", ["category_id", "payment_id"], name: "index_categories_payments_on_category_id_and_payment_id", unique: true, using: :btree
   add_index "categories_payments", ["category_id"], name: "index_categories_payments_on_category_id", using: :btree
   add_index "categories_payments", ["payment_id"], name: "index_categories_payments_on_payment_id", using: :btree
 
