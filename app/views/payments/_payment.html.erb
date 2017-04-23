@@ -1,6 +1,6 @@
 <% td_class = payment.payment_type == 'income' ? 'success' : 'danger' %>
 <tr>
-  <td class='<%= td_class %>'><%= payment.payment_type == 'income' ? '収入' : '支出' %></td>
+  <td class='<%= td_class %>'><%= t("views.payment.#{payment.payment_type}") %></td>
   <td class='<%= td_class %>'><%= payment.date %></td>
   <td class='<%= td_class %>'><%= payment.content %></td>
   <td class='<%= td_class %>'><%= payment.categories.pluck(:name).join(',') %></td>
