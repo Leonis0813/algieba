@@ -66,7 +66,7 @@ class PaymentsController < ApplicationController
         categories = attributes[:category].split(',').map do |category|
           Category.find_by_name(category) || Category.create!(:name => category)
         end
-        @payment.categories << categories
+        @payment.categories = categories
       end
 
       if @payment.update(attributes.except(:category))
