@@ -24,5 +24,5 @@ shared_context '事前準備: 家計簿を登録する' do
     end
   end
 
-  after(:all) { test_payment.each {|_, value| Payment.find_by(value[:id]).try(:delete) } }
+  after(:all) { test_payment.each {|_, value| Payment.find_by(value[:id]).try(:destroy) } }
 end
