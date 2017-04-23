@@ -10,7 +10,7 @@ describe "payments/manage", :type => :view do
     before(:all) { html = nil }
   end
 
-  shared_context '家計簿を登録する' do |num|
+  shared_context '収支情報を登録する' do |num|
     before(:all) do
       num.times { Payment.create!(param) }
       @payments = Payment.order(:date => :desc).page(1)
@@ -19,7 +19,7 @@ describe "payments/manage", :type => :view do
     after(:all) { Payment.delete_all }
   end
 
-  shared_examples '表示されている家計簿の数が正しいこと' do |expected_size|
+  shared_examples '表示されている収支情報の数が正しいこと' do |expected_size|
     it { expect(html).to have_xpath('//table/tbody/tr/td', {:text => I18n.t('views.payment.income'), :count => expected_size}) }
   end
 
@@ -27,7 +27,7 @@ describe "payments/manage", :type => :view do
     it { expect(html).to have_xpath('//table/tbody/tr/td/button/img') }
   end
 
-  shared_examples '家計簿の背景色が正しいこと' do
+  shared_examples '収支情報の背景色が正しいこと' do
     it do
       matched_data = html.gsub("\n", '').match(/<td\s*class='(?<color>.*?)'\s*>(?<payment_type>.*?)<\/td>/)
       case matched_data[:payment_type]
@@ -166,37 +166,37 @@ describe "payments/manage", :type => :view do
   end
 
   describe '動的コンテンツのテスト' do
-    context "家計簿が#{per_page}件登録されている場合" do
+    context "収支情報が#{per_page}件登録されている場合" do
       include_context 'HTML初期化'
-      include_context '家計簿を登録する', per_page
+      include_context '収支情報を登録する', per_page
 
 
-      it_behaves_like '表示されている家計簿の数が正しいこと', per_page
+      it_behaves_like '表示されている収支情報の数が正しいこと', per_page
       it_behaves_like '削除ボタンが表示されていること'
-      it_behaves_like '家計簿の背景色が正しいこと'
+      it_behaves_like '収支情報の背景色が正しいこと'
 
       it 'ページングボタンが表示されていないこと' do
         expect(html).not_to have_selector("//nav[class='pagination']")
       end
     end
 
-    context "家計簿が#{per_page + 1}件登録されている場合" do
+    context "収支情報が#{per_page + 1}件登録されている場合" do
       include_context 'HTML初期化'
-      include_context '家計簿を登録する', per_page + 1
+      include_context '収支情報を登録する', per_page + 1
 
-      it_behaves_like '表示されている家計簿の数が正しいこと', per_page
+      it_behaves_like '表示されている収支情報の数が正しいこと', per_page
       it_behaves_like '削除ボタンが表示されていること'
-      it_behaves_like '家計簿の背景色が正しいこと'
+      it_behaves_like '収支情報の背景色が正しいこと'
       it_behaves_like 'ページネーションが正しく表示されていること'
     end
 
-    context "家計簿が#{per_page + 9}件登録されている場合" do
+    context "収支情報が#{per_page + 9}件登録されている場合" do
       include_context 'HTML初期化'
-      include_context '家計簿を登録する', per_page + 9
+      include_context '収支情報を登録する', per_page + 9
 
-      it_behaves_like '表示されている家計簿の数が正しいこと', per_page
+      it_behaves_like '表示されている収支情報の数が正しいこと', per_page
       it_behaves_like '削除ボタンが表示されていること'
-      it_behaves_like '家計簿の背景色が正しいこと'
+      it_behaves_like '収支情報の背景色が正しいこと'
       it_behaves_like 'ページネーションが正しく表示されていること'
 
       it 'リンクが省略されていること' do
