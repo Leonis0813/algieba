@@ -14,11 +14,9 @@ class PaymentsController < ApplicationController
       raise BadRequest.new(absent_keys.map {|key| "absent_param_#{key}" }) unless absent_keys.empty?
 
       @payment = Payment.new(attributes.except(:category))
-
-      categories = attributes[:category].split(',').map do |category|
-        Category.find_by_name(category) || Category.create!(:name => category)
+      @payment.categories << attributes[:category].split(',').map do |category_name|
+        Category.find_or_create_by(:name => category_name)
       end
-      @payment.categories << categories
 
       if @payment.save
         respond_to do |format|
@@ -63,10 +61,9 @@ class PaymentsController < ApplicationController
     if @payment
       attributes = params.permit(*payment_params)
       if attributes[:category]
-        categories = attributes[:category].split(',').map do |category|
-          Category.find_by_name(category) || Category.create!(:name => category)
+        @payment.categories = attributes[:category].split(',').map do |category_name|
+          Category.find_or_create_by(:name => category_name)
         end
-        @payment.categories = categories
       end
 
       if @payment.update(attributes.except(:category))
