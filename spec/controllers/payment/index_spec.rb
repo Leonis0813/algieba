@@ -2,7 +2,7 @@
 require 'rails_helper'
 
 describe PaymentsController, :type => :controller do
-  shared_context '家計簿を検索する' do |params = {}, app_auth_header = CommonHelper.app_auth_header|
+  shared_context '収支情報を検索する' do |params = {}, app_auth_header = CommonHelper.app_auth_header|
     before(:all) do
       client.header('Authorization', app_auth_header)
       @res = client.get('/payments.json', params)
@@ -41,13 +41,23 @@ describe PaymentsController, :type => :controller do
       description = query.empty? ? '何も指定しない場合' : "#{query.keys.join(',')}を指定する場合"
 
       context description do
-        include_context '家計簿を検索する', query
+        include_context '収支情報を検索する', query
 
         it_behaves_like 'ステータスコードが正しいこと', '200'
 
+        it 'レスポンスボディのキーが正しいこと' do
+          @pbody.each {|body| expect(body.keys).to eq response_keys }
+        end
+
+        it 'カテゴリリソースのキーが正しいこと' do
+          @pbody.each do |body|
+            body['categories'].each {|category| expect(category.keys).to eq %w[ id name description ] }
+          end
+        end
+
         it 'レスポンスの属性値が正しいこと' do
           actual_payments = @pbody.map {|payment| payment.slice(*payment_params).symbolize_keys }
-          expected_payments = expected_payment_types.map {|key| test_payment[key].except(:id) }
+          expected_payments = expected_payment_types.map {|key| test_payment[key].except(:id, :category) }
           expect(actual_payments).to eq expected_payments
         end
       end
@@ -56,7 +66,7 @@ describe PaymentsController, :type => :controller do
 
   describe '異常系' do
     context 'Authorizationヘッダーがない場合' do
-      include_context '家計簿を検索する', {}, nil
+      include_context '収支情報を検索する', {}, nil
       it_behaves_like '400エラーをチェックする', ['absent_header']
     end
 
@@ -75,7 +85,7 @@ describe PaymentsController, :type => :controller do
       },
     ].each do |query|
       context "#{query.keys.join(',')}が不正な場合" do
-        include_context '家計簿を検索する', query
+        include_context '収支情報を検索する', query
         it_behaves_like '400エラーをチェックする', query.map {|key, _| "invalid_param_#{key}" }
       end
     end
