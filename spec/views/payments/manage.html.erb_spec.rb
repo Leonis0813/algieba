@@ -6,17 +6,20 @@ describe "payments/manage", :type => :view do
   per_page = 1
   param = {:payment_type => 'income', :date => '1000-01-01', :content => 'モジュールテスト用データ', :category => 'algieba', :price => 100}
 
-  shared_context 'HTML初期化' do
+  before(:all) { Category.create(:name => param[:category]) }
+  after(:all) { Category.destroy_all }
+
+    shared_context 'HTML初期化' do
     before(:all) { html = nil }
   end
 
   shared_context '収支情報を登録する' do |num|
     before(:all) do
-      num.times { Payment.create!(param) }
+      num.times { Payment.create!(param.except(:category)) }
       @payments = Payment.order(:date => :desc).page(1)
     end
 
-    after(:all) { Payment.delete_all }
+    after(:all) { Payment.destroy_all }
   end
 
   shared_examples '表示されている収支情報の数が正しいこと' do |expected_size|
@@ -95,13 +98,18 @@ describe "payments/manage", :type => :view do
       describe '<span>' do
         span_xpath = "#{form_xpath}/span[class='input-custom']"
 
-        %w[ date content category price ].each do |attribute|
+        %w[ date content categories price ].each do |attribute|
           it "payments_#{attribute}を含む<label>タグがあること" do
             expect(html).to have_selector("#{span_xpath}/label[for='payments_#{attribute}']", :text => I18n.t("views.payment.#{attribute}") + '：')
           end
 
-          it "payments[#{attribute}]を含む<input>タグがあること" do
+          it "payments[#{attribute}]を含む<input>タグがあること", :unless => attribute == 'categories' do
             xpath = "#{span_xpath}/input[type='text'][name='payments[#{attribute}]'][class='form-control'][required='required']"
+            expect(html).to have_selector(xpath, :text => '')
+          end
+
+          it "payments[category]を含む<input>タグがあること", :if => attribute == 'categories' do
+            xpath = "#{span_xpath}/input[type='text'][name='payments[category]'][class='form-control'][required='required']"
             expect(html).to have_selector(xpath, :text => '')
           end
         end
@@ -148,7 +156,7 @@ describe "payments/manage", :type => :view do
       end
 
       describe '<thead>' do
-        %w[ type date content category price ].each do |attribute|
+        %w[ type date content categories price ].each do |attribute|
           header = I18n.t("views.payment.#{attribute}")
 
           it "<th>#{header}</th>があること" do
