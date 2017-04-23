@@ -12,7 +12,7 @@ ja:
       expense: '支出'
       date: '日付'
       content: '内容'
-      category: 'カテゴリ'
+      categories: 'カテゴリ'
       price: '金額'
     submit: '登録'
     reset: 'リセット'

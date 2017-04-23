@@ -12,7 +12,7 @@ en:
       expense: 'Expense'
       date: 'Date'
       content: 'Content'
-      category: 'Category'
+      categories: 'Categories'
       price: 'Price'
     submit: 'Submit'
     reset: 'Reset'
