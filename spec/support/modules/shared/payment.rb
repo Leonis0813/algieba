@@ -11,7 +11,7 @@ shared_context '事前準備: クライアントアプリを作成する' do
   end
 end
 
-shared_context '事前準備: 家計簿を登録する' do
+shared_context '事前準備: 収支情報を登録する' do
   before(:all) do
     test_payment.each do |_, value|
       category_names = value[:category].split(',')

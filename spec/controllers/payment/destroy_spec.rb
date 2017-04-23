@@ -11,7 +11,7 @@ describe PaymentsController, :type => :controller do
   end
 
   include_context '事前準備: クライアントアプリを作成する'
-  include_context '事前準備: 家計簿を登録する'
+  include_context '事前準備: 収支情報を登録する'
 
   describe '正常系' do
     include_context '収支情報を削除する', PaymentHelper.test_payment[:income][:id]
