@@ -23,6 +23,7 @@ class ApplicationController < ActionController::Base
       return if User.find_by(:user_id => user_id, :password => password)
     end
     raise BadRequest.new('absent_header') unless request.headers['Authorization']
+    raise Unauthorized.new unless request.headers['Authorization'].match(/Basic (.+)/)
     credential = request.headers['Authorization'].match(/Basic (.+)/)[1]
     application_id, application_key = Base64.strict_decode64(credential).split(':')
     raise Unauthorized.new unless Client.find_by(:application_id => application_id, :application_key => application_key)

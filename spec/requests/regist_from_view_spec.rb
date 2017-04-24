@@ -3,10 +3,10 @@ require 'rails_helper'
 
 describe 'ブラウザから操作する', :type => :request do
   per_page =  Kaminari.config.default_per_page
-  default_inputs = {:date => '1000-01-01', :content => 'regist from view', :category => 'テスト', :price => 100}
+  default_inputs = {:date => '1000-01-01', :content => 'regist from view', :categories => 'テスト', :price => 100}
   color = {'収入' => 'success', '支出' => 'danger'}
 
-  shared_context '家計簿を登録する' do |inputs, payment_type|
+  shared_context '収支情報を登録する' do |inputs, payment_type|
     before(:all) do
       inputs.each {|key, value| @driver.find_element(:id, "payments_#{key}").send_keys(value.to_s) }
       @driver.find_element(:id, "payments_payment_type_#{payment_type}").click
@@ -20,7 +20,7 @@ describe 'ブラウザから操作する', :type => :request do
   end
 
   shared_examples '入力フォームが全て空であること' do
-    %w[ date content category price ].each do |column|
+    %w[ date content categories price ].each do |column|
       it { expect(@driver.find_element(:id, "payments_#{column}").text).to eq '' }
     end
   end
@@ -39,7 +39,7 @@ describe 'ブラウザから操作する', :type => :request do
     it { expect(@driver.find_element(:xpath, '//nav[@class="pagination"]')).to be }
   end
 
-  shared_examples '家計簿の数が正しいこと' do |expected_size|
+  shared_examples '収支情報の数が正しいこと' do |expected_size|
     it { expect(@driver.find_elements(:xpath, '//table/tbody/tr').size).to eq expected_size }
   end
 
@@ -60,7 +60,7 @@ describe 'ブラウザから操作する', :type => :request do
 
     header = {'Authorization' => app_auth_header}.merge(content_type_json)
     (per_page - 1 - size).times do
-      http_client.post("#{base_url}/payments", {:payments => payment}.to_json, header)
+      http_client.post("#{base_url}/payments", {:payments => payment.merge(:category => 'テスト')}.to_json, header)
     end
   end
 
@@ -95,10 +95,10 @@ describe 'ブラウザから操作する', :type => :request do
       it_behaves_like '入力フォームが全て空であること'
       it_behaves_like '表示されている件数が正しいこと', per_page - 1, 1, per_page - 1
       it_behaves_like 'ページングボタンが表示されていないこと'
-      it_behaves_like '家計簿の数が正しいこと', per_page - 1
+      it_behaves_like '収支情報の数が正しいこと', per_page - 1
 
-      describe '家計簿を登録する' do
-        include_context '家計簿を登録する', default_inputs.merge(:date => 'invalid_date'), 'income'
+      describe '収支情報を登録する' do
+        include_context '収支情報を登録する', default_inputs.merge(:date => 'invalid_date'), 'income'
 
         it 'エラーダイアログが表示されていること' do
           expect(@driver.find_element(:xpath, '//div[@class="bootbox modal fade bootbox-alert in"]')).to be
@@ -114,7 +114,7 @@ describe 'ブラウザから操作する', :type => :request do
 
         it_behaves_like '表示されている件数が正しいこと', per_page - 1, 1, per_page - 1
         it_behaves_like 'ページングボタンが表示されていないこと'
-        it_behaves_like '家計簿の数が正しいこと', per_page - 1
+        it_behaves_like '収支情報の数が正しいこと', per_page - 1
 
         describe '入力をリセットする' do
           before(:all) do
@@ -124,34 +124,34 @@ describe 'ブラウザから操作する', :type => :request do
           include_context 'リセットボタンを押す'
           it_behaves_like '入力フォームが全て空であること'
 
-          describe '家計簿を登録する' do
-            include_context '家計簿を登録する', default_inputs, 'expense'
+          describe '収支情報を登録する' do
+            include_context '収支情報を登録する', default_inputs, 'expense'
             it_behaves_like '表示されている件数が正しいこと', per_page, 1, per_page
             it_behaves_like 'ページングボタンが表示されていないこと'
-            it_behaves_like '家計簿の数が正しいこと', per_page
+            it_behaves_like '収支情報の数が正しいこと', per_page
             it_behaves_like '背景色が正しいこと'
 
-            describe '家計簿を登録する' do
+            describe '収支情報を登録する' do
               include_context 'リセットボタンを押す'
-              include_context '家計簿を登録する', default_inputs, 'income'
+              include_context '収支情報を登録する', default_inputs, 'income'
               it_behaves_like '表示されている件数が正しいこと', per_page + 1, 1, per_page
               it_behaves_like 'ページングボタンが表示されていること'
-              it_behaves_like '家計簿の数が正しいこと', per_page
+              it_behaves_like '収支情報の数が正しいこと', per_page
               it_behaves_like '背景色が正しいこと'
 
-              describe '家計簿を削除する' do
+              describe '収支情報を削除する' do
                 before(:all) do
                   @driver.find_element(:xpath, '//td[@class="delete"]/button').click
                   sleep 1
                 end
                 it_behaves_like '表示されている件数が正しいこと', per_page, 1, per_page
                 it_behaves_like 'ページングボタンが表示されていないこと'
-                it_behaves_like '家計簿の数が正しいこと', per_page
+                it_behaves_like '収支情報の数が正しいこと', per_page
                 it_behaves_like '背景色が正しいこと'
 
                 describe '2ページ目にアクセスする' do
                   include_context 'リセットボタンを押す'
-                  include_context '家計簿を登録する', default_inputs, 'income'
+                  include_context '収支情報を登録する', default_inputs, 'income'
                   before(:all) do
                     @driver.find_element(:xpath, '//span[@class="next"]').click
                     wait = Selenium::WebDriver::Wait.new(:timeout => 10)
@@ -160,7 +160,7 @@ describe 'ブラウザから操作する', :type => :request do
 
                   it_behaves_like '表示されている件数が正しいこと', per_page + 1, per_page + 1, per_page + 1
                   it_behaves_like 'ページングボタンが表示されていること'
-                  it_behaves_like '家計簿の数が正しいこと', 1
+                  it_behaves_like '収支情報の数が正しいこと', 1
                   it_behaves_like '背景色が正しいこと'
                 end
               end

@@ -2,8 +2,9 @@
 case Rails.env
 when 'development'
   [
-    Payment.new(:id => 1, :payment_type => 'expense', :date => '1000-01-01', :content => 'システムテスト用データ', :category => 'zosma', :price => 100),
-    Payment.new(:id => 2, :payment_type => 'income', :date => '1000-01-01', :content => 'システムテスト用データ', :category => 'zosma', :price => 100),
+    Category.new(:name => 'zosma'),
+    Payment.new(:id => 1, :payment_type => 'expense', :date => '1000-01-01', :content => 'システムテスト用データ', :price => 100),
+    Payment.new(:id => 2, :payment_type => 'income', :date => '1000-01-01', :content => 'システムテスト用データ', :price => 100),
     User.new(:id => 1, :user_id => 'test_user_id', :password => 'test_user_pass'),
     Client.new(:id => 1, :application_id => 'test_app_id', :application_key => 'test_app_key'),
   ].each do |object|
