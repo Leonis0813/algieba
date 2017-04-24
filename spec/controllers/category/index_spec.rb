@@ -14,10 +14,7 @@ describe CategoriesController, :type => :controller do
   include_context '事前準備: 収支情報を登録する'
 
   describe '正常系' do
-    [
-      ['algieba', 1],
-      ['not_exist', 0],
-    ].each do |keyword, size|
+    [['algieba', 1], ['not_exist', 0]].each do |keyword, size|
       context "#{keyword}を指定した場合" do
         include_context 'カテゴリを検索する', {:keyword => keyword}
 
@@ -49,6 +46,11 @@ describe CategoriesController, :type => :controller do
     context 'Authorizationヘッダーがない場合' do
       include_context 'カテゴリを検索する', {:keyword => 'algieba'}, nil
       it_behaves_like '400エラーをチェックする', ['absent_header']
+    end
+
+    context 'Authorizationヘッダーが不正な場合' do
+      include_context 'カテゴリを検索する', {:keyword => 'algieba'}, 'invalid'
+      it_behaves_like 'ステータスコードが正しいこと', '401'
     end
   end
 end

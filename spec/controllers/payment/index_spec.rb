@@ -44,16 +44,8 @@ describe PaymentsController, :type => :controller do
         include_context '収支情報を検索する', query
 
         it_behaves_like 'ステータスコードが正しいこと', '200'
-
-        it 'レスポンスボディのキーが正しいこと' do
-          @pbody.each {|body| expect(body.keys).to eq response_keys }
-        end
-
-        it 'カテゴリリソースのキーが正しいこと' do
-          @pbody.each do |body|
-            body['categories'].each {|category| expect(category.keys).to eq %w[ id name description ] }
-          end
-        end
+        it_behaves_like '収支情報リソースのキーが正しいこと'
+        it_behaves_like 'カテゴリリソースのキーが正しいこと'
 
         it 'レスポンスの属性値が正しいこと' do
           actual_payments = @pbody.map {|payment| payment.slice(*payment_params).symbolize_keys }

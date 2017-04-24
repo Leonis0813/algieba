@@ -11,6 +11,7 @@ describe PaymentsController, :type => :controller do
   end
 
   include_context '事前準備: クライアントアプリを作成する'
+  after(:all) { Category.destroy_all }
 
   describe '正常系' do
     base_payment = PaymentHelper.test_payment[:income]

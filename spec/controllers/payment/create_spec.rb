@@ -25,16 +25,8 @@ describe PaymentsController, :type => :controller do
         include_context '収支情報を登録する', {:payments => payment}
 
         it_behaves_like 'ステータスコードが正しいこと', '201'
-
-        it 'レスポンスボディのキーが正しいこと' do
-          expect(@pbody.keys).to eq response_keys
-        end
-
-        it 'カテゴリリソースのキーが正しいこと' do
-          @pbody['categories'].each do |category|
-            expect(category.keys).to eq %w[ id name description ]
-          end
-        end
+        it_behaves_like '収支情報リソースのキーが正しいこと'
+        it_behaves_like 'カテゴリリソースのキーが正しいこと'
 
         (PaymentHelper.payment_params - ['category']).each do |attribute|
           it "#{attribute}の値が正しいこと" do
@@ -54,6 +46,11 @@ describe PaymentsController, :type => :controller do
     context 'Authorizationヘッダーがない場合' do
       include_context '収支情報を登録する', {:payments => PaymentHelper.test_payment[:income]}, nil
       it_behaves_like '400エラーをチェックする', ['absent_header']
+    end
+
+    context 'Authorizationヘッダーが不正な場合' do
+      include_context '収支情報を登録する', {:payments => PaymentHelper.test_payment[:income]}, 'invalid'
+      it_behaves_like 'ステータスコードが正しいこと', '401'
     end
 
     payment_params = PaymentHelper.payment_params.map(&:to_sym)
