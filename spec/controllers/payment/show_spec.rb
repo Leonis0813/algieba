@@ -15,28 +15,23 @@ describe PaymentsController, :type => :controller do
 
   describe '正常系' do
     payment = PaymentHelper.test_payment[:income]
-
     include_context '収支情報を取得する', payment[:id]
-
     it_behaves_like 'ステータスコードが正しいこと', '200'
     it_behaves_like '収支情報リソースのキーが正しいこと'
     it_behaves_like 'カテゴリリソースのキーが正しいこと'
-
-    it 'レスポンスの属性値が正しいこと' do
-      actual_payment = @pbody.slice(*payment_params).symbolize_keys
-      expect(actual_payment).to eq payment.except(:id, :category)
-    end
-
-    it "カテゴリリソースの名前が#{payment[:category].split(',').sort}であること" do
-      actual_categories = @pbody['categories'].map {|category| category['name'] }.sort
-      expect(actual_categories).to eq payment[:category].split(',').sort
-    end
+    it_behaves_like '収支情報リソースの属性値が正しいこと', payment.except(:id, :category)
+    it_behaves_like 'カテゴリリソースの属性値が正しいこと', [payment[:category].split(',').sort]
   end
 
   describe '異常系' do
     context 'Authorizationヘッダーがない場合' do
       include_context '収支情報を取得する', PaymentHelper.test_payment[:income][:id], nil
       it_behaves_like '400エラーをチェックする', ['absent_header']
+    end
+
+    context 'Authorizationヘッダーが不正な場合' do
+      include_context '収支情報を取得する', PaymentHelper.test_payment[:income][:id], 'invalid'
+      it_behaves_like 'ステータスコードが正しいこと', '401'
     end
 
     context '存在しないidを指定した場合' do

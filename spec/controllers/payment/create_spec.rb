@@ -23,21 +23,11 @@ describe PaymentsController, :type => :controller do
       context description do
         after(:all) { Payment.where(payment.except(:id, :category)).destroy_all }
         include_context '収支情報を登録する', {:payments => payment}
-
         it_behaves_like 'ステータスコードが正しいこと', '201'
         it_behaves_like '収支情報リソースのキーが正しいこと'
         it_behaves_like 'カテゴリリソースのキーが正しいこと'
-
-        (PaymentHelper.payment_params - ['category']).each do |attribute|
-          it "#{attribute}の値が正しいこと" do
-            expect(@pbody[attribute]).to eq payment[attribute.to_sym]
-          end
-        end
-
-        it "カテゴリリソースの名前が#{payment[:category].split(',').sort}であること" do
-          actual_categories = @pbody['categories'].map {|category| category['name'] }.sort
-          expect(actual_categories).to eq payment[:category].split(',').sort
-        end
+        it_behaves_like '収支情報リソースの属性値が正しいこと', payment.except(:id, :category)
+        it_behaves_like 'カテゴリリソースの属性値が正しいこと', [payment[:category].split(',').sort]
       end
     end
   end

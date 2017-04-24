@@ -36,24 +36,11 @@ describe PaymentsController, :type => :controller do
       context description do
         include_context '事前準備: 収支情報を登録する'
         include_context '収支情報を更新する', base_payment[:id], params
-
         it_behaves_like 'ステータスコードが正しいこと', '200'
-
-        it 'カテゴリリソースのキーが正しいこと' do
-          @pbody['categories'].each do |category|
-            expect(category.keys).to eq %w[ id name description ]
-          end
-        end
-
-        it 'レスポンスの属性値が正しいこと' do
-          actual_payment = @pbody.slice(*payment_params).symbolize_keys
-          expect(actual_payment).to eq base_payment.merge(params).except(:id, :category)
-        end
-
-        it "カテゴリリソースの名前が#{base_payment.merge(params)[:category].split(',').sort}であること" do
-          actual_categories = @pbody['categories'].map {|category| category['name'] }.sort
-          expect(actual_categories).to eq base_payment.merge(params)[:category].split(',').sort
-        end
+        it_behaves_like '収支情報リソースのキーが正しいこと'
+        it_behaves_like 'カテゴリリソースのキーが正しいこと'
+        it_behaves_like '収支情報リソースの属性値が正しいこと', base_payment.merge(params).except(:id, :category)
+        it_behaves_like 'カテゴリリソースの属性値が正しいこと', [base_payment.merge(params)[:category].split(',').sort]
       end
     end
 
@@ -97,6 +84,11 @@ describe PaymentsController, :type => :controller do
     context 'Authorizationヘッダーがない場合' do
       include_context '収支情報を更新する', PaymentHelper.test_payment[:income][:id], {}, nil
       it_behaves_like '400エラーをチェックする', ['absent_header']
+    end
+
+    context 'Authorizationヘッダーが不正な場合' do
+      include_context '収支情報を更新する', PaymentHelper.test_payment[:income][:id], {}, 'invalid'
+      it_behaves_like 'ステータスコードが正しいこと', '401'
     end
 
     [

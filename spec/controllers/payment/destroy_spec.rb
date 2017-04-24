@@ -24,6 +24,11 @@ describe PaymentsController, :type => :controller do
       it_behaves_like '400エラーをチェックする', ['absent_header']
     end
 
+    context 'Authorizationヘッダーが不正な場合' do
+      include_context '収支情報を削除する', PaymentHelper.test_payment[:income][:id], 'invalid'
+      it_behaves_like 'ステータスコードが正しいこと', '401'
+    end
+
     context '存在しないidを指定した場合' do
       include_context '収支情報を削除する', 100
       it_behaves_like 'ステータスコードが正しいこと', '404'

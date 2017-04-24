@@ -39,19 +39,20 @@ describe PaymentsController, :type => :controller do
       [{}, [:income, :expense]],
     ].each do |query, expected_payment_types|
       description = query.empty? ? '何も指定しない場合' : "#{query.keys.join(',')}を指定する場合"
+      expected_payments = expected_payment_types.map do |key|
+        PaymentHelper.test_payment[key].except(:id, :category)
+      end
+      expected_categories = expected_payment_types.map do |key|
+        PaymentHelper.test_payment[key][:category].split(',')
+      end.sort
 
       context description do
         include_context '収支情報を検索する', query
-
         it_behaves_like 'ステータスコードが正しいこと', '200'
         it_behaves_like '収支情報リソースのキーが正しいこと'
         it_behaves_like 'カテゴリリソースのキーが正しいこと'
-
-        it 'レスポンスの属性値が正しいこと' do
-          actual_payments = @pbody.map {|payment| payment.slice(*payment_params).symbolize_keys }
-          expected_payments = expected_payment_types.map {|key| test_payment[key].except(:id, :category) }
-          expect(actual_payments).to eq expected_payments
-        end
+        it_behaves_like '収支情報リソースの属性値が正しいこと', expected_payments
+        it_behaves_like 'カテゴリリソースの属性値が正しいこと', expected_categories
       end
     end
   end
@@ -60,6 +61,11 @@ describe PaymentsController, :type => :controller do
     context 'Authorizationヘッダーがない場合' do
       include_context '収支情報を検索する', {}, nil
       it_behaves_like '400エラーをチェックする', ['absent_header']
+    end
+
+    context 'Authorizationヘッダーが不正な場合' do
+      include_context '収支情報を検索する', {}, 'invalid'
+      it_behaves_like 'ステータスコードが正しいこと', '401'
     end
 
     [

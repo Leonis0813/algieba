@@ -37,6 +37,11 @@ describe PaymentsController, :type => :controller do
       it_behaves_like '400エラーをチェックする', ['absent_header']
     end
 
+    context 'Authorizationヘッダーが不正な場合' do
+      include_context '収支を計算する', {:interval => 'yearly'}, 'invalid'
+      it_behaves_like 'ステータスコードが正しいこと', '401'
+    end
+
     [[nil, 'absent'], ['invalid_interval', 'invalid']].each do |interval, message|
       context "#{interval || 'nil'}を指定する場合" do
         include_context '収支を計算する', {:interval => interval}
