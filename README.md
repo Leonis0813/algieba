@@ -12,14 +12,15 @@
 
 ## APIs
 
-|HTTP Method|Path           |Description    |
-|:----------|:--------------|:--------------|
-|POST       |/payments      |create payment |
-|GET        |/payments/[:id]|read payment   |
-|GET        |/payments      |search payments|
-|PUT        |/payments/[:id]|update payment |
-|DELETE     |/payments/[:id]|delete payment |
-|GET        |/settlement    |settle up      |
+|HTTP Method|Path           |Description      |
+|:----------|:--------------|:----------------|
+|POST       |/payments      |create payment   |
+|GET        |/payments/[:id]|read payment     |
+|GET        |/payments      |search payments  |
+|PUT        |/payments/[:id]|update payment   |
+|DELETE     |/payments/[:id]|delete payment   |
+|GET        |/settlement    |settle up        |
+|GET        |/categories    |search categories|
 
 ## Deployment
 
