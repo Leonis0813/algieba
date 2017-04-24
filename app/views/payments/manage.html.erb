@@ -3,7 +3,7 @@
     <%= f.label :date, t('views.payment.date').html_safe + '：' %><%= f.text_field :date, {:class => 'form-control', :required => true} %>
   </span>
   <span class='input-custom'>
-    <%= f.label :content, t('views.payment.content').html_safe + '：' %><%= f.text_field :content, {:class => 'form-control', :required => true, :size => 100, :class => 'form-control'} %>
+    <%= f.label :content, t('views.payment.content').html_safe + '：' %><%= f.text_field :content, {:class => 'form-control', :required => true, :size => 100} %>
   </span>
   <span class='input-custom'>
     <%= f.label :categories, t('views.payment.categories').html_safe + '：' %><%= f.text_field :categories, {:name => 'payments[category]', :value => '', :class => 'form-control', :required => true} %>

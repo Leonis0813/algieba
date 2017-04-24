@@ -3,13 +3,10 @@ require 'rails_helper'
 
 describe Payment, :type => :model do
   describe '#settle' do
-    payments = [
-      {:payment_type => 'income', :date => '1000-01-01', :content => 'モジュールテスト用データ1', :category => 'algieba', :price => 1000},
-      {:payment_type => 'expense', :date => '1000-01-05', :content => 'モジュールテスト用データ2', :category => 'algieba', :price => 100},
-    ]
-
-    before(:all) { payments.each {|payment| Payment.create!(payment) } }
-    after(:all) { Payment.delete_all }
+    include_context '事前準備: 収支情報を登録する', [
+                      {:payment_type => 'income', :date => '1000-01-01', :content => 'モジュールテスト用データ1', :category => 'algieba', :price => 1000},
+                      {:payment_type => 'expense', :date => '1000-01-05', :content => 'モジュールテスト用データ2', :category => 'algieba', :price => 100},
+                    ]
 
     describe '正常系' do
       [
@@ -29,11 +26,11 @@ describe Payment, :type => :model do
   end
 
   describe '#validates' do
-    valid_params = {:payment_type => 'income', :date => '1000-01-01', :content => 'モジュールテスト用データ', :category => 'algieba', :price => 1000}
+    valid_params = {:payment_type => 'income', :date => '1000-01-01', :content => 'モジュールテスト用データ', :price => 1000}
 
     shared_context 'Paymentオブジェクトを検証する' do |params|
       before(:all) do
-        @payment = Payment.new(params)
+        @payment = Payment.new(params.except(:category))
         @payment.validate
       end
     end
