@@ -1,6 +1,10 @@
 algieba
 =======
 
+- 2.5.0:
+  - [ADD] category resource
+  - [ADD] web api for searching categories
+
 - 2.4.0:
   - [ADD] delete button to ui
 
