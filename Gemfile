@@ -20,6 +20,7 @@ gem 'bootbox-rails'
 
 group :development, :test do
   gem 'rspec-rails'
+  gem 'rspec-power_assert'
   gem 'capybara'
   gem 'capybara-mechanize'
   gem 'headless'
