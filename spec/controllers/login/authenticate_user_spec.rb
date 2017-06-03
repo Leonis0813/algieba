@@ -46,7 +46,7 @@ describe LoginController, :type => :controller do
       it_behaves_like 'Locationヘッダーが正しいこと', "#{Capybara.app_host}/login"
 
       it 'cookieがセットされていないこと' do
-        is_asserted_by { not client.response.headers.include('Set-Cookie') }
+        is_asserted_by { not client.response.headers.include?('Set-Cookie') }
       end
     end
   end
