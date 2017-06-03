@@ -9,7 +9,7 @@ describe "payments/manage", :type => :view do
   before(:all) { Category.create(:name => param[:category]) }
   after(:all) { Category.destroy_all }
 
-    shared_context 'HTML初期化' do
+  shared_context 'HTML初期化' do
     before(:all) { html = nil }
   end
 
@@ -35,9 +35,9 @@ describe "payments/manage", :type => :view do
       matched_data = html.gsub("\n", '').match(/<td\s*class='(?<color>.*?)'\s*>(?<payment_type>.*?)<\/td>/)
       case matched_data[:payment_type]
       when I18n.t('views.payment.income')
-        expect(matched_data[:color]).to eq('success')
+        is_asserted_by { matched_data[:color] == 'success' }
       when I18n.t('views.payment.expense')
-        expect(matched_data[:color]).to eq('danger')
+        is_asserted_by { matched_data[:color] == 'danger' }
       end
     end
   end

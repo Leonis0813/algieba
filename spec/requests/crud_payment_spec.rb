@@ -43,7 +43,7 @@ describe '収支情報を管理する', :type => :request do
           it_behaves_like 'レスポンスボディのキーが正しいこと', CategoryHelper.response_keys
 
           it 'カテゴリにalgiebaが含まれていること' do
-            expect(@pbody.map {|body| body['name'] }).to include category
+            is_asserted_by { @pbody.map {|body| body['name'] }.include?(category) }
           end
 
           describe '収支情報を取得する' do
@@ -63,7 +63,7 @@ describe '収支情報を管理する', :type => :request do
               it_behaves_like 'レスポンスボディのキーが正しいこと', PaymentHelper.response_keys
 
               it '収支情報が更新されていること' do
-                expect(@pbody['categories'].first['name']).to eq 'other'
+                is_asserted_by { @pbody['categories'].first['name'] == 'other' }
               end
 
               describe 'カテゴリを検索する' do
@@ -72,7 +72,7 @@ describe '収支情報を管理する', :type => :request do
                 it_behaves_like 'レスポンスボディのキーが正しいこと', CategoryHelper.response_keys
 
                 it 'カテゴリにotherが含まれていること' do
-                  expect(@pbody.map {|body| body['name'] }).to include 'other'
+                  is_asserted_by { @pbody.map {|body| body['name'] }.include?('other') }
                 end
 
                 describe '収支情報を検索する' do
@@ -102,7 +102,7 @@ describe '収支情報を管理する', :type => :request do
 
                       %w[ algieba other ].each do |category|
                         it "カテゴリに#{category}が含まれていること" do
-                          expect(@pbody.map {|body| body['name'] }).to include category
+                          is_asserted_by { @pbody.map {|body| body['name'] }.include?(category) }
                         end
                       end
                     end

@@ -17,7 +17,7 @@ describe Client, :type => :model do
     end
 
     it "#{expected}が返ること" do
-      expect(@actual).to eq expected
+      is_asserted_by { @actual == expected }
     end
   end
 
@@ -30,7 +30,7 @@ describe Client, :type => :model do
     end
 
     it "#{expected}が返ること" do
-      expect(@actual).to eq expected
+      is_asserted_by { @actual == expected }
     end
   end
 end
