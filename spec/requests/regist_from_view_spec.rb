@@ -21,12 +21,12 @@ describe 'ブラウザから操作する', :type => :request do
 
   shared_examples '入力フォームが全て空であること' do
     %w[ date content categories price ].each do |column|
-      it { expect(@driver.find_element(:id, "payments_#{column}").text).to eq '' }
+      it_is_asserted_by { @driver.find_element(:id, "payments_#{column}").text == '' }
     end
   end
 
   shared_examples '表示されている件数が正しいこと' do |total, from, to|
-    it { expect(@driver.find_element(:xpath, '//div[@class="row row-center"]/div').text).to eq "#{total}件中#{from}〜#{to}件を表示" }
+    it_is_asserted_by { @driver.find_element(:xpath, '//div[@class="row row-center"]/div').text == "#{total}件中#{from}〜#{to}件を表示" }
   end
 
   shared_examples 'ページングボタンが表示されていないこと' do
@@ -36,18 +36,18 @@ describe 'ブラウザから操作する', :type => :request do
   end
 
   shared_examples 'ページングボタンが表示されていること' do
-    it { expect(@driver.find_element(:xpath, '//nav[@class="pagination"]')).to be }
+    it_is_asserted_by { @driver.find_element(:xpath, '//nav[@class="pagination"]') }
   end
 
   shared_examples '収支情報の数が正しいこと' do |expected_size|
-    it { expect(@driver.find_elements(:xpath, '//table/tbody/tr').size).to eq expected_size }
+    it_is_asserted_by { @driver.find_elements(:xpath, '//table/tbody/tr').size == expected_size }
   end
 
   shared_examples '背景色が正しいこと' do
     it do
       @driver.find_elements(:xpath, '//table/tbody/tr').each do |element|
         type = element.find_element(:xpath, './td').text
-        expect(element.find_element(:xpath, "./td[@class='#{color[type]}']")).to be
+        is_asserted_by { element.find_element(:xpath, "./td[@class='#{color[type]}']") }
       end
     end
   end
@@ -78,7 +78,7 @@ describe 'ブラウザから操作する', :type => :request do
     end
 
     it 'ログイン画面にリダイレクトされていること' do
-      expect(@driver.current_url).to eq "#{base_url}/login"
+      is_asserted_by { @driver.current_url == "#{base_url}/login" }
     end
 
     describe 'ログインする' do
@@ -89,7 +89,7 @@ describe 'ブラウザから操作する', :type => :request do
       end
 
       it '管理画面が開いていること' do
-        expect(@driver.current_url).to eq "#{base_url}/"
+        is_asserted_by { @driver.current_url == "#{base_url}/" }
       end
 
       it_behaves_like '入力フォームが全て空であること'
@@ -101,15 +101,15 @@ describe 'ブラウザから操作する', :type => :request do
         include_context '収支情報を登録する', default_inputs.merge(:date => 'invalid_date'), 'income'
 
         it 'エラーダイアログが表示されていること' do
-          expect(@driver.find_element(:xpath, '//div[@class="bootbox modal fade bootbox-alert in"]')).to be
+          is_asserted_by { @driver.find_element(:xpath, '//div[@class="bootbox modal fade bootbox-alert in"]') }
         end
 
         it 'ダイアログのタイトルが正しいこと' do
-          expect(@driver.find_element(:xpath, '//h4[@class="modal-title"]').text).to eq 'エラー'
+          is_asserted_by { @driver.find_element(:xpath, '//h4[@class="modal-title"]').text == 'エラー' }
         end
 
         it 'エラーメッセージが正しいこと' do
-          expect(@driver.find_element(:xpath, '//div[@class="text-center alert alert-danger"]').text).to eq '日付 が不正です'
+          is_asserted_by { @driver.find_element(:xpath, '//div[@class="text-center alert alert-danger"]').text == '日付 が不正です' }
         end
 
         it_behaves_like '表示されている件数が正しいこと', per_page - 1, 1, per_page - 1
