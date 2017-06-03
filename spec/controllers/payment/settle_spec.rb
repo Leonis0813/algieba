@@ -25,7 +25,7 @@ describe PaymentsController, :type => :controller do
         it_behaves_like 'ステータスコードが正しいこと', '200'
 
         it '計算結果が正しいこと' do
-          expect(@pbody).to eq expected_settlement
+          is_asserted_by { @pbody == expected_settlement }
         end
       end
     end

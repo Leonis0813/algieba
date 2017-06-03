@@ -21,11 +21,11 @@ describe CategoriesController, :type => :controller do
         it_behaves_like 'ステータスコードが正しいこと', '200'
 
         it "レスポンスボディの配列のサイズが#{size}であること" do
-          expect(@pbody.size).to eq size
+          is_asserted_by { @pbody.size == size }
         end
 
         it "カテゴリ名が#{keyword}であること", :if => size > 0 do
-          expect(@pbody.first['name']).to eq keyword
+          is_asserted_by { @pbody.first['name'] == keyword }
         end
       end
     end
@@ -37,7 +37,7 @@ describe CategoriesController, :type => :controller do
 
       it '全てのカテゴリ情報が取得されていること' do
         actual_categories = @pbody.map {|category| category['name'] }.sort
-        expect(actual_categories).to eq Category.order(:name).pluck(:name)
+        is_asserted_by { actual_categories == Category.order(:name).pluck(:name) }
       end
     end
   end

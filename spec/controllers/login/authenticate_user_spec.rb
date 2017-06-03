@@ -9,7 +9,7 @@ describe LoginController, :type => :controller do
   end
 
   shared_examples 'Locationヘッダーが正しいこと' do |expected_url|
-    it { expect(@res.headers['Location']).to eq expected_url }
+    it_is_asserted_by { @res.headers['Location'] == expected_url }
   end
 
   describe '正常系' do
@@ -29,11 +29,11 @@ describe LoginController, :type => :controller do
       it_behaves_like 'Locationヘッダーが正しいこと', "#{Capybara.app_host}/"
 
       it 'cookieがセットされていること' do
-        expect(@user_cookie).to be
+        is_asserted_by { @user_cookie }
 
         ticket = URI.decode(@user_cookie.match(/\Aalgieba=(?<ticket>.+)\z/)[:ticket])
         user_id, password = Base64.strict_decode64(ticket).split(':')
-        expect({:user_id => user_id, :password => password}).to eq test_user_params
+        is_asserted_by { {:user_id => user_id, :password => password} == test_user_params }
       end
     end
   end
@@ -46,7 +46,7 @@ describe LoginController, :type => :controller do
       it_behaves_like 'Locationヘッダーが正しいこと', "#{Capybara.app_host}/login"
 
       it 'cookieがセットされていないこと' do
-        expect(client.response.headers).not_to include('Set-Cookie')
+        is_asserted_by { not client.response.headers.include('Set-Cookie') }
       end
     end
   end

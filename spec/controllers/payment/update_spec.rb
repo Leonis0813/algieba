@@ -57,24 +57,24 @@ describe PaymentsController, :type => :controller do
         it_behaves_like 'ステータスコードが正しいこと', '200'
 
         it 'レスポンスボディのキーが正しいこと' do
-          expect(@pbody.keys).to eq response_keys
+          is_asserted_by { @pbody.keys == response_keys }
         end
 
         it 'カテゴリリソースのキーが正しいこと' do
           @pbody['categories'].each do |category|
-            expect(category.keys).to eq %w[ id name description ]
+            is_asserted_by { category.keys == %w[ id name description ] }
           end
         end
 
         (PaymentHelper.payment_params - ['category']).each do |attribute|
           it "#{attribute}の値が正しいこと" do
-            expect(@pbody[attribute]).to eq base_payment[attribute.to_sym]
+            is_asserted_by { @pbody[attribute] == base_payment[attribute.to_sym] }
           end
         end
 
         it "カテゴリリソースの名前が#{base_payment[:category].split(',').sort}であること" do
           actual_categories = @pbody['categories'].map {|category| category['name'] }.sort
-          expect(actual_categories).to eq base_payment.merge(params)[:category].split(',').sort
+          is_asserted_by { actual_categories == base_payment.merge(params)[:category].split(',').sort }
         end
       end
     end
