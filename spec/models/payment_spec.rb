@@ -18,7 +18,7 @@ describe Payment, :type => :model do
           before(:all) { @settlement = Payment.settle(interval) }
 
           it '計算結果が正しいこと' do
-            expect(@settlement).to eq settlement
+            is_asserted_by { @settlement == settlement }
           end
         end
       end
@@ -36,7 +36,7 @@ describe Payment, :type => :model do
     end
 
     shared_examples '検証結果が正しいこと' do |result|
-      it { expect(@payment.errors.empty?).to be result }
+      it_is_asserted_by { @payment.errors.empty? == result }
     end
 
     describe '正常系' do
@@ -62,7 +62,7 @@ describe Payment, :type => :model do
           it_behaves_like '検証結果が正しいこと', false
 
           it 'エラーメッセージが正しいこと' do
-            expect(@payment.errors.messages).to eq invalid_params.map {|key, _| [key, ['invalid']] }.to_h
+            is_asserted_by { @payment.errors.messages == invalid_params.map {|key, _| [key, ['invalid']] }.to_h }
           end
         end
       end

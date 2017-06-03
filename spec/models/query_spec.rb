@@ -11,11 +11,11 @@ describe Query, :type => :model do
     end
 
     shared_examples '検証結果が正しいこと' do |result|
-      it { expect(@query.errors.empty?).to be result }
+      it_is_asserted_by { @query.errors.empty? == result }
     end
 
     shared_examples 'エラーメッセージが正しいこと' do |expected_messages|
-      it { expect(@query.errors.messages).to eq expected_messages }
+      it_is_asserted_by { @query.errors.messages == expected_messages }
     end
 
     describe '正常系' do
