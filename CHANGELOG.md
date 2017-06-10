@@ -1,6 +1,9 @@
 algieba
 =======
 
+- 2.5.2:
+  - [ADD] rake task to dump database
+
 - 2.5.1:
   - [ADD] power assert
 
