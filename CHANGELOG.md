@@ -1,12 +1,22 @@
 algieba
 =======
 
+- 2.5.2:
+  - [ADD] rake task to dump database
+
+- 2.5.1:
+  - [ADD] power assert
+
+- 2.5.0:
+  - [ADD] category resource
+  - [ADD] web api to search categories
+
 - 2.4.0:
   - [ADD] delete button to ui
 
 - 2.3.1:
   - [ADD] rake task for unicorn
-  - [CHANGE] remote host when request spec
+  - [UPDATE] remote host when request spec
 
 - 2.3.0:
   - [ADD] reset button
@@ -15,13 +25,13 @@ algieba
   - [ADD] links for first & last page
 
 - 2.2.1:
-  - [REFACTOR] change model name
+  - [UPDATE] model name
 
 - 2.2.0:
   - [ADD] user and app authentication
 
 - 2.1.5:
-  - [CHANGE] management view
+  - [UPDATE] management view
 
 - 2.1.4:
   - [ADD] favicon
@@ -33,8 +43,8 @@ algieba
 
 - 2.1.2:
   - [FIX] XHR error
-  - [CHANGE] input width for content
-  - [REFACTOR] error handling
+  - [UPDATE] input width for content
+  - [UPDATE] error handling
 
 - 2.1.1:
   - [FIX] routing error for assets
@@ -53,7 +63,7 @@ algieba
   - [ADD] view for account registration
 
 - 1.0.3:
-  - [FIX] remove invalid_value exception
+  - [REMOVE] invalid_value exception
 
 - 1.0.2:
   - [ADD] rspec

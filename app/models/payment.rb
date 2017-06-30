@@ -1,4 +1,6 @@
 class Payment < ActiveRecord::Base
+  has_and_belongs_to_many :categories
+
   validates :payment_type, :inclusion => {:in => %w[ income expense ], :message => 'invalid'}
   validates :date, :presence => {:message => 'invalid'}
   validates :price, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0, :message => 'invalid'}
@@ -8,7 +10,7 @@ class Payment < ActiveRecord::Base
   scope :date_after, ->(date) { where('date >= ?', date) }
   scope :content_equal, ->(content) { where(:content => content) }
   scope :content_include, ->(content) { where('content LIKE ?', "%#{content}%") }
-  scope :category, ->(category) { where(:category => category) }
+  scope :category, ->(category) { joins(:categories).where('categories.name = ?', category) }
   scope :price_upper, ->(price) { where('price >= ?', price) }
   scope :price_lower, ->(price) { where('price <= ?', price) }
 

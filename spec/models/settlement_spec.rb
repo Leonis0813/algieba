@@ -11,7 +11,7 @@ describe Settlement, :type => :model do
     end
 
     shared_examples '検証結果が正しいこと' do |result|
-      it { expect(@settlement.errors.empty?).to be result }
+      it_is_asserted_by { @settlement.errors.empty? == result }
     end
 
     describe '正常系' do
@@ -30,7 +30,7 @@ describe Settlement, :type => :model do
           it_behaves_like '検証結果が正しいこと', false
 
           it 'エラーメッセージが正しいこと' do
-            expect(@settlement.errors.messages).to eq({:interval => [message]})
+            is_asserted_by { @settlement.errors.messages == {:interval => [message] } }
           end
         end
       end

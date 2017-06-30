@@ -11,7 +11,7 @@ describe PaymentsController, :type => :controller do
   end
 
   include_context '事前準備: クライアントアプリを作成する'
-  include_context '事前準備: 家計簿を登録する'
+  include_context '事前準備: 収支情報を登録する'
 
   describe '正常系' do
     [
@@ -25,7 +25,7 @@ describe PaymentsController, :type => :controller do
         it_behaves_like 'ステータスコードが正しいこと', '200'
 
         it '計算結果が正しいこと' do
-          expect(@pbody).to eq expected_settlement
+          is_asserted_by { @pbody == expected_settlement }
         end
       end
     end
@@ -35,6 +35,11 @@ describe PaymentsController, :type => :controller do
     context 'Authorizationヘッダーがない場合' do
       include_context '収支を計算する', {:interval => 'yearly'}, nil
       it_behaves_like '400エラーをチェックする', ['absent_header']
+    end
+
+    context 'Authorizationヘッダーが不正な場合' do
+      include_context '収支を計算する', {:interval => 'yearly'}, 'invalid'
+      it_behaves_like 'ステータスコードが正しいこと', '401'
     end
 
     [[nil, 'absent'], ['invalid_interval', 'invalid']].each do |interval, message|

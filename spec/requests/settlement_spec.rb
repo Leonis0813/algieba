@@ -33,10 +33,10 @@ describe '収支を計算する', :type => :request do
     end
   end
 
-  describe '家計簿を登録する' do
+  describe '収支情報を登録する' do
     include_context 'POST /payments', payment
 
-    describe '家計簿を検索する' do
+    describe '収支情報を検索する' do
       include_context 'GET /payments'
       it_behaves_like 'レスポンスボディのキーが正しいこと', PaymentHelper.response_keys
 
@@ -55,7 +55,7 @@ describe '収支を計算する', :type => :request do
           it_behaves_like 'ステータスコードが正しいこと', '200'
 
           it 'レスポンスボディのキーのフォーマットが正しいこと' do
-            @pbody.keys.each {|key| expect(key).to match(regex) }
+            @pbody.keys.each {|key| is_asserted_by { key.match(regex) } }
           end
         end
       end

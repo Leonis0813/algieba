@@ -17,6 +17,42 @@ end
 
 shared_examples 'レスポンスボディのキーが正しいこと' do |payment_keys|
   it do
-    Array.wrap(@pbody).each {|payment| expect(payment.keys.sort).to eq payment_keys.sort }
+    Array.wrap(@pbody).each do |payment|
+      is_asserted_by { payment.keys.sort == payment_keys.sort }
+    end
+  end
+end
+
+shared_examples '収支情報リソースのキーが正しいこと' do
+  it do
+    Array.wrap(@pbody).each do |payment|
+      is_asserted_by { payment.keys.sort == PaymentHelper.response_keys.sort }
+    end
+  end
+end
+
+shared_examples 'カテゴリリソースのキーが正しいこと' do
+  it do
+    Array.wrap(@pbody).each do |resource|
+      resource['categories'].each do |category|
+        is_asserted_by { category.keys.sort == CategoryHelper.response_keys.sort }
+      end
+    end
+  end
+end
+
+shared_examples '収支情報リソースの属性値が正しいこと' do |expected_payments|
+  it do
+    actual_payments = Array.wrap(@pbody).map {|payment| payment.slice(*payment_params).symbolize_keys }
+    is_asserted_by { actual_payments == Array.wrap(expected_payments) }
+  end
+end
+
+shared_examples 'カテゴリリソースの属性値が正しいこと' do |expected_categories|
+  it do
+    actual_categories = Array.wrap(@pbody).map do |body|
+      body['categories'].map {|category| category['name'] }.sort
+    end
+    is_asserted_by { actual_categories == expected_categories }
   end
 end
