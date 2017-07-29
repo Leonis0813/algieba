@@ -144,24 +144,40 @@ describe 'ブラウザから操作する', :type => :request do
                   @driver.find_element(:xpath, '//td[@class="delete"]/button').click
                   sleep 1
                 end
-                it_behaves_like '表示されている件数が正しいこと', per_page, 1, per_page
-                it_behaves_like 'ページングボタンが表示されていないこと'
-                it_behaves_like '収支情報の数が正しいこと', per_page
-                it_behaves_like '背景色が正しいこと'
 
-                describe '2ページ目にアクセスする' do
-                  include_context 'リセットボタンを押す'
-                  include_context '収支情報を登録する', default_inputs, 'income'
+                it '確認ダイアログが表示されていること' do
+                  is_asserted_by { @driver.find_element(:xpath, '//div[@class="bootbox modal fade bootbox-confirm in"]') }
+                end
+
+                it 'ダイアログのタイトルが正しいこと' do
+                  is_asserted_by { @driver.find_element(:xpath, '//div[@class="modal-body"]/div[@class="bootbox-body"]').text == '本当に削除しますか？' }
+                end
+
+                describe '削除を確定する' do
                   before(:all) do
-                    @driver.find_element(:xpath, '//span[@class="next"]').click
-                    wait = Selenium::WebDriver::Wait.new(:timeout => 10)
-                    wait.until { URI.parse(@driver.current_url).query == 'page=2' }
+                    @driver.find_element(:xpath, '//div[@class="modal-footer"]/button[@class="btn btn-success"]').click
+                    sleep 1
                   end
 
-                  it_behaves_like '表示されている件数が正しいこと', per_page + 1, per_page + 1, per_page + 1
-                  it_behaves_like 'ページングボタンが表示されていること'
-                  it_behaves_like '収支情報の数が正しいこと', 1
+                  it_behaves_like '表示されている件数が正しいこと', per_page, 1, per_page
+                  it_behaves_like 'ページングボタンが表示されていないこと'
+                  it_behaves_like '収支情報の数が正しいこと', per_page
                   it_behaves_like '背景色が正しいこと'
+
+                  describe '2ページ目にアクセスする' do
+                    include_context 'リセットボタンを押す'
+                    include_context '収支情報を登録する', default_inputs, 'income'
+                    before(:all) do
+                      @driver.find_element(:xpath, '//span[@class="next"]').click
+                      wait = Selenium::WebDriver::Wait.new(:timeout => 10)
+                      wait.until { URI.parse(@driver.current_url).query == 'page=2' }
+                    end
+
+                    it_behaves_like '表示されている件数が正しいこと', per_page + 1, per_page + 1, per_page + 1
+                    it_behaves_like 'ページングボタンが表示されていること'
+                    it_behaves_like '収支情報の数が正しいこと', 1
+                    it_behaves_like '背景色が正しいこと'
+                  end
                 end
               end
             end

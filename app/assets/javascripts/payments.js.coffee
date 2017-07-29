@@ -24,12 +24,28 @@ $ ->
 $ ->
   $('.delete')
     .on 'click', ->
-      $.ajax({
-        type: 'DELETE',
-        url: '/payments/' + $(@).children('button').attr('value')
-      }).done((data) ->
-        location.reload()
-        return
-      )
+      id = $(@).children('button').attr('value')
+      bootbox.confirm({
+        message: '本当に削除しますか？',
+        buttons: {
+          confirm: {
+            label: 'はい',
+            className: 'btn-success'
+          },
+          cancel: {
+            label: 'いいえ',
+            className: 'btn-danger'
+          }
+        },
+        callback: (result) ->
+          if result == true
+            $.ajax({
+              type: 'DELETE',
+              url: '/payments/' + id
+            }).done((data) ->
+              location.reload()
+              return
+            )
+      });
       return
     return

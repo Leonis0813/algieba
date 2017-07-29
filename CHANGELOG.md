@@ -1,6 +1,9 @@
 algieba
 =======
 
+- 2.6.0:
+  - [ADD] dialog to confirm deletion
+
 - 2.5.2:
   - [ADD] rake task to dump database
 
