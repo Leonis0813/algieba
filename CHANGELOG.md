@@ -1,5 +1,5 @@
 # 2.6.0 (2017/07/29)
- [ADD] dialog to confirm deletion
+- [ADD] dialog to confirm deletion
 
 # 2.5.2 (2017/06/10)
 - [ADD] rake task to dump database
