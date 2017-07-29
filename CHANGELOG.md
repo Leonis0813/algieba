@@ -1,79 +1,76 @@
-algieba
-=======
+# 2.6.0 (2017/07/29)
+- [ADD] dialog to confirm deletion
 
-- 2.6.0:
-  - [ADD] dialog to confirm deletion
+# 2.5.2 (2017/06/10)
+- [ADD] rake task to dump database
 
-- 2.5.2:
-  - [ADD] rake task to dump database
+# 2.5.1 (2017/06/03)
+- [ADD] power assert
 
-- 2.5.1:
-  - [ADD] power assert
+# 2.5.0 (2017/04/26)
+- [ADD] category resource
+- [ADD] web api to search categories
 
-- 2.5.0:
-  - [ADD] category resource
-  - [ADD] web api to search categories
+# 2.4.0 (2017/02/20)
+- [ADD] delete button to ui
 
-- 2.4.0:
-  - [ADD] delete button to ui
+# 2.3.1 (2017/02/12)
+- [ADD] rake task for unicorn
+- [UPDATE] remote host when request spec
 
-- 2.3.1:
-  - [ADD] rake task for unicorn
-  - [UPDATE] remote host when request spec
+# 2.3.0 (2016/12/14)
+- [ADD] reset button
+- [ADD] error notification
+- [ADD] total count
+- [ADD] links for first & last page
 
-- 2.3.0:
-  - [ADD] reset button
-  - [ADD] error notification
-  - [ADD] total count
-  - [ADD] links for first & last page
+# 2.2.1 (2016/12/11)
+- [UPDATE] model name
 
-- 2.2.1:
-  - [UPDATE] model name
+# 2.2.0 (2016/11/13)
+- [ADD] user and app authentication
 
-- 2.2.0:
-  - [ADD] user and app authentication
+# 2.1.5 (2016/11/03)
+- [UPDATE] management view
 
-- 2.1.5:
-  - [UPDATE] management view
+# 2.1.4 (2016/10/08)
+- [ADD] favicon
+- [FIX] query for paging
+- [ADD] initial data
 
-- 2.1.4:
-  - [ADD] favicon
-  - [FIX] query for paging
-  - [ADD] initial data
+# 2.1.3 (2016/09/14)
+- [FIX] default format
 
-- 2.1.3:
-  - [FIX] default format
+# 2.1.2 (2016/09/12)
+- [FIX] XHR error
+- [UPDATE] input width for content
+- [UPDATE] error handling
 
-- 2.1.2:
-  - [FIX] XHR error
-  - [UPDATE] input width for content
-  - [UPDATE] error handling
+# 2.1.1 (2016/08/15)
+- [FIX] routing error for assets
 
-- 2.1.1:
-  - [FIX] routing error for assets
+# 2.1.0 (2016/08/15)
+- [ADD] pagination
 
-- 2.1.0:
-  - [ADD] pagination
+# 2.0.0 (2016/07/17)
+- [ADD] indexing api
 
-- 2.0.0:
-  - [ADD] indexing api
+# 1.1.1 (2016/06/05)
+- [ADD] exception class
+- [FIX] request spec
 
-- 1.1.1:
-  - [ADD] exception class
-  - [FIX] request spec
+# 1.1.0 (2016/06/04)
+- [ADD] view for account registration
 
-- 1.1.0:
-  - [ADD] view for account registration
+# 1.0.3 (2016/02/11)
+- [REMOVE] invalid_value exception
 
-- 1.0.3:
-  - [REMOVE] invalid_value exception
+# 1.0.2 (2016/01/31)
+- [ADD] rspec
 
-- 1.0.2:
-  - [ADD] rspec
+# 1.0.1 (2015/10/17)
+- [ADD] module and functional test
+- [FIX] controller and model for account
 
-- 1.0.1:
-  - [ADD] module and functional test
-  - [FIX] controller and model for account
-
-- 1.0.0:
-  - [NEW] create app
+# 1.0.0 (2015/08/23)
+- [NEW] create app
