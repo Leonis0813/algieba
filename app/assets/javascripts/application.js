@@ -14,5 +14,16 @@
 //= require jquery_ujs
 //= require twitter/bootstrap
 //= require bootbox
+//= require moment
+//= require moment/ja
+//= require bootstrap-datetimepicker
 //= require turbolinks
 //= require_tree .
+
+$(function(){
+    $('.datepicker').datetimepicker({
+	format: 'YYYY-MM-DD',
+	locale: 'ja',
+	dayViewHeaderFormat: 'YYYY年 MM月'
+    });
+});
