@@ -103,15 +103,24 @@ describe "payments/manage", :type => :view do
             expect(html).to have_selector("#{span_xpath}/label[for='payments_#{attribute}']", :text => I18n.t("views.payment.#{attribute}") + '：')
           end
 
-          it "payments[#{attribute}]を含む<input>タグがあること", :unless => attribute == 'categories' do
+          it "payments[#{attribute}]を含む<input>タグがあること", :unless => %w[ date categories ].include?(attribute) do
             xpath = "#{span_xpath}/input[type='text'][name='payments[#{attribute}]'][class='form-control'][required='required']"
             expect(html).to have_selector(xpath, :text => '')
           end
+        end
 
-          it "payments[category]を含む<input>タグがあること", :if => attribute == 'categories' do
-            xpath = "#{span_xpath}/input[type='text'][name='payments[category]'][class='form-control'][required='required']"
-            expect(html).to have_selector(xpath, :text => '')
-          end
+        it 'id=date-formを含む<span>タグがあること' do
+          expect(html).to have_selector("#{form_xpath}/span[id='date-form']")
+        end
+
+        it 'payments[date]を含む<input>タグがあること' do
+          xpath = "#{span_xpath}/input[type='text'][name='payments[date]'][class='form-control datepicker'][required='required']"
+          expect(html).to have_selector(xpath, :text => '')
+        end
+
+        it 'payments[category]を含む<input>タグがあること' do
+          xpath = "#{span_xpath}/input[type='text'][name='payments[category]'][class='form-control'][required='required']"
+          expect(html).to have_selector(xpath, :text => '')
         end
 
         %w[ income expense ].each do |payment_type|
