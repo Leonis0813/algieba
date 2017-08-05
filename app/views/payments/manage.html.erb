@@ -2,22 +2,22 @@
   <span class='input-custom' style='position: relative'>
     <%= f.label :date, t('views.payment.date').html_safe + '：' %><%= f.text_field :date, {:class => 'form-control datepicker', :required => true} %>
   </span>
-  <span class='input-custom' style='position: relative'>
+  <span class='input-custom'>
     <%= f.label :content, t('views.payment.content').html_safe + '：' %><%= f.text_field :content, {:class => 'form-control', :required => true, :size => 100} %>
   </span>
-  <span class='input-custom' style='position: relative'>
+  <span class='input-custom'>
     <%= f.label :categories, t('views.payment.categories').html_safe + '：' %><%= f.text_field :categories, {:name => 'payments[category]', :value => '', :class => 'form-control', :required => true} %>
   </span>
-  <span class='input-custom' style='position: relative'>
+  <span class='input-custom'>
     <%= f.label :price, t('views.payment.price').html_safe + '：' %><%= f.text_field :price, {:class => 'form-control', :required => true} %>
   </span>
   <% [[:income, {}], [:expense, {:checked => true}]].each do |payment_type, options| %>
-    <span class='input-custom' style='position: relative'>
+    <span class='input-custom'>
       <%= f.radio_button :payment_type, payment_type, options %><%= f.label "payment_type_#{payment_type}", t("views.payment.#{payment_type}").html_safe %>
     </span>
   <% end %>
-  <span class='input-custom' style='position: relative'><%= f.submit t('views.submit').html_safe, :class => 'btn btn-primary' %></span>
-  <span class='input-custom' style='position: relative'><%= f.submit t('views.reset'), :type => 'reset', :class => 'btn btn-primary' %></span>
+  <span class='input-custom'><%= f.submit t('views.submit').html_safe, :class => 'btn btn-primary' %></span>
+  <span class='input-custom'><%= f.submit t('views.reset'), :type => 'reset', :class => 'btn btn-primary' %></span>
 <% end %>
 
 <hr>
