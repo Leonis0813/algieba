@@ -98,7 +98,7 @@ describe 'ブラウザから操作する', :type => :request do
       it_behaves_like '収支情報の数が正しいこと', per_page - 1
 
       describe '収支情報を登録する' do
-        include_context '収支情報を登録する', default_inputs.merge(:date => 'invalid_date'), 'income'
+        include_context '収支情報を登録する', default_inputs.merge(:price => 'invalid_price'), 'income'
 
         it 'エラーダイアログが表示されていること' do
           is_asserted_by { @driver.find_element(:xpath, '//div[@class="bootbox modal fade bootbox-alert in"]') }
@@ -109,7 +109,7 @@ describe 'ブラウザから操作する', :type => :request do
         end
 
         it 'エラーメッセージが正しいこと' do
-          is_asserted_by { @driver.find_element(:xpath, '//div[@class="text-center alert alert-danger"]').text == '日付 が不正です' }
+          is_asserted_by { @driver.find_element(:xpath, '//div[@class="text-center alert alert-danger"]').text == '金額 が不正です' }
         end
 
         it_behaves_like '表示されている件数が正しいこと', per_page - 1, 1, per_page - 1
@@ -125,58 +125,75 @@ describe 'ブラウザから操作する', :type => :request do
           it_behaves_like '入力フォームが全て空であること'
 
           describe '収支情報を登録する' do
-            include_context '収支情報を登録する', default_inputs, 'expense'
+            include_context '収支情報を登録する', default_inputs.merge(:date => Date.today.strftime('%Y-%m-%d')), 'expense'
             it_behaves_like '表示されている件数が正しいこと', per_page, 1, per_page
             it_behaves_like 'ページングボタンが表示されていないこと'
             it_behaves_like '収支情報の数が正しいこと', per_page
             it_behaves_like '背景色が正しいこと'
 
-            describe '収支情報を登録する' do
-              include_context 'リセットボタンを押す'
-              include_context '収支情報を登録する', default_inputs, 'income'
-              it_behaves_like '表示されている件数が正しいこと', per_page + 1, 1, per_page
-              it_behaves_like 'ページングボタンが表示されていること'
-              it_behaves_like '収支情報の数が正しいこと', per_page
-              it_behaves_like '背景色が正しいこと'
+            describe 'カレンダーを表示する' do
+              before(:all) { @driver.find_element(:id, 'payments_date').click }
 
-              describe '収支情報を削除する' do
-                before(:all) do
-                  @driver.find_element(:xpath, '//td[@class="delete"]/button').click
-                  sleep 1
+              it 'カレンダーが表示されていること' do
+                is_asserted_by { @driver.find_element(:class, 'bootstrap-datetimepicker-widget') }
+              end
+
+              describe '日付を選択する' do
+                before(:all) { @driver.find_element(:class, 'today').click }
+
+                it 'カレンダーが表示されていないこと' do
+                  expect{ @driver.find_element(:class, 'bootstrap-datetimepicker-widget') }.to raise_error Selenium::WebDriver::Error::NoSuchElementError
                 end
 
-                it '確認ダイアログが表示されていること' do
-                  is_asserted_by { @driver.find_element(:xpath, '//div[@class="bootbox modal fade bootbox-confirm in"]') }
-                end
+                describe '収支情報を登録する' do
+                  include_context 'リセットボタンを押す'
+                  include_context '収支情報を登録する', default_inputs, 'income'
 
-                it 'ダイアログのタイトルが正しいこと' do
-                  is_asserted_by { @driver.find_element(:xpath, '//div[@class="modal-body"]/div[@class="bootbox-body"]').text == '本当に削除しますか？' }
-                end
-
-                describe '削除を確定する' do
-                  before(:all) do
-                    @driver.find_element(:xpath, '//div[@class="modal-footer"]/button[@class="btn btn-success"]').click
-                    sleep 1
-                  end
-
-                  it_behaves_like '表示されている件数が正しいこと', per_page, 1, per_page
-                  it_behaves_like 'ページングボタンが表示されていないこと'
+                  it_behaves_like '表示されている件数が正しいこと', per_page + 1, 1, per_page
+                  it_behaves_like 'ページングボタンが表示されていること'
                   it_behaves_like '収支情報の数が正しいこと', per_page
                   it_behaves_like '背景色が正しいこと'
 
-                  describe '2ページ目にアクセスする' do
-                    include_context 'リセットボタンを押す'
-                    include_context '収支情報を登録する', default_inputs, 'income'
+                  describe '収支情報を削除する' do
                     before(:all) do
-                      @driver.find_element(:xpath, '//span[@class="next"]').click
-                      wait = Selenium::WebDriver::Wait.new(:timeout => 10)
-                      wait.until { URI.parse(@driver.current_url).query == 'page=2' }
+                      @driver.find_element(:xpath, '//td[@class="delete"]/button').click
+                      sleep 1
                     end
 
-                    it_behaves_like '表示されている件数が正しいこと', per_page + 1, per_page + 1, per_page + 1
-                    it_behaves_like 'ページングボタンが表示されていること'
-                    it_behaves_like '収支情報の数が正しいこと', 1
-                    it_behaves_like '背景色が正しいこと'
+                    it '確認ダイアログが表示されていること' do
+                      is_asserted_by { @driver.find_element(:xpath, '//div[@class="bootbox modal fade bootbox-confirm in"]') }
+                    end
+
+                    it 'ダイアログのタイトルが正しいこと' do
+                      is_asserted_by { @driver.find_element(:xpath, '//div[@class="modal-body"]/div[@class="bootbox-body"]').text == '本当に削除しますか？' }
+                    end
+
+                    describe '削除を確定する' do
+                      before(:all) do
+                        @driver.find_element(:xpath, '//div[@class="modal-footer"]/button[@class="btn btn-success"]').click
+                        sleep 1
+                      end
+
+                      it_behaves_like '表示されている件数が正しいこと', per_page, 1, per_page
+                      it_behaves_like 'ページングボタンが表示されていないこと'
+                      it_behaves_like '収支情報の数が正しいこと', per_page
+                      it_behaves_like '背景色が正しいこと'
+
+                      describe '2ページ目にアクセスする' do
+                        include_context 'リセットボタンを押す'
+                        include_context '収支情報を登録する', default_inputs, 'income'
+                        before(:all) do
+                          @driver.find_element(:xpath, '//span[@class="next"]').click
+                          wait = Selenium::WebDriver::Wait.new(:timeout => 10)
+                          wait.until { URI.parse(@driver.current_url).query == 'page=2' }
+                        end
+
+                        it_behaves_like '表示されている件数が正しいこと', per_page + 1, per_page + 1, per_page + 1
+                        it_behaves_like 'ページングボタンが表示されていること'
+                        it_behaves_like '収支情報の数が正しいこと', 1
+                        it_behaves_like '背景色が正しいこと'
+                      end
+                    end
                   end
                 end
               end

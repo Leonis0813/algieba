@@ -1,3 +1,7 @@
+# 2.7.0 (2017/08/05)
+- [FIX] sql to index by content
+- [ADD] datetimepicker to date form
+
 # 2.6.0 (2017/07/29)
 - [ADD] dialog to confirm deletion
 
