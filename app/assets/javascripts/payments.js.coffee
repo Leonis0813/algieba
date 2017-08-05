@@ -49,3 +49,11 @@ $ ->
       });
       return
     return
+
+$ ->
+  $('.datepicker').datetimepicker({
+    format: 'YYYY-MM-DD',
+    locale: 'ja',
+    dayViewHeaderFormat: 'YYYY年 MM月'
+  })
+  return
