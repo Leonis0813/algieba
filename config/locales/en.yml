@@ -1,5 +1,6 @@
 en:
   views:
+    title: 'Account Book'
     pagination:
       first: '◀◀'
       previous: '◀'
