@@ -1,5 +1,6 @@
 ja:
   views:
+    title: '家計簿'
     pagination:
       first: '◀◀'
       previous: '◀'
