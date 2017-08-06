@@ -1,3 +1,6 @@
+# 2.7.1 (2017/08/06)
+- [UPDATE] view title
+
 # 2.7.0 (2017/08/05)
 - [FIX] sql to index by content
 - [ADD] datetimepicker to date form
