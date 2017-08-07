@@ -1,3 +1,6 @@
+# 2.7.2 (2017/08/07)
+- [REMOVE] test directory
+
 # 2.7.1 (2017/08/06)
 - [UPDATE] view title
 
