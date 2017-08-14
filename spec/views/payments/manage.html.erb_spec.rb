@@ -123,6 +123,11 @@ describe "payments/manage", :type => :view do
           expect(html).to have_selector(xpath, :text => '')
         end
 
+        it 'カテゴリ選択ボタンがあること' do
+          xpath = "#{span_xpath}/span[id='category-list']/button/span[@class='glyphicon glyphicon-list']"
+          expect(html).to have_selector(xpath)
+        end
+
         %w[ income expense ].each do |payment_type|
           it "value=#{payment_type}を持つラジオボタンがあること" do
             expect(html).to have_selector("#{span_xpath}/input[type='radio'][value='#{payment_type}']")
