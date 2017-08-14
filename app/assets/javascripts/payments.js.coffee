@@ -57,3 +57,19 @@ $ ->
     dayViewHeaderFormat: 'YYYY年 MM月'
   })
   return
+
+$ ->
+  $('#category-list')
+  .on 'click', ->
+    categories = $.map($(@).data('names'), (value) ->
+      return {text: value, value: value};
+    );
+    bootbox.prompt({
+      title: 'カテゴリを選択してください',
+      inputType: 'checkbox',
+      inputOptions: categories,
+      callback: (result) ->
+        if result
+          $('#payments_categories').val(result.join(','));
+    });
+    return
