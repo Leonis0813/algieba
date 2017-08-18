@@ -10,7 +10,7 @@ describe 'ブラウザから操作する', :type => :request do
     before(:all) do
       inputs.except(:categories).each {|key, value| @driver.find_element(:id, "payments_#{key}").send_keys(value.to_s) }
       @driver.find_element(:xpath, '//span[@id="category-list"]/button').click
-      @driver.find_element(:xpath, "//input[@value='#{inputs[:categories]}']").click
+      @wait.until { @driver.find_element(:xpath, "//input[@value='#{inputs[:categories]}']").click rescue false }
       @driver.find_element(:xpath, '//button[@data-bb-handler="confirm"]').click
       @wait.until { (not @driver.find_element(:xpath, '//div[@class="modal-body"]')) rescue true }
       @driver.find_element(:id, "payments_payment_type_#{payment_type}").click
@@ -108,7 +108,7 @@ describe 'ブラウザから操作する', :type => :request do
   describe '不正な収支情報を登録する' do
     include_context '収支情報を入力する', default_inputs.merge(:price => 'invalid_price'), 'income'
     include_context '登録ボタンを押す'
-    before(:all) { @wait.until { @driver.find_element(:xpath, '//div[@role="dialog"]') } }
+    before(:all) { @wait.until { not @driver.find_element(:class, 'modal-title').text.empty? } }
 
     it 'ダイアログのタイトルが正しいこと' do
       is_asserted_by { @driver.find_element(:xpath, '//h4[@class="modal-title"]').text == 'エラー' }
@@ -170,18 +170,22 @@ describe 'ブラウザから操作する', :type => :request do
     include_context '登録ボタンを押す'
     before(:all) { @wait.until { @driver.find_element(:xpath, '//div[@class="row row-center"]/div').text =~ /^#{per_page + 1}/ } }
 
-    after(:all) do
-      @driver.find_element(:xpath, '//button[@data-bb-handler="confirm"]').click
-      @wait.until { (not @driver.find_element(:xpath, '//div[@class="modal-body"]')) rescue true }
-    end
-
     it_behaves_like '表示されている件数が正しいこと', per_page + 1, 1, per_page
     it_behaves_like 'ページングボタンが表示されていること'
     it_behaves_like '収支情報の数が正しいこと', per_page
     it_behaves_like '背景色が正しいこと'
+  end
+
+  describe 'カテゴリ一覧を確認する' do
+    before(:all) { @driver.find_element(:xpath, '//span[@id="category-list"]/button').click }
+
+    after(:all) do
+      sleep 1
+      @driver.find_element(:xpath, '//button[@data-bb-handler="cancel"]').click
+      @wait.until { (not @driver.find_element(:xpath, '//div[@class="modal-body"]')) rescue true }
+    end
 
     it '新カテゴリが追加されていること' do
-      @driver.find_element(:xpath, '//span[@id="category-list"]/button').click
       is_asserted_by { @driver.find_element(:xpath, "//input[@value='新カテゴリ']") }
     end
   end
