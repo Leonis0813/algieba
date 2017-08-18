@@ -1,3 +1,7 @@
+# 2.8.0 (2017/08/18)
+- [ADD] button to select categories
+- [UPDATE] trash icon
+
 # 2.7.2 (2017/08/07)
 - [REMOVE] test directory
 

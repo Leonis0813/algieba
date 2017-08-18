@@ -7,7 +7,7 @@
   <td class='<%= td_class %>'><%= payment.price %></td>
   <td width='16' class='delete'>
     <%= button_tag(:class => 'btn btn-default btn-mini', :height => 16, :value => payment.id) do %>
-      <%= image_tag 'trash.png', :size => '16x16' %>
+      <span class='glyphicon glyphicon-trash' />
     <% end %>
   </td>
 </tr>
