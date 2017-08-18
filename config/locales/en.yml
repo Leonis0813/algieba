@@ -15,5 +15,15 @@ en:
       content: 'Content'
       categories: 'Categories'
       price: 'Price'
+    delete:
+      message: 'Delete this payment?'
+      yes: 'Yes'
+      no: 'No'
+    datepicker:
+      format: 'MM/DD/YYYY'
+      dayViewHeaderFormat: 'MM/YYYY'
+    category-list:
+      title: 'Select categories'
+    error: 'Error'
     submit: 'Submit'
     reset: 'Reset'

@@ -15,5 +15,15 @@ ja:
       content: '内容'
       categories: 'カテゴリ'
       price: '金額'
+    delete:
+      message: '本当に削除しますか？'
+      yes: 'はい'
+      no: 'いいえ'
+    datepicker:
+      format: 'YYYY-MM-DD'
+      dayViewHeaderFormat: 'YYYY年 MM月'
+    category-list:
+      title: 'カテゴリを選択してください'
+    error: 'エラー'
     submit: '登録'
     reset: 'リセット'
