@@ -1,5 +1,8 @@
+# 2.8.2 (2017/08/19)
+- [FIX] key name for confirm dialog of deletion
+
 # 2.8.1 (2017/08/19)
-- [UPDATE] javascripts fot i18n
+- [UPDATE] javascripts for i18n
 
 # 2.8.0 (2017/08/18)
 - [ADD] button to select categories

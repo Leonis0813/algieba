@@ -28,11 +28,11 @@ $ ->
         message: I18n.t('views.delete.message'),
         buttons: {
           confirm: {
-            label: I18n.t('views.delete.yes'),
+            label: I18n.t('views.delete.confirm'),
             className: 'btn-success'
           },
           cancel: {
-            label: I18n.t('views.delete.no'),
+            label: I18n.t('views.delete.cancel'),
             className: 'btn-danger'
           }
         },
