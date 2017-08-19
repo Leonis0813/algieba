@@ -1,3 +1,6 @@
+# 2.8.1 (2017/08/19)
+- [UPDATE] javascripts fot i18n
+
 # 2.8.0 (2017/08/18)
 - [ADD] button to select categories
 - [UPDATE] trash icon
