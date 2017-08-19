@@ -14,8 +14,8 @@ $ ->
         return
       )
       bootbox.alert({
-        title: I18n.t('views.error'),
-        message: '<div class="text-center alert alert-danger">' + error_codes.join(', ') + ' が不正です</div>',
+        title: I18n.t('views.create.error.title'),
+        message: '<div class="text-center alert alert-danger">' + I18n.t('views.create.error.message', {error_codes: error_codes.join(', ')}) + '</div>',
       })
       return
     return

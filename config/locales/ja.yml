@@ -2,6 +2,7 @@ ja:
   views:
     title: '家計簿'
     pagination:
+      info: "%{total_count}件中%{from}〜%{to}件を表示"
       first: '◀◀'
       previous: '◀'
       next: '▶'
@@ -15,6 +16,10 @@ ja:
       content: '内容'
       categories: 'カテゴリ'
       price: '金額'
+    create:
+      error:
+        title: 'エラー'
+        message: "%{error_codes} が不正です"
     delete:
       message: '本当に削除しますか？'
       yes: 'はい'
@@ -24,6 +29,5 @@ ja:
       dayViewHeaderFormat: 'YYYY年 MM月'
     category-list:
       title: 'カテゴリを選択してください'
-    error: 'エラー'
     submit: '登録'
     reset: 'リセット'

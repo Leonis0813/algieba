@@ -34,7 +34,8 @@
 
 <div class='row row-center'>
   <div style='padding: 0px 10px'>
-    <h4><%= @payments.total_count %>件中<%= @payments.offset_value + 1 %>〜<%= @payments.offset_value + @payments.size %>件を表示</h4>
+    <% info = {:total_count => @payments.total_count, :from => @payments.offset_value + 1, :to => @payments.offset_value + @payments.size} %>
+    <h4><%= t('views.pagination.info', info) %></h4>
   </div>
   <div style='padding: 0px 10px'>
     <%= paginate @payments %>
