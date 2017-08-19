@@ -8,7 +8,7 @@ en:
       last: '▶▶'
       truncate: '...'
     payment:
-      info: "Show %{from}〜%{to}th payments"
+      info: "Show %{from} - %{to}th payments"
       type: 'Payment Type'
       income: 'Income'
       expense: 'Expense'
