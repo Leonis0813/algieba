@@ -22,8 +22,8 @@ en:
         message: "Invalid Input: %{error_codes}"
     delete:
       message: 'Delete this payment?'
-      yes: 'Yes'
-      no: 'No'
+      confirm: 'Yes'
+      cancel: 'No'
     datepicker:
       format: 'MM/DD/YYYY'
       dayViewHeaderFormat: 'MM/YYYY'

@@ -22,8 +22,8 @@ ja:
         message: "%{error_codes} が不正です"
     delete:
       message: '本当に削除しますか？'
-      yes: 'はい'
-      no: 'いいえ'
+      confirm: 'はい'
+      cancel: 'いいえ'
     datepicker:
       format: 'YYYY-MM-DD'
       dayViewHeaderFormat: 'YYYY年 MM月'
