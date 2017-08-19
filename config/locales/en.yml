@@ -8,6 +8,7 @@ en:
       last: '▶▶'
       truncate: '...'
     payment:
+      info: "Show %{from} - %{to}th payments"
       type: 'Payment Type'
       income: 'Income'
       expense: 'Expense'
@@ -15,5 +16,18 @@ en:
       content: 'Content'
       categories: 'Categories'
       price: 'Price'
+    create:
+      error:
+        title: 'Error'
+        message: "Invalid Input: %{error_codes}"
+    delete:
+      message: 'Delete this payment?'
+      yes: 'Yes'
+      no: 'No'
+    datepicker:
+      format: 'MM/DD/YYYY'
+      dayViewHeaderFormat: 'MM/YYYY'
+    category-list:
+      title: 'Select categories'
     submit: 'Submit'
     reset: 'Reset'

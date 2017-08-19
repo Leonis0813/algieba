@@ -8,15 +8,14 @@ $ ->
 $ ->
   $('#new_payments')
     .on 'ajax:error', (event, xhr, status, error) ->
-      ja = {date: '日付', price: '金額'}
       error_codes = []
       $.each($.parseJSON(xhr.responseText), (i, e)->
-        error_codes.push(ja[e.error_code.match(/invalid_param_(.+)/)[1]])
+        error_codes.push(I18n.t("views.payment.#{e.error_code.match(/invalid_param_(.+)/)[1]}"))
         return
       )
       bootbox.alert({
-        title: 'エラー',
-        message: '<div class="text-center alert alert-danger">' + error_codes.join(', ') + ' が不正です</div>',
+        title: I18n.t('views.create.error.title'),
+        message: '<div class="text-center alert alert-danger">' + I18n.t('views.create.error.message', {error_codes: error_codes.join(', ')}) + '</div>',
       })
       return
     return
@@ -26,14 +25,14 @@ $ ->
     .on 'click', ->
       id = $(@).children('button').attr('value')
       bootbox.confirm({
-        message: '本当に削除しますか？',
+        message: I18n.t('views.delete.message'),
         buttons: {
           confirm: {
-            label: 'はい',
+            label: I18n.t('views.delete.yes'),
             className: 'btn-success'
           },
           cancel: {
-            label: 'いいえ',
+            label: I18n.t('views.delete.no'),
             className: 'btn-danger'
           }
         },
@@ -52,9 +51,9 @@ $ ->
 
 $ ->
   $('.datepicker').datetimepicker({
-    format: 'YYYY-MM-DD',
-    locale: 'ja',
-    dayViewHeaderFormat: 'YYYY年 MM月'
+    format: I18n.t('views.datepicker.format'),
+    locale: I18n.locale,
+    dayViewHeaderFormat: I18n.t('views.datepicker.dayViewHeaderFormat')
   })
   return
 
@@ -65,7 +64,7 @@ $ ->
       return {text: value, value: value};
     );
     bootbox.prompt({
-      title: 'カテゴリを選択してください',
+      title: I18n.t('views.category-list.title'),
       inputType: 'checkbox',
       inputOptions: categories,
       callback: (result) ->
