@@ -1,3 +1,6 @@
+# 2.8.3 (2017/09/04)
+- [FIX] bug for view after pagination
+
 # 2.8.2 (2017/08/19)
 - [FIX] key name for confirm dialog of deletion
 
