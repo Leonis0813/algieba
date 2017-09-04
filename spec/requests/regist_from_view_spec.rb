@@ -233,4 +233,24 @@ describe 'ブラウザから操作する', :type => :request do
     it_behaves_like '収支情報の数が正しいこと', 1
     it_behaves_like '背景色が正しいこと'
   end
+
+  describe 'カレンダーを表示する' do
+    before(:all) { @driver.find_element(:id, 'payments_date').click }
+    after(:all) { @driver.find_element(:class, 'today').click }
+
+    it 'カレンダーが表示されていること' do
+      is_asserted_by { @driver.find_element(:class, 'bootstrap-datetimepicker-widget') }
+    end
+  end
+
+  describe 'カテゴリ一覧を確認する' do
+    before(:all) do
+      @driver.find_element(:xpath, '//span[@id="category-list"]/button').click
+      sleep 1
+    end
+
+    it 'カテゴリ一覧が表示されていること' do
+      is_asserted_by { @driver.find_element(:xpath, '//div[@class="bootbox modal fade bootbox-prompt in"]') }
+    end
+  end
 end
