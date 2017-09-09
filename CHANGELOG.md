@@ -1,3 +1,6 @@
+# 2.8.4 (2017/09/09)
+- [REFACTOR] coffeescripts
+
 # 2.8.3 (2017/09/04)
 - [FIX] bug for view after pagination
 
