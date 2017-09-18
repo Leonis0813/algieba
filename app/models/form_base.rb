@@ -1,4 +1,4 @@
-class FormBase < ActiveRecord::Base
+class FormBase
   include ActiveModel::Model
 
   attr_accessor :date_before, :date_after,

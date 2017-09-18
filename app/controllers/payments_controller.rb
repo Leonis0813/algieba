@@ -5,6 +5,7 @@ class PaymentsController < ApplicationController
   def manage
     @payment = Payment.new
     @payments = Payment.order(:date => :desc).page(params[:page])
+    @search_form = SearchForm.new
   end
 
   def create
