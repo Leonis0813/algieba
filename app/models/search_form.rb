@@ -1,2 +1,2 @@
-class SearchForm < ActiveRecord::Base
+class SearchForm < FormBase
 end
