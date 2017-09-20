@@ -32,29 +32,29 @@
 
 <hr>
 
-<%= form_for @search_form, {:url => payments_path, :method => :get, :html => {:class => 'form-inline'}} do |f| %>
+<%= form_for @search_form, {:url => payments_path, :method => :get, :remote => true, :html => {:class => 'form-inline', :onClick => 'return false;'}} do |f| %>
   <span id='date-form' class='input-custom'>
     <%= f.label :date_after, t('views.payment.date').html_safe + '：' %>
-    <%= f.text_field :date_after, {:class => 'form-control datepicker'} %>
-    〜
-    <%= f.text_field :date_before, {:class => 'form-control datepicker'} %>
+    <%= f.text_field :date_after, {:class => 'form-control datepicker', :name => 'date_after'} %>
+    <%= t('views.search.form.between') %>
+    <%= f.text_field :date_before, {:class => 'form-control datepicker', :name => 'date_before'} %>
   </span>
   <span class='input-custom'>
     <%= label_tag :content, t('views.payment.content').html_safe + '：' %>
     <%= text_field_tag :content, '', :class => 'form-control' %>
-    <%= select_tag :content, options_for_select('と一致する' => 'equal', 'を含む' => 'include'), :class => 'form-control' %>
+    <%= select_tag :content_type, options_for_select(t('views.search.form.include') => 'include', t('views.search.form.equal') => 'equal'), :class => 'form-control', :id => 'content_type' %>
   </span>
   <span class='input-custom'>
     <%= f.label :category, t('views.payment.categories').html_safe + '：' %>
-    <%= f.text_field :category, {:class => 'form-control'} %>
+    <%= f.text_field :category, {:class => 'form-control', :name => 'category'} %>
   </span>
   <span class='input-custom'>
     <%= f.label :price_upper, t('views.payment.price').html_safe + '：' %>
-    <%= f.text_field :price_upper, {:class => 'form-control'} %>
-    〜
-    <%= f.text_field :price_lower, {:class => 'form-control'} %>
+    <%= f.text_field :price_upper, {:class => 'form-control', :name => 'price_upper'} %>
+    <%= t('views.search.form.between') %>
+    <%= f.text_field :price_lower, {:class => 'form-control', :name => 'price_lower'} %>
   </span>
-  <span class='input-custom'><%= f.submit t('views.submit').html_safe, :class => 'btn btn-primary' %></span>
+  <span class='input-custom'><%= f.submit t('views.search.button').html_safe, :id => 'search_button', :class => 'btn btn-primary' %></span>
 <% end %>
 
 <hr>

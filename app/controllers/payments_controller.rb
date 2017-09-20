@@ -2,12 +2,6 @@ class PaymentsController < ApplicationController
   before_action :check_user, :only => [:manage]
   before_action :check_client, :except => [:manage]
 
-  def manage
-    @payment = Payment.new
-    @payments = Payment.order(:date => :desc).page(params[:page])
-    @search_form = SearchForm.new
-  end
-
   def create
     begin
       attributes = params.require(:payments).permit(*payment_params)
@@ -50,7 +44,17 @@ class PaymentsController < ApplicationController
         value ? payments.send(key, value) : payments
       end
       respond_to do |format|
-        format.json {render :status => :ok, :template => 'payments/payments'}
+        if cookies[:algieba]
+          request.format = :html
+          format.html do
+            @payment = Payment.new
+            @payments = @payments.order(:date => :desc).page(params[:page])
+            @search_form = SearchForm.new(params.slice(*index_params))
+            render :status => :ok, :template => 'payments/manage'
+          end
+        elsif check_client
+          format.json {render :status => :ok, :template => 'payments/payments'}
+        end
       end
     else
       raise BadRequest.new(query.errors.messages.keys.map {|key| "invalid_param_#{key}" })
