@@ -37,10 +37,10 @@ class PaymentsController < ApplicationController
   end
 
   def index
-    query = Query.new(params.permit(*index_params))
-    if query.valid?
+    @search_form = SearchForm.new(params.permit(*index_params))
+    if @search_form.valid?
       @payments = index_params.inject(Payment.all) do |payments, key|
-        value = query.send(key)
+        value = @search_form.send(key)
         value ? payments.send(key, value) : payments
       end
       respond_to do |format|
@@ -49,7 +49,6 @@ class PaymentsController < ApplicationController
           format.html do
             @payment = Payment.new
             @payments = @payments.order(:date => :desc).page(params[:page])
-            @search_form = SearchForm.new(params.slice(*index_params))
             render :status => :ok, :template => 'payments/manage'
           end
         elsif check_client
@@ -57,7 +56,7 @@ class PaymentsController < ApplicationController
         end
       end
     else
-      raise BadRequest.new(query.errors.messages.keys.map {|key| "invalid_param_#{key}" })
+      raise BadRequest.new(@search_form.errors.messages.keys.map {|key| "invalid_param_#{key}" })
     end
   end
 
