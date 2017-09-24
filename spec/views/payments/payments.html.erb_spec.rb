@@ -1,7 +1,7 @@
 # coding: utf-8
 require 'rails_helper'
 
-describe "payments/manage", :type => :view do
+describe "payments/payments", :type => :view do
   html = nil
   per_page = 1
   param = {:payment_type => 'income', :date => '1000-01-01', :content => 'モジュールテスト用データ', :category => 'algieba', :price => 100}
