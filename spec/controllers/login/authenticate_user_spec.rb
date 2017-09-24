@@ -26,7 +26,7 @@ describe LoginController, :type => :controller do
       end
 
       it_behaves_like 'ステータスコードが正しいこと', '302'
-      it_behaves_like 'Locationヘッダーが正しいこと', "#{Capybara.app_host}/"
+      it_behaves_like 'Locationヘッダーが正しいこと', "#{Capybara.app_host}/payments"
 
       it 'cookieがセットされていること' do
         is_asserted_by { @user_cookie }
