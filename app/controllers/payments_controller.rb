@@ -1,6 +1,6 @@
 class PaymentsController < ApplicationController
-  before_action :check_user, :only => [:manage]
-  before_action :check_client, :except => [:manage]
+  before_action :only => [:index] { check_client rescue check_user }
+  before_action :check_client, :except => [:index]
 
   def create
     begin

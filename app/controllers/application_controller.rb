@@ -8,7 +8,7 @@ class ApplicationController < ActionController::Base
       user_id, password = parse_cookie
       if User.find_by(:user_id => user_id, :password => password)
         logger.info ("Login_user: #{user_id}")
-        redirect_unless '/payments'
+        redirect_unless payments_path
       else
         redirect_unless login_path
       end
