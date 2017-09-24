@@ -45,7 +45,7 @@ $ ->
         this.name = "content_" + $('#content_type').val()
       return this.name != "content"
     )
-    location.href = '/payments?' + $.param(queries)
+    location.href = '/payments.html?' + $.param(queries)
     return
 
   $('.delete').on 'click', ->
