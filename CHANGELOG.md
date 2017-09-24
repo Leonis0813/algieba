@@ -1,3 +1,6 @@
+# 2.9.0 (2017/09/24)
+- [ADD] view to search payments
+
 # 2.8.4 (2017/09/09)
 - [REFACTOR] coffeescripts
 
