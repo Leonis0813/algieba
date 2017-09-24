@@ -81,7 +81,7 @@ describe 'ブラウザから操作する', :type => :request do
   end
 
   describe '管理画面を開く' do
-    before(:all) { @driver.get(base_url) }
+    before(:all) { @driver.get("#{base_url}/payments.html") }
 
     it 'ログイン画面にリダイレクトされていること' do
       is_asserted_by { @driver.current_url == "#{base_url}/login" }
@@ -96,7 +96,7 @@ describe 'ブラウザから操作する', :type => :request do
     end
 
     it '管理画面が開いていること' do
-      is_asserted_by { @driver.current_url == "#{base_url}/" }
+      is_asserted_by { @driver.current_url == "#{base_url}/payments.html" }
     end
 
     it_behaves_like '入力フォームが全て空であること'

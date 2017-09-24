@@ -5,7 +5,7 @@ class LoginController < ApplicationController
     login_user = User.find_by(user_param)
     if login_user
       cookies[:algieba] = Base64.strict_encode64("#{login_user[:user_id]}:#{login_user[:password]}")
-      redirect_to :controller => 'payments', :action => 'index'
+      redirect_to :controller => 'payments', :action => 'index', :format => :html
     else
       redirect_to login_url
     end

@@ -1,5 +1,6 @@
 class PaymentsController < ApplicationController
-  before_action :check_client
+  before_action :check_client, :except => [:index]
+  before_action :check_client_or_user, :only => [:index]
 
   def create
     begin
@@ -43,16 +44,12 @@ class PaymentsController < ApplicationController
         value ? payments.send(key, value) : payments
       end
       respond_to do |format|
-        if cookies[:algieba]
-          request.format = :html
-          format.html do
-            @payment = Payment.new
-            @payments = @payments.order(:date => :desc).page(params[:page])
-            render :status => :ok
-          end
-        else
-          format.json {render :status => :ok, :template => 'payments/payments'}
+        format.html do
+          @payment = Payment.new
+          @payments = @payments.order(:date => :desc).page(params[:page])
+          render :status => :ok
         end
+        format.json {render :status => :ok, :template => 'payments/payments'}
       end
     else
       raise BadRequest.new(@search_form.errors.messages.keys.map {|key| "invalid_param_#{key}" })
@@ -112,5 +109,13 @@ class PaymentsController < ApplicationController
 
   def index_params
     %i[ payment_type date_before date_after content_equal content_include category price_upper price_lower ]
+  end
+
+  def check_client_or_user
+    if request.format == :html
+      check_user
+    else
+      check_client
+    end
   end
 end
