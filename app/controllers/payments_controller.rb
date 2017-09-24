@@ -48,7 +48,7 @@ class PaymentsController < ApplicationController
           format.html do
             @payment = Payment.new
             @payments = @payments.order(:date => :desc).page(params[:page])
-            render :status => :ok, :template => 'payments/payments'
+            render :status => :ok
           end
         else
           format.json {render :status => :ok, :template => 'payments/payments'}
