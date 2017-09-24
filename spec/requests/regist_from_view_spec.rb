@@ -81,7 +81,7 @@ describe 'ブラウザから操作する', :type => :request do
   end
 
   describe '管理画面を開く' do
-    before(:all) { @driver.get(base_url) }
+    before(:all) { @driver.get("#{base_url}/payments.html") }
 
     it 'ログイン画面にリダイレクトされていること' do
       is_asserted_by { @driver.current_url == "#{base_url}/login" }
@@ -96,7 +96,7 @@ describe 'ブラウザから操作する', :type => :request do
     end
 
     it '管理画面が開いていること' do
-      is_asserted_by { @driver.current_url == "#{base_url}/" }
+      is_asserted_by { @driver.current_url == "#{base_url}/payments.html" }
     end
 
     it_behaves_like '入力フォームが全て空であること'
@@ -232,6 +232,35 @@ describe 'ブラウザから操作する', :type => :request do
     it_behaves_like 'ページングボタンが表示されていること'
     it_behaves_like '収支情報の数が正しいこと', 1
     it_behaves_like '背景色が正しいこと'
+  end
+
+  describe '10000円以下の収支情報を検索する' do
+    before(:all) do
+      @driver.find_element(:name, 'price_lower').send_keys('10000')
+      @driver.find_element(:id, 'search_button').click
+    end
+
+    it 'URLにクエリがセットされていること' do
+      is_asserted_by { @driver.current_url == "#{base_url}/payments.html?price_lower=10000" }
+    end
+    it_behaves_like '表示されている件数が正しいこと', per_page + 1, 1, per_page
+    it_behaves_like 'ページングボタンが表示されていること'
+    it_behaves_like '収支情報の数が正しいこと', 50
+    it_behaves_like '背景色が正しいこと'
+  end
+
+  describe '1000円以上10000円以下の収支情報を検索する' do
+    before(:all) do
+      @driver.find_element(:name, 'price_upper').send_keys('1000')
+      @driver.find_element(:id, 'search_button').click
+    end
+
+    it 'URLにクエリがセットされていること' do
+      is_asserted_by { @driver.current_url == "#{base_url}/payments.html?price_upper=1000&price_lower=10000" }
+    end
+    it_behaves_like '表示されている件数が正しいこと', 0, 1, 0
+    it_behaves_like 'ページングボタンが表示されていないこと'
+    it_behaves_like '収支情報の数が正しいこと', 0
   end
 
   describe 'カレンダーを表示する' do

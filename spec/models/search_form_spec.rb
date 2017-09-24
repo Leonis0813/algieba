@@ -1,21 +1,21 @@
 # coding: utf-8
 require 'rails_helper'
 
-describe Query, :type => :model do
+describe SearchForm, :type => :model do
   describe '#validates' do
-    shared_context 'Queryオブジェクトを検証する' do |params|
+    shared_context 'SearchFormオブジェクトを検証する' do |params|
       before(:all) do
-        @query = Query.new(params)
-        @query.validate
+        @search_form = SearchForm.new(params)
+        @search_form.validate
       end
     end
 
     shared_examples '検証結果が正しいこと' do |result|
-      it_is_asserted_by { @query.errors.empty? == result }
+      it_is_asserted_by { @search_form.errors.empty? == result }
     end
 
     shared_examples 'エラーメッセージが正しいこと' do |expected_messages|
-      it_is_asserted_by { @query.errors.messages == expected_messages }
+      it_is_asserted_by { @search_form.errors.messages == expected_messages }
     end
 
     describe '正常系' do
@@ -31,7 +31,7 @@ describe Query, :type => :model do
       }
       CommonHelper.generate_test_case(valid_params).each do |params|
         context "クエリに#{params.keys.join(',')}を指定した場合" do
-          include_context 'Queryオブジェクトを検証する', params
+          include_context 'SearchFormオブジェクトを検証する', params
           it_behaves_like '検証結果が正しいこと', true
         end
       end
@@ -49,7 +49,7 @@ describe Query, :type => :model do
 
       CommonHelper.generate_test_case(invalid_params).each do |params|
         context "クエリに#{params.keys.join(',')}を指定した場合" do
-          include_context 'Queryオブジェクトを検証する', valid_params.merge(params)
+          include_context 'SearchFormオブジェクトを検証する', valid_params.merge(params)
 
           it_behaves_like '検証結果が正しいこと', false
           it_behaves_like 'エラーメッセージが正しいこと', params.map {|key, _| [key, ['invalid']] }.to_h
@@ -65,7 +65,7 @@ describe Query, :type => :model do
 
       test_cases.each do |params|
         context '期間が不正な場合' do
-          include_context 'Queryオブジェクトを検証する', valid_params.merge(params)
+          include_context 'SearchFormオブジェクトを検証する', valid_params.merge(params)
 
           it_behaves_like '検証結果が正しいこと', false
           it_behaves_like 'エラーメッセージが正しいこと', params.map {|key, _| [key, ['invalid']] }.to_h
@@ -78,7 +78,7 @@ describe Query, :type => :model do
 
       test_cases.each do |params|
         context '期間が不正な場合' do
-          include_context 'Queryオブジェクトを検証する', params
+          include_context 'SearchFormオブジェクトを検証する', params
 
           it_behaves_like '検証結果が正しいこと', false
           it_behaves_like 'エラーメッセージが正しいこと', params.map {|key, _| [key, ['invalid']] }.to_h

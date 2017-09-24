@@ -1,7 +1,7 @@
 # coding: utf-8
 require 'rails_helper'
 
-describe "payments/manage", :type => :view do
+describe "payments/index", :type => :view do
   html = nil
   per_page = 1
   param = {:payment_type => 'income', :date => '1000-01-01', :content => 'モジュールテスト用データ', :category => 'algieba', :price => 100}
@@ -62,11 +62,11 @@ describe "payments/manage", :type => :view do
     end
 
     it '2ページ目が表示されていること' do
-      expect(html).to have_selector("#{nav_xpath}/li/span[@class='page']/a[href='/?page=2']", :text => 2)
+      expect(html).to have_selector("#{nav_xpath}/li/span[@class='page']/a[href='/payments?page=2']", :text => 2)
     end
 
     it '次のページへのボタンが表示されていること' do
-      expect(html).to have_selector("#{nav_xpath}/li/span[@class='next']/a[href='/?page=2']", :text => I18n.t('views.pagination.next'))
+      expect(html).to have_selector("#{nav_xpath}/li/span[@class='next']/a[href='/payments?page=2']", :text => I18n.t('views.pagination.next'))
     end
 
     it '最後のページへのボタンが表示されていること' do
@@ -77,6 +77,7 @@ describe "payments/manage", :type => :view do
   before(:all) do
     @payment = Payment.new
     @payments = Payment.order(:date => :desc).page(1)
+    @search_form = SearchForm.new
     Kaminari.config.default_per_page = per_page
   end
 
@@ -142,6 +143,49 @@ describe "payments/manage", :type => :view do
           it "#{type}ボタンがあること" do
             expect(html).to have_selector("#{span_xpath}/input[type='#{type}'][@class='btn btn-primary']")
           end
+        end
+      end
+    end
+
+    describe '<form>' do
+      form_xpath = '//form[action="/payments"][data-remote="true"][method="get"][@class="form-inline"]'
+
+      it '<form>タグがあること' do
+        expect(html).to have_selector(form_xpath)
+      end
+
+      describe '<span>' do
+        span_xpath = "#{form_xpath}/span[@class='input-custom']"
+
+        [
+          %w[ search_form_date_after date ],
+          %w[ content content ],
+          %w[ search_form_category categories ],
+          %w[ search_form_price_upper price ],
+        ].each do |label_for, text|
+          it "#{label_for}を含む<label>タグがあること" do
+            expect(html).to have_selector("#{span_xpath}/label[for='#{label_for}']", :text => I18n.t("views.payment.#{text}") + '：')
+          end
+        end
+
+        it 'id=date-formを含む<span>タグがあること' do
+          expect(html).to have_selector("#{form_xpath}/span[id='date-form']")
+        end
+
+        %w[ date_after date_before content category price_upper price_lower ].each do |param_name|
+          it "#{param_name}を含む<input>タグがあること" do
+            xpath = "#{span_xpath}/input[type='text'][name='#{param_name}']"
+            expect(html).to have_selector(xpath, :text => '')
+          end
+        end
+
+        it 'content_typeを含む<select>タグがあること' do
+          xpath = "#{span_xpath}/select[name='content_type'][@class='form-control']"
+          expect(html).to have_selector(xpath, :text => '')
+        end
+
+        it "検索ボタンがあること" do
+          expect(html).to have_selector("#{span_xpath}/input[type='submit'][@class='btn btn-primary']")
         end
       end
     end

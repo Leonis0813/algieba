@@ -1,11 +1,6 @@
 class PaymentsController < ApplicationController
-  before_action :check_user, :only => [:manage]
-  before_action :check_client, :except => [:manage]
-
-  def manage
-    @payment = Payment.new
-    @payments = Payment.order(:date => :desc).page(params[:page])
-  end
+  before_action :check_client, :except => [:index]
+  before_action :check_client_or_user, :only => [:index]
 
   def create
     begin
@@ -42,17 +37,22 @@ class PaymentsController < ApplicationController
   end
 
   def index
-    query = Query.new(params.permit(*index_params))
-    if query.valid?
+    @search_form = SearchForm.new(params.permit(*index_params))
+    if @search_form.valid?
       @payments = index_params.inject(Payment.all) do |payments, key|
-        value = query.send(key)
+        value = @search_form.send(key)
         value ? payments.send(key, value) : payments
       end
       respond_to do |format|
+        format.html do
+          @payment = Payment.new
+          @payments = @payments.order(:date => :desc).page(params[:page])
+          render :status => :ok
+        end
         format.json {render :status => :ok, :template => 'payments/payments'}
       end
     else
-      raise BadRequest.new(query.errors.messages.keys.map {|key| "invalid_param_#{key}" })
+      raise BadRequest.new(@search_form.errors.messages.keys.map {|key| "invalid_param_#{key}" })
     end
   end
 
@@ -109,5 +109,13 @@ class PaymentsController < ApplicationController
 
   def index_params
     %i[ payment_type date_before date_after content_equal content_include category price_upper price_lower ]
+  end
+
+  def check_client_or_user
+    if request.format == :html
+      check_user
+    else
+      check_client
+    end
   end
 end

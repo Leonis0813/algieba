@@ -31,3 +31,9 @@ en:
       title: 'Select categories'
     submit: 'Submit'
     reset: 'Reset'
+    search:
+      form:
+        between: '-'
+        include: 'include'
+        equal: 'equal'
+      button: 'Search'

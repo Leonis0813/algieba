@@ -31,3 +31,9 @@ ja:
       title: 'カテゴリを選択してください'
     submit: '登録'
     reset: 'リセット'
+    search:
+      form:
+        between: '〜'
+        include: 'を含む'
+        equal: 'と一致する'
+      button: '検索'
