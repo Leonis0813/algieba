@@ -1,11 +1,11 @@
-class Query
+class SearchForm
   include ActiveModel::Model
 
-  attr_accessor :payment_type
-  attr_accessor :date_before, :date_after
-  attr_accessor :content_equal, :content_include
-  attr_accessor :category
-  attr_accessor :price_upper, :price_lower
+  attr_accessor :payment_type,
+                :date_before, :date_after,
+                :content_equal, :content_include,
+                :category,
+                :price_upper, :price_lower
 
   validates :payment_type, :inclusion => {:in => %w[ income expense ], :message => 'invalid'}, :allow_nil => true
   validates :price_upper, :price_lower, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0, :message => 'invalid'}, :allow_nil => true
