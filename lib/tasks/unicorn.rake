@@ -6,7 +6,7 @@ namespace :unicorn do
   task(:start) {
     config = "#{rails_root}/config/unicorn.rb"
     ENV['RAILS_ENV'] ||= 'development'
-    sh "bundle exec unicorn_rails -c #{config} -E #{ENV['RAILS_ENV']} -D"
+    sh "bundle exec unicorn_rails -c #{config} -E #{ENV['RAILS_ENV']} -D --path /algieba"
   }
 
   desc 'Stop unicorn'
