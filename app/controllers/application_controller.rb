@@ -52,6 +52,6 @@ class ApplicationController < ActionController::Base
   end
 
   def redirect_unless(path)
-    redirect_to path unless request.path_info == path
+    redirect_to path unless "/algieba#{request.path_info}" == path
   end
 end
