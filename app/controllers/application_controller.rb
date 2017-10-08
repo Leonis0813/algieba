@@ -8,12 +8,12 @@ class ApplicationController < ActionController::Base
       user_id, password = parse_cookie
       if User.find_by(:user_id => user_id, :password => password)
         logger.info ("Login_user: #{user_id}")
-        redirect_unless '/payments.html'
+        redirect_unless '/algieba/payments.html'
       else
-        redirect_unless login_path
+        redirect_unless '/algieba/login'
       end
     else
-      redirect_unless login_path
+      redirect_unless '/algieba/login'
     end
   end
 
@@ -52,6 +52,6 @@ class ApplicationController < ActionController::Base
   end
 
   def redirect_unless(path)
-    redirect_to path unless request.path_info == path
+    redirect_to path unless "/algieba#{request.path_info}" == path
   end
 end
