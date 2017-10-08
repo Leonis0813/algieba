@@ -45,7 +45,7 @@ $ ->
         this.name = "content_" + $('#content_type').val()
       return this.name != "content"
     )
-    location.href = '/payments.html?' + $.param(queries)
+    location.href = '/algieba/payments.html?' + $.param(queries)
     return
 
   $('.delete').on 'click', ->
@@ -66,7 +66,7 @@ $ ->
         if result == true
           $.ajax({
             type: 'DELETE',
-            url: '/payments/' + id
+            url: '/algieba/payments/' + id
           }).done((data) ->
             location.reload()
             return
