@@ -258,7 +258,7 @@ describe 'ブラウザから操作する', :type => :request do
     it 'URLにクエリがセットされていること' do
       is_asserted_by { @driver.current_url == "#{base_url}/payments.html?price_upper=1000&price_lower=10000" }
     end
-    it_behaves_like '表示されている件数が正しいこと', 0, 1, 0
+    it_behaves_like '表示されている件数が正しいこと', 0, 0, 0
     it_behaves_like 'ページングボタンが表示されていないこと'
     it_behaves_like '収支情報の数が正しいこと', 0
   end
