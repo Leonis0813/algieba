@@ -41,8 +41,10 @@
   </span>
   <span class='input-custom'>
     <%= label_tag :content, t('views.payment.content').html_safe + '：' %>
-    <%= text_field_tag :content, '', :class => 'form-control' %>
-    <%= select_tag :content_type, options_for_select(t('views.search.form.include') => 'include', t('views.search.form.equal') => 'equal'), :class => 'form-control', :id => 'content_type' %>
+    <%= text_field_tag :content, '', :class => 'form-control', :value => @search_form.content_include || @search_form.content_equal %>
+    <% options = {t('views.search.form.include') => 'include', t('views.search.form.equal') => 'equal'} %>
+    <% selected_value = @search_form.content_equal ? 'equal' : 'include' %>
+    <%= select_tag :content_type, options_for_select(options, selected_value), :class => 'form-control', :id => 'content_type' %>
   </span>
   <span class='input-custom'>
     <%= f.label :category, t('views.payment.categories').html_safe + '：' %>
