@@ -58,6 +58,14 @@ describe 'ブラウザから操作する', :type => :request do
     end
   end
 
+  shared_examples 'URLにクエリがセットされていること' do |expected_query = {}|
+    it_is_asserted_by { URI.parse(@driver.current_url).query.symbolize_keys == expected_query }
+  end
+
+  shared_examples 'フォームに値がセットされていること' do |attribute|
+    it_is_asserted_by { @driver.find_element(:xpath, "//input[@name='#{attribute[:name]}'][@value='#{attribute[:value]}']") }
+  end
+
   before(:all) do
     header = {'Authorization' => app_auth_header}
     res = http_client.get("#{base_url}/payments", nil, header)
@@ -240,13 +248,12 @@ describe 'ブラウザから操作する', :type => :request do
       @driver.find_element(:id, 'search_button').click
     end
 
-    it 'URLにクエリがセットされていること' do
-      is_asserted_by { @driver.current_url == "#{base_url}/payments.html?price_lower=10000" }
-    end
+    it_behaves_like 'URLにクエリがセットされていること', :price_lower => 10000
     it_behaves_like '表示されている件数が正しいこと', per_page + 1, 1, per_page
     it_behaves_like 'ページングボタンが表示されていること'
     it_behaves_like '収支情報の数が正しいこと', 50
     it_behaves_like '背景色が正しいこと'
+    it_behaves_like 'フォームに値がセットされていること', :name => 'price_lower', :value => '10000'
   end
 
   describe '1000円以上10000円以下の収支情報を検索する' do
@@ -255,12 +262,12 @@ describe 'ブラウザから操作する', :type => :request do
       @driver.find_element(:id, 'search_button').click
     end
 
-    it 'URLにクエリがセットされていること' do
-      is_asserted_by { @driver.current_url == "#{base_url}/payments.html?price_upper=1000&price_lower=10000" }
-    end
+    it_behaves_like 'URLにクエリがセットされていること', :price_upper => 1000, :price_lower => 10000
     it_behaves_like '表示されている件数が正しいこと', 0, 0, 0
     it_behaves_like 'ページングボタンが表示されていないこと'
     it_behaves_like '収支情報の数が正しいこと', 0
+    it_behaves_like 'フォームに値がセットされていること', :name => 'price_lower', :value => '10000'
+    it_behaves_like 'フォームに値がセットされていること', :name => 'price_upper', :value => '1000'
   end
 
   describe 'カレンダーを表示する' do
