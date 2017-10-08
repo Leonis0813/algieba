@@ -59,7 +59,10 @@ describe 'ブラウザから操作する', :type => :request do
   end
 
   shared_examples 'URLにクエリがセットされていること' do |expected_query = {}|
-    it_is_asserted_by { URI.parse(@driver.current_url).query.symbolize_keys == expected_query }
+    it do
+      query_string = URI.parse(@driver.current_url).query
+      is_asserted_by { Rack::Utils.parse_nested_query(query_string).symbolize_keys == expected_query }
+    end
   end
 
   shared_examples 'フォームに値がセットされていること' do |attribute|
@@ -248,7 +251,7 @@ describe 'ブラウザから操作する', :type => :request do
       @driver.find_element(:id, 'search_button').click
     end
 
-    it_behaves_like 'URLにクエリがセットされていること', :price_lower => 10000
+    it_behaves_like 'URLにクエリがセットされていること', :price_lower => '10000'
     it_behaves_like '表示されている件数が正しいこと', per_page + 1, 1, per_page
     it_behaves_like 'ページングボタンが表示されていること'
     it_behaves_like '収支情報の数が正しいこと', 50
@@ -262,7 +265,7 @@ describe 'ブラウザから操作する', :type => :request do
       @driver.find_element(:id, 'search_button').click
     end
 
-    it_behaves_like 'URLにクエリがセットされていること', :price_upper => 1000, :price_lower => 10000
+    it_behaves_like 'URLにクエリがセットされていること', :price_upper => '1000', :price_lower => '10000'
     it_behaves_like '表示されている件数が正しいこと', 0, 0, 0
     it_behaves_like 'ページングボタンが表示されていないこと'
     it_behaves_like '収支情報の数が正しいこと', 0
