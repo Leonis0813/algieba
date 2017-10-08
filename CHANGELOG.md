@@ -1,3 +1,6 @@
+# 2.9.1 (2017/10/08)
+- [UPDATE] root path
+
 # 2.9.0 (2017/09/24)
 - [ADD] view to search payments
 
