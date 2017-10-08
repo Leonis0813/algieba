@@ -1,5 +1,6 @@
 # 2.9.2 (2017/10/08)
 - [FIX] payment info if no payments found
+- [FIX] search form when content is specified
 
 # 2.9.1 (2017/10/08)
 - [UPDATE] root path
