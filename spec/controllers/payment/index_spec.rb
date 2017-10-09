@@ -57,11 +57,17 @@ describe PaymentsController, :type => :controller do
     context 'Authorizationヘッダーがない場合' do
       include_context '収支情報を検索する', {}, nil
       it_behaves_like 'ステータスコードが正しいこと', '302'
+      it 'LocationヘッダのURLが正しいこと' do
+        is_asserted_by { @res.header['Location'] == "#{Capybara.app_host}/algieba/login" }
+      end
     end
 
     context 'Authorizationヘッダーが不正な場合' do
       include_context '収支情報を検索する', {}, 'invalid'
       it_behaves_like 'ステータスコードが正しいこと', '302'
+      it 'LocationヘッダのURLが正しいこと' do
+        is_asserted_by { @res.header['Location'] == "#{Capybara.app_host}/algieba/login" }
+      end
     end
 
     [
