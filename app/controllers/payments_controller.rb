@@ -2,20 +2,15 @@ class PaymentsController < ApplicationController
   before_action :check_user
 
   def index
-    @search_form = SearchForm.new(params.permit(*index_params))
+    @search_form = Query.new(params.permit(*index_params))
     if @search_form.valid?
       @payments = index_params.inject(Payment.all) do |payments, key|
         value = @search_form.send(key)
         value ? payments.send(key, value) : payments
       end
-      respond_to do |format|
-        format.html do
-          @payment = Payment.new
-          @payments = @payments.order(:date => :desc).page(params[:page])
-          render :status => :ok
-        end
-        format.json {render :status => :ok, :template => 'payments/payments'}
-      end
+      @payment = Payment.new
+      @payments = @payments.order(:date => :desc).page(params[:page])
+      render :status => :ok
     else
       raise BadRequest.new(@search_form.errors.messages.keys.map {|key| "invalid_param_#{key}" })
     end
