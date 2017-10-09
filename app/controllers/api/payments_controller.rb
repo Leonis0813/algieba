@@ -13,9 +13,7 @@ class Api::PaymentsController < ApplicationController
       end
 
       if @payment.save
-        respond_to do |format|
-          format.json {render :status => :created, :template => 'payments/payment'}
-        end
+        render :status => :created, :template => 'payments/payment'
       else
         raise BadRequest.new(@payment.errors.messages.keys.map {|key| "invalid_param_#{key}" })
       end
@@ -27,31 +25,23 @@ class Api::PaymentsController < ApplicationController
   def show
     @payment = Payment.find_by(params.permit(:id))
     if @payment
-      respond_to do |format|
-        format.json {render :status => :ok, :template => 'payments/payment'}
-      end
+      render :status => :ok, :template => 'payments/payment'
     else
       raise NotFound.new
     end
   end
 
   def index
-    @search_form = SearchForm.new(params.permit(*index_params))
-    if @search_form.valid?
+    query = Query.new(params.permit(*index_params))
+    if query.valid?
+      query = params.permit(*index_params)
       @payments = index_params.inject(Payment.all) do |payments, key|
-        value = @search_form.send(key)
+        value = query.send(key)
         value ? payments.send(key, value) : payments
       end
-      respond_to do |format|
-        format.html do
-          @payment = Payment.new
-          @payments = @payments.order(:date => :desc).page(params[:page])
-          render :status => :ok
-        end
-        format.json {render :status => :ok, :template => 'payments/payments'}
-      end
+      render :status => :ok, :template => 'payments/payments'
     else
-      raise BadRequest.new(@search_form.errors.messages.keys.map {|key| "invalid_param_#{key}" })
+      raise BadRequest.new(query.errors.messages.keys.map {|key| "invalid_param_#{key}" })
     end
   end
 
@@ -66,9 +56,7 @@ class Api::PaymentsController < ApplicationController
       end
 
       if @payment.update(attributes.except(:category))
-        respond_to do |format|
-          format.json {render :status => :ok, :template => 'payments/payment'}
-        end
+        render :status => :ok, :template => 'payments/payment'
       else
         raise BadRequest.new(@payment.errors.messages.keys.map {|key| "invalid_param_#{key}" })
       end
@@ -80,9 +68,7 @@ class Api::PaymentsController < ApplicationController
   def destroy
     @payment = Payment.find_by(params.permit(:id)).try(:destroy)
     if @payment
-      respond_to do |format|
-        format.json {head :no_content}
-      end
+      head :no_content
     else
       raise NotFound.new
     end
@@ -92,9 +78,7 @@ class Api::PaymentsController < ApplicationController
     query = Settlement.new(params.permit(:interval))
     if query.valid?
       @settlement = Payment.settle(query.interval)
-      respond_to do |format|
-        format.json {render :status => :ok}
-      end
+      render :status => :ok
     else
       raise BadRequest.new("#{query.errors.messages[:interval].first}_param_interval")
     end
