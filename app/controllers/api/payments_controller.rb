@@ -34,7 +34,6 @@ class Api::PaymentsController < ApplicationController
   def index
     query = Query.new(params.permit(*index_params))
     if query.valid?
-      query = params.permit(*index_params)
       @payments = index_params.inject(Payment.all) do |payments, key|
         value = query.send(key)
         value ? payments.send(key, value) : payments
@@ -78,7 +77,7 @@ class Api::PaymentsController < ApplicationController
     query = Settlement.new(params.permit(:interval))
     if query.valid?
       @settlement = Payment.settle(query.interval)
-      render :status => :ok
+      render :status => :ok, :template => 'payments/settle'
     else
       raise BadRequest.new("#{query.errors.messages[:interval].first}_param_interval")
     end

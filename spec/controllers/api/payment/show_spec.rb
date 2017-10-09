@@ -5,7 +5,7 @@ describe PaymentsController, :type => :controller do
   shared_context '収支情報を取得する' do |id, app_auth_header = CommonHelper.app_auth_header|
     before(:all) do
       client.header('Authorization', app_auth_header)
-      @res = client.get("/payments/#{id}.json")
+      @res = client.get("/api/payments/#{id}")
       @pbody = JSON.parse(@res.body) rescue nil
     end
   end

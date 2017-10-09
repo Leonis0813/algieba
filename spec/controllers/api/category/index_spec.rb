@@ -5,7 +5,7 @@ describe Api::CategoriesController, :type => :controller do
   shared_context 'カテゴリを検索する' do |param = {}, app_auth_header = CommonHelper.app_auth_header|
     before(:all) do
       client.header('Authorization', app_auth_header)
-      @res = client.get('/categories', param)
+      @res = client.get('/api/categories', param)
       @pbody = JSON.parse(@res.body) rescue nil
     end
   end
