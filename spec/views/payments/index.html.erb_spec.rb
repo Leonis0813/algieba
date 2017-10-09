@@ -90,7 +90,7 @@ describe "payments/index", :type => :view do
     include_context 'HTML初期化'
 
     describe '<form>' do
-      form_xpath = '//form[action="/payments"][data-remote="true"][method="post"][@class="form-inline"]'
+      form_xpath = '//form[action="/api/payments"][data-remote="true"][method="post"][@class="form-inline"]'
 
       it '<form>タグがあること' do
         expect(html).to have_selector(form_xpath)
