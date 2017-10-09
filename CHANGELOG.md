@@ -1,3 +1,6 @@
+# 2.10.0 (2017/10/09)
+- [UPDATE] controller to separate api from html
+
 # 2.9.2 (2017/10/08)
 - [FIX] payment info if no payments found
 - [FIX] search form when content is specified
