@@ -1,4 +1,4 @@
-<%= form_for @payment, {:as => :payments, :remote => true, :html => {:class => 'form-inline'}} do |f| %>
+<%= form_for @payment, {:url => api_payments_path, :as => :payments, :remote => true, :html => {:class => 'form-inline'}} do |f| %>
   <span id='date-form' class='input-custom'>
     <%= f.label :date, t('views.payment.date').html_safe + '：' %>
     <%= f.text_field :date, {:class => 'form-control datepicker', :required => true} %>

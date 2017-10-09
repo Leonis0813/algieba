@@ -36,7 +36,7 @@ $ ->
     return
 
   $('#search_button').on 'click', ->
-    all_queries = $('#new_search_form').serializeArray()
+    all_queries = $('#new_query').serializeArray()
     queries = $.grep(all_queries, (query) ->
       return query.name != "content_type" && query.name != "utf8" && query.value != ""
     )
@@ -45,7 +45,7 @@ $ ->
         this.name = "content_" + $('#content_type').val()
       return this.name != "content"
     )
-    location.href = '/algieba/payments.html?' + $.param(queries)
+    location.href = '/algieba/payments?' + $.param(queries)
     return
 
   $('.delete').on 'click', ->
@@ -66,7 +66,7 @@ $ ->
         if result == true
           $.ajax({
             type: 'DELETE',
-            url: '/algieba/payments/' + id
+            url: '/algieba/api/payments/' + id
           }).done((data) ->
             location.reload()
             return
