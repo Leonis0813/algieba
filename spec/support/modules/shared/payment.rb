@@ -11,6 +11,18 @@ shared_context '事前準備: クライアントアプリを作成する' do
   end
 end
 
+shared_context '事前準備: ユーザーを作成する' do
+  before(:all) do
+    params = {:user_id => Settings.user_id, :password => Settings.password}
+    User.create!(params)
+  end
+
+  after(:all) do
+    params = {:user_id => Settings.user_id, :password => Settings.password}
+    User.find_by(params).destroy
+  end
+end
+
 shared_context '事前準備: 収支情報を登録する' do |payments = PaymentHelper.test_payment.values|
   before(:all) do
     payments.each do |payment|

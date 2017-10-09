@@ -5,10 +5,14 @@ class ApplicationController < ActionController::Base
 
   def check_user
     if cookies[:algieba]
-      user_id, password = parse_cookie
+      begin
+        user_id, password = parse_cookie
+      rescue ArgumentError
+        redirect_to '/algieba/login' and return
+      end
       if User.find_by(:user_id => user_id, :password => password)
         logger.info ("Login_user: #{user_id}")
-        redirect_unless '/algieba/payments.html'
+        redirect_unless '/algieba/payments'
       else
         redirect_unless '/algieba/login'
       end
