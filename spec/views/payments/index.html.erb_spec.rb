@@ -77,7 +77,7 @@ describe "payments/index", :type => :view do
   before(:all) do
     @payment = Payment.new
     @payments = Payment.order(:date => :desc).page(1)
-    @search_form = SearchForm.new
+    @search_form = Query.new
     Kaminari.config.default_per_page = per_page
   end
 
@@ -158,10 +158,10 @@ describe "payments/index", :type => :view do
         span_xpath = "#{form_xpath}/span[@class='input-custom']"
 
         [
-          %w[ search_form_date_after date ],
+          %w[ query_date_after date ],
           %w[ content content ],
-          %w[ search_form_category categories ],
-          %w[ search_form_price_upper price ],
+          %w[ query_category categories ],
+          %w[ query_price_upper price ],
         ].each do |label_for, text|
           it "#{label_for}を含む<label>タグがあること" do
             expect(html).to have_selector("#{span_xpath}/label[for='#{label_for}']", :text => I18n.t("views.payment.#{text}") + '：')

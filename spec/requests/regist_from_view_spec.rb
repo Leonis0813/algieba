@@ -71,13 +71,13 @@ describe 'ブラウザから操作する', :type => :request do
 
   before(:all) do
     header = {'Authorization' => app_auth_header}
-    res = http_client.get("#{base_url}/payments", nil, header)
+    res = http_client.get("#{base_url}/api/payments", nil, header)
     size = JSON.parse(res.body).size
     payment = default_inputs.merge(:payment_type => 'income')
 
     header = {'Authorization' => app_auth_header}.merge(content_type_json)
     (per_page - 1 - size).times do
-      http_client.post("#{base_url}/payments", {:payments => payment.merge(:category => 'テスト')}.to_json, header)
+      http_client.post("#{base_url}/api/payments", {:payments => payment.merge(:category => 'テスト')}.to_json, header)
     end
 
     @driver = Selenium::WebDriver.for :firefox
@@ -86,13 +86,13 @@ describe 'ブラウザから操作する', :type => :request do
 
   after(:all) do
     header = {'Authorization' => app_auth_header}
-    res = http_client.get("#{base_url}/payments", {:content_equal => 'regist from view'}, header)
+    res = http_client.get("#{base_url}/api/payments", {:content_equal => 'regist from view'}, header)
     payments = JSON.parse(res.body)
-    payments.each {|payment| http_client.delete("#{base_url}/payments/#{payment['id']}", nil, header) }
+    payments.each {|payment| http_client.delete("#{base_url}/api/payments/#{payment['id']}", nil, header) }
   end
 
   describe '管理画面を開く' do
-    before(:all) { @driver.get("#{base_url}/payments.html") }
+    before(:all) { @driver.get("#{base_url}/payments") }
 
     it 'ログイン画面にリダイレクトされていること' do
       is_asserted_by { @driver.current_url == "#{base_url}/login" }
@@ -107,7 +107,7 @@ describe 'ブラウザから操作する', :type => :request do
     end
 
     it '管理画面が開いていること' do
-      is_asserted_by { @driver.current_url == "#{base_url}/payments.html" }
+      is_asserted_by { @driver.current_url == "#{base_url}/payments" }
     end
 
     it_behaves_like '入力フォームが全て空であること'

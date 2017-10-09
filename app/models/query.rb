@@ -1,4 +1,4 @@
-class SearchForm
+class Query
   include ActiveModel::Model
 
   attr_accessor :payment_type,
