@@ -10,7 +10,7 @@
   <span class='input-custom'>
     <%= f.label :categories, t('views.payment.categories').html_safe + '：' %>
     <%= f.text_field :categories, {:name => 'payments[category]', :value => '', :class => 'form-control', :required => true} %>
-    <span id='category-list' data-names='<%= Category.pluck(:name).uniq.sort %>'>
+    <span class='category-list' data-names='<%= Category.pluck(:name).uniq.sort %>'>
       <%= button_tag(:type => 'button', :class => 'btn btn-default btn-sm') do %>
         <span class="glyphicon glyphicon-list" />
       <% end %>
@@ -49,6 +49,11 @@
   <span class='input-custom'>
     <%= f.label :category, t('views.payment.categories').html_safe + '：' %>
     <%= f.text_field :category, {:class => 'form-control', :name => 'category'} %>
+    <span class='category-list' data-names='<%= Category.pluck(:name).uniq.sort %>'>
+      <%= button_tag(:type => 'button', :class => 'btn btn-default btn-sm') do %>
+        <span class="glyphicon glyphicon-list" />
+      <% end %>
+    </span>
   </span>
   <span class='input-custom'>
     <%= f.label :price_upper, t('views.payment.price').html_safe + '：' %>

@@ -5,7 +5,7 @@ $ ->
     dayViewHeaderFormat: I18n.t('views.datepicker.dayViewHeaderFormat')
   })
 
-  $('#category-list').on 'click', ->
+  $('.category-list').on 'click', ->
     categories = $.map($(@).data('names'), (value) ->
       return {text: value, value: value}
     )
