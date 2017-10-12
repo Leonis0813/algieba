@@ -9,13 +9,14 @@ $ ->
     categories = $.map($(@).data('names'), (value) ->
       return {text: value, value: value}
     )
+    category_form = $(@).parent().find('.category-form')
     bootbox.prompt({
       title: I18n.t('views.category-list.title'),
       inputType: 'checkbox',
       inputOptions: categories,
       callback: (result) ->
         if result
-          $('#payments_categories').val(result.join(','))
+          category_form.val(result.join(','))
     })
     return
 
