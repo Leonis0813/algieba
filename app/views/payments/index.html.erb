@@ -61,6 +61,11 @@
     <%= t('views.search.form.between') %>
     <%= f.text_field :price_lower, {:class => 'form-control', :name => 'price_lower'} %>
   </span>
+  <span class='input-custom'>
+    <%= f.label :payment_type, t('views.payment.type').html_safe + '：' %>
+    <% options = %w[ income expense ].map {|payment_type| [t("views.payment.#{payment_type}"), payment_type] }.to_h %>
+    <%= f.select :payment_type, options, {:include_blank => true}, {:class => 'form-control', :name => 'payment_type'} %>
+  </span>
   <span class='input-custom'><%= f.submit t('views.search.button').html_safe, :id => 'search_button', :class => 'btn btn-primary' %></span>
 <% end %>
 
