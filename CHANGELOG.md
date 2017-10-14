@@ -1,3 +1,8 @@
+# 2.11.0 (2017/10/14)
+- [ADD] category list button to search form
+- [ADD] payment type list to search form
+- [UPDATE] category order by frequency
+
 # 2.10.0 (2017/10/09)
 - [UPDATE] controller to separate api from html
 

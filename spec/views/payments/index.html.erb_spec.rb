@@ -6,9 +6,6 @@ describe "payments/index", :type => :view do
   per_page = 1
   param = {:payment_type => 'income', :date => '1000-01-01', :content => 'モジュールテスト用データ', :category => 'algieba', :price => 100}
 
-  before(:all) { Category.create(:name => param[:category]) }
-  after(:all) { Category.destroy_all }
-
   shared_context 'HTML初期化' do
     before(:all) { html = nil }
   end
@@ -75,6 +72,7 @@ describe "payments/index", :type => :view do
   end
 
   before(:all) do
+    Category.create(:name => param[:category])
     @payment = Payment.new
     @payments = Payment.order(:date => :desc).page(1)
     @search_form = Query.new
@@ -85,6 +83,8 @@ describe "payments/index", :type => :view do
     render
     html ||= response
   end
+
+  after(:all) { Category.destroy_all }
 
   describe '<html><body>' do
     include_context 'HTML初期化'
@@ -120,12 +120,12 @@ describe "payments/index", :type => :view do
         end
 
         it 'payments[category]を含む<input>タグがあること' do
-          xpath = "#{span_xpath}/input[type='text'][name='payments[category]'][@class='form-control'][required='required']"
+          xpath = "#{span_xpath}/input[type='text'][name='payments[category]'][@class='form-control category-form'][required='required']"
           expect(html).to have_selector(xpath, :text => '')
         end
 
         it 'カテゴリ選択ボタンがあること' do
-          xpath = "#{span_xpath}/span[id='category-list']/button/span[@class='glyphicon glyphicon-list']"
+          xpath = "#{span_xpath}/span[@class='category-list']/button/span[@class='glyphicon glyphicon-list']"
           expect(html).to have_selector(xpath)
         end
 
@@ -181,6 +181,16 @@ describe "payments/index", :type => :view do
 
         it 'content_typeを含む<select>タグがあること' do
           xpath = "#{span_xpath}/select[name='content_type'][@class='form-control']"
+          expect(html).to have_selector(xpath, :text => '')
+        end
+
+        it 'カテゴリ選択ボタンがあること' do
+          xpath = "#{span_xpath}/span[@class='category-list']/button/span[@class='glyphicon glyphicon-list']"
+          expect(html).to have_selector(xpath)
+        end
+
+        it 'payment_typeを含む<select>タグがあること' do
+          xpath = "#{span_xpath}/select[name='payment_type'][@class='form-control']"
           expect(html).to have_selector(xpath, :text => '')
         end
 

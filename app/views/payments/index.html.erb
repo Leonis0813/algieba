@@ -9,8 +9,8 @@
   </span>
   <span class='input-custom'>
     <%= f.label :categories, t('views.payment.categories').html_safe + '：' %>
-    <%= f.text_field :categories, {:name => 'payments[category]', :value => '', :class => 'form-control', :required => true} %>
-    <span id='category-list' data-names='<%= Category.pluck(:name).uniq.sort %>'>
+    <%= f.text_field :categories, {:name => 'payments[category]', :value => '', :class => 'form-control category-form', :required => true} %>
+    <span class='category-list' data-names='<%= Payment.joins(:categories).group('categories.name').order('count_all desc').count.keys %>'>
       <%= button_tag(:type => 'button', :class => 'btn btn-default btn-sm') do %>
         <span class="glyphicon glyphicon-list" />
       <% end %>
@@ -48,13 +48,23 @@
   </span>
   <span class='input-custom'>
     <%= f.label :category, t('views.payment.categories').html_safe + '：' %>
-    <%= f.text_field :category, {:class => 'form-control', :name => 'category'} %>
+    <%= f.text_field :category, {:class => 'form-control category-form', :name => 'category'} %>
+    <span class='category-list' data-names='<%= Payment.joins(:categories).group('categories.name').order('count_all desc').count.keys %>'>
+      <%= button_tag(:type => 'button', :class => 'btn btn-default btn-sm') do %>
+        <span class="glyphicon glyphicon-list" />
+      <% end %>
+    </span>
   </span>
   <span class='input-custom'>
     <%= f.label :price_upper, t('views.payment.price').html_safe + '：' %>
     <%= f.text_field :price_upper, {:class => 'form-control', :name => 'price_upper'} %>
     <%= t('views.search.form.between') %>
     <%= f.text_field :price_lower, {:class => 'form-control', :name => 'price_lower'} %>
+  </span>
+  <span class='input-custom'>
+    <%= f.label :payment_type, t('views.payment.type').html_safe + '：' %>
+    <% options = %w[ income expense ].map {|payment_type| [t("views.payment.#{payment_type}"), payment_type] }.to_h %>
+    <%= f.select :payment_type, options, {:include_blank => true}, {:class => 'form-control', :name => 'payment_type'} %>
   </span>
   <span class='input-custom'><%= f.submit t('views.search.button').html_safe, :id => 'search_button', :class => 'btn btn-primary' %></span>
 <% end %>
