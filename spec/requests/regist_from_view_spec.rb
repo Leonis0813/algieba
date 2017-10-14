@@ -9,7 +9,7 @@ describe 'ブラウザから操作する', :type => :request do
   shared_context '収支情報を入力する' do |inputs, payment_type|
     before(:all) do
       inputs.except(:categories).each {|key, value| @driver.find_element(:id, "payments_#{key}").send_keys(value.to_s) }
-      @driver.find_element(:xpath, '//span[@id="category-list"]/button').click
+      @driver.find_element(:xpath, '//form[@id="new_payments"]//span[@class="category-list"]/button').click
       @wait.until { @driver.find_element(:xpath, "//input[@value='#{inputs[:categories]}']").click rescue false }
       @driver.find_element(:xpath, '//button[@data-bb-handler="confirm"]').click
       @wait.until { (not @driver.find_element(:xpath, '//div[@class="modal-body"]')) rescue true }
@@ -188,7 +188,7 @@ describe 'ブラウザから操作する', :type => :request do
   end
 
   describe 'カテゴリ一覧を確認する' do
-    before(:all) { @driver.find_element(:xpath, '//span[@id="category-list"]/button').click }
+    before(:all) { @driver.find_element(:xpath, '//form[@id="new_query"]//span[@class="category-list"]/button').click }
 
     after(:all) do
       sleep 1
@@ -284,7 +284,7 @@ describe 'ブラウザから操作する', :type => :request do
 
   describe 'カテゴリ一覧を確認する' do
     before(:all) do
-      @driver.find_element(:xpath, '//span[@id="category-list"]/button').click
+      @driver.find_element(:xpath, '//form[@id="new_query"]//span[@class="category-list"]/button').click
       sleep 1
     end
 
