@@ -1,3 +1,6 @@
+# 2.11.1 (2017/11/05)
+- [FIX] log level to info
+
 # 2.11.0 (2017/10/14)
 - [ADD] category list button to search form
 - [ADD] payment type list to search form
