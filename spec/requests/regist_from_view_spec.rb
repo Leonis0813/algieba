@@ -281,10 +281,11 @@ describe 'ブラウザから操作する', :type => :request do
       @driver.find_element(:id, 'search_button').click
     end
 
-    it_behaves_like 'URLにクエリがセットされていること', :category => 'テスト%2C新カテゴリ'
-    it_behaves_like '表示されている件数が正しいこと', 0, 0, 0
-    it_behaves_like 'ページングボタンが表示されていないこと'
-    it_behaves_like '収支情報の数が正しいこと', 0
+    it_behaves_like 'URLにクエリがセットされていること', :category => 'テスト,新カテゴリ'
+    it_behaves_like '表示されている件数が正しいこと', per_page + 1, 1, per_page
+    it_behaves_like 'ページングボタンが表示されていること'
+    it_behaves_like '収支情報の数が正しいこと', 50
+    it_behaves_like '背景色が正しいこと'
     it_behaves_like 'フォームに値がセットされていること', :name => 'category', :value => 'テスト,新カテゴリ'
   end
 
