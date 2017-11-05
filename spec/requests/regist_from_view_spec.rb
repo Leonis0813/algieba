@@ -273,6 +273,22 @@ describe 'ブラウザから操作する', :type => :request do
     it_behaves_like 'フォームに値がセットされていること', :name => 'price_upper', :value => '1000'
   end
 
+  describe 'テスト，または新カテゴリの収支情報を検索する' do
+    before(:all) do
+      @driver.find_element(:name, 'price_upper').clear
+      @driver.find_element(:name, 'price_lower').clear
+      @driver.find_element(:id, 'query_category').send_keys('テスト,新カテゴリ')
+      @driver.find_element(:id, 'search_button').click
+    end
+
+    it_behaves_like 'URLにクエリがセットされていること', :category => 'テスト,新カテゴリ'
+    it_behaves_like '表示されている件数が正しいこと', per_page + 1, 1, per_page
+    it_behaves_like 'ページングボタンが表示されていること'
+    it_behaves_like '収支情報の数が正しいこと', 50
+    it_behaves_like '背景色が正しいこと'
+    it_behaves_like 'フォームに値がセットされていること', :name => 'category', :value => 'テスト,新カテゴリ'
+  end
+
   describe 'カレンダーを表示する' do
     before(:all) { @driver.find_element(:id, 'payments_date').click }
     after(:all) { @driver.find_element(:class, 'today').click }

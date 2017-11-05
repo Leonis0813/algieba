@@ -1,5 +1,6 @@
 # 2.11.1 (2017/11/05)
 - [FIX] log level to info
+- [FIX] indexing by categories
 
 # 2.11.0 (2017/10/14)
 - [ADD] category list button to search form
