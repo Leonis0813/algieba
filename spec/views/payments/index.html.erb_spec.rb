@@ -217,7 +217,7 @@ describe "payments/index", :type => :view do
     end
 
     describe '<table>' do
-      table_xpath = '//table[@class="table table-hover"]'
+      table_xpath = '//table[@id="payment_table"][@class="table table-hover"]'
 
       it '<table>タグがあること' do
         expect(html).to have_selector(table_xpath)
