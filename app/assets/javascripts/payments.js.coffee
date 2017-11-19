@@ -53,7 +53,7 @@ $ ->
     paging: false,
     info: false,
     filter: false,
-    order: [[ 1, "asc" ]],
+    order: [[ 1, "desc" ]],
     columnDefs: [
       {
         "targets": [5],
