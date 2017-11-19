@@ -82,12 +82,13 @@
   </div>
 </div>
 
-<table class='table table-hover'>
+<table id='payment_table' class='table table-hover'>
   <thead>
     <tr>
       <% %w[ type date content categories price ].each do |attribute| %>
         <th><%= t("views.payment.#{attribute}").html_safe %></th>
       <% end %>
+      <th style="border: none"></th>
     </tr>
   </thead>
   <tbody>

@@ -49,6 +49,19 @@ $ ->
     location.href = '/algieba/payments?' + $.param(queries)
     return
 
+  $('#payment_table').DataTable({
+    paging: false,
+    info: false,
+    filter: false,
+    order: [[ 1, "asc" ]],
+    columnDefs: [
+      {
+        "targets": [5],
+        "sorting": false,
+      },
+    ]
+  })
+
   $('.delete').on 'click', ->
     id = $(@).children('button').attr('value')
     bootbox.confirm({
