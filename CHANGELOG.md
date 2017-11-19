@@ -1,3 +1,6 @@
+# 2.12.0 (2017/11/19)
+- [ADD] sort button to payment table
+
 # 2.11.1 (2017/11/05)
 - [FIX] log level to info
 - [FIX] indexing by categories
