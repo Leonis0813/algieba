@@ -73,11 +73,11 @@ describe 'ブラウザから操作する', :type => :request do
     header = {'Authorization' => app_auth_header}
     res = http_client.get("#{base_url}/api/payments", nil, header)
     size = JSON.parse(res.body).size
-    payment = default_inputs.merge(:payment_type => 'income')
+    payment = default_inputs.merge(:payment_type => 'income', :category => 'テスト')
 
     header = {'Authorization' => app_auth_header}.merge(content_type_json)
     (per_page - 1 - size).times do
-      http_client.post("#{base_url}/api/payments", {:payments => payment.merge(:category => 'テスト')}.to_json, header)
+      http_client.post("#{base_url}/api/payments", {:payments => payment.merge(:price => rand(100))}.to_json, header)
     end
 
     @driver = Selenium::WebDriver.for :firefox
@@ -114,6 +114,10 @@ describe 'ブラウザから操作する', :type => :request do
     it_behaves_like '表示されている件数が正しいこと', per_page - 1, 1, per_page - 1
     it_behaves_like 'ページングボタンが表示されていないこと'
     it_behaves_like '収支情報の数が正しいこと', per_page - 1
+
+    it '日付でソートされていること' do
+      is_asserted_by { @driver.find_element(:xpath, '//th[@class="sorting_asc"]').text == '日付' }
+    end
   end
 
   describe '不正な収支情報を登録する' do
@@ -259,6 +263,19 @@ describe 'ブラウザから操作する', :type => :request do
     it_behaves_like 'フォームに値がセットされていること', :name => 'price_lower', :value => '10000'
   end
 
+  describe '金額でソートする' do
+    before(:all) { @driver.find_element(:xpath, '//th[text()="金額"]').click }
+
+    it '金額でソートされていること' do
+      is_asserted_by { @driver.find_element(:xpath, '//th[@class="sorting_asc"]').text == '金額' }
+    end
+
+    it '収支情報がソートされていること' do
+      prices = @driver.find_elements(:class, 'sorting_1').map(&:text).map(&:to_i)
+      is_asserted_by { prices == prices.sort }
+    end
+  end
+
   describe '1000円以上10000円以下の収支情報を検索する' do
     before(:all) do
       @driver.find_element(:name, 'price_upper').send_keys('1000')
@@ -268,9 +285,12 @@ describe 'ブラウザから操作する', :type => :request do
     it_behaves_like 'URLにクエリがセットされていること', :price_upper => '1000', :price_lower => '10000'
     it_behaves_like '表示されている件数が正しいこと', 0, 0, 0
     it_behaves_like 'ページングボタンが表示されていないこと'
-    it_behaves_like '収支情報の数が正しいこと', 0
     it_behaves_like 'フォームに値がセットされていること', :name => 'price_lower', :value => '10000'
     it_behaves_like 'フォームに値がセットされていること', :name => 'price_upper', :value => '1000'
+
+    it 'テーブルにメッセージが表示されていること' do
+      is_asserted_by { @driver.find_element(:xpath, '//td').text == 'No data available in table' }
+    end
   end
 
   describe 'テスト，または新カテゴリの収支情報を検索する' do
