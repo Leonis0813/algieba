@@ -46,7 +46,23 @@ $ ->
         this.name = "content_" + $('#content_type').val()
       return this.name != "content"
     )
-    location.href = '/algieba/payments?' + $.param(queries)
+    $.ajax({
+      type: 'GET',
+      url: '/algieba/payments?' + $.param(queries)
+    }).done((data) ->
+      location.href = '/algieba/payments?' + $.param(queries)
+      return
+    ).fail((xhr, status, error) ->
+      error_codes = []
+      $.each($.parseJSON(xhr.responseText), (i, e)->
+        error_codes.push(I18n.t("views.search.form.#{e.error_code.match(/invalid_param_(.+)/)[1]}"))
+        return
+      )
+      bootbox.alert({
+      title: I18n.t('views.create.error.title'),
+      message: '<div class="text-center alert alert-danger">' + I18n.t('views.create.error.message', {error_codes: error_codes.join(', ')}) + '</div>',
+      })
+    )
     return
 
   $('#payment_table').DataTable({
