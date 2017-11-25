@@ -116,7 +116,7 @@ describe 'ブラウザから操作する', :type => :request do
     it_behaves_like '収支情報の数が正しいこと', per_page - 1
 
     it '日付でソートされていること' do
-      is_asserted_by { @driver.find_element(:xpath, '//th[@class="sorting_asc"]').text == '日付' }
+      is_asserted_by { @driver.find_element(:xpath, '//th[@class="sorting_desc"]').text == '日付' }
     end
   end
 
@@ -249,10 +249,38 @@ describe 'ブラウザから操作する', :type => :request do
     it_behaves_like '背景色が正しいこと'
   end
 
+  describe '不正な金額を入力して検索する' do
+    before(:all) do
+      @driver.find_element(:name, 'price_upper').send_keys('invalid')
+      @driver.find_element(:id, 'search_button').click
+      @wait.until { not @driver.find_element(:class, 'modal-title').text.empty? }
+    end
+
+    after(:all) do
+      @driver.find_element(:xpath, '//div[@class="modal-footer"]/button').click
+      @wait.until { (not @driver.find_element(:xpath, '//div[@role="dialog"]')) rescue true }
+      @driver.find_element(:name, 'price_upper').clear
+    end
+
+    it 'ダイアログのタイトルが正しいこと' do
+      is_asserted_by { @driver.find_element(:xpath, '//h4[@class="modal-title"]').text == 'エラー' }
+    end
+
+    it 'エラーメッセージが正しいこと' do
+      is_asserted_by { @driver.find_element(:xpath, '//div[@class="text-center alert alert-danger"]').text == '金額 が不正です' }
+    end
+
+    it_behaves_like '表示されている件数が正しいこと', per_page + 1, per_page + 1, per_page + 1
+    it_behaves_like 'ページングボタンが表示されていること'
+    it_behaves_like '収支情報の数が正しいこと', 1
+    it_behaves_like '背景色が正しいこと'
+  end
+
   describe '10000円以下の収支情報を検索する' do
     before(:all) do
       @driver.find_element(:name, 'price_lower').send_keys('10000')
       @driver.find_element(:id, 'search_button').click
+      sleep 1
     end
 
     it_behaves_like 'URLにクエリがセットされていること', :price_lower => '10000'
@@ -280,6 +308,7 @@ describe 'ブラウザから操作する', :type => :request do
     before(:all) do
       @driver.find_element(:name, 'price_upper').send_keys('1000')
       @driver.find_element(:id, 'search_button').click
+      sleep 1
     end
 
     it_behaves_like 'URLにクエリがセットされていること', :price_upper => '1000', :price_lower => '10000'
@@ -299,6 +328,7 @@ describe 'ブラウザから操作する', :type => :request do
       @driver.find_element(:name, 'price_lower').clear
       @driver.find_element(:id, 'query_category').send_keys('テスト,新カテゴリ')
       @driver.find_element(:id, 'search_button').click
+      sleep 1
     end
 
     it_behaves_like 'URLにクエリがセットされていること', :category => 'テスト,新カテゴリ'
