@@ -65,6 +65,15 @@ $ ->
     )
     return
 
+  $('#per_page_form').on 'submit', ->
+    query = location.search.replace(/&?per_page=\d+/, '').substring(1)
+    per_page = $('#per_page').val()
+    if (query == '')
+      location.href = '/algieba/payments?per_page=' + per_page
+    else
+      location.href = '/algieba/payments?' + query + '&per_page=' + per_page
+    return
+
   $('#payment_table').DataTable({
     paging: false,
     info: false,

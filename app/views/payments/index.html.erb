@@ -72,17 +72,15 @@
 <hr>
 
 <div class='row'>
-  <span class='pull-left'>
-    <% from = @payments.total_count == 0 ? 0 : @payments.offset_value + 1 %>
-    <% info = {:total_count => @payments.total_count, :from => from, :to => @payments.offset_value + @payments.size} %>
-    <h4 style='padding: 0px 10px'><%= t('views.pagination.info', info) %></h4>
-    <span style='padding: 0px 10px'>
-      <%= paginate @payments %>
-    </span>
+  <% from = @payments.total_count == 0 ? 0 : @payments.offset_value + 1 %>
+  <% info = {:total_count => @payments.total_count, :from => from, :to => @payments.offset_value + @payments.size} %>
+  <h4 style='margin-top: 30px; padding: 0px 10px' class='pull-left'><%= t('views.pagination.info', info) %></h4>
+  <span style='padding: 0px 10px' class='pull-left'>
+    <%= paginate @payments %>
   </span>
-  <form style='padding: 0px 10px; margin: 10px 0px' id='per_page_form' class='form-group form-inline pull-right' onSubmit='return false;'>
+  <form style='margin-top: 20px; padding: 0px 10px' id='per_page_form' class='form-inline pull-right' onSubmit='return false;'>
     <label for='per_page'>表示件数</label>
-    <input type='text' class='form-control' name='per_page' />
+    <input type='text' id='per_page' class='form-control' name='per_page' value='<%= @per_page %>'/>
   </form>
 </div>
 
