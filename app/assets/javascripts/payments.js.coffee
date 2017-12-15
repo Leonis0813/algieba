@@ -46,6 +46,11 @@ $ ->
         this.name = "content_" + $('#content_type').val()
       return this.name != "content"
     )
+
+    per_page = $('#per_page').val()
+    if (per_page != '')
+      queries.push({'name': 'per_page', 'value': per_page})
+
     $.ajax({
       type: 'GET',
       url: '/algieba/payments?' + $.param(queries)
@@ -59,8 +64,8 @@ $ ->
         return
       )
       bootbox.alert({
-      title: I18n.t('views.create.error.title'),
-      message: '<div class="text-center alert alert-danger">' + I18n.t('views.create.error.message', {error_codes: error_codes.join(', ')}) + '</div>',
+        title: I18n.t('views.create.error.title'),
+        message: '<div class="text-center alert alert-danger">' + I18n.t('views.create.error.message', {error_codes: error_codes.join(', ')}) + '</div>',
       })
     )
     return
