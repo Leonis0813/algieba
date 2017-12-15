@@ -41,3 +41,7 @@ en:
         include: 'include'
         equal: 'equal'
       button: 'Search'
+    per_page:
+      error:
+        title: 'Error'
+        message: 'Input number for page setting'
