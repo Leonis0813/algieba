@@ -73,10 +73,24 @@ $ ->
   $('#per_page_form').on 'submit', ->
     query = location.search.replace(/&?per_page=\d+/, '').substring(1)
     per_page = $('#per_page').val()
+
+    url = ''
     if (query == '')
-      location.href = '/algieba/payments?per_page=' + per_page
+      url = '/algieba/payments?per_page=' + per_page
     else
-      location.href = '/algieba/payments?' + query + '&per_page=' + per_page
+      url = '/algieba/payments?' + query + '&per_page=' + per_page
+    $.ajax({
+      type: 'GET',
+      url: url
+    }).done((data) ->
+      location.href = url
+      return
+    ).fail((xhr, status, error) ->
+      bootbox.alert({
+        title: I18n.t('views.per_page.error.title'),
+        message: '<div class="text-center alert alert-danger">' + I18n.t('views.per_page.error.message') + '</div>',
+      })
+    )
     return
 
   $('#payment_table').DataTable({
