@@ -23,6 +23,7 @@ describe PaymentsController, :type => :controller do
       [{:category => 'algieba'}, [:income, :expense]],
       [{:price_upper => 100}, [:income, :expense]],
       [{:price_lower => 100}, [:expense]],
+      [{:per_page => 10}, [:income, :expense]],
       [
         {
           :payment_type => 'income',
@@ -33,6 +34,7 @@ describe PaymentsController, :type => :controller do
           :category => 'algieba',
           :price_upper => 100,
           :price_lower => 1000,
+          :per_page => 10,
         },
         [:income],
       ],
@@ -76,6 +78,7 @@ describe PaymentsController, :type => :controller do
       {:date_after => 'invalid_date'},
       {:price_upper => 'invalid_price'},
       {:price_lower => 'invalid_price'},
+      {:per_page => 'invalid_per_page'},
       {
         :payment_type => 'invalid_type',
         :date_before => 'invalid_date',
