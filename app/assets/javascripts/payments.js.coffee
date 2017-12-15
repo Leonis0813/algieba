@@ -90,6 +90,7 @@ $ ->
         title: I18n.t('views.per_page.error.title'),
         message: '<div class="text-center alert alert-danger">' + I18n.t('views.per_page.error.message') + '</div>',
       })
+      $('#per_page').val('')
     )
     return
 
