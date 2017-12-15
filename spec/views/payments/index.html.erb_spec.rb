@@ -40,7 +40,7 @@ describe "payments/index", :type => :view do
   end
 
   shared_examples 'ページネーションが正しく表示されていること' do
-    nav_xpath = '//div[@class="row row-center"]/div/nav[@class="pagination"]'
+    nav_xpath = '//div[@class="row"]/span/nav[@class="pagination"]'
 
     it 'ページングボタンが表示されていること' do
       expect(html).to have_selector(nav_xpath)
@@ -200,19 +200,23 @@ describe "payments/index", :type => :view do
       end
     end
 
-    describe '<div class="row row-center">' do
-      row_xpath = '//div[@class="row row-center"]'
+    describe '<div class="row">' do
+      row_xpath = '//div[@class="row"]'
 
       it 'ページング情報を表示するブロックがあること' do
         expect(html).to have_selector(row_xpath)
       end
 
       it '件数を表示するブロックがあること' do
-        expect(html).to have_selector("#{row_xpath}/div")
+        expect(html).to have_selector("#{row_xpath}/h4")
       end
 
       it 'リンクを表示するブロックがあること' do
-        expect(html).to have_selector("#{row_xpath}/div")
+        expect(html).to have_selector("#{row_xpath}/span")
+      end
+
+      it '表示件数を変更するフォームがあること' do
+        expect(html).to have_selector("#{row_xpath}/form")
       end
     end
 

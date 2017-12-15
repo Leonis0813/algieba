@@ -41,3 +41,7 @@ ja:
         include: 'を含む'
         equal: 'と一致する'
       button: '検索'
+    per_page:
+      error:
+        title: 'エラー'
+        message: '表示件数には数値を入力してください'

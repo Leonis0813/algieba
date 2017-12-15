@@ -1,3 +1,6 @@
+# 2.13.0 (2017/12/15)
+- [ADD] setting number of payments to display
+
 # 2.12.1 (2017/11/25)
 - [FIX] default sort order
 - [FIX] invalid search pattern

@@ -32,7 +32,7 @@ describe 'ブラウザから操作する', :type => :request do
   end
 
   shared_examples '表示されている件数が正しいこと' do |total, from, to|
-    it_is_asserted_by { @driver.find_element(:xpath, '//div[@class="row row-center"]/div').text == "#{total}件中#{from}〜#{to}件を表示" }
+    it_is_asserted_by { @driver.find_element(:xpath, '//div[@class="row"]/h4').text == "#{total}件中#{from}〜#{to}件を表示" }
   end
 
   shared_examples 'ページングボタンが表示されていないこと' do
@@ -150,7 +150,7 @@ describe 'ブラウザから操作する', :type => :request do
   describe '収支情報を登録する' do
     include_context '収支情報を入力する', default_inputs.merge(:date => Date.today.strftime('%Y-%m-%d')), 'expense'
     include_context '登録ボタンを押す'
-    before(:all) { @wait.until { @driver.find_element(:xpath, '//div[@class="row row-center"]/div').text =~ /^#{per_page}/ } }
+    before(:all) { @wait.until { @driver.find_element(:xpath, '//div[@class="row"]/h4').text =~ /^#{per_page}/ } }
 
     it_behaves_like '表示されている件数が正しいこと', per_page, 1, per_page
     it_behaves_like 'ページングボタンが表示されていないこと'
@@ -183,7 +183,7 @@ describe 'ブラウザから操作する', :type => :request do
       element.send_keys('新カテゴリ')
     end
     include_context '登録ボタンを押す'
-    before(:all) { @wait.until { @driver.find_element(:xpath, '//div[@class="row row-center"]/div').text =~ /^#{per_page + 1}/ } }
+    before(:all) { @wait.until { @driver.find_element(:xpath, '//div[@class="row"]/h4').text =~ /^#{per_page + 1}/ } }
 
     it_behaves_like '表示されている件数が正しいこと', per_page + 1, 1, per_page
     it_behaves_like 'ページングボタンが表示されていること'
@@ -224,7 +224,7 @@ describe 'ブラウザから操作する', :type => :request do
     before(:all) do
       @driver.find_element(:xpath, '//div[@class="modal-footer"]/button[@class="btn btn-success"]').click
       @wait.until { (not @driver.find_element(:xpath, '//div[@class="bootbox modal fade bootbox-confirm in"]')) rescue true }
-      @wait.until { @driver.find_element(:xpath, '//div[@class="row row-center"]/div').text =~ /^#{per_page}/ }
+      @wait.until { @driver.find_element(:xpath, '//div[@class="row"]/h4').text =~ /^#{per_page}/ }
     end
 
     it_behaves_like '表示されている件数が正しいこと', per_page, 1, per_page
@@ -238,7 +238,7 @@ describe 'ブラウザから操作する', :type => :request do
     include_context '収支情報を入力する', default_inputs, 'income'
     include_context '登録ボタンを押す'
     before(:all) do
-      @wait.until { @driver.find_element(:xpath, '//div[@class="row row-center"]/div').text =~ /^#{per_page + 1}/ }
+      @wait.until { @driver.find_element(:xpath, '//div[@class="row"]/h4').text =~ /^#{per_page + 1}/ }
       @driver.find_element(:xpath, '//span[@class="next"]').click
       @wait.until { URI.parse(@driver.current_url).query == 'page=2' }
     end
@@ -283,7 +283,7 @@ describe 'ブラウザから操作する', :type => :request do
       sleep 1
     end
 
-    it_behaves_like 'URLにクエリがセットされていること', :price_lower => '10000'
+    it_behaves_like 'URLにクエリがセットされていること', :price_lower => '10000', :per_page => '50'
     it_behaves_like '表示されている件数が正しいこと', per_page + 1, 1, per_page
     it_behaves_like 'ページングボタンが表示されていること'
     it_behaves_like '収支情報の数が正しいこと', 50
@@ -304,14 +304,55 @@ describe 'ブラウザから操作する', :type => :request do
     end
   end
 
+  describe '不正な表示件数を入力する' do
+    before(:all) do
+      @driver.find_element(:id, 'per_page').send_keys('aaa')
+      @driver.find_element(:id, 'per_page').submit
+      @wait.until { not @driver.find_element(:class, 'modal-title').text.empty? }
+    end
+
+    after(:all) do
+      @driver.find_element(:xpath, '//div[@class="modal-footer"]/button').click
+      @wait.until { (not @driver.find_element(:xpath, '//div[@role="dialog"]')) rescue true }
+    end
+
+    it 'ダイアログのタイトルが正しいこと' do
+      is_asserted_by { @driver.find_element(:xpath, '//h4[@class="modal-title"]').text == 'エラー' }
+    end
+
+    it 'エラーメッセージが正しいこと' do
+      is_asserted_by { @driver.find_element(:xpath, '//div[@class="text-center alert alert-danger"]').text == '表示件数には数値を入力してください' }
+    end
+
+    it '表示件数が空文字になっていること' do
+      is_asserted_by { @driver.find_element(:id, 'per_page').text.empty? }
+    end
+  end
+
+  describe '表示件数を変更する' do
+    before(:all) do
+      @driver.find_element(:id, 'per_page').send_keys('20')
+      @driver.find_element(:id, 'per_page').submit
+      sleep 1
+    end
+
+    it_behaves_like 'URLにクエリがセットされていること', :price_lower => '10000', :per_page => '20'
+    it_behaves_like '表示されている件数が正しいこと', per_page + 1, 1, 20
+    it_behaves_like 'ページングボタンが表示されていること'
+    it_behaves_like '収支情報の数が正しいこと', 20
+    it_behaves_like '背景色が正しいこと'
+    it_behaves_like 'フォームに値がセットされていること', :name => 'price_lower', :value => '10000'
+    it_behaves_like 'フォームに値がセットされていること', :name => 'per_page', :value => '20'
+  end
+
   describe '1000円以上10000円以下の収支情報を検索する' do
     before(:all) do
       @driver.find_element(:name, 'price_upper').send_keys('1000')
       @driver.find_element(:id, 'search_button').click
-      sleep 1
+      sleep 2
     end
 
-    it_behaves_like 'URLにクエリがセットされていること', :price_upper => '1000', :price_lower => '10000'
+    it_behaves_like 'URLにクエリがセットされていること', :price_upper => '1000', :price_lower => '10000', :per_page => '20'
     it_behaves_like '表示されている件数が正しいこと', 0, 0, 0
     it_behaves_like 'ページングボタンが表示されていないこと'
     it_behaves_like 'フォームに値がセットされていること', :name => 'price_lower', :value => '10000'
@@ -331,10 +372,10 @@ describe 'ブラウザから操作する', :type => :request do
       sleep 1
     end
 
-    it_behaves_like 'URLにクエリがセットされていること', :category => 'テスト,新カテゴリ'
-    it_behaves_like '表示されている件数が正しいこと', per_page + 1, 1, per_page
+    it_behaves_like 'URLにクエリがセットされていること', :category => 'テスト,新カテゴリ', :per_page => '20'
+    it_behaves_like '表示されている件数が正しいこと', per_page + 1, 1, 20
     it_behaves_like 'ページングボタンが表示されていること'
-    it_behaves_like '収支情報の数が正しいこと', 50
+    it_behaves_like '収支情報の数が正しいこと', 20
     it_behaves_like '背景色が正しいこと'
     it_behaves_like 'フォームに値がセットされていること', :name => 'category', :value => 'テスト,新カテゴリ'
   end

@@ -46,6 +46,11 @@ $ ->
         this.name = "content_" + $('#content_type').val()
       return this.name != "content"
     )
+
+    per_page = $('#per_page').val()
+    if (per_page != '')
+      queries.push({'name': 'per_page', 'value': per_page})
+
     $.ajax({
       type: 'GET',
       url: '/algieba/payments?' + $.param(queries)
@@ -59,9 +64,33 @@ $ ->
         return
       )
       bootbox.alert({
-      title: I18n.t('views.create.error.title'),
-      message: '<div class="text-center alert alert-danger">' + I18n.t('views.create.error.message', {error_codes: error_codes.join(', ')}) + '</div>',
+        title: I18n.t('views.create.error.title'),
+        message: '<div class="text-center alert alert-danger">' + I18n.t('views.create.error.message', {error_codes: error_codes.join(', ')}) + '</div>',
       })
+    )
+    return
+
+  $('#per_page_form').on 'submit', ->
+    query = location.search.replace(/&?per_page=\d+/, '').substring(1)
+    per_page = $('#per_page').val()
+
+    url = ''
+    if (query == '')
+      url = '/algieba/payments?per_page=' + per_page
+    else
+      url = '/algieba/payments?' + query + '&per_page=' + per_page
+    $.ajax({
+      type: 'GET',
+      url: url
+    }).done((data) ->
+      location.href = url
+      return
+    ).fail((xhr, status, error) ->
+      bootbox.alert({
+        title: I18n.t('views.per_page.error.title'),
+        message: '<div class="text-center alert alert-danger">' + I18n.t('views.per_page.error.message') + '</div>',
+      })
+      $('#per_page').val('')
     )
     return
 
