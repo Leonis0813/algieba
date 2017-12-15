@@ -214,6 +214,10 @@ describe "payments/index", :type => :view do
       it 'リンクを表示するブロックがあること' do
         expect(html).to have_selector("#{row_xpath}/span")
       end
+
+      it '表示件数を変更するフォームがあること' do
+        expect(html).to have_selector("#{row_xpath}/form")
+      end
     end
 
     describe '<table>' do
