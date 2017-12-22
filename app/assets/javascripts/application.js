@@ -10,6 +10,7 @@
 // Read Sprockets README (https://github.com/rails/sprockets#sprockets-directives) for details
 // about supported directives.
 //
+//= require d3
 //= require i18n
 //= require i18n/translations
 //= require jquery
