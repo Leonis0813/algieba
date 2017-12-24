@@ -1,0 +1,2 @@
+module Statistics::SettlementsHelper
+end

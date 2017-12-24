@@ -78,6 +78,13 @@
   <span style='padding: 0px 10px' class='pull-left'>
     <%= paginate @payments %>
   </span>
+  <span style='margin-top: 20px; padding: 0px 10px' class="pull-right">
+    <a href="/algieba/statistics">
+      <button class="btn btn-default btn-sm" title="統計情報">
+	<span class="glyphicon glyphicon-stats"></span>
+      </button>
+    </a>
+  </span>
   <form style='margin-top: 20px; padding: 0px 10px' id='per_page_form' class='form-inline pull-right' onSubmit='return false;'>
     <label for='per_page'>表示件数</label>
     <input type='text' id='per_page' class='form-control' name='per_page' value='<%= @per_page %>'/>
