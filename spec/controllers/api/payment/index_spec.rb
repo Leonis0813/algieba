@@ -2,15 +2,15 @@
 require 'rails_helper'
 
 describe PaymentsController, :type => :controller do
-  shared_context '収支情報を検索する' do |params = {}, user_cookie = CommonHelper.user_cookie|
+  shared_context '収支情報を検索する' do |params = {}, app_auth_header = CommonHelper.app_auth_header|
     before(:all) do
-      client.header('Cookie', "algieba=#{user_cookie}")
-      @res = client.get('/payments', params)
+      client.header('Authorization', app_auth_header)
+      @res = client.get('/api/payments', params)
       @pbody = JSON.parse(@res.body) rescue nil
     end
   end
 
-  include_context '事前準備: ユーザーを作成する'
+  include_context '事前準備: クライアントアプリを作成する'
   include_context '事前準備: 収支情報を登録する'
 
   describe '正常系' do
@@ -23,7 +23,6 @@ describe PaymentsController, :type => :controller do
       [{:category => 'algieba'}, [:income, :expense]],
       [{:price_upper => 100}, [:income, :expense]],
       [{:price_lower => 100}, [:expense]],
-      [{:per_page => 10}, [:income, :expense]],
       [
         {
           :payment_type => 'income',
@@ -34,7 +33,6 @@ describe PaymentsController, :type => :controller do
           :category => 'algieba',
           :price_upper => 100,
           :price_lower => 1000,
-          :per_page => 10,
         },
         [:income],
       ],
@@ -51,6 +49,10 @@ describe PaymentsController, :type => :controller do
       context description do
         include_context '収支情報を検索する', query
         it_behaves_like 'ステータスコードが正しいこと', '200'
+        it_behaves_like '収支情報リソースのキーが正しいこと'
+        it_behaves_like 'カテゴリリソースのキーが正しいこと'
+        it_behaves_like '収支情報リソースの属性値が正しいこと', expected_payments
+        it_behaves_like 'カテゴリリソースの属性値が正しいこと', expected_categories
       end
     end
   end
@@ -58,18 +60,12 @@ describe PaymentsController, :type => :controller do
   describe '異常系' do
     context 'Authorizationヘッダーがない場合' do
       include_context '収支情報を検索する', {}, nil
-      it_behaves_like 'ステータスコードが正しいこと', '302'
-      it 'LocationヘッダのURLが正しいこと' do
-        is_asserted_by { @res.header['Location'] == "#{Capybara.app_host}/algieba/login" }
-      end
+      it_behaves_like '400エラーをチェックする', ['absent_header']
     end
 
     context 'Authorizationヘッダーが不正な場合' do
       include_context '収支情報を検索する', {}, 'invalid'
-      it_behaves_like 'ステータスコードが正しいこと', '302'
-      it 'LocationヘッダのURLが正しいこと' do
-        is_asserted_by { @res.header['Location'] == "#{Capybara.app_host}/algieba/login" }
-      end
+      it_behaves_like 'ステータスコードが正しいこと', '401'
     end
 
     [
@@ -78,7 +74,6 @@ describe PaymentsController, :type => :controller do
       {:date_after => 'invalid_date'},
       {:price_upper => 'invalid_price'},
       {:price_lower => 'invalid_price'},
-      {:per_page => 'invalid_per_page'},
       {
         :payment_type => 'invalid_type',
         :date_before => 'invalid_date',

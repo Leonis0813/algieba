@@ -5,15 +5,19 @@ class ApplicationController < ActionController::Base
 
   def check_user
     if cookies[:algieba]
-      user_id, password = parse_cookie
+      begin
+        user_id, password = parse_cookie
+      rescue ArgumentError
+        redirect_to '/algieba/login' and return
+      end
       if User.find_by(:user_id => user_id, :password => password)
         logger.info ("Login_user: #{user_id}")
-        redirect_unless '/payments.html'
+        redirect_unless '/algieba/payments'
       else
-        redirect_unless login_path
+        redirect_unless '/algieba/login'
       end
     else
-      redirect_unless login_path
+      redirect_unless '/algieba/login'
     end
   end
 
@@ -52,6 +56,6 @@ class ApplicationController < ActionController::Base
   end
 
   def redirect_unless(path)
-    redirect_to path unless request.path_info == path
+    redirect_to path unless "/algieba#{request.path_info}" == path
   end
 end

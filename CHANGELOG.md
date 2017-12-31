@@ -1,3 +1,33 @@
+# 2.13.0 (2017/12/15)
+- [ADD] setting number of payments to display
+
+# 2.12.1 (2017/11/25)
+- [FIX] default sort order
+- [FIX] invalid search pattern
+
+# 2.12.0 (2017/11/19)
+- [ADD] sort button to payment table
+- [UPDATE] rubyzip to 1.2.1
+
+# 2.11.1 (2017/11/05)
+- [FIX] log level to info
+- [FIX] indexing by categories
+
+# 2.11.0 (2017/10/14)
+- [ADD] category list button to search form
+- [ADD] payment type list to search form
+- [UPDATE] category order by frequency
+
+# 2.10.0 (2017/10/09)
+- [UPDATE] controller to separate api from html
+
+# 2.9.2 (2017/10/08)
+- [FIX] payment info if no payments found
+- [FIX] search form when content is specified
+
+# 2.9.1 (2017/10/08)
+- [UPDATE] root path
+
 # 2.9.0 (2017/09/24)
 - [ADD] view to search payments
 

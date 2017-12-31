@@ -33,7 +33,15 @@ en:
     reset: 'Reset'
     search:
       form:
+        date_before: 'Date'
+        date_after: 'Date'
+        price_upper: 'Price'
+        price_lower: 'Price'
         between: '-'
         include: 'include'
         equal: 'equal'
       button: 'Search'
+    per_page:
+      error:
+        title: 'Error'
+        message: 'Input number for page setting'

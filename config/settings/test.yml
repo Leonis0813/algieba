@@ -1,2 +1,4 @@
 application_id: 'test_app_id'
 application_key: 'test_app_key'
+user_id: 'test_user_id'
+user_password: 'test_user_pass'

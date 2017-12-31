@@ -5,17 +5,18 @@ $ ->
     dayViewHeaderFormat: I18n.t('views.datepicker.dayViewHeaderFormat')
   })
 
-  $('#category-list').on 'click', ->
+  $('.category-list').on 'click', ->
     categories = $.map($(@).data('names'), (value) ->
       return {text: value, value: value}
     )
+    category_form = $(@).parent().find('.category-form')
     bootbox.prompt({
       title: I18n.t('views.category-list.title'),
       inputType: 'checkbox',
       inputOptions: categories,
       callback: (result) ->
         if result
-          $('#payments_categories').val(result.join(','))
+          category_form.val(result.join(','))
     })
     return
 
@@ -36,7 +37,7 @@ $ ->
     return
 
   $('#search_button').on 'click', ->
-    all_queries = $('#new_search_form').serializeArray()
+    all_queries = $('#new_query').serializeArray()
     queries = $.grep(all_queries, (query) ->
       return query.name != "content_type" && query.name != "utf8" && query.value != ""
     )
@@ -45,8 +46,66 @@ $ ->
         this.name = "content_" + $('#content_type').val()
       return this.name != "content"
     )
-    location.href = '/payments.html?' + $.param(queries)
+
+    per_page = $('#per_page').val()
+    if (per_page != '')
+      queries.push({'name': 'per_page', 'value': per_page})
+
+    $.ajax({
+      type: 'GET',
+      url: '/algieba/payments?' + $.param(queries)
+    }).done((data) ->
+      location.href = '/algieba/payments?' + $.param(queries)
+      return
+    ).fail((xhr, status, error) ->
+      error_codes = []
+      $.each($.parseJSON(xhr.responseText), (i, e)->
+        error_codes.push(I18n.t("views.search.form.#{e.error_code.match(/invalid_param_(.+)/)[1]}"))
+        return
+      )
+      bootbox.alert({
+        title: I18n.t('views.create.error.title'),
+        message: '<div class="text-center alert alert-danger">' + I18n.t('views.create.error.message', {error_codes: error_codes.join(', ')}) + '</div>',
+      })
+    )
     return
+
+  $('#per_page_form').on 'submit', ->
+    query = location.search.replace(/&?per_page=\d+/, '').substring(1)
+    per_page = $('#per_page').val()
+
+    url = ''
+    if (query == '')
+      url = '/algieba/payments?per_page=' + per_page
+    else
+      url = '/algieba/payments?' + query + '&per_page=' + per_page
+    $.ajax({
+      type: 'GET',
+      url: url
+    }).done((data) ->
+      location.href = url
+      return
+    ).fail((xhr, status, error) ->
+      bootbox.alert({
+        title: I18n.t('views.per_page.error.title'),
+        message: '<div class="text-center alert alert-danger">' + I18n.t('views.per_page.error.message') + '</div>',
+      })
+      $('#per_page').val('')
+    )
+    return
+
+  $('#payment_table').DataTable({
+    paging: false,
+    info: false,
+    filter: false,
+    order: [[ 1, "desc" ]],
+    columnDefs: [
+      {
+        "targets": [5],
+        "sorting": false,
+      },
+    ]
+  })
 
   $('.delete').on 'click', ->
     id = $(@).children('button').attr('value')
@@ -66,7 +125,7 @@ $ ->
         if result == true
           $.ajax({
             type: 'DELETE',
-            url: '/payments/' + id
+            url: '/algieba/api/payments/' + id
           }).done((data) ->
             location.reload()
             return

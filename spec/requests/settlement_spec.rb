@@ -12,32 +12,32 @@ describe '収支を計算する', :type => :request do
 
   before(:all) do
     header = {'Authorization' => app_auth_header}
-    res = http_client.get("#{base_url}/payments", nil, header)
+    res = http_client.get("#{base_url}/api/payments", nil, header)
     @payments = JSON.parse(res.body)
     @payments.each do |payment|
-      http_client.delete("#{base_url}/payments/#{payment['id']}", nil, header)
+      http_client.delete("#{base_url}/api/payments/#{payment['id']}", nil, header)
     end
   end
 
   after(:all) do
     header = {'Authorization' => app_auth_header}
-    res = http_client.get("#{base_url}/payments", nil, header)
+    res = http_client.get("#{base_url}/api/payments", nil, header)
     JSON.parse(res.body).each do |payment|
-      http_client.delete("#{base_url}/payments/#{payment['id']}", nil, header)
+      http_client.delete("#{base_url}/api/payments/#{payment['id']}", nil, header)
     end
 
     header = {'Authorization' => app_auth_header}.merge(content_type_json)
     @payments.each do |payment|
       body = {:payments => payment.slice(*payment_params)}.to_json
-      http_client.post("#{base_url}/payments", body, header)
+      http_client.post("#{base_url}/api/payments", body, header)
     end
   end
 
   describe '収支情報を登録する' do
-    include_context 'POST /payments', payment
+    include_context 'POST /api/payments', payment
 
     describe '収支情報を検索する' do
-      include_context 'GET /payments'
+      include_context 'GET /api/payments'
       it_behaves_like 'レスポンスボディのキーが正しいこと', PaymentHelper.response_keys
 
       [
@@ -48,7 +48,7 @@ describe '収支を計算する', :type => :request do
         describe '収支を計算する' do
           before(:all) do
             header = {'Authorization' => app_auth_header}
-            @res = http_client.get("#{base_url}/settlement", {:interval => interval}, header)
+            @res = http_client.get("#{base_url}/api/settlement", {:interval => interval}, header)
             @pbody = JSON.parse(@res.body) rescue nil
           end
 

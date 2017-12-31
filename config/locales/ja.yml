@@ -33,7 +33,15 @@ ja:
     reset: 'リセット'
     search:
       form:
+        date_before: '日付'
+        date_after: '日付'
+        price_upper: '金額'
+        price_lower: '金額'
         between: '〜'
         include: 'を含む'
         equal: 'と一致する'
       button: '検索'
+    per_page:
+      error:
+        title: 'エラー'
+        message: '表示件数には数値を入力してください'

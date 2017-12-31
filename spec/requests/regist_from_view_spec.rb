@@ -9,7 +9,7 @@ describe 'ブラウザから操作する', :type => :request do
   shared_context '収支情報を入力する' do |inputs, payment_type|
     before(:all) do
       inputs.except(:categories).each {|key, value| @driver.find_element(:id, "payments_#{key}").send_keys(value.to_s) }
-      @driver.find_element(:xpath, '//span[@id="category-list"]/button').click
+      @driver.find_element(:xpath, '//form[@id="new_payments"]//span[@class="category-list"]/button').click
       @wait.until { @driver.find_element(:xpath, "//input[@value='#{inputs[:categories]}']").click rescue false }
       @driver.find_element(:xpath, '//button[@data-bb-handler="confirm"]').click
       @wait.until { (not @driver.find_element(:xpath, '//div[@class="modal-body"]')) rescue true }
@@ -32,7 +32,7 @@ describe 'ブラウザから操作する', :type => :request do
   end
 
   shared_examples '表示されている件数が正しいこと' do |total, from, to|
-    it_is_asserted_by { @driver.find_element(:xpath, '//div[@class="row row-center"]/div').text == "#{total}件中#{from}〜#{to}件を表示" }
+    it_is_asserted_by { @driver.find_element(:xpath, '//div[@class="row"]/h4').text == "#{total}件中#{from}〜#{to}件を表示" }
   end
 
   shared_examples 'ページングボタンが表示されていないこと' do
@@ -58,15 +58,26 @@ describe 'ブラウザから操作する', :type => :request do
     end
   end
 
+  shared_examples 'URLにクエリがセットされていること' do |expected_query = {}|
+    it do
+      query_string = URI.parse(@driver.current_url).query
+      is_asserted_by { Rack::Utils.parse_nested_query(query_string).symbolize_keys == expected_query }
+    end
+  end
+
+  shared_examples 'フォームに値がセットされていること' do |attribute|
+    it_is_asserted_by { @driver.find_element(:xpath, "//input[@name='#{attribute[:name]}'][@value='#{attribute[:value]}']") }
+  end
+
   before(:all) do
     header = {'Authorization' => app_auth_header}
-    res = http_client.get("#{base_url}/payments", nil, header)
+    res = http_client.get("#{base_url}/api/payments", nil, header)
     size = JSON.parse(res.body).size
-    payment = default_inputs.merge(:payment_type => 'income')
+    payment = default_inputs.merge(:payment_type => 'income', :category => 'テスト')
 
     header = {'Authorization' => app_auth_header}.merge(content_type_json)
     (per_page - 1 - size).times do
-      http_client.post("#{base_url}/payments", {:payments => payment.merge(:category => 'テスト')}.to_json, header)
+      http_client.post("#{base_url}/api/payments", {:payments => payment.merge(:price => rand(100))}.to_json, header)
     end
 
     @driver = Selenium::WebDriver.for :firefox
@@ -75,13 +86,13 @@ describe 'ブラウザから操作する', :type => :request do
 
   after(:all) do
     header = {'Authorization' => app_auth_header}
-    res = http_client.get("#{base_url}/payments", {:content_equal => 'regist from view'}, header)
+    res = http_client.get("#{base_url}/api/payments", {:content_equal => 'regist from view'}, header)
     payments = JSON.parse(res.body)
-    payments.each {|payment| http_client.delete("#{base_url}/payments/#{payment['id']}", nil, header) }
+    payments.each {|payment| http_client.delete("#{base_url}/api/payments/#{payment['id']}", nil, header) }
   end
 
   describe '管理画面を開く' do
-    before(:all) { @driver.get("#{base_url}/payments.html") }
+    before(:all) { @driver.get("#{base_url}/payments") }
 
     it 'ログイン画面にリダイレクトされていること' do
       is_asserted_by { @driver.current_url == "#{base_url}/login" }
@@ -96,13 +107,17 @@ describe 'ブラウザから操作する', :type => :request do
     end
 
     it '管理画面が開いていること' do
-      is_asserted_by { @driver.current_url == "#{base_url}/payments.html" }
+      is_asserted_by { @driver.current_url == "#{base_url}/payments" }
     end
 
     it_behaves_like '入力フォームが全て空であること'
     it_behaves_like '表示されている件数が正しいこと', per_page - 1, 1, per_page - 1
     it_behaves_like 'ページングボタンが表示されていないこと'
     it_behaves_like '収支情報の数が正しいこと', per_page - 1
+
+    it '日付でソートされていること' do
+      is_asserted_by { @driver.find_element(:xpath, '//th[@class="sorting_desc"]').text == '日付' }
+    end
   end
 
   describe '不正な収支情報を登録する' do
@@ -135,7 +150,7 @@ describe 'ブラウザから操作する', :type => :request do
   describe '収支情報を登録する' do
     include_context '収支情報を入力する', default_inputs.merge(:date => Date.today.strftime('%Y-%m-%d')), 'expense'
     include_context '登録ボタンを押す'
-    before(:all) { @wait.until { @driver.find_element(:xpath, '//div[@class="row row-center"]/div').text =~ /^#{per_page}/ } }
+    before(:all) { @wait.until { @driver.find_element(:xpath, '//div[@class="row"]/h4').text =~ /^#{per_page}/ } }
 
     it_behaves_like '表示されている件数が正しいこと', per_page, 1, per_page
     it_behaves_like 'ページングボタンが表示されていないこと'
@@ -168,7 +183,7 @@ describe 'ブラウザから操作する', :type => :request do
       element.send_keys('新カテゴリ')
     end
     include_context '登録ボタンを押す'
-    before(:all) { @wait.until { @driver.find_element(:xpath, '//div[@class="row row-center"]/div').text =~ /^#{per_page + 1}/ } }
+    before(:all) { @wait.until { @driver.find_element(:xpath, '//div[@class="row"]/h4').text =~ /^#{per_page + 1}/ } }
 
     it_behaves_like '表示されている件数が正しいこと', per_page + 1, 1, per_page
     it_behaves_like 'ページングボタンが表示されていること'
@@ -177,7 +192,7 @@ describe 'ブラウザから操作する', :type => :request do
   end
 
   describe 'カテゴリ一覧を確認する' do
-    before(:all) { @driver.find_element(:xpath, '//span[@id="category-list"]/button').click }
+    before(:all) { @driver.find_element(:xpath, '//form[@id="new_query"]//span[@class="category-list"]/button').click }
 
     after(:all) do
       sleep 1
@@ -209,7 +224,7 @@ describe 'ブラウザから操作する', :type => :request do
     before(:all) do
       @driver.find_element(:xpath, '//div[@class="modal-footer"]/button[@class="btn btn-success"]').click
       @wait.until { (not @driver.find_element(:xpath, '//div[@class="bootbox modal fade bootbox-confirm in"]')) rescue true }
-      @wait.until { @driver.find_element(:xpath, '//div[@class="row row-center"]/div').text =~ /^#{per_page}/ }
+      @wait.until { @driver.find_element(:xpath, '//div[@class="row"]/h4').text =~ /^#{per_page}/ }
     end
 
     it_behaves_like '表示されている件数が正しいこと', per_page, 1, per_page
@@ -223,9 +238,36 @@ describe 'ブラウザから操作する', :type => :request do
     include_context '収支情報を入力する', default_inputs, 'income'
     include_context '登録ボタンを押す'
     before(:all) do
-      @wait.until { @driver.find_element(:xpath, '//div[@class="row row-center"]/div').text =~ /^#{per_page + 1}/ }
+      @wait.until { @driver.find_element(:xpath, '//div[@class="row"]/h4').text =~ /^#{per_page + 1}/ }
       @driver.find_element(:xpath, '//span[@class="next"]').click
       @wait.until { URI.parse(@driver.current_url).query == 'page=2' }
+    end
+
+    it_behaves_like '表示されている件数が正しいこと', per_page + 1, per_page + 1, per_page + 1
+    it_behaves_like 'ページングボタンが表示されていること'
+    it_behaves_like '収支情報の数が正しいこと', 1
+    it_behaves_like '背景色が正しいこと'
+  end
+
+  describe '不正な金額を入力して検索する' do
+    before(:all) do
+      @driver.find_element(:name, 'price_upper').send_keys('invalid')
+      @driver.find_element(:id, 'search_button').click
+      @wait.until { not @driver.find_element(:class, 'modal-title').text.empty? }
+    end
+
+    after(:all) do
+      @driver.find_element(:xpath, '//div[@class="modal-footer"]/button').click
+      @wait.until { (not @driver.find_element(:xpath, '//div[@role="dialog"]')) rescue true }
+      @driver.find_element(:name, 'price_upper').clear
+    end
+
+    it 'ダイアログのタイトルが正しいこと' do
+      is_asserted_by { @driver.find_element(:xpath, '//h4[@class="modal-title"]').text == 'エラー' }
+    end
+
+    it 'エラーメッセージが正しいこと' do
+      is_asserted_by { @driver.find_element(:xpath, '//div[@class="text-center alert alert-danger"]').text == '金額 が不正です' }
     end
 
     it_behaves_like '表示されている件数が正しいこと', per_page + 1, per_page + 1, per_page + 1
@@ -238,29 +280,104 @@ describe 'ブラウザから操作する', :type => :request do
     before(:all) do
       @driver.find_element(:name, 'price_lower').send_keys('10000')
       @driver.find_element(:id, 'search_button').click
+      sleep 1
     end
 
-    it 'URLにクエリがセットされていること' do
-      is_asserted_by { @driver.current_url == "#{base_url}/payments.html?price_lower=10000" }
-    end
+    it_behaves_like 'URLにクエリがセットされていること', :price_lower => '10000', :per_page => '50'
     it_behaves_like '表示されている件数が正しいこと', per_page + 1, 1, per_page
     it_behaves_like 'ページングボタンが表示されていること'
     it_behaves_like '収支情報の数が正しいこと', 50
     it_behaves_like '背景色が正しいこと'
+    it_behaves_like 'フォームに値がセットされていること', :name => 'price_lower', :value => '10000'
+  end
+
+  describe '金額でソートする' do
+    before(:all) { @driver.find_element(:xpath, '//th[text()="金額"]').click }
+
+    it '金額でソートされていること' do
+      is_asserted_by { @driver.find_element(:xpath, '//th[@class="sorting_asc"]').text == '金額' }
+    end
+
+    it '収支情報がソートされていること' do
+      prices = @driver.find_elements(:class, 'sorting_1').map(&:text).map(&:to_i)
+      is_asserted_by { prices == prices.sort }
+    end
+  end
+
+  describe '不正な表示件数を入力する' do
+    before(:all) do
+      @driver.find_element(:id, 'per_page').send_keys('aaa')
+      @driver.find_element(:id, 'per_page').submit
+      @wait.until { not @driver.find_element(:class, 'modal-title').text.empty? }
+    end
+
+    after(:all) do
+      @driver.find_element(:xpath, '//div[@class="modal-footer"]/button').click
+      @wait.until { (not @driver.find_element(:xpath, '//div[@role="dialog"]')) rescue true }
+    end
+
+    it 'ダイアログのタイトルが正しいこと' do
+      is_asserted_by { @driver.find_element(:xpath, '//h4[@class="modal-title"]').text == 'エラー' }
+    end
+
+    it 'エラーメッセージが正しいこと' do
+      is_asserted_by { @driver.find_element(:xpath, '//div[@class="text-center alert alert-danger"]').text == '表示件数には数値を入力してください' }
+    end
+
+    it '表示件数が空文字になっていること' do
+      is_asserted_by { @driver.find_element(:id, 'per_page').text.empty? }
+    end
+  end
+
+  describe '表示件数を変更する' do
+    before(:all) do
+      @driver.find_element(:id, 'per_page').send_keys('20')
+      @driver.find_element(:id, 'per_page').submit
+      sleep 1
+    end
+
+    it_behaves_like 'URLにクエリがセットされていること', :price_lower => '10000', :per_page => '20'
+    it_behaves_like '表示されている件数が正しいこと', per_page + 1, 1, 20
+    it_behaves_like 'ページングボタンが表示されていること'
+    it_behaves_like '収支情報の数が正しいこと', 20
+    it_behaves_like '背景色が正しいこと'
+    it_behaves_like 'フォームに値がセットされていること', :name => 'price_lower', :value => '10000'
+    it_behaves_like 'フォームに値がセットされていること', :name => 'per_page', :value => '20'
   end
 
   describe '1000円以上10000円以下の収支情報を検索する' do
     before(:all) do
       @driver.find_element(:name, 'price_upper').send_keys('1000')
       @driver.find_element(:id, 'search_button').click
+      sleep 2
     end
 
-    it 'URLにクエリがセットされていること' do
-      is_asserted_by { @driver.current_url == "#{base_url}/payments.html?price_upper=1000&price_lower=10000" }
-    end
-    it_behaves_like '表示されている件数が正しいこと', 0, 1, 0
+    it_behaves_like 'URLにクエリがセットされていること', :price_upper => '1000', :price_lower => '10000', :per_page => '20'
+    it_behaves_like '表示されている件数が正しいこと', 0, 0, 0
     it_behaves_like 'ページングボタンが表示されていないこと'
-    it_behaves_like '収支情報の数が正しいこと', 0
+    it_behaves_like 'フォームに値がセットされていること', :name => 'price_lower', :value => '10000'
+    it_behaves_like 'フォームに値がセットされていること', :name => 'price_upper', :value => '1000'
+
+    it 'テーブルにメッセージが表示されていること' do
+      is_asserted_by { @driver.find_element(:xpath, '//td').text == 'No data available in table' }
+    end
+  end
+
+  describe 'テスト，または新カテゴリの収支情報を検索する' do
+    before(:all) do
+      @driver.find_element(:name, 'price_upper').clear
+      @driver.find_element(:name, 'price_lower').clear
+      @driver.find_element(:id, 'query_category').send_keys('テスト,新カテゴリ')
+      @driver.find_element(:id, 'search_button').click
+      sleep 1
+    end
+
+    it_behaves_like 'URLにクエリがセットされていること', :category => 'テスト,新カテゴリ', :per_page => '20'
+    it_behaves_like '表示されている件数が正しいこと', per_page + 1, 1, 20
+    it_behaves_like 'ページングボタンが表示されていること'
+    it_behaves_like '収支情報の数が正しいこと', 20
+    it_behaves_like '背景色が正しいこと'
+    it_behaves_like 'フォームに値がセットされていること', :name => 'category', :value => 'テスト,新カテゴリ'
   end
 
   describe 'カレンダーを表示する' do
@@ -274,7 +391,7 @@ describe 'ブラウザから操作する', :type => :request do
 
   describe 'カテゴリ一覧を確認する' do
     before(:all) do
-      @driver.find_element(:xpath, '//span[@id="category-list"]/button').click
+      @driver.find_element(:xpath, '//form[@id="new_query"]//span[@class="category-list"]/button').click
       sleep 1
     end
 
