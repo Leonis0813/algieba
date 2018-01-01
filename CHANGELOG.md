@@ -1,3 +1,6 @@
+# 3.0.0 (2018/01/01)
+- [ADD] new function to check statistics
+
 # 2.13.0 (2017/12/15)
 - [ADD] setting number of payments to display
 
