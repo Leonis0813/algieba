@@ -49,9 +49,9 @@ class Payment < ActiveRecord::Base
         end
       end
 
-      {}.tap do |settlements|
+      [].tap do |settlements|
         (incomes.keys | expenses.keys).each do |period|
-          settlements.merge!(period => (incomes[period].to_i - expenses[period].to_i))
+          settlements << {:date => period, :price => (incomes[period].to_i - expenses[period].to_i)}
         end
       end
     end

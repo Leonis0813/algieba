@@ -218,6 +218,10 @@ describe "payments/index", :type => :view do
       it '表示件数を変更するフォームがあること' do
         expect(html).to have_selector("#{row_xpath}/form")
       end
+
+      it '統計情報を表示するビューへのリンクがあること' do
+        expect(html).to have_selector("#{row_xpath}/span[@class='pull-right']/a[href='/algieba/statistics']")
+      end
     end
 
     describe '<table>' do

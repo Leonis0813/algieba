@@ -15,9 +15,9 @@ describe PaymentsController, :type => :controller do
 
   describe '正常系' do
     [
-      ['yearly', {'1000' => 900}],
-      ['monthly', {'1000-01' => 900}],
-      ['daily', {'1000-01-01' => 1000, '1000-01-05' => -100}],
+      ['yearly', [{'date' => '1000', 'price' => 900}]],
+      ['monthly', [{'date' => '1000-01', 'price' => 900}]],
+      ['daily', [{'date' => '1000-01-01', 'price' => 1000}, {'date' => '1000-01-05', 'price' => -100}]],
     ].each do |interval, expected_settlement|
       context "#{interval}を指定する場合" do
         include_context '収支を計算する', {:interval => interval}
