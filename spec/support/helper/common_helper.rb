@@ -19,7 +19,7 @@ module CommonHelper
   end
 
   def user_cookie
-    Base64.strict_encode64("#{Settings.user_id}:#{Settings.password}")
+    Base64.strict_encode64("#{Settings.user_id}:#{Settings.user_password}")
   end
 
   def client
