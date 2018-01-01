@@ -1,3 +1,3 @@
-@settlement.each do |date, price|
-  json.set! date, price
+json.array! @settlement do |settlement|
+  json.(settlement, :date, :price)
 end
