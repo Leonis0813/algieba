@@ -55,7 +55,7 @@ describe '収支を計算する', :type => :request do
           it_behaves_like 'ステータスコードが正しいこと', '200'
 
           it 'レスポンスボディのキーのフォーマットが正しいこと' do
-            @pbody.keys.each {|key| is_asserted_by { key.match(regex) } }
+            @pbody.each {|settlement| is_asserted_by { settlement['date'].match(regex) } }
           end
         end
       end
