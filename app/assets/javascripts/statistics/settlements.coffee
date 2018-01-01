@@ -77,7 +77,7 @@
             return "price" + i
           )
           .attr("x", () ->
-            return x(d.date) - 30
+            return x(d.date)
           )
           .attr("y", () ->
             return y(d.price) - 15
