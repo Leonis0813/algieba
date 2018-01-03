@@ -1,11 +1,11 @@
 # coding: utf-8
 require 'rails_helper'
 
-describe Statistics::SettlementsController, :type => :controller do
+describe StatisticsController, :type => :controller do
   shared_context '収支を取得する' do |cookie = CommonHelper.user_cookie|
     before(:all) do
       client.header('Cookie', cookie ? "algieba=#{cookie}" : nil)
-      @res = client.get('/statistics/settlements')
+      @res = client.get('/statistics')
       @pbody = JSON.parse(@res.body) rescue nil
     end
   end

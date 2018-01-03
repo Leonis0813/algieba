@@ -1,95 +1,98 @@
-@draw = ->
-  margin = {top: 50, right: 50, bottom: 50, left: 80}
-  width = window.innerWidth- margin.left - margin.right
-  height = window.innerHeight - margin.top - margin.bottom - 50
+class window.Settlement
+  _margin = {top: 50, right: 50, bottom: 50, left: 80}
+  _width = window.innerWidth - _margin.left - _margin.right
+  _height = (window.innerHeight / 2) - _margin.top - _margin.bottom - 50
 
-  x = d3.scaleBand().rangeRound([0, width])
-  y = d3.scaleLinear().range([height, 0])
+  _x = d3.scaleBand().rangeRound([0, _width])
+  _y = d3.scaleLinear().range([_height, 0])
 
-  xAxis = d3.axisBottom(x)
-  yAxis = d3.axisLeft(y)
+  _xAxis = d3.axisBottom(_x)
+  _yAxis = d3.axisLeft(_y)
 
-  svg = d3.select("body")
-    .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+  drawMonthly: ->
+    interval = "monthly"
 
-  d3.json("statistics/settlements", (error, data) ->
-    x.domain(data.map((d) ->
-      return d.date
-    ))
-    min = d3.min(data, (d) ->
-      return d.price
+    svg = createSvg.call @, interval
+
+    d3.json("api/settlement?interval=" + interval, (error, data) ->
+      data = data.filter((element, index, array) -> index > (array.length - 1) - 36)
+
+      _x.domain(setDomainX.call @, data)
+      _y.domain(setDomainY.call @, data)
+
+      drawAxisX.call @, svg
+      svg.selectAll("text")
+        .attr("onclick", (d) -> "settlement.drawDaily('" + d + "')")
+      drawAxisY.call @, svg
+      drawBars.call @, svg, data
     )
-    max = d3.max(data, (d) ->
-      return d.price
-    )
-    y.domain([min, max])
+    return
 
+  drawDaily: (month) ->
+    interval = "daily"
+
+    d3.select("#settlement-" + interval).remove()
+    svg = createSvg.call @, interval
+
+    d3.json("api/settlement?interval=" + interval, (error, data) ->
+      data = data.filter((element, index, array) -> element.date.indexOf(month) == 0)
+
+      _x.domain(setDomainX.call @, data)
+      _y.domain(setDomainY.call @, data)
+
+      drawAxisX.call @, svg
+      svg.selectAll("text")
+        .attr("transform", "rotate(-20) translate(0, 10)")
+      drawAxisY.call @, svg
+      drawBars.call @, svg, data
+    )
+    return
+
+  createSvg = (interval) ->
+    svg = d3.select("body")
+      .append("svg")
+      .attr("id", "settlement-" + interval)
+      .attr("width", _width + _margin.left + _margin.right)
+      .attr("height", _height + _margin.top + _margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + _margin.left + "," + _margin.top + ")")
+    return svg
+
+  setDomainX = (data) ->
+    return data.map((d) -> d.date)
+
+  setDomainY = (data) ->
+    min = d3.min(data, (d) -> d.price)
+    max = d3.max(data, (d) -> d.price)
+    return [min, max]
+
+  drawAxisX = (svg) ->
     svg.append("g")
       .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis)
+      .attr("transform", "translate(0," + _height + ")")
+      .call(_xAxis)
+    return
 
+  drawAxisY = (svg) ->
     svg.append("g")
       .attr("class", "y axis")
-      .call(yAxis)
+      .call(_yAxis)
       .append("text")
       .attr("transform", "rotate(-90)")
       .attr("y", 6)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
-      .text("Frequency")
+    return
 
+  drawBars = (svg, data) ->
     svg.selectAll(".bar")
       .data(data)
       .enter()
       .append("rect")
       .attr("class", "bar")
-      .attr("x", (d) ->
-        return x(d.date)
-      )
-      .attr("width", x.bandwidth())
-      .attr("y", (d) ->
-        if d.price < 0
-          return y(0)
-        else
-          return y(d.price)
-      )
-      .attr("height", (d) ->
-        if d.price < 0
-          return y(d.price) - y(0)
-        else
-          return y(0) - y(d.price)
-      )
-      .attr("fill", (d) ->
-        if d.price < 0
-          return "red"
-        else
-          return "green"
-      )
+      .attr("x", (d) -> _x(d.date))
+      .attr("y", (d) -> if d.price < 0 then _y(0) else _y(d.price))
+      .attr("width", _x.bandwidth())
+      .attr("height", (d) -> Math.abs(_y(d.price) - _y(0)))
+      .attr("fill", (d) -> if d.price < 0 then "red" else "green")
       .attr("opacity", 0.3)
-      .on("mouseover", (d, i) ->
-        svg.append("text")
-          .attr("id", () ->
-            return "price" + i
-          )
-          .attr("x", () ->
-            return x(d.date)
-          )
-          .attr("y", () ->
-            return y(d.price) - 15
-          )
-          .text(() ->
-            return d.price
-          )
-        return
-      )
-      .on("mouseout", (d, i) ->
-        d3.select("#price" + i).remove()
-        return
-      )
-  )
-  return
