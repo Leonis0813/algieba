@@ -12,7 +12,15 @@ describe Payment, :type => :model do
       [
         ['yearly', [{:date => '1000', :price => 900}]],
         ['monthly', [{:date => '1000-01', :price => 900}]],
-        ['daily', [{:date => '1000-01-01', :price => 1000}, {:date => '1000-01-05', :price => -100}]],
+        ['daily',
+         [
+           {:date => '1000-01-01', :price => 1000},
+           {:date => '1000-01-02', :price => 0},
+           {:date => '1000-01-03', :price => 0},
+           {:date => '1000-01-04', :price => 0},
+           {:date => '1000-01-05', :price => -100},
+         ]
+        ],
       ].each do |interval, settlement|
         context "#{interval}を指定する場合" do
           before(:all) { @settlement = Payment.settle(interval) }
