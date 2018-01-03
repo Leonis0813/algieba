@@ -15,18 +15,14 @@ class window.Settlement
     svg = createSvg.call @, interval
 
     d3.json("api/settlement?interval=" + interval, (error, data) ->
-      data = data.filter((element, index, array) ->
-        return index > (array.length - 1) - 36
-      )
+      data = data.filter((element, index, array) -> index > (array.length - 1) - 36)
 
       _x.domain(setDomainX.call @, data)
       _y.domain(setDomainY.call @, data)
 
       drawAxisX.call @, svg
       svg.selectAll("text")
-        .attr("onclick", (d) ->
-          return "settlement.drawDaily('" + d + "')"
-        )
+        .attr("onclick", (d) -> "settlement.drawDaily('" + d + "')")
       drawAxisY.call @, svg
       drawBars.call @, svg, data
     )
@@ -39,9 +35,7 @@ class window.Settlement
     svg = createSvg.call @, interval
 
     d3.json("api/settlement?interval=" + interval, (error, data) ->
-      data = data.filter((element, index, array) ->
-        return element.date.indexOf(month) == 0
-      )
+      data = data.filter((element, index, array) -> element.date.indexOf(month) == 0)
 
       _x.domain(setDomainX.call @, data)
       _y.domain(setDomainY.call @, data)
@@ -65,17 +59,11 @@ class window.Settlement
     return svg
 
   setDomainX = (data) ->
-    return data.map((d) ->
-      return d.date
-    )
+    return data.map((d) -> d.date)
 
   setDomainY = (data) ->
-    min = d3.min(data, (d) ->
-      return d.price
-    )
-    max = d3.max(data, (d) ->
-      return d.price
-    )
+    min = d3.min(data, (d) -> d.price)
+    max = d3.max(data, (d) -> d.price)
     return [min, max]
 
   drawAxisX = (svg) ->
@@ -102,17 +90,9 @@ class window.Settlement
       .enter()
       .append("rect")
       .attr("class", "bar")
-      .attr("x", (d) ->
-        return _x(d.date)
-      )
-      .attr("y", (d) ->
-        return if d.price < 0 then _y(0) else _y(d.price)
-      )
+      .attr("x", (d) -> _x(d.date))
+      .attr("y", (d) -> if d.price < 0 then _y(0) else _y(d.price))
       .attr("width", _x.bandwidth())
-      .attr("height", (d) ->
-        return  Math.abs(_y(d.price) - _y(0))
-      )
-      .attr("fill", (d) ->
-        return if d.price < 0 then "red" else "green"
-      )
+      .attr("height", (d) -> Math.abs(_y(d.price) - _y(0)))
+      .attr("fill", (d) -> if d.price < 0 then "red" else "green")
       .attr("opacity", 0.3)
