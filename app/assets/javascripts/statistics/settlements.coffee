@@ -23,24 +23,12 @@ class window.Settlement
       _y.domain(setDomainY.call @, data)
 
       drawAxisX.call @, svg
-      drawAxisY.call @, svg
-
-      svg.selectAll(".bar")
-        .data(data)
-        .enter()
-        .append("rect")
-        .attr("class", "bar")
-        .attr("x", setX.call @)
-        .attr("width", _x.bandwidth())
-        .attr("y", setY.call @)
-        .attr("height", setHeight.call @)
-        .attr("fill", setColor.call @)
-        .attr("opacity", 0.3)
+      svg.selectAll("text")
         .attr("onclick", (d) ->
-          return "new Settlement().drawDaily('" + d.date + "')"
+          return "settlement.drawDaily('" + d + "')"
         )
-        .on("mouseover", setMouseoverEvent.call @, svg)
-        .on("mouseout", setMouseoutEvent.call @)
+      drawAxisY.call @, svg
+      drawBars.call @, svg, data
     )
     return
 
@@ -48,7 +36,6 @@ class window.Settlement
     interval = "daily"
 
     d3.select("#settlement-" + interval).remove()
-
     svg = createSvg.call @, interval
 
     d3.json("api/settlement?interval=" + interval, (error, data) ->
@@ -63,20 +50,7 @@ class window.Settlement
       svg.selectAll("text")
         .attr("transform", "rotate(-20) translate(0, 10)")
       drawAxisY.call @, svg
-
-      svg.selectAll(".bar")
-        .data(data)
-        .enter()
-        .append("rect")
-        .attr("class", "bar")
-        .attr("x", setX.call @)
-        .attr("width", _x.bandwidth())
-        .attr("y", setY.call @)
-        .attr("height", setHeight.call @)
-        .attr("fill", setColor.call @)
-        .attr("opacity", 0.3)
-        .on("mouseover", setMouseoverEvent.call @, svg)
-        .on("mouseout", setMouseoutEvent.call @)
+      drawBars.call @, svg, data
     )
     return
 
@@ -109,6 +83,7 @@ class window.Settlement
       .attr("class", "x axis")
       .attr("transform", "translate(0," + _height + ")")
       .call(_xAxis)
+    return
 
   drawAxisY = (svg) ->
     svg.append("g")
@@ -119,6 +94,7 @@ class window.Settlement
       .attr("y", 6)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
+    return
 
   setX = ->
     return (d) ->
@@ -136,16 +112,15 @@ class window.Settlement
     return (d) ->
       return if d.price < 0 then "red" else "green"
 
-  setMouseoverEvent = (svg) ->
-    return (d, i) ->
-      svg.append("text")
-        .attr("id", "price" + i)
-        .attr("x", _x(d.date))
-        .attr("y", _y(d.price) - 15)
-        .text(d.price)
-      return
-
-  setMouseoutEvent = ->
-    return (d, i) ->
-      d3.select("#price" + i).remove()
-      return
+  drawBars = (svg, data) ->
+    svg.selectAll(".bar")
+      .data(data)
+      .enter()
+      .append("rect")
+      .attr("class", "bar")
+      .attr("x", setX.call @)
+      .attr("width", _x.bandwidth())
+      .attr("y", setY.call @)
+      .attr("height", setHeight.call @)
+      .attr("fill", setColor.call @)
+      .attr("opacity", 0.3)
