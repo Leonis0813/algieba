@@ -359,7 +359,7 @@ describe 'ブラウザから操作する', :type => :request do
     it_behaves_like 'フォームに値がセットされていること', :name => 'price_upper', :value => '1000'
 
     it 'テーブルにメッセージが表示されていること' do
-      is_asserted_by { @driver.find_element(:xpath, '//td').text == 'No data available in table' }
+      is_asserted_by { @wait.until { @driver.find_element(:xpath, '//td').text == 'No data available in table' } }
     end
   end
 
