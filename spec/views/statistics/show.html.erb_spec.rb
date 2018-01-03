@@ -14,7 +14,7 @@ describe 'statistics/show', :type => :view do
 
     describe '<div>' do
       it '<a>タグがあること' do
-        expect(html).to have_selector('//div/a[href="/algieba/payments"]')
+        expect(html).to have_selector('//div/a[href="/payments"]')
       end
 
       describe '<a>' do
