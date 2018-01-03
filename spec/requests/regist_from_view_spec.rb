@@ -32,7 +32,9 @@ describe 'ブラウザから操作する', :type => :request do
   end
 
   shared_examples '表示されている件数が正しいこと' do |total, from, to|
-    it_is_asserted_by { @driver.find_element(:xpath, '//div[@class="row"]/h4').text == "#{total}件中#{from}〜#{to}件を表示" }
+    it_is_asserted_by do
+      @wait.until { @driver.find_element(:xpath, '//div[@class="row"]/h4').text == "#{total}件中#{from}〜#{to}件を表示" }
+    end
   end
 
   shared_examples 'ページングボタンが表示されていないこと' do
@@ -359,7 +361,7 @@ describe 'ブラウザから操作する', :type => :request do
     it_behaves_like 'フォームに値がセットされていること', :name => 'price_upper', :value => '1000'
 
     it 'テーブルにメッセージが表示されていること' do
-      is_asserted_by { @driver.find_element(:xpath, '//td').text == 'No data available in table' }
+      is_asserted_by { @wait.until { @driver.find_element(:xpath, '//td').text == 'No data available in table' } }
     end
   end
 

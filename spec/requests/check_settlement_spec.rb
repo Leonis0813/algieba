@@ -45,7 +45,7 @@ describe '統計情報を確認する', :type => :request do
     end
 
     it '月次の棒グラフが表示されていること' do
-      is_asserted_by { @driver.find_element(:id, 'settlement-monthly') }
+      is_asserted_by { @wait.until { @driver.find_element(:id, 'settlement-monthly') } }
     end
 
     it '日次の棒グラフが表示されていないこと' do
@@ -57,7 +57,7 @@ describe '統計情報を確認する', :type => :request do
     before(:all) { @driver.execute_script('settlement.drawDaily("2018-01")') }
 
     it '日次の棒グラフが表示されていること' do
-      is_asserted_by { @driver.find_element(:id, 'settlement-daily') }
+      is_asserted_by { @wait.until { @driver.find_element(:id, 'settlement-daily') } }
     end
   end
 end
