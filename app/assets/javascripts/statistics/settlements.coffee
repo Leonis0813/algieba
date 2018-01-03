@@ -96,31 +96,23 @@ class window.Settlement
       .style("text-anchor", "end")
     return
 
-  setX = ->
-    return (d) ->
-      return _x(d.date)
-
-  setY = ->
-    return (d) ->
-      return if d.price < 0 then _y(0) else _y(d.price)
-
-  setHeight = ->
-   return (d) ->
-     return Math.abs(_y(d.price) - _y(0))
-
-  setColor = ->
-    return (d) ->
-      return if d.price < 0 then "red" else "green"
-
   drawBars = (svg, data) ->
     svg.selectAll(".bar")
       .data(data)
       .enter()
       .append("rect")
       .attr("class", "bar")
-      .attr("x", setX.call @)
+      .attr("x", (d) ->
+        return _x(d.date)
+      )
+      .attr("y", (d) ->
+        return if d.price < 0 then _y(0) else _y(d.price)
+      )
       .attr("width", _x.bandwidth())
-      .attr("y", setY.call @)
-      .attr("height", setHeight.call @)
-      .attr("fill", setColor.call @)
+      .attr("height", (d) ->
+        return  Math.abs(_y(d.price) - _y(0))
+      )
+      .attr("fill", (d) ->
+        return if d.price < 0 then "red" else "green"
+      )
       .attr("opacity", 0.3)
