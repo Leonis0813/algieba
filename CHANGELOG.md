@@ -1,3 +1,6 @@
+# 3.1.0 (2018/01/03)
+- [ADD] daily settlement graph
+
 # 3.0.0 (2018/01/01)
 - [ADD] new function to check statistics
 
