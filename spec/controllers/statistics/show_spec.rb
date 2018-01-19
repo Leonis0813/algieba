@@ -14,6 +14,8 @@ describe StatisticsController, :type => :controller do
     it_is_asserted_by { @res.header['Location'] == "#{Capybara.app_host}/algieba/login" }
   end
 
+  include_context '事前準備: ユーザーを作成する'
+
   describe '正常系' do
     include_context '収支を取得する'
     it_behaves_like 'ステータスコードが正しいこと', '200'
