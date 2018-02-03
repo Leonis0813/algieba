@@ -27,6 +27,38 @@ form {
   padding: 0px 5px;
 }
 
-#date-form {
-  position: relative;
+.date-form {
+  display: inline;
+  width: 40%;
+}
+
+#content-type {
+  width: 50%;
+  margin: 5px 0px;
+}
+
+#category-form {
+  display: inline;
+  width: 80%;
+}
+
+.price-form {
+  display: inline;
+  width: 40%;
+}
+
+.payment-type-list {
+  width: 25%;
+}
+
+#search-button {
+  width: 100%;
+}
+
+.payment_type,.price{
+  width: 10%;
+}
+
+.date {
+  width: 15%;
 }
