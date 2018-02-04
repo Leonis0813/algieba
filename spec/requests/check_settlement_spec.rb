@@ -38,7 +38,7 @@ describe '統計情報を確認する', :type => :request do
   end
 
   describe '統計情報確認画面を開く' do
-    before(:all) { @driver.find_element(:id, 'btn-stats').click }
+    before(:all) { @driver.find_element(:xpath, '//li/a[text()="統計画面"]').click }
 
     it '統計情報確認画面が表示されていること' do
       is_asserted_by { @driver.current_url == "#{base_url}/statistics" }

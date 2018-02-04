@@ -1,35 +1,161 @@
 # coding: utf-8
 require 'rails_helper'
 
-describe "payments/index", :type => :view do
-  html = nil
+describe 'payments/index', :type => :view do
   per_page = 1
-  param = {:payment_type => 'income', :date => '1000-01-01', :content => 'モジュールテスト用データ', :category => 'algieba', :price => 100}
+  param = {:date => '1000-01-01', :content => 'モジュールテスト用データ', :price => 100}
+  main_content_xpath = '//div[@id="main-content"]'
+  payment_list_xpath = "#{main_content_xpath}/div[@class='row']/div[@class='col-lg-8']"
 
   shared_context 'HTML初期化' do
-    before(:all) { html = nil }
+    before(:all) { @html = nil }
   end
 
   shared_context '収支情報を登録する' do |num|
     before(:all) do
-      num.times { Payment.create!(param.except(:category)) }
+      num.times { Payment.create!(param.merge(:payment_type => ['income', 'expense'].sample)) }
       @payments = Payment.order(:date => :desc).page(1)
     end
 
     after(:all) { Payment.destroy_all }
   end
 
-  shared_examples '表示されている収支情報の数が正しいこと' do |expected_size|
-    it { expect(html).to have_xpath('//table/tbody/tr/td', {:text => I18n.t('views.payment.income'), :count => expected_size}) }
+  shared_examples '検索フォームが表示されていること' do
+    search_form_xpath = [
+      main_content_xpath,
+      'div[@class="row"]',
+      'div[@class="col-lg-4"]',
+      'div[@class="well sidebar-nav"]',
+    ].join('/')
+
+    it 'タイトルが表示されていること' do
+      expect(@html).to have_selector("#{search_form_xpath}/h3", :text => '検索条件を入力してください')
+    end
+
+    it '日付入力フォームが表示されていること' do
+      date_xpath = "#{search_form_xpath}/form[@id='new_query']/div[@class='form-group']"
+      expect(@html).to have_selector("#{date_xpath}/label", :text => '日付')
+      expect(@html).to have_selector("#{date_xpath}/input[@id='query_date_after']")
+      expect(@html).to have_selector("#{date_xpath}/input[@id='query_date_before']")
+    end
+
+    it '内容入力フォームが表示されていること' do
+      content_xpath = "#{search_form_xpath}/form[@id='new_query']/div[@class='form-group']"
+      expect(@html).to have_selector("#{content_xpath}/label", :text => '内容')
+      expect(@html).to have_selector("#{content_xpath}/input[@id='content']")
+
+      select_xpath = "#{content_xpath}/select[@id='content-type']"
+      expect(@html).to have_selector("#{select_xpath}/option[@value='include'][@selected]", :text => 'を含む')
+      expect(@html).to have_selector("#{select_xpath}/option[@value='equal']", :text => 'と一致する')
+    end
+
+    it 'カテゴリ入力フォームが表示されていること' do
+      category_xpath = "#{search_form_xpath}/form[@id='new_query']/div[@class='form-group']"
+      expect(@html).to have_selector("#{category_xpath}/label", :text => 'カテゴリ')
+      expect(@html).to have_selector("#{category_xpath}/input[@id='category-form']")
+      expect(@html).to have_selector("#{category_xpath}/span[@class='category-list']/button/span[@class='glyphicon glyphicon-list']")
+    end
+
+    it '金額入力フォームが表示されていること' do
+      price_xpath = "#{search_form_xpath}/form[@id='new_query']/div[@class='form-group']"
+      expect(@html).to have_selector("#{price_xpath}/label", :text => '金額')
+      expect(@html).to have_selector("#{price_xpath}/input[@id='query_price_upper']")
+      expect(@html).to have_selector("#{price_xpath}/input[@id='query_price_lower']")
+    end
+
+    it '種類選択ボタンが表示されていること' do
+      payment_type_xpath = "#{search_form_xpath}/form[@id='new_query']/div[@class='form-group']"
+      expect(@html).to have_selector("#{payment_type_xpath}/label", :text => '種類')
+
+      select_xpath = "#{payment_type_xpath}/select[@id='query_payment_type']"
+      expect(@html).to have_selector("#{select_xpath}/option", :text => '')
+      expect(@html).to have_selector("#{select_xpath}/option[@value='income']", :text => '収入')
+      expect(@html).to have_selector("#{select_xpath}/option[@value='expense']", :text => '支出')
+    end
+
+    it '検索ボタンが表示されていること' do
+      expect(@html).to have_selector("#{search_form_xpath}/form[@id='new_query']/input[@id='search-button']")
+    end
   end
 
-  shared_examples '削除ボタンが表示されていること' do
-    it { expect(html).to have_xpath('//table/tbody/tr/td/button/span[@class="glyphicon glyphicon-trash"]') }
-  end
-
-  shared_examples '収支情報の背景色が正しいこと' do
+  shared_examples '件数情報が表示されていること' do |total: 0, from: 0, to: 0|
     it do
-      matched_data = html.gsub("\n", '').match(/<td\s*class='(?<color>.*?)'\s*>(?<payment_type>.*?)<\/td>/)
+      info_xpath = "#{payment_list_xpath}/div[@class='row']/h4"
+      expect(@html).to have_selector(info_xpath, :text => "#{total}件中#{from}〜#{to}件を表示")
+    end
+  end
+
+  shared_examples 'ページングが表示されていないこと' do
+    it do
+      paging_xpath = "#{payment_list_xpath}/span/nav[@class='pagination']"
+      expect(@html).not_to have_selector(paging_xpath)
+    end
+  end
+
+  shared_examples 'ページングが表示されていること' do
+    paging_xpath = "#{payment_list_xpath}/span/nav[@class='pagination']"
+
+    it 'ページングボタンが表示されていること' do
+      expect(@html).to have_selector(paging_xpath)
+    end
+
+    it '先頭のページへのボタンが表示されていないこと' do
+      expect(@html).not_to have_selector("#{paging_xpath}/li/span[@class='first']/a", :text => I18n.t('views.pagination.first'))
+    end
+
+    it '前のページへのボタンが表示されていないこと' do
+      expect(@html).not_to have_selector("#{paging_xpath}/li/span[@class='prev']/a", :text => I18n.t('views.pagination.previous'))
+    end
+
+    it '1ページ目が表示されていること' do
+      expect(@html).to have_selector("#{paging_xpath}/li/span[@class='page current']", :text => 1)
+    end
+
+    it '2ページ目が表示されていること' do
+      expect(@html).to have_selector("#{paging_xpath}/li/span[@class='page']/a[href='/payments?page=2']", :text => 2)
+    end
+
+    it '次のページへのボタンが表示されていること' do
+      expect(@html).to have_selector("#{paging_xpath}/li/span[@class='next']/a[href='/payments?page=2']", :text => I18n.t('views.pagination.next'))
+    end
+
+    it '最後のページへのボタンが表示されていること' do
+      expect(@html).to have_selector("#{paging_xpath}/li/span[@class='last']/a", :text => I18n.t('views.pagination.last'))
+    end
+  end
+
+  shared_examples '表示件数が表示されていること' do
+    it do
+      per_page_xpath = "#{payment_list_xpath}/div[@class='row']/form[@id='per_page_form']"
+      expect(@html).to have_selector(per_page_xpath)
+    end
+  end
+
+  shared_examples '登録ボタンが表示されていること' do
+    it do
+      create_xpath = "#{payment_list_xpath}/div[@class='row']/span/button[@id='btn-new']/span[@class='glyphicon glyphicon-plus']"
+      expect(@html).to have_selector(create_xpath)
+    end
+  end
+
+  shared_examples 'テーブルのヘッダーが表示されていること' do
+    table_header_xpath = "#{payment_list_xpath}//table[@id='payment_table']/thead/tr/th"
+
+    %w[ 種類 日付 内容 カテゴリ 金額 ].each do |attribute|
+      it "#{attribute}のヘッダーが表示されていること" do
+        expect(@html).to have_selector(table_header_xpath, :text => attribute)
+      end
+    end
+  end
+
+  shared_examples 'テーブルに表示されているデータが正しいこと' do |expected_size: 0|
+    it 'データの数が正しいこと' do
+      table_body_xpath = "#{payment_list_xpath}//table[@id='payment_table']/tbody/tr"
+      expect(@html).to have_xpath(table_body_xpath, :count => expected_size)
+    end
+
+    it '背景色が正しいこと', :if => expected_size > 0 do
+      matched_data = @html.gsub("\n", '').match(/<td\s*class='(?<color>.*?)'\s*>(?<payment_type>.*?)<\/td>/)
       case matched_data[:payment_type]
       when I18n.t('views.payment.income')
         is_asserted_by { matched_data[:color] == 'success' }
@@ -39,252 +165,74 @@ describe "payments/index", :type => :view do
     end
   end
 
-  shared_examples 'ページネーションが正しく表示されていること' do
-    nav_xpath = '//div[@class="row"]/span/nav[@class="pagination"]'
-
-    it 'ページングボタンが表示されていること' do
-      expect(html).to have_selector(nav_xpath)
-    end
-
-    it '先頭のページへのボタンが表示されていないこと' do
-      expect(html).not_to have_selector("#{nav_xpath}/li/span[@class='first']/a", :text => I18n.t('views.pagination.first'))
-    end
-
-    it '前のページへのボタンが表示されていないこと' do
-      expect(html).not_to have_selector("#{nav_xpath}/li/span[@class='prev']/a", :text => I18n.t('views.pagination.previous'))
-    end
-
-    it '1ページ目が表示されていること' do
-      expect(html).to have_selector("#{nav_xpath}/li/span[@class='page current']", :text => 1)
-    end
-
-    it '2ページ目が表示されていること' do
-      expect(html).to have_selector("#{nav_xpath}/li/span[@class='page']/a[href='/payments?page=2']", :text => 2)
-    end
-
-    it '次のページへのボタンが表示されていること' do
-      expect(html).to have_selector("#{nav_xpath}/li/span[@class='next']/a[href='/payments?page=2']", :text => I18n.t('views.pagination.next'))
-    end
-
-    it '最後のページへのボタンが表示されていること' do
-      expect(html).to have_selector("#{nav_xpath}/li/span[@class='last']/a", :text => I18n.t('views.pagination.last'))
-    end
-  end
-
   before(:all) do
-    Category.create(:name => param[:category])
+    @html = nil
     @payment = Payment.new
-    @payments = Payment.order(:date => :desc).page(1)
     @search_form = Query.new
     Kaminari.config.default_per_page = per_page
   end
 
   before(:each) do
-    render
-    html ||= response
+    render :template => 'payments/index', :layout => 'layouts/application'
+    @html ||= response
   end
 
   after(:all) { Category.destroy_all }
 
-  describe '<html><body>' do
+  describe '収支情報が0件の場合' do
     include_context 'HTML初期化'
+    include_context '収支情報を登録する', 0
 
-    describe '<form>' do
-      form_xpath = '//form[action="/api/payments"][data-remote="true"][method="post"][@class="form-inline"]'
-
-      it '<form>タグがあること' do
-        expect(html).to have_selector(form_xpath)
-      end
-
-      describe '<span>' do
-        span_xpath = "#{form_xpath}/span[@class='input-custom']"
-
-        %w[ date content categories price ].each do |attribute|
-          it "payments_#{attribute}を含む<label>タグがあること" do
-            expect(html).to have_selector("#{span_xpath}/label[for='payments_#{attribute}']", :text => I18n.t("views.payment.#{attribute}") + '：')
-          end
-
-          it "payments[#{attribute}]を含む<input>タグがあること", :unless => %w[ date categories ].include?(attribute) do
-            xpath = "#{span_xpath}/input[type='text'][name='payments[#{attribute}]'][@class='form-control'][required='required']"
-            expect(html).to have_selector(xpath, :text => '')
-          end
-        end
-
-        it 'id=date-formを含む<span>タグがあること' do
-          expect(html).to have_selector("#{form_xpath}/span[id='date-form']")
-        end
-
-        it 'payments[date]を含む<input>タグがあること' do
-          xpath = "#{span_xpath}/input[type='text'][name='payments[date]'][@class='form-control datepicker'][required='required']"
-          expect(html).to have_selector(xpath, :text => '')
-        end
-
-        it 'payments[category]を含む<input>タグがあること' do
-          xpath = "#{span_xpath}/input[type='text'][name='payments[category]'][@class='form-control category-form'][required='required']"
-          expect(html).to have_selector(xpath, :text => '')
-        end
-
-        it 'カテゴリ選択ボタンがあること' do
-          xpath = "#{span_xpath}/span[@class='category-list']/button/span[@class='glyphicon glyphicon-list']"
-          expect(html).to have_selector(xpath)
-        end
-
-        %w[ income expense ].each do |payment_type|
-          it "value=#{payment_type}を持つラジオボタンがあること" do
-            expect(html).to have_selector("#{span_xpath}/input[type='radio'][value='#{payment_type}']")
-          end
-        end
-
-        it '支出が選択されていること' do
-          expect(html).to have_selector("#{span_xpath}/input[type='radio'][value='expense'][checked='checked']")
-        end
-
-        %w[ submit reset ].each do |type|
-          it "#{type}ボタンがあること" do
-            expect(html).to have_selector("#{span_xpath}/input[type='#{type}'][@class='btn btn-primary']")
-          end
-        end
-      end
-    end
-
-    describe '<form>' do
-      form_xpath = '//form[action="/payments"][data-remote="true"][method="get"][@class="form-inline"]'
-
-      it '<form>タグがあること' do
-        expect(html).to have_selector(form_xpath)
-      end
-
-      describe '<span>' do
-        span_xpath = "#{form_xpath}/span[@class='input-custom']"
-
-        [
-          %w[ query_date_after date ],
-          %w[ content content ],
-          %w[ query_category categories ],
-          %w[ query_price_upper price ],
-        ].each do |label_for, text|
-          it "#{label_for}を含む<label>タグがあること" do
-            expect(html).to have_selector("#{span_xpath}/label[for='#{label_for}']", :text => I18n.t("views.payment.#{text}") + '：')
-          end
-        end
-
-        it 'id=date-formを含む<span>タグがあること' do
-          expect(html).to have_selector("#{form_xpath}/span[id='date-form']")
-        end
-
-        %w[ date_after date_before content category price_upper price_lower ].each do |param_name|
-          it "#{param_name}を含む<input>タグがあること" do
-            xpath = "#{span_xpath}/input[type='text'][name='#{param_name}']"
-            expect(html).to have_selector(xpath, :text => '')
-          end
-        end
-
-        it 'content_typeを含む<select>タグがあること' do
-          xpath = "#{span_xpath}/select[name='content_type'][@class='form-control']"
-          expect(html).to have_selector(xpath, :text => '')
-        end
-
-        it 'カテゴリ選択ボタンがあること' do
-          xpath = "#{span_xpath}/span[@class='category-list']/button/span[@class='glyphicon glyphicon-list']"
-          expect(html).to have_selector(xpath)
-        end
-
-        it 'payment_typeを含む<select>タグがあること' do
-          xpath = "#{span_xpath}/select[name='payment_type'][@class='form-control']"
-          expect(html).to have_selector(xpath, :text => '')
-        end
-
-        it "検索ボタンがあること" do
-          expect(html).to have_selector("#{span_xpath}/input[type='submit'][@class='btn btn-primary']")
-        end
-      end
-    end
-
-    describe '<div class="row">' do
-      row_xpath = '//div[@class="row"]'
-
-      it 'ページング情報を表示するブロックがあること' do
-        expect(html).to have_selector(row_xpath)
-      end
-
-      it '件数を表示するブロックがあること' do
-        expect(html).to have_selector("#{row_xpath}/h4")
-      end
-
-      it 'リンクを表示するブロックがあること' do
-        expect(html).to have_selector("#{row_xpath}/span")
-      end
-
-      it '表示件数を変更するフォームがあること' do
-        expect(html).to have_selector("#{row_xpath}/form")
-      end
-
-      it '統計情報を表示するビューへのリンクがあること' do
-        expect(html).to have_selector("#{row_xpath}/span[@class='pull-right']/a[href='/algieba/statistics']")
-      end
-    end
-
-    describe '<table>' do
-      table_xpath = '//table[@id="payment_table"][@class="table table-hover"]'
-
-      it '<table>タグがあること' do
-        expect(html).to have_selector(table_xpath)
-      end
-
-      describe '<thead>' do
-        %w[ type date content categories price ].each do |attribute|
-          header = I18n.t("views.payment.#{attribute}")
-
-          it "<th>#{header}</th>があること" do
-            expect(html).to have_selector("#{table_xpath}/thead/tr/th", :text => header)
-          end
-        end
-      end
-
-      describe '<tbody>' do
-        it '<tbody>があること' do
-          expect(html).to have_selector("#{table_xpath}/tbody")
-        end
-      end
-    end
+    it_behaves_like 'ヘッダーが表示されていること'
+    it_behaves_like '検索フォームが表示されていること'
+    it_behaves_like '件数情報が表示されていること'
+    it_behaves_like 'ページングが表示されていないこと'
+    it_behaves_like '表示件数が表示されていること'
+    it_behaves_like '登録ボタンが表示されていること'
+    it_behaves_like 'テーブルのヘッダーが表示されていること'
+    it_behaves_like 'テーブルに表示されているデータが正しいこと'
   end
 
-  describe '動的コンテンツのテスト' do
-    context "収支情報が#{per_page}件登録されている場合" do
-      include_context 'HTML初期化'
-      include_context '収支情報を登録する', per_page
+  describe "収支情報が#{per_page}件の場合" do
+    include_context 'HTML初期化'
+    include_context '収支情報を登録する', per_page
 
-      it_behaves_like '表示されている収支情報の数が正しいこと', per_page
-      it_behaves_like '削除ボタンが表示されていること'
-      it_behaves_like '収支情報の背景色が正しいこと'
+    it_behaves_like 'ヘッダーが表示されていること'
+    it_behaves_like '検索フォームが表示されていること'
+    it_behaves_like '件数情報が表示されていること', :total => per_page, :from => 1, :to => per_page
+    it_behaves_like 'ページングが表示されていないこと'
+    it_behaves_like '表示件数が表示されていること'
+    it_behaves_like '登録ボタンが表示されていること'
+    it_behaves_like 'テーブルのヘッダーが表示されていること'
+    it_behaves_like 'テーブルに表示されているデータが正しいこと', :expected_size => per_page
+  end
 
-      it 'ページングボタンが表示されていないこと' do
-        expect(html).not_to have_selector("//nav[@class='pagination']")
-      end
-    end
+  describe "収支情報が#{per_page + 1}件の場合" do
+    include_context 'HTML初期化'
+    include_context '収支情報を登録する', per_page + 1
 
-    context "収支情報が#{per_page + 1}件登録されている場合" do
-      include_context 'HTML初期化'
-      include_context '収支情報を登録する', per_page + 1
+    it_behaves_like 'ヘッダーが表示されていること'
+    it_behaves_like '検索フォームが表示されていること'
+    it_behaves_like '件数情報が表示されていること', :total => per_page + 1, :from => 1, :to => per_page
+    it_behaves_like 'ページングが表示されていること'
+    it_behaves_like '表示件数が表示されていること'
+    it_behaves_like '登録ボタンが表示されていること'
+    it_behaves_like 'テーブルのヘッダーが表示されていること'
+    it_behaves_like 'テーブルに表示されているデータが正しいこと', :expected_size => per_page
+  end
 
-      it_behaves_like '表示されている収支情報の数が正しいこと', per_page
-      it_behaves_like '削除ボタンが表示されていること'
-      it_behaves_like '収支情報の背景色が正しいこと'
-      it_behaves_like 'ページネーションが正しく表示されていること'
-    end
+  describe "収支情報が#{per_page + Kaminari.config.window * 2 + 1}件の場合" do
+    total = per_page + Kaminari.config.window * 2 + 1
+    include_context 'HTML初期化'
+    include_context '収支情報を登録する', total
 
-    context "収支情報が#{per_page + 9}件登録されている場合" do
-      include_context 'HTML初期化'
-      include_context '収支情報を登録する', per_page + 9
-
-      it_behaves_like '表示されている収支情報の数が正しいこと', per_page
-      it_behaves_like '削除ボタンが表示されていること'
-      it_behaves_like '収支情報の背景色が正しいこと'
-      it_behaves_like 'ページネーションが正しく表示されていること'
-
-      it 'リンクが省略されていること' do
-        expect(html).to have_selector("//nav/li/span[@class='page gap']", :text => I18n.t('views.pagination.truncate'))
-      end
-    end
+    it_behaves_like 'ヘッダーが表示されていること'
+    it_behaves_like '検索フォームが表示されていること'
+    it_behaves_like '件数情報が表示されていること', :total => total, :from => 1, :to => per_page
+    it_behaves_like 'ページングが表示されていること'
+    it_behaves_like '表示件数が表示されていること'
+    it_behaves_like '登録ボタンが表示されていること'
+    it_behaves_like 'テーブルのヘッダーが表示されていること'
+    it_behaves_like 'テーブルに表示されているデータが正しいこと', :expected_size => per_page
   end
 end

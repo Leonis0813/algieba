@@ -1,3 +1,6 @@
+# 3.2.0 (2018/02/04)
+- [UPDATE] ui design
+
 # 3.1.0 (2018/01/03)
 - [ADD] daily settlement graph
 

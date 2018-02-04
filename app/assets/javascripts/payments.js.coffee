@@ -1,5 +1,5 @@
 $ ->
-  $('.datepicker').datetimepicker({
+  $('.date-form').datetimepicker({
     format: I18n.t('views.datepicker.format'),
     locale: I18n.locale,
     dayViewHeaderFormat: I18n.t('views.datepicker.dayViewHeaderFormat')
@@ -36,7 +36,7 @@ $ ->
     })
     return
 
-  $('#search_button').on 'click', ->
+  $('#search-button').on 'click', ->
     all_queries = $('#new_query').serializeArray()
     queries = $.grep(all_queries, (query) ->
       return query.name != "content_type" && query.name != "utf8" && query.value != ""
