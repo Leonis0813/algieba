@@ -20,7 +20,7 @@
 
         <div class='form-group'>
           <%= f.label :category, t('views.payment.categories').html_safe %><br>
-          <%= f.text_field :category, {:id => 'category-form', :class => 'form-control', :name => 'category'} %>
+          <%= f.text_field :category, {:id => 'category-form', :class => 'form-control category-form', :name => 'category'} %>
           <span class='category-list' data-names='<%= Payment.joins(:categories).group('categories.name').order('count_all desc').count.keys %>'>
             <%= button_tag(:type => 'button', :class => 'btn btn-default btn-sm') do %>
               <span class='glyphicon glyphicon-list' />
