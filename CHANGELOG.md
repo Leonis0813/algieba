@@ -1,3 +1,6 @@
+# 3.2.1 (2018/02/11)
+- [FIX] category form to index
+
 # 3.2.0 (2018/02/04)
 - [UPDATE] ui design
 

@@ -36,9 +36,6 @@ describe 'ブラウザから操作する', :type => :request do
     end
   end
 
-  shared_examples '検索フォームの値が正しいこと' do
-  end
-
   shared_examples '正しくエラーダイアログが表示されていること' do |message: ''|
     alert_xpath = '//div[contains(@class, "bootbox-alert")]'
 
