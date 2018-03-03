@@ -1,47 +1,46 @@
 ja:
   views:
     title: '家計簿'
-    pagination:
-      info: "%{total_count}件中%{from}〜%{to}件を表示"
-      first: '◀◀'
-      previous: '◀'
-      next: '▶'
-      last: '▶▶'
-      truncate: '...'
-    payment:
-      type: '種類'
-      income: '収入'
-      expense: '支出'
-      date: '日付'
-      content: '内容'
-      categories: 'カテゴリ'
-      price: '金額'
-    create:
-      error:
-        title: 'エラー'
-        message: "%{error_codes} が不正です"
-    delete:
-      message: '本当に削除しますか？'
-      confirm: 'はい'
-      cancel: 'いいえ'
-    datepicker:
-      format: 'YYYY-MM-DD'
-      dayViewHeaderFormat: 'YYYY年 MM月'
-    category-list:
-      title: 'カテゴリを選択してください'
-    submit: '登録'
-    reset: 'リセット'
-    search:
+    common:
+      attribute:
+        payment_type: '種類'
+        date: '日付'
+        content: '内容'
+        category: 'カテゴリ'
+        price: '金額'
+      payment_type:
+        income: '収入'
+        expense: '支出'
+    js:
+      datepicker:
+        format: 'YYYY-MM-DD'
+        dayViewHeaderFormat: 'YYYY年 MM月'
+      category-list:
+        title: 'カテゴリを選択してください'
       form:
-        date_before: '日付'
-        date_after: '日付'
-        price_upper: '金額'
-        price_lower: '金額'
-        between: '〜'
-        include: 'を含む'
-        equal: 'と一致する'
-      button: '検索'
-    per_page:
-      error:
-        title: 'エラー'
-        message: '表示件数には数値を入力してください'
+        error:
+          title: 'エラー'
+          message: "%{error_codes} が不正です"
+      pagination:
+        error:
+          title: 'エラー'
+          message: '表示件数には数値を入力してください'
+      delete:
+        message: '本当に削除しますか？'
+        confirm: 'はい'
+        cancel: 'いいえ'
+    search:
+      between: '〜'
+      include: 'を含む'
+      equal: 'と一致する'
+      submit: '検索'
+    register:
+      submit: '登録'
+    list:
+      pagination:
+        info: "%{total_count}件中%{from}〜%{to}件を表示"
+        first: '◀◀'
+        previous: '◀'
+        next: '▶'
+        last: '▶▶'
+        truncate: '...'
