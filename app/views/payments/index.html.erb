@@ -91,7 +91,6 @@
   </div>
 
   <div class='col-lg-8'>
-    <div class='row'>
       <% from = @payments.total_count == 0 ? 0 : @payments.offset_value + 1 %>
       <% info = {:total_count => @payments.total_count, :from => from, :to => @payments.offset_value + @payments.size} %>
       <h4 style='margin-top: 30px; padding: 0px 10px' class='pull-left'><%= t('views.list.pagination.info', info) %></h4>
@@ -99,7 +98,7 @@
         <label for='per_page'>表示件数</label>
         <input type='text' id='per_page' class='form-control' name='per_page' value='<%= @per_page %>' size='10'/>
       </form>
-    </div>
+
 
     <span style='padding: 0px 10px' class='pull-left'>
       <%= paginate @payments %>
