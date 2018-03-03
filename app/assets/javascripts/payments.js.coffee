@@ -12,6 +12,7 @@ $ ->
     category_form = $(@).parent().find('.category-form')
     bootbox.prompt({
       title: I18n.t('views.category-list.title'),
+      value: categories[0].value,
       inputType: 'checkbox',
       inputOptions: categories,
       callback: (result) ->
