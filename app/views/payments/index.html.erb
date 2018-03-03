@@ -1,13 +1,13 @@
 <div class='row'>
   <div class='col-lg-4'>
     <ul class='nav nav-tabs'>
-      <li class='active'><a href='#new-payment' data-toggle='tab'>登録</a></li>
-      <li><a href='#search-form' data-toggle='tab'>検索</a></li>
+      <li class='active'><a href='#new-payment' data-toggle='tab'><%= t('views.register.tab_name') %></a></li>
+      <li><a href='#search-form' data-toggle='tab'><%= t('views.search.tab_name') %></a></li>
     </ul>
 
     <div class='tab-content'>
       <div id='new-payment' class='well tab-pane active'>
-        <h3 >収支情報を入力してください</h3>
+        <h3><%= t('views.register.title') %></h3>
         <%= form_for @payment, {:url => api_payments_path, :as => :payments, :remote => true} do |f| %>
           <div class='form-group'>
             <%= f.label :date, t('views.common.attribute.date').html_safe %><br>
@@ -44,7 +44,7 @@
       </div>
 
       <div id='search-form' class='well tab-pane'>
-        <h3>検索条件を入力してください</h3>
+        <h3><%= t('views.search.title') %></h3>
         <%= form_for @search_form, {:url => payments_path, :method => :get, :remote => true, :html => {:onClick => 'return false;'}} do |f| %>
           <div class='form-group'>
             <%= f.label :date_after, t('views.common.attribute.date').html_safe %><br>
@@ -91,18 +91,16 @@
   </div>
 
   <div class='col-lg-8'>
+    <div>
       <% from = @payments.total_count == 0 ? 0 : @payments.offset_value + 1 %>
       <% info = {:total_count => @payments.total_count, :from => from, :to => @payments.offset_value + @payments.size} %>
-      <h4 style='margin-top: 30px; padding: 0px 10px' class='pull-left'><%= t('views.list.pagination.info', info) %></h4>
-      <form style='margin-top: 20px; padding: 0px 10px' id='per_page_form' class='form-inline pull-right' onSubmit='return false;'>
-        <label for='per_page'>表示件数</label>
+      <h4 style='padding: 0px 10px;display: inline'><%= t('views.list.pagination.info', info) %></h4>
+      <form style='padding: 0px 10px;display: inline' id='per_page_form' class='form-inline pull-right' onSubmit='return false;'>
+        <label for='per_page'><%= t('views.list.pagination.label') %></label>
         <input type='text' id='per_page' class='form-control' name='per_page' value='<%= @per_page %>' size='10'/>
       </form>
-
-
-    <span style='padding: 0px 10px' class='pull-left'>
-      <%= paginate @payments %>
-    </span>
+    </div>
+    <%= paginate @payments %>
     <table id='payment_table' class='table table-hover' style='max-width:300px'>
       <thead>
         <tr>

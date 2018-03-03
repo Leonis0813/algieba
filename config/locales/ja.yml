@@ -30,11 +30,15 @@ ja:
         confirm: 'はい'
         cancel: 'いいえ'
     search:
+      tab_name: '検索'
+      title: '検索条件を入力してください'
       between: '〜'
       include: 'を含む'
       equal: 'と一致する'
       submit: '検索'
     register:
+      tab_name: '登録'
+      title: '収支情報を入力してください'
       submit: '登録'
     list:
       pagination:
@@ -44,3 +48,4 @@ ja:
         next: '▶'
         last: '▶▶'
         truncate: '...'
+        label: '表示件数'

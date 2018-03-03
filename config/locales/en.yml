@@ -30,11 +30,15 @@ en:
         confirm: 'Yes'
         cancel: 'No'
     search:
+      tab_name: 'Search'
+      title: 'Input search condition'
       between: '-'
       include: 'include'
       equal: 'equal'
       submit: 'Search'
     register:
+      tab_name: 'Register'
+      title: 'Input payment info to register'
       submit: 'Register'
     list:
       pagination:
@@ -44,3 +48,4 @@ en:
         next: '▶'
         last: '▶▶'
         truncate: '...'
+        label: 'Payments per page'
