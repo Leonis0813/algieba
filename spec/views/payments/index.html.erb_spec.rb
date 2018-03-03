@@ -5,7 +5,7 @@ describe 'payments/index', :type => :view do
   per_page = 1
   param = {:date => '1000-01-01', :content => 'モジュールテスト用データ', :price => 100}
   main_content_xpath = '//div[@id="main-content"]'
-  payment_list_xpath = "#{main_content_xpath}/div[@class='row']/div[@class='col-lg-8']"
+  payment_list_xpath = "#{main_content_xpath}/div[@class='row center-block']/div[@class='col-lg-8']"
 
   shared_context 'HTML初期化' do
     before(:all) { @html = nil }
@@ -23,9 +23,10 @@ describe 'payments/index', :type => :view do
   shared_examples '検索フォームが表示されていること' do
     search_form_xpath = [
       main_content_xpath,
-      'div[@class="row"]',
+      'div[@class="row center-block"]',
       'div[@class="col-lg-4"]',
-      'div[@class="well sidebar-nav"]',
+      'div[@class="tab-content"]',
+      'div[@class="well tab-pane"]',
     ].join('/')
 
     it 'タイトルが表示されていること' do
@@ -52,7 +53,7 @@ describe 'payments/index', :type => :view do
     it 'カテゴリ入力フォームが表示されていること' do
       category_xpath = "#{search_form_xpath}/form[@id='new_query']/div[@class='form-group']"
       expect(@html).to have_selector("#{category_xpath}/label", :text => 'カテゴリ')
-      expect(@html).to have_selector("#{category_xpath}/input[@id='category-form']")
+      expect(@html).to have_selector("#{category_xpath}/input[@id='query_category']")
       expect(@html).to have_selector("#{category_xpath}/span[@class='category-list']/button/span[@class='glyphicon glyphicon-list']")
     end
 
@@ -80,7 +81,7 @@ describe 'payments/index', :type => :view do
 
   shared_examples '件数情報が表示されていること' do |total: 0, from: 0, to: 0|
     it do
-      info_xpath = "#{payment_list_xpath}/div[@class='row']/h4"
+      info_xpath = "#{payment_list_xpath}/div/h4"
       expect(@html).to have_selector(info_xpath, :text => "#{total}件中#{from}〜#{to}件を表示")
     end
   end
@@ -93,18 +94,18 @@ describe 'payments/index', :type => :view do
   end
 
   shared_examples 'ページングが表示されていること' do
-    paging_xpath = "#{payment_list_xpath}/span/nav[@class='pagination']"
+    paging_xpath = "#{payment_list_xpath}/nav[@class='pagination']"
 
     it 'ページングボタンが表示されていること' do
       expect(@html).to have_selector(paging_xpath)
     end
 
     it '先頭のページへのボタンが表示されていないこと' do
-      expect(@html).not_to have_selector("#{paging_xpath}/li/span[@class='first']/a", :text => I18n.t('views.pagination.first'))
+      expect(@html).not_to have_selector("#{paging_xpath}/li/span[@class='first']/a", :text => I18n.t('views.list.pagination.first'))
     end
 
     it '前のページへのボタンが表示されていないこと' do
-      expect(@html).not_to have_selector("#{paging_xpath}/li/span[@class='prev']/a", :text => I18n.t('views.pagination.previous'))
+      expect(@html).not_to have_selector("#{paging_xpath}/li/span[@class='prev']/a", :text => I18n.t('views.list.pagination.previous'))
     end
 
     it '1ページ目が表示されていること' do
@@ -116,25 +117,18 @@ describe 'payments/index', :type => :view do
     end
 
     it '次のページへのボタンが表示されていること' do
-      expect(@html).to have_selector("#{paging_xpath}/li/span[@class='next']/a[href='/payments?page=2']", :text => I18n.t('views.pagination.next'))
+      expect(@html).to have_selector("#{paging_xpath}/li/span[@class='next']/a[href='/payments?page=2']", :text => I18n.t('views.list.pagination.next'))
     end
 
     it '最後のページへのボタンが表示されていること' do
-      expect(@html).to have_selector("#{paging_xpath}/li/span[@class='last']/a", :text => I18n.t('views.pagination.last'))
+      expect(@html).to have_selector("#{paging_xpath}/li/span[@class='last']/a", :text => I18n.t('views.list.pagination.last'))
     end
   end
 
   shared_examples '表示件数が表示されていること' do
     it do
-      per_page_xpath = "#{payment_list_xpath}/div[@class='row']/form[@id='per_page_form']"
+      per_page_xpath = "#{payment_list_xpath}/div/form[@id='per_page_form']"
       expect(@html).to have_selector(per_page_xpath)
-    end
-  end
-
-  shared_examples '登録ボタンが表示されていること' do
-    it do
-      create_xpath = "#{payment_list_xpath}/div[@class='row']/span/button[@id='btn-new']/span[@class='glyphicon glyphicon-plus']"
-      expect(@html).to have_selector(create_xpath)
     end
   end
 
@@ -188,7 +182,6 @@ describe 'payments/index', :type => :view do
     it_behaves_like '件数情報が表示されていること'
     it_behaves_like 'ページングが表示されていないこと'
     it_behaves_like '表示件数が表示されていること'
-    it_behaves_like '登録ボタンが表示されていること'
     it_behaves_like 'テーブルのヘッダーが表示されていること'
     it_behaves_like 'テーブルに表示されているデータが正しいこと'
   end
@@ -202,7 +195,6 @@ describe 'payments/index', :type => :view do
     it_behaves_like '件数情報が表示されていること', :total => per_page, :from => 1, :to => per_page
     it_behaves_like 'ページングが表示されていないこと'
     it_behaves_like '表示件数が表示されていること'
-    it_behaves_like '登録ボタンが表示されていること'
     it_behaves_like 'テーブルのヘッダーが表示されていること'
     it_behaves_like 'テーブルに表示されているデータが正しいこと', :expected_size => per_page
   end
@@ -216,7 +208,6 @@ describe 'payments/index', :type => :view do
     it_behaves_like '件数情報が表示されていること', :total => per_page + 1, :from => 1, :to => per_page
     it_behaves_like 'ページングが表示されていること'
     it_behaves_like '表示件数が表示されていること'
-    it_behaves_like '登録ボタンが表示されていること'
     it_behaves_like 'テーブルのヘッダーが表示されていること'
     it_behaves_like 'テーブルに表示されているデータが正しいこと', :expected_size => per_page
   end
@@ -231,7 +222,6 @@ describe 'payments/index', :type => :view do
     it_behaves_like '件数情報が表示されていること', :total => total, :from => 1, :to => per_page
     it_behaves_like 'ページングが表示されていること'
     it_behaves_like '表示件数が表示されていること'
-    it_behaves_like '登録ボタンが表示されていること'
     it_behaves_like 'テーブルのヘッダーが表示されていること'
     it_behaves_like 'テーブルに表示されているデータが正しいこと', :expected_size => per_page
   end
