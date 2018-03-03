@@ -2,11 +2,11 @@
   <div class='col-lg-4'>
     <ul class='nav nav-tabs'>
       <li class='active'><a href='#new-payment' data-toggle='tab'>登録</a></li>
-      <li><a href='#index-form' data-toggle='tab'>検索</a></li>
+      <li><a href='#search-form' data-toggle='tab'>検索</a></li>
     </ul>
 
     <div class='tab-content'>
-      <div class='well tab-pane active' id='new-payment'>
+      <div id='new-payment' class='well tab-pane active'>
         <h3 >収支情報を入力してください</h3>
         <%= form_for @payment, {:url => api_payments_path, :as => :payments, :remote => true} do |f| %>
           <div class='form-group'>
@@ -31,7 +31,7 @@
             <%= f.text_field :price, {:class => 'form-control price-form', :required => true} %>
           </div>
           <div class='form-group'>
-            <label>種類</label>
+            <%= f.label :payment_type, t('views.payment.type').html_safe %>
             <% [[:income, {}], [:expense, {:checked => true}]].each do |payment_type, options| %>
               <span class='input-custom'>
                 <%= f.radio_button :payment_type, payment_type, options %>
@@ -43,7 +43,7 @@
         <% end %>
       </div>
 
-      <div id='index-form' class='well tab-pane'>
+      <div id='search-form' class='well tab-pane'>
         <h3>検索条件を入力してください</h3>
         <%= form_for @search_form, {:url => payments_path, :method => :get, :remote => true, :html => {:onClick => 'return false;'}} do |f| %>
           <div class='form-group'>

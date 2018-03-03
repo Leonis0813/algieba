@@ -43,7 +43,7 @@ $ ->
     )
     $.each(queries, ->
       if (this.name == "content")
-        this.name = "content_" + $('#content_type').val()
+        this.name = "content_" + $('#content-type').val()
       return this.name != "content"
     )
 
