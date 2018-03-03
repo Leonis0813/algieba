@@ -98,10 +98,10 @@ $ ->
     paging: false,
     info: false,
     filter: false,
-    order: [[ 1, "desc" ]],
+    order: [[1, "desc"]],
     columnDefs: [
       {
-        "targets": [5],
+        "targets": [0, 5],
         "sorting": false,
       },
     ]
