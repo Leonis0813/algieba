@@ -1,47 +1,55 @@
 en:
   views:
     title: 'Account Book'
-    pagination:
-      first: '◀◀'
-      previous: '◀'
-      next: '▶'
-      last: '▶▶'
-      truncate: '...'
-    payment:
-      info: "Show %{from} - %{to}th payments"
-      type: 'Payment Type'
-      income: 'Income'
-      expense: 'Expense'
-      date: 'Date'
-      content: 'Content'
-      categories: 'Categories'
-      price: 'Price'
-    create:
-      error:
-        title: 'Error'
-        message: "Invalid Input: %{error_codes}"
-    delete:
-      message: 'Delete this payment?'
-      confirm: 'Yes'
-      cancel: 'No'
-    datepicker:
-      format: 'MM/DD/YYYY'
-      dayViewHeaderFormat: 'MM/YYYY'
-    category-list:
-      title: 'Select categories'
-    submit: 'Submit'
-    reset: 'Reset'
-    search:
+    common:
+      attribute:
+        payment_type: 'Payment Type'
+        date: &date 'Date'
+        content: 'Content'
+        categories: 'Categories'
+        price: &price 'Price'
+      payment_type:
+        income: 'Income'
+        expense: 'Expense'
+    js:
+      datepicker:
+        format: 'MM/DD/YYYY'
+        dayViewHeaderFormat: 'MM/YYYY'
+      category-list:
+        title: 'Select categories'
       form:
-        date_before: 'Date'
-        date_after: 'Date'
-        price_upper: 'Price'
-        price_lower: 'Price'
-        between: '-'
-        include: 'include'
-        equal: 'equal'
-      button: 'Search'
-    per_page:
-      error:
-        title: 'Error'
-        message: 'Input number for page setting'
+        error:
+          title: 'Error'
+          message: "Invalid Input: %{error_codes}"
+      pagination:
+        error:
+          title: 'Error'
+          message: 'Input number for page setting'
+      delete:
+        message: 'Delete this payment?'
+        confirm: 'Yes'
+        cancel: 'No'
+    search:
+      tab_name: 'Search'
+      title: 'Input search condition'
+      between: '-'
+      include: 'include'
+      equal: 'equal'
+      submit: 'Search'
+      date_before: *date
+      date_after: *date
+      price_upper: *price
+      price_lower: *price
+    register:
+      tab_name: 'Register'
+      title: 'Input payment info to register'
+      submit: 'Register'
+    list:
+      pagination:
+        info: "Show %{from} - %{to}th payments"
+        first: '◀◀'
+        previous: '◀'
+        next: '▶'
+        last: '▶▶'
+        truncate: '...'
+        label: 'Payments per page'

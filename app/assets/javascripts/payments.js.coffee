@@ -1,8 +1,8 @@
 $ ->
   $('.date-form').datetimepicker({
-    format: I18n.t('views.datepicker.format'),
+    format: I18n.t('views.js.datepicker.format'),
     locale: I18n.locale,
-    dayViewHeaderFormat: I18n.t('views.datepicker.dayViewHeaderFormat')
+    dayViewHeaderFormat: I18n.t('views.js.datepicker.dayViewHeaderFormat')
   })
 
   $('.category-list').on 'click', ->
@@ -11,7 +11,8 @@ $ ->
     )
     category_form = $(@).parent().find('.category-form')
     bootbox.prompt({
-      title: I18n.t('views.category-list.title'),
+      title: I18n.t('views.js.category-list.title'),
+      value: categories[0].value,
       inputType: 'checkbox',
       inputOptions: categories,
       callback: (result) ->
@@ -27,12 +28,12 @@ $ ->
   $('#new_payments').on 'ajax:error', (event, xhr, status, error) ->
     error_codes = []
     $.each($.parseJSON(xhr.responseText), (i, e)->
-      error_codes.push(I18n.t("views.payment.#{e.error_code.match(/invalid_param_(.+)/)[1]}"))
+      error_codes.push(I18n.t("views.common.attribute.#{e.error_code.match(/invalid_param_(.+)/)[1]}"))
       return
     )
     bootbox.alert({
-      title: I18n.t('views.create.error.title'),
-      message: '<div class="text-center alert alert-danger">' + I18n.t('views.create.error.message', {error_codes: error_codes.join(', ')}) + '</div>',
+      title: I18n.t('views.js.form.error.title'),
+      message: '<div class="text-center alert alert-danger">' + I18n.t('views.js.form.error.message', {error_codes: error_codes.join(', ')}) + '</div>',
     })
     return
 
@@ -43,7 +44,7 @@ $ ->
     )
     $.each(queries, ->
       if (this.name == "content")
-        this.name = "content_" + $('#content_type').val()
+        this.name = "content_" + $('#content-type').val()
       return this.name != "content"
     )
 
@@ -60,12 +61,12 @@ $ ->
     ).fail((xhr, status, error) ->
       error_codes = []
       $.each($.parseJSON(xhr.responseText), (i, e)->
-        error_codes.push(I18n.t("views.search.form.#{e.error_code.match(/invalid_param_(.+)/)[1]}"))
+        error_codes.push(I18n.t("views.search.#{e.error_code.match(/invalid_param_(.+)/)[1]}"))
         return
       )
       bootbox.alert({
-        title: I18n.t('views.create.error.title'),
-        message: '<div class="text-center alert alert-danger">' + I18n.t('views.create.error.message', {error_codes: error_codes.join(', ')}) + '</div>',
+        title: I18n.t('views.js.form.error.title'),
+        message: '<div class="text-center alert alert-danger">' + I18n.t('views.js.form.error.message', {error_codes: error_codes.join(', ')}) + '</div>',
       })
     )
     return
@@ -87,8 +88,8 @@ $ ->
       return
     ).fail((xhr, status, error) ->
       bootbox.alert({
-        title: I18n.t('views.per_page.error.title'),
-        message: '<div class="text-center alert alert-danger">' + I18n.t('views.per_page.error.message') + '</div>',
+        title: I18n.t('views.js.pagination.error.title'),
+        message: '<div class="text-center alert alert-danger">' + I18n.t('views.js.pagination.error.message') + '</div>',
       })
       $('#per_page').val('')
     )
@@ -98,10 +99,10 @@ $ ->
     paging: false,
     info: false,
     filter: false,
-    order: [[ 1, "desc" ]],
+    order: [[1, "desc"]],
     columnDefs: [
       {
-        "targets": [5],
+        "targets": [0, 5],
         "sorting": false,
       },
     ]
@@ -110,14 +111,14 @@ $ ->
   $('.delete').on 'click', ->
     id = $(@).children('button').attr('value')
     bootbox.confirm({
-      message: I18n.t('views.delete.message'),
+      message: I18n.t('views.js.delete.message'),
       buttons: {
         confirm: {
-          label: I18n.t('views.delete.confirm'),
+          label: I18n.t('views.js.delete.confirm'),
           className: 'btn-success'
         },
         cancel: {
-          label: I18n.t('views.delete.cancel'),
+          label: I18n.t('views.js.delete.cancel'),
           className: 'btn-danger'
         }
       },

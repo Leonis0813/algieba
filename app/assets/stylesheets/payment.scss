@@ -13,9 +13,17 @@ form {
   padding: 10px
 }
 
-.row {
-  margin: 0px;
-  padding: 0px 10px;
+@media (max-width: 1500px){
+  .row {
+    margin: 0px;
+    padding: 0px 10px;
+  }
+}
+
+@media (min-width: 1501px){
+  .row {
+    max-width: 1500px;
+  }
 }
 
 .row-center {
@@ -37,7 +45,7 @@ form {
   margin: 5px 0px;
 }
 
-#category-form {
+.category-form {
   display: inline;
   width: 80%;
 }
@@ -51,14 +59,32 @@ form {
   width: 25%;
 }
 
-#search-button {
+.btn-submit {
   width: 100%;
 }
 
-.payment_type,.price{
+#header_payment_type,#header_price{
   width: 10%;
 }
 
-.date {
+#header_date {
   width: 15%;
+}
+
+#header_content {
+  width: 45%;
+}
+
+#header_category {
+  width: 20%;
+}
+
+.content, .category {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#payment_table {
+  table-layout: fixed;
 }
