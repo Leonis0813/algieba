@@ -20,14 +20,74 @@ describe 'payments/index', :type => :view do
     after(:all) { Payment.destroy_all }
   end
 
+  shared_examples '登録フォームが表示されていること' do
+    register_form_xpath = [
+      main_content_xpath,
+      'div[@class="row center-block"]',
+      'div[@class="col-lg-4"]',
+      'div[@class="tab-content"]',
+      'div[@id="new-payment"][@class="well tab-pane active"]',
+    ].join('/')
+
+    it 'タブが表示されていること' do
+      expect(@html).to have_selector("#{main_content_xpath}/div/div/ul/li[@class='active']/a[@href='#new-payment']", :text => '登録')
+    end
+
+    it 'タイトルが表示されていること' do
+      expect(@html).to have_selector("#{register_form_xpath}/h3", :text => '収支情報を入力してください')
+    end
+
+    it '日付入力フォームが表示されていること' do
+      date_xpath = "#{register_form_xpath}/form[@id='new_payments']/div[@class='form-group']"
+      expect(@html).to have_selector("#{date_xpath}/label", :text => '日付')
+      expect(@html).to have_selector("#{date_xpath}/input[@id='payments_date']")
+    end
+
+    it '内容入力フォームが表示されていること' do
+      content_xpath = "#{register_form_xpath}/form[@id='new_payments']/div[@class='form-group']"
+      expect(@html).to have_selector("#{content_xpath}/label", :text => '内容')
+      expect(@html).to have_selector("#{content_xpath}/input[@id='payments_content']")
+    end
+
+    it 'カテゴリ入力フォームが表示されていること' do
+      category_xpath = "#{register_form_xpath}/form[@id='new_payments']/div[@class='form-group']"
+      expect(@html).to have_selector("#{category_xpath}/label", :text => 'カテゴリ')
+      expect(@html).to have_selector("#{category_xpath}/input[@id='payments_categories']")
+      expect(@html).to have_selector("#{category_xpath}/span[@class='category-list']/button/span[@class='glyphicon glyphicon-list']")
+    end
+
+    it '金額入力フォームが表示されていること' do
+      price_xpath = "#{register_form_xpath}/form[@id='new_payments']/div[@class='form-group']"
+      expect(@html).to have_selector("#{price_xpath}/label", :text => '金額')
+      expect(@html).to have_selector("#{price_xpath}/input[@id='payments_price']")
+    end
+
+    it '種類選択ボタンが表示されていること' do
+      payment_type_xpath = "#{register_form_xpath}/form[@id='new_payments']/div[@class='form-group']"
+      expect(@html).to have_selector("#{payment_type_xpath}/label", :text => '種類')
+      expect(@html).to have_selector("#{payment_type_xpath}/span/label", :text => '収入')
+      expect(@html).to have_selector("#{payment_type_xpath}/span/input[@value='income']")
+      expect(@html).to have_selector("#{payment_type_xpath}/span/label", :text => '支出')
+      expect(@html).to have_selector("#{payment_type_xpath}/span/input[@value='expense']")
+    end
+
+    it '検索ボタンが表示されていること' do
+      expect(@html).to have_selector("#{register_form_xpath}/form[@id='new_payments']/input[@value='登録']")
+    end
+  end
+
   shared_examples '検索フォームが表示されていること' do
     search_form_xpath = [
       main_content_xpath,
       'div[@class="row center-block"]',
       'div[@class="col-lg-4"]',
       'div[@class="tab-content"]',
-      'div[@class="well tab-pane"]',
+      'div[@id="search-form"][@class="well tab-pane"]',
     ].join('/')
+
+    it 'タブが表示されていること' do
+      expect(@html).to have_selector("#{main_content_xpath}/div/div/ul/li/a[@href='#search-form']", :text => '検索')
+    end
 
     it 'タイトルが表示されていること' do
       expect(@html).to have_selector("#{search_form_xpath}/h3", :text => '検索条件を入力してください')
@@ -178,6 +238,7 @@ describe 'payments/index', :type => :view do
     include_context '収支情報を登録する', 0
 
     it_behaves_like 'ヘッダーが表示されていること'
+    it_behaves_like '登録フォームが表示されていること'
     it_behaves_like '検索フォームが表示されていること'
     it_behaves_like '件数情報が表示されていること'
     it_behaves_like 'ページングが表示されていないこと'
@@ -191,6 +252,7 @@ describe 'payments/index', :type => :view do
     include_context '収支情報を登録する', per_page
 
     it_behaves_like 'ヘッダーが表示されていること'
+    it_behaves_like '登録フォームが表示されていること'
     it_behaves_like '検索フォームが表示されていること'
     it_behaves_like '件数情報が表示されていること', :total => per_page, :from => 1, :to => per_page
     it_behaves_like 'ページングが表示されていないこと'
@@ -204,6 +266,7 @@ describe 'payments/index', :type => :view do
     include_context '収支情報を登録する', per_page + 1
 
     it_behaves_like 'ヘッダーが表示されていること'
+    it_behaves_like '登録フォームが表示されていること'
     it_behaves_like '検索フォームが表示されていること'
     it_behaves_like '件数情報が表示されていること', :total => per_page + 1, :from => 1, :to => per_page
     it_behaves_like 'ページングが表示されていること'
@@ -218,6 +281,7 @@ describe 'payments/index', :type => :view do
     include_context '収支情報を登録する', total
 
     it_behaves_like 'ヘッダーが表示されていること'
+    it_behaves_like '登録フォームが表示されていること'
     it_behaves_like '検索フォームが表示されていること'
     it_behaves_like '件数情報が表示されていること', :total => total, :from => 1, :to => per_page
     it_behaves_like 'ページングが表示されていること'
