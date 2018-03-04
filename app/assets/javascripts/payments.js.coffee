@@ -32,8 +32,8 @@ $ ->
       return
     )
     bootbox.alert({
-      title: I18n.t('views.js.error.title'),
-      message: '<div class="text-center alert alert-danger">' + I18n.t('views.js.error.message', {error_codes: error_codes.join(', ')}) + '</div>',
+      title: I18n.t('views.js.form.error.title'),
+      message: '<div class="text-center alert alert-danger">' + I18n.t('views.js.form.error.message', {error_codes: error_codes.join(', ')}) + '</div>',
     })
     return
 
@@ -61,12 +61,12 @@ $ ->
     ).fail((xhr, status, error) ->
       error_codes = []
       $.each($.parseJSON(xhr.responseText), (i, e)->
-        error_codes.push(I18n.t("views.common.attribute.#{e.error_code.match(/invalid_param_(.+)/)[1]}"))
+        error_codes.push(I18n.t("views.search.#{e.error_code.match(/invalid_param_(.+)/)[1]}"))
         return
       )
       bootbox.alert({
-        title: I18n.t('views.js.error.title'),
-        message: '<div class="text-center alert alert-danger">' + I18n.t('views.js.error.message', {error_codes: error_codes.join(', ')}) + '</div>',
+        title: I18n.t('views.js.form.error.title'),
+        message: '<div class="text-center alert alert-danger">' + I18n.t('views.js.form.error.message', {error_codes: error_codes.join(', ')}) + '</div>',
       })
     )
     return

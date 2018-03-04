@@ -4,10 +4,10 @@ en:
     common:
       attribute:
         payment_type: 'Payment Type'
-        date: 'Date'
+        date: &date 'Date'
         content: 'Content'
         categories: 'Categories'
-        price: 'Price'
+        price: &price 'Price'
       payment_type:
         income: 'Income'
         expense: 'Expense'
@@ -36,6 +36,10 @@ en:
       include: 'include'
       equal: 'equal'
       submit: 'Search'
+      date_before: *date
+      date_after: *date
+      price_upper: *price
+      price_lower: *price
     register:
       tab_name: 'Register'
       title: 'Input payment info to register'

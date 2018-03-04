@@ -15,19 +15,18 @@ describe 'ブラウザから操作する', :type => :request do
         element.send_keys(value.to_s)
       end
       @driver.find_element(:xpath, '//form[@id="new_payments"]//span[@class="category-list"]/button').click
-      @wait.until { @driver.find_element(:xpath, "//input[@value='#{inputs[:categories]}']").click rescue false }
-      @driver.find_element(:xpath, '//button[@data-bb-handler="confirm"]').click
+      @wait.until do
+        @driver.find_element(:xpath, "//input[@value='#{inputs[:categories]}']").selected? ||
+        (@driver.find_element(:xpath, "//input[@value='#{inputs[:categories]}']").click rescue false)
+      end
+      @wait.until { @driver.find_element(:xpath, '//button[@data-bb-handler="confirm"]').click rescue false }
       @wait.until { (not @driver.find_element(:xpath, '//h4[text()="カテゴリを選択してください"]').displayed?) rescue true }
-      @driver.find_element(:id, "payments_payment_type_#{payment_type}").click
+      @wait.until { @driver.find_element(:id, "payments_payment_type_#{payment_type}").click rescue false }
     end
   end
 
   shared_context '登録ボタンを押す' do
-    before(:all) { @driver.find_element(:xpath, '//form/div/input[@value="登録"]').click }
-  end
-
-  shared_context 'リセットボタンを押す' do
-    before(:all) { @driver.find_element(:xpath, '//form/span/input[@value="リセット"]').click }
+    before(:all) { @wait.until { @driver.find_element(:xpath, '//form/input[@value="登録"]').click rescue false } }
   end
 
   shared_examples '入力フォームが全て空であること' do
@@ -54,7 +53,7 @@ describe 'ブラウザから操作する', :type => :request do
 
   shared_examples '表示されている件数が正しいこと' do |total, from, to|
     it_is_asserted_by do
-      @wait.until { @driver.find_element(:xpath, '//div[@class="row"]/h4').text == "#{total}件中#{from}〜#{to}件を表示" }
+      @wait.until { @driver.find_element(:xpath, '//div/h4').text == "#{total}件中#{from}〜#{to}件を表示" }
     end
   end
 
@@ -113,11 +112,10 @@ describe 'ブラウザから操作する', :type => :request do
   end
 
   describe '不正な収支情報を登録する' do
-    before(:all) { @driver.find_element(:id, 'btn-new').click }
     include_context '収支情報を入力する', default_inputs.merge(:price => 'invalid_price'), 'income'
     include_context '登録ボタンを押す'
-    before(:all) { @wait.until { @driver.find_element(:class, 'bootbox-alert').displayed? } }
-    after(:all) { @driver.find_element(:xpath, '//div/button[text()="OK"]').click }
+    before(:all) { @wait.until { @driver.find_element(:class, 'modal-body').displayed? } }
+    after(:all) { @wait.until { @driver.find_element(:xpath, '//div/button[text()="OK"]').click rescue false } }
 
     it_behaves_like '正しくエラーダイアログが表示されていること', :message => '金額 が不正です'
     it_behaves_like '収支情報の数が正しいこと', per_page - 1
@@ -125,13 +123,12 @@ describe 'ブラウザから操作する', :type => :request do
 
   describe '収支情報を登録する' do
     before(:all) do
-      @wait.until { not @driver.find_element(:class, 'bootbox-alert').displayed? }
+      @wait.until { @driver.find_element(:id, 'payments_price').enabled? rescue false }
       element = @driver.find_element(:id, 'payments_price')
       element.clear
       element.send_keys('100')
     end
     include_context '登録ボタンを押す'
-    before(:all) { @wait.until { not @driver.find_element(:id, 'payments_date').displayed? } }
 
     it_behaves_like '表示されている件数が正しいこと', per_page, 1, per_page
     it_behaves_like '収支情報の数が正しいこと', per_page
@@ -139,7 +136,6 @@ describe 'ブラウザから操作する', :type => :request do
 
   describe 'カレンダーを表示する' do
     before(:all) do
-      @driver.find_element(:id, 'btn-new').click
       @wait.until { @driver.find_element(:id, 'payments_date').displayed? }
       @driver.find_element(:id, 'payments_date').click
     end
@@ -157,7 +153,6 @@ describe 'ブラウザから操作する', :type => :request do
       element.send_keys('新カテゴリ')
     end
     include_context '登録ボタンを押す'
-    before(:all) { @wait.until { not @driver.find_element(:id, 'payments_date').displayed? } }
 
     it_behaves_like '表示されている件数が正しいこと', per_page + 1, 1, per_page
     it_behaves_like '収支情報の数が正しいこと', per_page
@@ -165,7 +160,7 @@ describe 'ブラウザから操作する', :type => :request do
 
   describe 'カテゴリ一覧を確認する' do
     before(:all) do
-      @driver.find_element(:xpath, '//form[@id="new_query"]//span[@class="category-list"]/button').click
+      @driver.find_element(:xpath, '//form//span[@class="category-list"]/button').click
       @wait.until { @driver.find_element(:class, 'bootbox-prompt').displayed? }
     end
 
@@ -202,12 +197,10 @@ describe 'ブラウザから操作する', :type => :request do
   end
 
   describe '2ページ目にアクセスする' do
-    before(:all) { @driver.find_element(:id, 'btn-new').click }
     include_context '収支情報を入力する', default_inputs, 'income'
     include_context '登録ボタンを押す'
     before(:all) do
-      @wait.until { not @driver.find_element(:id, 'payments_date').displayed? }
-      @driver.find_element(:xpath, '//span[@class="next"]').click
+      @wait.until { @driver.find_element(:xpath, '//span[@class="next"]').click rescue false }
       @wait.until { URI.parse(@driver.current_url).query == 'page=2' }
     end
 
@@ -217,6 +210,7 @@ describe 'ブラウザから操作する', :type => :request do
 
   describe '不正な金額を入力して検索する' do
     before(:all) do
+      @driver.find_element(:xpath, '//a[@href="#search-form"]').click
       @driver.find_element(:name, 'price_upper').send_keys('invalid')
       @driver.find_element(:id, 'search-button').click
       @wait.until { @driver.find_element(:class, 'bootbox-alert').displayed? }
@@ -233,6 +227,7 @@ describe 'ブラウザから操作する', :type => :request do
 
   describe '10000円以下の収支情報を検索する' do
     before(:all) do
+      @wait.until { @driver.find_element(:xpath, '//a[@href="#search-form"]').click rescue false }
       @driver.find_element(:name, 'price_lower').send_keys('10000')
       @driver.find_element(:id, 'search-button').click
       @wait.until { @driver.current_url.include?('price_lower=10000') }
@@ -291,6 +286,7 @@ describe 'ブラウザから操作する', :type => :request do
 
   describe '1000円以上10000円以下の収支情報を検索する' do
     before(:all) do
+      @wait.until { @driver.find_element(:xpath, '//a[@href="#search-form"]').click rescue false }
       @driver.find_element(:name, 'price_upper').send_keys('1000')
       @driver.find_element(:id, 'search-button').click
       @wait.until { @driver.current_url.include?('price_upper=1000') }
@@ -307,6 +303,7 @@ describe 'ブラウザから操作する', :type => :request do
 
   describe 'テスト，または新カテゴリの収支情報を検索する' do
     before(:all) do
+      @wait.until { @driver.find_element(:xpath, '//a[@href="#search-form"]').click rescue false }
       @driver.find_element(:name, 'price_upper').clear
       @driver.find_element(:name, 'price_lower').clear
       @driver.find_element(:name, 'category').send_keys('テスト,新カテゴリ')
@@ -320,7 +317,10 @@ describe 'ブラウザから操作する', :type => :request do
   end
 
   describe 'カレンダーを表示する' do
-    before(:all) { @driver.find_element(:id, 'query_date_after').click }
+    before(:all) do
+      @wait.until { @driver.find_element(:xpath, '//a[@href="#search-form"]').click rescue false }
+      @driver.find_element(:id, 'query_date_after').click
+    end
 
     it 'カレンダーが表示されていること' do
       is_asserted_by { @driver.find_element(:class, 'bootstrap-datetimepicker-widget') }
