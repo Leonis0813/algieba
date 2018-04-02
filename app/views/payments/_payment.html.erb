@@ -1,10 +1,11 @@
 <% td_class = payment.payment_type == 'income' ? 'success' : 'danger' %>
+<% icon = payment.payment_type == 'income' ? 'glyphicon-plus-sign' : 'glyphicon-minus-sign' %>
 <tr>
-  <td class='<%= td_class %>'><%= t("views.payment.#{payment.payment_type}") %></td>
-  <td class='<%= td_class %>'><%= payment.date %></td>
-  <td class='<%= td_class %>'><%= payment.content %></td>
-  <td class='<%= td_class %>'><%= payment.categories.pluck(:name).join(',') %></td>
-  <td class='<%= td_class %>'><%= payment.price %></td>
+  <td class='payment_type <%= td_class %>'><span class="glyphicon <%= icon %>" /></td>
+  <td class='date <%= td_class %>'><%= payment.date %></td>
+  <td class='content <%= td_class %>' title='<%= payment.content %>'><%= payment.content %></td>
+  <td class='category <%= td_class %>' title='<%= payment.categories.pluck(:name).join(',') %>'><%= payment.categories.pluck(:name).join(',') %></td>
+  <td class='price <%= td_class %>'><%= payment.price %></td>
   <td width='16' class='delete'>
     <%= button_tag(:class => 'btn btn-default btn-mini', :height => 16, :value => payment.id) do %>
       <span class='glyphicon glyphicon-trash' />

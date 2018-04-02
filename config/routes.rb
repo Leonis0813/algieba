@@ -6,6 +6,8 @@ Rails.application.routes.draw do
   end
 
   resources :payments, :only => [:index], :format => 'html'
+  get '/statistics' => 'statistics#show', :format => 'html'
+  get '/statistics/settlements' => 'statistics/settlements#show'
   get '/login' => 'login#form', :format => 'html'
   post '/login' => 'login#authenticate_user'
 end

@@ -12,7 +12,7 @@ class ApplicationController < ActionController::Base
       end
       if User.find_by(:user_id => user_id, :password => password)
         logger.info ("Login_user: #{user_id}")
-        redirect_unless '/algieba/payments'
+        redirect_unless "/algieba#{request.path_info}"
       else
         redirect_unless '/algieba/login'
       end

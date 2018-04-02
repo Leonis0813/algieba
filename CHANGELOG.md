@@ -1,3 +1,18 @@
+# 3.3.0 (2018/03/04)
+- [UPDATE] ui design
+
+# 3.2.1 (2018/02/11)
+- [FIX] category form to index
+
+# 3.2.0 (2018/02/04)
+- [UPDATE] ui design
+
+# 3.1.0 (2018/01/03)
+- [ADD] daily settlement graph
+
+# 3.0.0 (2018/01/01)
+- [ADD] new function to check statistics
+
 # 2.13.0 (2017/12/15)
 - [ADD] setting number of payments to display
 

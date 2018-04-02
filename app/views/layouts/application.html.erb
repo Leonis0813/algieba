@@ -1,19 +1,36 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset='utf-8'>
     <title><%= t('views.title') %></title>
-    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
-    <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+    <%= stylesheet_link_tag 'application', :media => 'all' %>
+    <%= javascript_include_tag 'application' %>
     <%= csrf_meta_tags %>
     <%= favicon_link_tag %>
 
-    <script type="text/javascript">
-      I18n.defaultLocale = "<%= I18n.default_locale %>";
-      I18n.locale = "<%= I18n.locale %>";
+    <script type='text/javascript'>
+      I18n.defaultLocale = '<%= I18n.default_locale %>';
+      I18n.locale = '<%= I18n.locale %>';
       I18n.fallbacks = true;
     </script>
   </head>
   <body>
-    <%= yield %>
+
+    <div class='navbar navbar-default navbar-static-top'>
+      <div class='container'>
+        <span class='navbar-brand'>Payment Manager</span>
+        <div class='navbar-collapse collapse navbar-responsive-collapse'>
+          <ul class='nav navbar-nav'>
+            <li><%= link_to '管理画面', payments_path %></li>
+            <li><%= link_to '統計画面', statistics_path %></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div id='main-content' class='container'>
+      <%= bootstrap_flash %>
+      <%= yield %>
+    </div>
   </body>
 </html>

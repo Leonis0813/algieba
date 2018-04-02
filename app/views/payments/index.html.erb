@@ -1,99 +1,118 @@
-<%= form_for @payment, {:url => api_payments_path, :as => :payments, :remote => true, :html => {:class => 'form-inline'}} do |f| %>
-  <span id='date-form' class='input-custom'>
-    <%= f.label :date, t('views.payment.date').html_safe + '：' %>
-    <%= f.text_field :date, {:class => 'form-control datepicker', :required => true} %>
-  </span>
-  <span class='input-custom'>
-    <%= f.label :content, t('views.payment.content').html_safe + '：' %>
-    <%= f.text_field :content, {:class => 'form-control', :required => true, :size => 100} %>
-  </span>
-  <span class='input-custom'>
-    <%= f.label :categories, t('views.payment.categories').html_safe + '：' %>
-    <%= f.text_field :categories, {:name => 'payments[category]', :value => '', :class => 'form-control category-form', :required => true} %>
-    <span class='category-list' data-names='<%= Payment.joins(:categories).group('categories.name').order('count_all desc').count.keys %>'>
-      <%= button_tag(:type => 'button', :class => 'btn btn-default btn-sm') do %>
-        <span class="glyphicon glyphicon-list" />
-      <% end %>
-    </span>
-  </span>
-  <span class='input-custom'>
-    <%= f.label :price, t('views.payment.price').html_safe + '：' %>
-    <%= f.text_field :price, {:class => 'form-control', :required => true} %>
-  </span>
-  <% [[:income, {}], [:expense, {:checked => true}]].each do |payment_type, options| %>
-    <span class='input-custom'>
-      <%= f.radio_button :payment_type, payment_type, options %>
-      <%= f.label "payment_type_#{payment_type}", t("views.payment.#{payment_type}").html_safe %>
-    </span>
-  <% end %>
-  <span class='input-custom'><%= f.submit t('views.submit').html_safe, :class => 'btn btn-primary' %></span>
-  <span class='input-custom'><%= f.submit t('views.reset'), :type => 'reset', :class => 'btn btn-primary' %></span>
-<% end %>
+<div class='row center-block'>
+  <div class='col-lg-4'>
+    <ul class='nav nav-tabs'>
+      <li class='active'><a href='#new-payment' data-toggle='tab'><%= t('views.register.tab_name') %></a></li>
+      <li><a href='#search-form' data-toggle='tab'><%= t('views.search.tab_name') %></a></li>
+    </ul>
 
-<hr>
+    <div class='tab-content'>
+      <div id='new-payment' class='well tab-pane active'>
+        <h3><%= t('views.register.title') %></h3>
+        <%= form_for @payment, {:url => api_payments_path, :as => :payments, :remote => true} do |f| %>
+          <div class='form-group'>
+            <%= f.label :date, t('views.common.attribute.date').html_safe %><br>
+            <%= f.text_field :date, {:class => 'form-control date-form', :required => true} %>
+          </div>
+          <div class='form-group'>
+            <%= f.label :content, t('views.common.attribute.content').html_safe %>
+            <%= f.text_field :content, {:class => 'form-control', :required => true, :size => 100} %>
+          </div>
+          <div class='form-group'>
+            <%= f.label :categories, t('views.common.attribute.category').html_safe %><br>
+            <%= f.text_field :categories, {:name => 'payments[category]', :value => '', :class => 'form-control category-form', :required => true} %>
+            <span class='category-list' data-names='<%= Payment.joins(:categories).group('categories.name').order('count_all desc').count.keys %>'>
+              <%= button_tag(:type => 'button', :class => 'btn btn-default btn-sm') do %>
+                <span class='glyphicon glyphicon-list' />
+              <% end %>
+            </span>
+          </div>
+          <div class='form-group'>
+            <%= f.label :price, t('views.common.attribute.price').html_safe %><br>
+            <%= f.text_field :price, {:class => 'form-control price-form', :required => true} %>
+          </div>
+          <div class='form-group'>
+            <%= f.label :payment_type, t('views.common.attribute.payment_type').html_safe %>
+            <% [[:income, {}], [:expense, {:checked => true}]].each do |payment_type, options| %>
+              <span class='input-custom'>
+                <%= f.radio_button :payment_type, payment_type, options %>
+                <%= f.label "payment_type_#{payment_type}", t("views.common.payment_type.#{payment_type}").html_safe %>
+              </span>
+            <% end %>
+          </div>
+          <%= f.submit t('views.register.submit').html_safe, :class => 'btn btn-primary btn-submit' %>
+        <% end %>
+      </div>
 
-<%= form_for @search_form, {:url => payments_path, :method => :get, :remote => true, :html => {:class => 'form-inline', :onClick => 'return false;'}} do |f| %>
-  <span id='date-form' class='input-custom'>
-    <%= f.label :date_after, t('views.payment.date').html_safe + '：' %>
-    <%= f.text_field :date_after, {:class => 'form-control datepicker', :name => 'date_after'} %>
-    <%= t('views.search.form.between') %>
-    <%= f.text_field :date_before, {:class => 'form-control datepicker', :name => 'date_before'} %>
-  </span>
-  <span class='input-custom'>
-    <%= label_tag :content, t('views.payment.content').html_safe + '：' %>
-    <%= text_field_tag :content, '', :class => 'form-control', :value => @search_form.content_include || @search_form.content_equal %>
-    <% options = {t('views.search.form.include') => 'include', t('views.search.form.equal') => 'equal'} %>
-    <% selected_value = @search_form.content_equal ? 'equal' : 'include' %>
-    <%= select_tag :content_type, options_for_select(options, selected_value), :class => 'form-control', :id => 'content_type' %>
-  </span>
-  <span class='input-custom'>
-    <%= f.label :category, t('views.payment.categories').html_safe + '：' %>
-    <%= f.text_field :category, {:class => 'form-control category-form', :name => 'category'} %>
-    <span class='category-list' data-names='<%= Payment.joins(:categories).group('categories.name').order('count_all desc').count.keys %>'>
-      <%= button_tag(:type => 'button', :class => 'btn btn-default btn-sm') do %>
-        <span class="glyphicon glyphicon-list" />
-      <% end %>
-    </span>
-  </span>
-  <span class='input-custom'>
-    <%= f.label :price_upper, t('views.payment.price').html_safe + '：' %>
-    <%= f.text_field :price_upper, {:class => 'form-control', :name => 'price_upper'} %>
-    <%= t('views.search.form.between') %>
-    <%= f.text_field :price_lower, {:class => 'form-control', :name => 'price_lower'} %>
-  </span>
-  <span class='input-custom'>
-    <%= f.label :payment_type, t('views.payment.type').html_safe + '：' %>
-    <% options = %w[ income expense ].map {|payment_type| [t("views.payment.#{payment_type}"), payment_type] }.to_h %>
-    <%= f.select :payment_type, options, {:include_blank => true}, {:class => 'form-control', :name => 'payment_type'} %>
-  </span>
-  <span class='input-custom'><%= f.submit t('views.search.button').html_safe, :id => 'search_button', :class => 'btn btn-primary' %></span>
-<% end %>
+      <div id='search-form' class='well tab-pane'>
+        <h3><%= t('views.search.title') %></h3>
+        <%= form_for @search_form, {:url => payments_path, :method => :get, :remote => true, :html => {:onClick => 'return false;'}} do |f| %>
+          <div class='form-group'>
+            <%= f.label :date_after, t('views.common.attribute.date').html_safe %><br>
+            <%= f.text_field :date_after, {:class => 'form-control date-form', :name => 'date_after'} %>
+            <%= t('views.search.between') %>
+            <%= f.text_field :date_before, {:class => 'form-control date-form', :name => 'date_before'} %>
+          </div>
 
-<hr>
+          <div class='form-group'>
+            <%= label_tag :content, t('views.common.attribute.content').html_safe %>
+            <%= text_field_tag :content, '', :class => 'form-control', :value => @search_form.content_include || @search_form.content_equal %>
+            <% options = {t('views.search.include') => 'include', t('views.search.equal') => 'equal'} %>
+            <% selected_value = @search_form.content_equal ? 'equal' : 'include' %>
+            <%= select_tag :content_type, options_for_select(options, selected_value), :class => 'form-control', :id => 'content-type' %>
+          </div>
 
-<div class='row'>
-  <% from = @payments.total_count == 0 ? 0 : @payments.offset_value + 1 %>
-  <% info = {:total_count => @payments.total_count, :from => from, :to => @payments.offset_value + @payments.size} %>
-  <h4 style='margin-top: 30px; padding: 0px 10px' class='pull-left'><%= t('views.pagination.info', info) %></h4>
-  <span style='padding: 0px 10px' class='pull-left'>
+          <div class='form-group'>
+            <%= f.label :category, t('views.common.attribute.category').html_safe %><br>
+            <%= f.text_field :category, {:class => 'form-control category-form', :name => 'category'} %>
+            <span class='category-list' data-names='<%= Payment.joins(:categories).group('categories.name').order('count_all desc').count.keys %>'>
+              <%= button_tag(:type => 'button', :class => 'btn btn-default btn-sm') do %>
+                <span class='glyphicon glyphicon-list' />
+              <% end %>
+            </span>
+          </div>
+
+          <div class='form-group'>
+            <%= f.label :price_upper, t('views.common.attribute.price').html_safe %><br>
+            <%= f.text_field :price_upper, {:class => 'form-control price-form', :name => 'price_upper'} %>
+            <%= t('views.search.between') %>
+            <%= f.text_field :price_lower, {:class => 'form-control price-form', :name => 'price_lower'} %>
+          </div>
+
+          <div class='form-group'>
+            <%= f.label :payment_type, t('views.common.attribute.payment_type').html_safe %>
+            <% options = %w[ income expense ].map {|payment_type| [t("views.common.payment_type.#{payment_type}"), payment_type] }.to_h %>
+            <%= f.select :payment_type, options, {:include_blank => true}, {:class => 'form-control payment-type-list', :name => 'payment_type'} %>
+          </div>
+
+          <%= f.submit t('views.search.submit').html_safe, :id => 'search-button', :class => 'btn btn-primary btn-submit' %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class='col-lg-8'>
+    <div>
+      <% from = @payments.total_count == 0 ? 0 : @payments.offset_value + 1 %>
+      <% info = {:total_count => @payments.total_count, :from => from, :to => @payments.offset_value + @payments.size} %>
+      <h4 style='padding: 0px 10px;display: inline'><%= t('views.list.pagination.info', info) %></h4>
+      <form style='padding: 0px 10px;display: inline' id='per_page_form' class='form-inline pull-right' onSubmit='return false;'>
+        <label for='per_page'><%= t('views.list.pagination.label') %></label>
+        <input type='text' id='per_page' class='form-control' name='per_page' value='<%= @per_page %>' size='10'/>
+      </form>
+    </div>
     <%= paginate @payments %>
-  </span>
-  <form style='margin-top: 20px; padding: 0px 10px' id='per_page_form' class='form-inline pull-right' onSubmit='return false;'>
-    <label for='per_page'>表示件数</label>
-    <input type='text' id='per_page' class='form-control' name='per_page' value='<%= @per_page %>'/>
-  </form>
+    <table id='payment_table' class='table table-hover' style='max-width:300px'>
+      <thead>
+        <tr>
+          <% %w[ payment_type date content category price ].each do |attribute| %>
+            <th id='<%= "header_#{attribute}" %>'><%= t("views.common.attribute.#{attribute}").html_safe %></th>
+          <% end %>
+          <th style='border: none'></th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= render @payments %>
+      </tbody>
+    </table>
+  </div>
 </div>
-
-<table id='payment_table' class='table table-hover'>
-  <thead>
-    <tr>
-      <% %w[ type date content categories price ].each do |attribute| %>
-        <th><%= t("views.payment.#{attribute}").html_safe %></th>
-      <% end %>
-      <th style="border: none"></th>
-    </tr>
-  </thead>
-  <tbody>
-    <%= render @payments %>
-  </tbody>
-</table>

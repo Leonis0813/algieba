@@ -13,12 +13,12 @@ end
 
 shared_context '事前準備: ユーザーを作成する' do
   before(:all) do
-    params = {:user_id => Settings.user_id, :password => Settings.password}
+    params = {:user_id => Settings.user_id, :password => Settings.user_password}
     User.create!(params)
   end
 
   after(:all) do
-    params = {:user_id => Settings.user_id, :password => Settings.password}
+    params = {:user_id => Settings.user_id, :password => Settings.user_password}
     User.find_by(params).destroy
   end
 end
