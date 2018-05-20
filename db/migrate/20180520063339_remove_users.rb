@@ -1,5 +1,5 @@
 class RemoveUsers < ActiveRecord::Migration
-  def chang
-    drop_table :userse
+  def change
+    drop_table :users
   end
 end

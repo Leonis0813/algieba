@@ -40,11 +40,4 @@ ActiveRecord::Schema.define(version: 20180520063550) do
     t.datetime "updated_at",               null: false
   end
 
-  create_table "users", force: :cascade do |t|
-    t.string   "user_id",    limit: 255
-    t.string   "password",   limit: 255
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
 end
