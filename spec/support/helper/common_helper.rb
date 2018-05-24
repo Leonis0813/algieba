@@ -18,10 +18,6 @@ module CommonHelper
     @app_auth_header = "Basic #{credential}"
   end
 
-  def user_cookie
-    Base64.strict_encode64("#{Settings.user_id}:#{Settings.user_password}")
-  end
-
   def client
     @client ||= Capybara.page.driver
   end
@@ -53,5 +49,5 @@ module CommonHelper
     end.flatten
   end
 
-  module_function :client, :app_auth_header, :user_cookie, :generate_test_case
+  module_function :client, :app_auth_header, :generate_test_case
 end
