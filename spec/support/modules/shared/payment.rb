@@ -1,27 +1,4 @@
 # coding: utf-8
-shared_context '事前準備: クライアントアプリを作成する' do
-  before(:all) do
-    params = {:application_id => Settings.application_id, :application_key => Settings.application_key}
-    Client.create!(params)
-  end
-
-  after(:all) do
-    params = {:application_id => Settings.application_id, :application_key => Settings.application_key}
-    Client.find_by(params).destroy
-  end
-end
-
-shared_context '事前準備: ユーザーを作成する' do
-  before(:all) do
-    params = {:user_id => Settings.user_id, :password => Settings.user_password}
-    User.create!(params)
-  end
-
-  after(:all) do
-    params = {:user_id => Settings.user_id, :password => Settings.user_password}
-    User.find_by(params).destroy
-  end
-end
 
 shared_context '事前準備: 収支情報を登録する' do |payments = PaymentHelper.test_payment.values|
   before(:all) do

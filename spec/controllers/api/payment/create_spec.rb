@@ -2,15 +2,12 @@
 require 'rails_helper'
 
 describe PaymentsController, :type => :controller do
-  shared_context '収支情報を登録する' do |params, app_auth_header = CommonHelper.app_auth_header|
+  shared_context '収支情報を登録する' do |params|
     before(:all) do
-      client.header('Authorization', app_auth_header)
       @res = client.post('/api/payments', params)
       @pbody = JSON.parse(@res.body) rescue nil
     end
   end
-
-  include_context '事前準備: クライアントアプリを作成する'
 
   describe '正常系' do
     base_payment = PaymentHelper.test_payment[:income]
@@ -33,16 +30,6 @@ describe PaymentsController, :type => :controller do
   end
 
   describe '異常系' do
-    context 'Authorizationヘッダーがない場合' do
-      include_context '収支情報を登録する', {:payments => PaymentHelper.test_payment[:income]}, nil
-      it_behaves_like '400エラーをチェックする', ['absent_header']
-    end
-
-    context 'Authorizationヘッダーが不正な場合' do
-      include_context '収支情報を登録する', {:payments => PaymentHelper.test_payment[:income]}, 'invalid'
-      it_behaves_like 'ステータスコードが正しいこと', '401'
-    end
-
     payment_params = PaymentHelper.payment_params.map(&:to_sym)
     test_cases = [].tap do |tests|
       (payment_params.size - 1).times {|i| tests << payment_params.combination(i + 1).to_a }
