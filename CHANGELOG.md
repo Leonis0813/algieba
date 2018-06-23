@@ -1,3 +1,6 @@
+# 3.3.1 (2018/06/20)
+- [REMOVE] users and clients
+
 # 3.3.0 (2018/03/04)
 - [UPDATE] ui design
 
