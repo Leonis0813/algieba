@@ -2,8 +2,6 @@
 require 'rails_helper'
 
 describe '統計情報を確認する', :type => :request do
-  user_id, password = 'test_user_id', 'test_user_pass'
-
   before(:all) do
     payment = {:date => '2018-01-01', :payment_type => 'income', :content => 'regist from view', :category => 'テスト', :price => 100}
     header = {'Authorization' => app_auth_header}.merge(content_type_json)
@@ -16,12 +14,8 @@ describe '統計情報を確認する', :type => :request do
     http_client.delete("#{base_url}/api/payments/#{@payment_id}", nil, header)
   end
 
-  before(:all) do
-    @driver = Selenium::WebDriver.for :firefox
-    @driver.get("#{base_url}/404_path")
-    @driver.manage.add_cookie(:name => 'algieba', :value => Base64.strict_encode64("#{user_id}:#{password}"))
-    @wait = Selenium::WebDriver::Wait.new(:timeout => 30)
-  end
+  include_context 'Webdriverを起動する'
+  include_context 'Cookieをセットする'
 
   describe '統計情報確認画面を開く' do
     before(:all) do

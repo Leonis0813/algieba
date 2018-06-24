@@ -5,7 +5,6 @@ describe 'ブラウザから操作する', :type => :request do
   per_page =  Kaminari.config.default_per_page
   default_inputs = {:date => '1000-01-01', :content => 'regist from view', :categories => 'テスト', :price => 100}
   color = {'収入' => 'success', '支出' => 'danger'}
-  user_id, password = 'test_user_id', 'test_user_pass'
 
   shared_context '収支情報を入力する' do |inputs, payment_type|
     before(:all) do
@@ -85,12 +84,8 @@ describe 'ブラウザから操作する', :type => :request do
     payments.each {|payment| http_client.delete("#{base_url}/api/payments/#{payment['id']}", nil, header) }
   end
 
-  before(:all) do
-    @driver = Selenium::WebDriver.for :firefox
-    @driver.get("#{base_url}/404_path")
-    @driver.manage.add_cookie(:name => 'algieba', :value => Base64.strict_encode64("#{user_id}:#{password}"))
-    @wait = Selenium::WebDriver::Wait.new(:timeout => 30)
-  end
+  include_context 'Webdriverを起動する'
+  include_context 'Cookieをセットする'
 
   describe '管理画面を開く' do
     before(:all) { @driver.get("#{base_url}/payments") }
