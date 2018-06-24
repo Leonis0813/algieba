@@ -9,9 +9,6 @@ describe '統計情報を確認する', :type => :request do
     header = {'Authorization' => app_auth_header}.merge(content_type_json)
     res = http_client.post("#{base_url}/api/payments", {:payments => payment}.to_json, header)
     @payment_id = JSON.parse(res.body)['id']
-
-    @driver = Selenium::WebDriver.for :firefox
-    @wait = Selenium::WebDriver::Wait.new(:timeout => 60)
   end
 
   after(:all) do
