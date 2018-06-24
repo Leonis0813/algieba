@@ -75,9 +75,6 @@ describe 'ブラウザから操作する', :type => :request do
     (per_page - 1 - size).times do
       http_client.post("#{base_url}/api/payments", {:payments => payment.merge(:price => rand(100))}.to_json, header)
     end
-
-    @driver = Selenium::WebDriver.for :firefox
-    @wait = Selenium::WebDriver::Wait.new(:timeout => 30)
   end
 
   after(:all) do
@@ -87,24 +84,11 @@ describe 'ブラウザから操作する', :type => :request do
     payments.each {|payment| http_client.delete("#{base_url}/api/payments/#{payment['id']}", nil, header) }
   end
 
+  include_context 'Webdriverを起動する'
+  include_context 'Cookieをセットする'
+
   describe '管理画面を開く' do
     before(:all) { @driver.get("#{base_url}/payments") }
-
-    it 'ログイン画面にリダイレクトされていること' do
-      is_asserted_by { @driver.current_url == "#{base_url}/login" }
-    end
-  end
-
-  describe 'ログインする' do
-    before(:all) do
-      @driver.find_element(:id, 'user_id').send_keys('test_user_id')
-      @driver.find_element(:id, 'password').send_keys('test_user_pass')
-      @driver.find_element(:id, 'login').click
-    end
-
-    it '管理画面が開いていること' do
-      is_asserted_by { @driver.current_url == "#{base_url}/payments" }
-    end
 
     it '日付でソートされていること' do
       is_asserted_by { @driver.find_element(:class, 'sorting_desc').text == '日付' }
