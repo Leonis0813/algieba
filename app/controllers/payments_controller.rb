@@ -1,6 +1,4 @@
 class PaymentsController < ApplicationController
-  before_action :check_user
-
   def index
     @search_form = Query.new(params.permit(*index_params))
     per_page = request.query_parameters[:per_page]

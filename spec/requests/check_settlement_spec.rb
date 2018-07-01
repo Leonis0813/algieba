@@ -7,9 +7,6 @@ describe '統計情報を確認する', :type => :request do
     header = {'Authorization' => app_auth_header}.merge(content_type_json)
     res = http_client.post("#{base_url}/api/payments", {:payments => payment}.to_json, header)
     @payment_id = JSON.parse(res.body)['id']
-
-    @driver = Selenium::WebDriver.for :firefox
-    @wait = Selenium::WebDriver::Wait.new(:timeout => 60)
   end
 
   after(:all) do
@@ -17,28 +14,14 @@ describe '統計情報を確認する', :type => :request do
     http_client.delete("#{base_url}/api/payments/#{@payment_id}", nil, header)
   end
 
+  include_context 'Webdriverを起動する'
+  include_context 'Cookieをセットする'
+
   describe '統計情報確認画面を開く' do
-    before(:all) { @driver.get("#{base_url}/statistics") }
-
-    it 'ログイン画面にリダイレクトされていること' do
-      is_asserted_by { @driver.current_url == "#{base_url}/login" }
-    end
-  end
-
-  describe 'ログインする' do
     before(:all) do
-      @driver.find_element(:id, 'user_id').send_keys('test_user_id')
-      @driver.find_element(:id, 'password').send_keys('test_user_pass')
-      @driver.find_element(:id, 'login').click
+      @driver.get("#{base_url}/payments")
+      @driver.find_element(:xpath, '//li/a[text()="統計画面"]').click
     end
-
-    it '管理画面が表示されていること' do
-      is_asserted_by { @driver.current_url == "#{base_url}/payments" }
-    end
-  end
-
-  describe '統計情報確認画面を開く' do
-    before(:all) { @driver.find_element(:xpath, '//li/a[text()="統計画面"]').click }
 
     it '統計情報確認画面が表示されていること' do
       is_asserted_by { @driver.current_url == "#{base_url}/statistics" }

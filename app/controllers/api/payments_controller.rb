@@ -1,6 +1,4 @@
 class Api::PaymentsController < ApplicationController
-  before_action :check_client
-
   def create
     begin
       attributes = params.require(:payments).permit(*payment_params)

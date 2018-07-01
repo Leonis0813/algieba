@@ -2,15 +2,13 @@
 require 'rails_helper'
 
 describe Api::CategoriesController, :type => :controller do
-  shared_context 'カテゴリを検索する' do |param = {}, app_auth_header = CommonHelper.app_auth_header|
+  shared_context 'カテゴリを検索する' do |param = {}|
     before(:all) do
-      client.header('Authorization', app_auth_header)
       @res = client.get('/api/categories', param)
       @pbody = JSON.parse(@res.body) rescue nil
     end
   end
 
-  include_context '事前準備: クライアントアプリを作成する'
   include_context '事前準備: 収支情報を登録する'
 
   describe '正常系' do
@@ -39,18 +37,6 @@ describe Api::CategoriesController, :type => :controller do
         actual_categories = @pbody.map {|category| category['name'] }.sort
         is_asserted_by { actual_categories == Category.order(:name).pluck(:name) }
       end
-    end
-  end
-
-  describe '異常系' do
-    context 'Authorizationヘッダーがない場合' do
-      include_context 'カテゴリを検索する', {:keyword => 'algieba'}, nil
-      it_behaves_like '400エラーをチェックする', ['absent_header']
-    end
-
-    context 'Authorizationヘッダーが不正な場合' do
-      include_context 'カテゴリを検索する', {:keyword => 'algieba'}, 'invalid'
-      it_behaves_like 'ステータスコードが正しいこと', '401'
     end
   end
 end
