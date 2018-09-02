@@ -23,6 +23,8 @@ class window.Settlement
       drawAxisX.call @, svg
       svg.selectAll("text")
         .attr("onclick", (d) -> "settlement.drawDaily('" + d + "')")
+      svg.selectAll("text")
+        .attr("transform", (d, i) -> "translate(0, " + 12 * (i % 2) + ")")
       drawAxisY.call @, svg
       drawBars.call @, svg, data
     )
@@ -42,7 +44,7 @@ class window.Settlement
 
       drawAxisX.call @, svg
       svg.selectAll("text")
-        .attr("transform", "rotate(-20) translate(0, 10)")
+        .attr("transform", (d, i) -> "translate(0, " + 12 * (i % 2) + ")")
       drawAxisY.call @, svg
       drawBars.call @, svg, data
     )
