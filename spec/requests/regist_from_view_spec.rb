@@ -15,9 +15,10 @@ describe 'ブラウザから操作する', :type => :request do
         element.send_keys(value.to_s)
       end
       @driver.find_element(:xpath, '//form[@id="new_payments"]//span[@class="category-list"]/button').click
+
+      xpath = "//div[@class='modal-dialog']//input[@value='#{inputs[:categories]}']"
       @wait.until do
-        @driver.find_element(:xpath, "//input[@value='#{inputs[:categories]}']").selected? ||
-        (@driver.find_element(:xpath, "//input[@value='#{inputs[:categories]}']").click rescue false)
+        @driver.find_element(:xpath, xpath).selected? || (@driver.find_element(:xpath, xpath).click rescue false)
       end
       @wait.until { @driver.find_element(:xpath, '//button[@data-bb-handler="confirm"]').click rescue false }
       @wait.until { (not @driver.find_element(:xpath, '//h4[text()="カテゴリを選択してください"]').displayed?) rescue true }
