@@ -23,8 +23,24 @@ class window.Settlement
       drawAxisX.call @, svg
       svg.selectAll("text")
         .attr("onclick", (d) -> "settlement.drawDaily('" + d + "')")
+      svg.selectAll("text")
+        .attr("transform", (d, i) -> "translate(0, " + 12 * (i % 2) + ")")
       drawAxisY.call @, svg
       drawBars.call @, svg, data
+      svg.selectAll("rect")
+        .on("mouseover", (d) ->
+          svg.append("text")
+            .text(d.price)
+            .attr("x", _x(d.date))
+            .attr("y", if d.price > 0 then 0.9 * _y(d.price) else _y(10000))
+            .attr("class", "price")
+          return
+        )
+        .on("mouseout", ()->
+          svg.select('text.price')
+            .remove()
+        )
+
     )
     return
 
@@ -42,7 +58,7 @@ class window.Settlement
 
       drawAxisX.call @, svg
       svg.selectAll("text")
-        .attr("transform", "rotate(-20) translate(0, 10)")
+        .attr("transform", (d, i) -> "translate(0, " + 12 * (i % 2) + ")")
       drawAxisY.call @, svg
       drawBars.call @, svg, data
     )

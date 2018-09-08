@@ -1,3 +1,7 @@
+# 3.4.0 (2018/09/08)
+- [UPDATE] registration view to improve usability
+- [UPDATE] statistics view to display price
+
 # 3.3.1 (2018/06/23)
 - [REMOVE] users and clients
 
