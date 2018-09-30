@@ -18,9 +18,10 @@
             <%= f.text_field :content, {:class => 'form-control', :required => true, :size => 100} %>
           </div>
           <div class='form-group'>
+            <% category_names = Payment.joins(:categories).group('categories.name').order('count_all desc').count.keys %>
             <%= f.label :categories, t('views.common.attribute.category').html_safe %><br>
-            <%= f.text_field :categories, {:name => 'payments[category]', :value => '', :class => 'form-control category-form', :required => true} %>
-            <span class='category-list' data-names='<%= Payment.joins(:categories).group('categories.name').order('count_all desc').count.keys %>'>
+            <%= f.text_field :categories, {:name => 'payments[category]', :value => category_names.first, :class => 'form-control category-form', :required => true} %>
+            <span class='category-list' data-names='<%= category_names %>'>
               <%= button_tag(:type => 'button', :class => 'btn btn-default btn-sm') do %>
                 <span class='glyphicon glyphicon-list' />
               <% end %>

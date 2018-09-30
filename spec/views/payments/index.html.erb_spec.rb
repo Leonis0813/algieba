@@ -13,14 +13,31 @@ describe 'payments/index', :type => :view do
 
   shared_context '収支情報を登録する' do |num|
     before(:all) do
-      num.times { Payment.create!(param.merge(:payment_type => ['income', 'expense'].sample)) }
+      @category = 2.times.map do |i|
+        name = "category#{i}"
+        Category.create!(:name => name)
+        [name, 0]
+      end.to_h
+
+      num.times do
+        payment = Payment.new(param.merge(:payment_type => ['income', 'expense'].sample))
+        category = Category.all.sample
+        @category[category.name] += 1
+        payment.categories << [category]
+        payment.save!
+      end
+
+      @category.select! {|k, v| v > 0 }.to_h
       @payments = Payment.order(:date => :desc).page(1)
     end
 
-    after(:all) { Payment.destroy_all }
+    after(:all) do
+      Payment.destroy_all
+      Category.destroy_all
+    end
   end
 
-  shared_examples '登録フォームが表示されていること' do
+  shared_examples '登録フォームが表示されていること' do |expected_size: 0|
     register_form_xpath = [
       main_content_xpath,
       'div[@class="row center-block"]',
@@ -54,6 +71,12 @@ describe 'payments/index', :type => :view do
       expect(@html).to have_selector("#{category_xpath}/label", :text => 'カテゴリ')
       expect(@html).to have_selector("#{category_xpath}/input[@id='payments_categories']")
       expect(@html).to have_selector("#{category_xpath}/span[@class='category-list']/button/span[@class='glyphicon glyphicon-list']")
+    end
+
+    it 'カテゴリ入力フォームに初期値が表示されていること', :if => expected_size > 0 do
+      category_xpath = "#{register_form_xpath}/form[@id='new_payments']/div[@class='form-group']"
+      value = @category.max{|x, y| x[1] <=> y[1] }.try(:first)
+      expect(@html).to have_selector("#{category_xpath}/input[@id='payments_categories'][@value='#{value}']")
     end
 
     it '金額入力フォームが表示されていること' do
@@ -252,7 +275,7 @@ describe 'payments/index', :type => :view do
     include_context '収支情報を登録する', per_page
 
     it_behaves_like 'ヘッダーが表示されていること'
-    it_behaves_like '登録フォームが表示されていること'
+    it_behaves_like '登録フォームが表示されていること', :expected_size => per_page
     it_behaves_like '検索フォームが表示されていること'
     it_behaves_like '件数情報が表示されていること', :total => per_page, :from => 1, :to => per_page
     it_behaves_like 'ページングが表示されていないこと'
@@ -266,7 +289,7 @@ describe 'payments/index', :type => :view do
     include_context '収支情報を登録する', per_page + 1
 
     it_behaves_like 'ヘッダーが表示されていること'
-    it_behaves_like '登録フォームが表示されていること'
+    it_behaves_like '登録フォームが表示されていること', :expected_size => per_page
     it_behaves_like '検索フォームが表示されていること'
     it_behaves_like '件数情報が表示されていること', :total => per_page + 1, :from => 1, :to => per_page
     it_behaves_like 'ページングが表示されていること'
@@ -281,7 +304,7 @@ describe 'payments/index', :type => :view do
     include_context '収支情報を登録する', total
 
     it_behaves_like 'ヘッダーが表示されていること'
-    it_behaves_like '登録フォームが表示されていること'
+    it_behaves_like '登録フォームが表示されていること', :expected_size => per_page
     it_behaves_like '検索フォームが表示されていること'
     it_behaves_like '件数情報が表示されていること', :total => total, :from => 1, :to => per_page
     it_behaves_like 'ページングが表示されていること'
