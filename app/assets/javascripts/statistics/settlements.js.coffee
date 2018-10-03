@@ -1,4 +1,4 @@
- class window.Settlement
+class window.Settlement
   _margin = {top: 50, right: 50, bottom: 50, left: 80}
   _width = window.innerWidth - _margin.left - _margin.right
   _height = (window.innerHeight / 2) - _margin.top - _margin.bottom - 50
