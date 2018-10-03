@@ -28,8 +28,8 @@ class window.Settlement
       drawAxisX.call @, svg, _xAxisMonthly
       svg.selectAll('text')
         .attr('onclick', (d) -> "settlement.drawDaily('#{d}')")
-      svg.selectAll('text')
         .attr('transform', (d, i) -> "translate(0, #{12 * (i % 2)})")
+        .style('cursor', 'pointer')
       drawAxisY.call @, svg, _yAxisMonthly
       drawBars.call @, svg, data, _xMonthly, _yMonthly
       svg.selectAll('rect')
