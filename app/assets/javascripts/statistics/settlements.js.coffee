@@ -9,12 +9,14 @@
   _xDaily = d3.scaleBand().rangeRound([0, _width])
   _yDaily = d3.scaleLinear().range([_height, 0])
 
-  _xAxis = d3.axisBottom(_xMonthly)
-  _yAxis = d3.axisLeft(_yMonthly)
+  _xAxisMonthly = d3.axisBottom(_xMonthly)
+  _yAxisMonthly = d3.axisLeft(_yMonthly)
+
+  _xAxisDaily = d3.axisBottom(_xDaily)
+  _yAxisDaily = d3.axisLeft(_yDaily)
 
   drawMonthly: ->
     interval = 'monthly'
-
     svg = createSvg.call @, interval
 
     d3.json("api/settlement?interval=#{interval}", (error, data) ->
@@ -23,12 +25,12 @@
       _xMonthly.domain(setDomainX.call @, data)
       _yMonthly.domain(setDomainY.call @, data)
 
-      drawAxisX.call @, svg
+      drawAxisX.call @, svg, _xAxisMonthly
       svg.selectAll('text')
         .attr('onclick', (d) -> "settlement.drawDaily('#{d}')")
       svg.selectAll('text')
         .attr('transform', (d, i) -> "translate(0, #{12 * (i % 2)})")
-      drawAxisY.call @, svg
+      drawAxisY.call @, svg, _yAxisMonthly
       drawBars.call @, svg, data, _xMonthly, _yMonthly
       svg.selectAll('rect')
         .on('mouseover', (d) ->
@@ -59,10 +61,10 @@
       _xDaily.domain(setDomainX.call @, data)
       _yDaily.domain(setDomainY.call @, data)
 
-      drawAxisX.call @, svg
+      drawAxisX.call @, svg, _xAxisDaily
       svg.selectAll('text')
         .attr('transform', (d, i) -> "translate(0, #{12 * (i % 2)})")
-      drawAxisY.call @, svg
+      drawAxisY.call @, svg, _yAxisDaily
       drawBars.call @, svg, data, _xDaily, _yDaily
     )
     return
@@ -85,17 +87,17 @@
     max = d3.max(data, (d) -> d.price)
     return [min, max]
 
-  drawAxisX = (svg) ->
+  drawAxisX = (svg, xAxis) ->
     svg.append('g')
       .attr('class', 'x axis')
       .attr('transform', "translate(0, #{_height})")
-      .call(_xAxis)
+      .call(xAxis)
     return
 
-  drawAxisY = (svg) ->
+  drawAxisY = (svg, yAxis) ->
     svg.append('g')
       .attr('class', 'y axis')
-      .call(_yAxis)
+      .call(yAxis)
       .append('text')
       .attr('transform', 'rotate(-90)')
       .attr('y', 6)
