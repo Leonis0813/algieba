@@ -1,3 +1,6 @@
+# 3.4.1 (2018/10/03)
+- [FIX] position to display settlement
+
 # 3.4.0 (2018/09/08)
 - [UPDATE] registration view to improve usability
 - [UPDATE] statistics view to display price
