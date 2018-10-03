@@ -21,13 +21,12 @@ describe 'payments/index', :type => :view do
 
       num.times do
         payment = Payment.new(param.merge(:payment_type => ['income', 'expense'].sample))
-        category = Category.all.sample
+        category = Category.first
         @category[category.name] += 1
         payment.categories << [category]
         payment.save!
       end
 
-      @category.select! {|k, v| v > 0 }.to_h
       @payments = Payment.order(:date => :desc).page(1)
     end
 
@@ -75,8 +74,7 @@ describe 'payments/index', :type => :view do
 
     it 'カテゴリ入力フォームに初期値が表示されていること', :if => expected_size > 0 do
       category_xpath = "#{register_form_xpath}/form[@id='new_payments']/div[@class='form-group']"
-      value = @category.max{|x, y| x[1] <=> y[1] }.try(:first)
-      expect(@html).to have_selector("#{category_xpath}/input[@id='payments_categories'][@value='#{value}']")
+      expect(@html).to have_selector("#{category_xpath}/input[@id='payments_categories'][@value='#{Category.first.name}']")
     end
 
     it '金額入力フォームが表示されていること' do
