@@ -45,7 +45,6 @@ class window.Settlement
           svg.select('text.price')
             .remove()
         )
-
     )
     return
 
@@ -66,6 +65,19 @@ class window.Settlement
         .attr('transform', (d, i) -> "translate(0, #{12 * (i % 2)})")
       drawAxisY.call @, svg, _yAxisDaily
       drawBars.call @, svg, data, _xDaily, _yDaily
+      svg.selectAll('rect')
+        .on('mouseover', (d) ->
+          svg.append('text')
+            .text(d.price)
+            .attr('x', _xDaily(d.date))
+            .attr('y', if d.price > 0 then 0.9 * _yDaily(d.price) else _yDaily(10000))
+            .attr('class', 'price')
+          return
+        )
+        .on('mouseout', ()->
+          svg.select('text.price')
+            .remove()
+        )
     )
     return
 
