@@ -1,3 +1,6 @@
+# 3.5.0 (2018/10/05)
+- [UPDATE] statistics view to display price per day
+
 # 3.4.1 (2018/10/03)
 - [FIX] position to display settlement
 
