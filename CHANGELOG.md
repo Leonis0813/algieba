@@ -1,3 +1,6 @@
+# 3.5.1 (2018/11/06)
+- [REFACTOR] coffeescripts
+
 # 3.5.0 (2018/10/05)
 - [UPDATE] statistics view to display price per day
 
