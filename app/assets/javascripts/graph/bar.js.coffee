@@ -9,6 +9,8 @@ class window.Bar
         .attr('class', 'x axis')
         .attr('transform', "translate(#{origin.x}, #{origin.y})")
         .call(d3.axisBottom(scale))
+      _svg.selectAll('text')
+        .attr('transform', (month, i) -> "translate(0, #{12 * (i % 2)})")
       return
 
     @drawYAxis = (origin, scale) ->
