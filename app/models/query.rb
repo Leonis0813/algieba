@@ -5,11 +5,19 @@ class Query
                 :date_before, :date_after,
                 :content_equal, :content_include,
                 :category,
-                :price_upper, :price_lower
+                :price_upper, :price_lower,
+                :page, :per_page
 
   validates :payment_type, :inclusion => {:in => %w[ income expense ], :message => 'invalid'}, :allow_nil => true
-  validates :price_upper, :price_lower, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0, :message => 'invalid'}, :allow_nil => true
+  validates :price_upper, :price_lower, :page, :per_page,
+            :numericality => {:only_integer => true, :greater_than_or_equal_to => 0, :message => 'invalid'}, :allow_nil => true
   validate :date_valid?
+
+  def initialize(attributes = {})
+    super
+    self.page ||= 1
+    self.per_page ||= 10
+  end
 
   def date_valid?
     return unless date_before or date_after
@@ -27,5 +35,14 @@ class Query
       errors.add(:date_before, 'invalid')
       errors.add(:date_after, 'invalid')
     end
+  end
+
+  def attributes
+    %i[ payment_type
+        date_before date_after
+        content_equal content_include
+        category
+        price_upper price_lower
+        page per_page ].map {|name| [name, self.send(name)] }.to_h
   end
 end

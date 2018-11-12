@@ -19,7 +19,7 @@ describe *target, :type => :model do
     it_is_asserted_by do
       params[:page] ||= 1
       params[:per_page] ||= 10
-      @query.attributes == params
+      @query.attributes.slice(*(params.keys)) == params
     end
   end
 
