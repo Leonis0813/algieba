@@ -1,3 +1,6 @@
+# 3.6.0 (2018/11/12)
+- [ADD] query parameters to index api for paging
+
 # 3.5.1 (2018/11/06)
 - [REFACTOR] coffeescripts
 

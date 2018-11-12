@@ -32,10 +32,10 @@ class Api::PaymentsController < ApplicationController
   def index
     query = Query.new(params.permit(*index_params))
     if query.valid?
-      @payments = index_params.inject(Payment.all) do |payments, key|
+      @payments = (index_params - %i[ page per_page ]).inject(Payment.all) do |payments, key|
         value = query.send(key)
         value ? payments.send(key, value) : payments
-      end
+      end.page(query.page).per(query.per_page)
       render :status => :ok, :template => 'payments/payments'
     else
       raise BadRequest.new(query.errors.messages.keys.map {|key| "invalid_param_#{key}" })
@@ -88,6 +88,6 @@ class Api::PaymentsController < ApplicationController
   end
 
   def index_params
-    %i[ payment_type date_before date_after content_equal content_include category price_upper price_lower ]
+    %i[ payment_type date_before date_after content_equal content_include category price_upper price_lower page per_page ]
   end
 end

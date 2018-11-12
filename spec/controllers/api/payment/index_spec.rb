@@ -21,6 +21,8 @@ describe PaymentsController, :type => :controller do
       [{:category => 'algieba'}, [:income, :expense]],
       [{:price_upper => 100}, [:income, :expense]],
       [{:price_lower => 100}, [:expense]],
+      [{:page => 1}, [:income, :expense]],
+      [{:per_page => 1}, [:income]],
       [
         {
           :payment_type => 'income',
@@ -31,6 +33,8 @@ describe PaymentsController, :type => :controller do
           :category => 'algieba',
           :price_upper => 100,
           :price_lower => 1000,
+          :page => 1,
+          :per_page => 1,
         },
         [:income],
       ],
@@ -53,6 +57,22 @@ describe PaymentsController, :type => :controller do
         it_behaves_like 'カテゴリリソースの属性値が正しいこと', expected_categories
       end
     end
+
+    [
+      {:date_before => '0999-12-31'},
+      {:date_after => '1000-12-31'},
+      {:price_upper => 10000},
+      {:price_lower => 1},
+      {:page => 10},
+    ].each do |query|
+      describe "#{query.keys.join(',')}を指定する場合" do
+        include_context '収支情報を検索する', query
+        it_behaves_like 'ステータスコードが正しいこと', '200'
+        it '空配列であること' do
+          is_asserted_by { @pbody == [] }
+        end
+      end
+    end
   end
 
   describe '異常系' do
@@ -62,12 +82,16 @@ describe PaymentsController, :type => :controller do
       {:date_after => 'invalid_date'},
       {:price_upper => 'invalid_price'},
       {:price_lower => 'invalid_price'},
+      {:page => 'invalid_page'},
+      {:per_page => 'invalid_per_page'},
       {
         :payment_type => 'invalid_type',
         :date_before => 'invalid_date',
         :date_after => 'invalid_date',
         :price_upper => 'invalid_price',
         :price_lower => 'invalid_price',
+        :page => 'invalid_page',
+        :per_page => 'invalid_per_page',
       },
     ].each do |query|
       context "#{query.keys.join(',')}が不正な場合" do
