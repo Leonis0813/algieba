@@ -1,3 +1,6 @@
+# 3.6.1 (2018/12/09)
+- [FIX] settlement graph size to display price
+
 # 3.6.0 (2018/11/12)
 - [ADD] query parameters to index api for paging
 
