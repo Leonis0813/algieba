@@ -13,8 +13,8 @@ class window.Settlement
         bars = data.filter((element, index, array) -> index > (array.length - 1) - 36)
 
         scale = {
-          x: d3.scaleBand().rangeRound([0, Settlement.WIDTH - 50]),
-          y: d3.scaleLinear().range([Settlement.HEIGHT - 50, 0]),
+          x: d3.scaleBand().rangeRound([0, Settlement.WIDTH - 75]),
+          y: d3.scaleLinear().range([Settlement.HEIGHT - 50, 25]),
         }
 
         scale.x.domain(bars.map((d) -> d.date))
@@ -45,8 +45,8 @@ class window.Settlement
         bars = data.filter((element, index, array) -> element.date.indexOf(month) == 0)
 
         scale = {
-          x: d3.scaleBand().rangeRound([0, Settlement.WIDTH - 50]),
-          y: d3.scaleLinear().range([Settlement.HEIGHT - 50, 0]),
+          x: d3.scaleBand().rangeRound([0, Settlement.WIDTH - 75]),
+          y: d3.scaleLinear().range([Settlement.HEIGHT - 50, 25]),
         }
 
         scale.x.domain(bars.map((bar) -> bar.date))
