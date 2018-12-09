@@ -1,6 +1,14 @@
 class window.Settlement
   @WIDTH = 1200
   @HEIGHT = 300
+  @X_AXIS = {
+    ORIGIN: {x: 50, y: Settlement.HEIGHT - 50},
+    RANGE: [0, Settlement.WIDTH - 75],
+  }
+  @Y_AXIS = {
+    ORIGIN: {x: 50, y: 0},
+    RANGE: [Settlement.HEIGHT - 50, 25],
+  }
 
   constructor: ->
     _monthlyBar = null
@@ -13,12 +21,12 @@ class window.Settlement
         bars = data.filter((element, index, array) -> index > (array.length - 1) - 36)
 
         scale = {
-          x: d3.scaleBand().rangeRound([0, Settlement.WIDTH - 50]),
-          y: d3.scaleLinear().range([Settlement.HEIGHT - 50, 0]),
+          x: d3.scaleBand().rangeRound(Settlement.X_AXIS.RANGE),
+          y: d3.scaleLinear().range(Settlement.Y_AXIS.RANGE),
         }
 
         scale.x.domain(bars.map((d) -> d.date))
-        _monthlyBar.drawXAxis({x: 50, y: Settlement.HEIGHT - 50}, scale.x)
+        _monthlyBar.drawXAxis(Settlement.X_AXIS.ORIGIN, scale.x)
 
         d3.select('#monthly')
           .selectAll('text')
@@ -28,7 +36,7 @@ class window.Settlement
         min = d3.min(bars, (bar) -> bar.price)
         max = d3.max(bars, (bar) -> bar.price)
         scale.y.domain([min, max])
-        _monthlyBar.drawYAxis({x: 50, y: 0}, scale.y)
+        _monthlyBar.drawYAxis(Settlement.Y_AXIS.ORIGIN, scale.y)
 
         bars = _createBars(bars, scale)
         _monthlyBar.drawBars(bars)
@@ -39,24 +47,24 @@ class window.Settlement
       return
 
     @drawDaily = (month) ->
-      _dailyBar = new Bar('daily', 1200, 300)
+      _dailyBar = new Bar('daily', Settlement.WIDTH, Settlement.HEIGHT)
 
       d3.json('api/settlement?interval=daily', (error, data) ->
         bars = data.filter((element, index, array) -> element.date.indexOf(month) == 0)
 
         scale = {
-          x: d3.scaleBand().rangeRound([0, Settlement.WIDTH - 50]),
-          y: d3.scaleLinear().range([Settlement.HEIGHT - 50, 0]),
+          x: d3.scaleBand().rangeRound(Settlement.X_AXIS.RANGE),
+          y: d3.scaleLinear().range(Settlement.Y_AXIS.RANGE),
         }
 
         scale.x.domain(bars.map((bar) -> bar.date))
         d3.select('#daily').selectAll('*').remove()
-        _dailyBar.drawXAxis({x: 50, y: Settlement.HEIGHT - 50}, scale.x)
+        _dailyBar.drawXAxis(Settlement.X_AXIS.ORIGIN, scale.x)
 
         min = d3.min(bars, (bar) -> bar.price)
         max = d3.max(bars, (bar) -> bar.price)
         scale.y.domain([min, max])
-        _dailyBar.drawYAxis({x: 50, y: 0}, scale.y)
+        _dailyBar.drawYAxis(Settlement.Y_AXIS.ORIGIN, scale.y)
 
         bars = _createBars(bars, scale)
         _dailyBar.drawBars(bars)
@@ -69,7 +77,7 @@ class window.Settlement
     _createBars = (bars, scale) ->
       bars.map((bar) ->
           {
-            x: scale.x(bar.date) + 50,
+            x: scale.x(bar.date) + Settlement.X_AXIS.ORIGIN.x,
             y: if bar.price < 0 then scale.y(0) else scale.y(bar.price),
             width: scale.x.bandwidth(),
             height: Math.abs(scale.y(bar.price) - scale.y(0)),
