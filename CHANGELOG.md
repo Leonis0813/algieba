@@ -1,3 +1,6 @@
+# 3.6.3 (2018/12/22)
+- [UPDATE] gems
+
 # 3.6.2 (2018/12/22)
 - [FIX] Gemfile to use web-console on development
 
