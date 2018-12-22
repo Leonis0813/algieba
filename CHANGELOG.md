@@ -1,3 +1,6 @@
+# 3.6.2 (2018/12/22)
+- [FIX] Gemfile to use web-console on development
+
 # 3.6.1 (2018/12/09)
 - [FIX] settlement graph size to display price
 
