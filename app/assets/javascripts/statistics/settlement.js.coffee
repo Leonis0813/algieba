@@ -17,7 +17,7 @@ class window.Settlement
     @drawMonthly = ->
       _monthlyBar = new Bar('monthly', Settlement.WIDTH, Settlement.HEIGHT)
 
-      d3.json('api/settlement?interval=monthly', (error, data) ->
+      d3.json('api/settlement?interval=monthly').then((data) ->
         bars = data.filter((element, index, array) -> index > (array.length - 1) - 36)
 
         scale = {
@@ -49,7 +49,7 @@ class window.Settlement
     @drawDaily = (month) ->
       _dailyBar = new Bar('daily', Settlement.WIDTH, Settlement.HEIGHT)
 
-      d3.json('api/settlement?interval=daily', (error, data) ->
+      d3.json('api/settlement?interval=daily').then((data) ->
         bars = data.filter((element, index, array) -> element.date.indexOf(month) == 0)
 
         scale = {

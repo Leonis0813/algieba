@@ -1,3 +1,6 @@
+# 3.6.3 (2018/12/24)
+- [FIX] bug due to d3-rails version up
+
 # 3.6.2 (2018/12/22)
 - [UPDATE] gems
 - [FIX] Gemfile to use web-console on development
