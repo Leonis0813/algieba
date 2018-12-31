@@ -1,3 +1,25 @@
+# 3.6.3 (2018/12/24)
+- [FIX] bug due to d3-rails version up
+
+# 3.6.2 (2018/12/22)
+- [UPDATE] gems
+- [FIX] Gemfile to use web-console on development
+
+# 3.6.1 (2018/12/09)
+- [FIX] settlement graph size to display price
+
+# 3.6.0 (2018/11/12)
+- [ADD] query parameters to index api for paging
+
+# 3.5.1 (2018/11/06)
+- [REFACTOR] coffeescripts
+
+# 3.5.0 (2018/10/05)
+- [UPDATE] statistics view to display price per day
+
+# 3.4.1 (2018/10/03)
+- [FIX] position to display settlement
+
 # 3.4.0 (2018/09/08)
 - [UPDATE] registration view to improve usability
 - [UPDATE] statistics view to display price

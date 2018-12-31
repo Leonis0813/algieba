@@ -28,11 +28,15 @@ describe '統計情報を確認する', :type => :request do
     end
 
     it '月次の棒グラフが表示されていること' do
-      is_asserted_by { @wait.until { @driver.find_element(:id, 'settlement-monthly') } }
+      is_asserted_by do
+        @wait.until { @driver.find_element(:xpath, '//*[@id="monthly"][@width="1200"][@height="300"]') }
+      end
     end
 
     it '日次の棒グラフが表示されていないこと' do
-      expect{ @driver.find_element(:id, 'settlement-daily') }.to raise_error Selenium::WebDriver::Error::NoSuchElementError
+      expect do
+        @driver.find_element(:xpath, '//*[@id="daily"][@width="1200"][@height="300"]')
+      end.to raise_error Selenium::WebDriver::Error::NoSuchElementError
     end
   end
 
@@ -40,7 +44,9 @@ describe '統計情報を確認する', :type => :request do
     before(:all) { @driver.execute_script('settlement.drawDaily("2018-01")') }
 
     it '日次の棒グラフが表示されていること' do
-      is_asserted_by { @wait.until { @driver.find_element(:id, 'settlement-daily') } }
+      is_asserted_by do
+        @wait.until { @driver.find_element(:xpath, '//*[@id="daily"][@width="1200"][@height="300"]') }
+      end
     end
   end
 end

@@ -10,7 +10,7 @@ end
 shared_context 'GET /api/payments' do |params = {}|
   before(:all) do
     header = {'Authorization' => app_auth_header}
-    @res = http_client.get("#{base_url}/api/payments", params.to_json, header)
+    @res = http_client.get("#{base_url}/api/payments", params, header)
     @pbody = JSON.parse(@res.body) rescue nil
   end
 end

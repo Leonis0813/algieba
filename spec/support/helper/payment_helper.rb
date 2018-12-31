@@ -26,7 +26,7 @@ module PaymentHelper
   end
 
   def response_keys
-    @response_keys ||= %w[ id payment_type date content categories price created_at updated_at ]
+    @response_keys ||= %w[ id payment_type date content categories price ]
   end
 
   module_function :test_payment, :payment_params, :response_keys
