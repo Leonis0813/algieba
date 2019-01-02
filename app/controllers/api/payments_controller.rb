@@ -35,7 +35,7 @@ class Api::PaymentsController < ApplicationController
       @payments = (index_params - %i[ page per_page ]).inject(Payment.all) do |payments, key|
         value = query.send(key)
         value ? payments.send(key, value) : payments
-      end.page(query.page).per(query.per_page)
+      end.order(query.sort => query.order).page(query.page).per(query.per_page)
       render :status => :ok, :template => 'payments/payments'
     else
       raise BadRequest.new(query.errors.messages.keys.map {|key| "invalid_param_#{key}" })
