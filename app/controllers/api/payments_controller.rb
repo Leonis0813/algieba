@@ -32,7 +32,7 @@ class Api::PaymentsController < ApplicationController
   def index
     query = Query.new(params.permit(*index_params))
     if query.valid?
-      @payments = (index_params - %i[ page per_page ]).inject(Payment.all) do |payments, key|
+      @payments = (index_params - %i[ page per_page sort order ]).inject(Payment.all) do |payments, key|
         value = query.send(key)
         value ? payments.send(key, value) : payments
       end.order(query.sort => query.order).page(query.page).per(query.per_page)
