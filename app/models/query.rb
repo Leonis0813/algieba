@@ -6,17 +6,22 @@ class Query
                 :content_equal, :content_include,
                 :category,
                 :price_upper, :price_lower,
-                :page, :per_page
+                :page, :per_page,
+                :sort, :order
 
   validates :payment_type, :inclusion => {:in => %w[ income expense ], :message => 'invalid'}, :allow_nil => true
   validates :price_upper, :price_lower, :page, :per_page,
             :numericality => {:only_integer => true, :greater_than_or_equal_to => 0, :message => 'invalid'}, :allow_nil => true
+  validates :sort, :inclusion => {:in => %w[ id date price ], :message => 'invalid'}
+  validates :order, :inclusion => {:in => %w[ asc desc ], :message => 'invalid'}
   validate :date_valid?
 
   def initialize(attributes = {})
     super
     self.page ||= 1
     self.per_page ||= 10
+    self.sort ||= 'id'
+    self.order ||= 'asc'
   end
 
   def date_valid?
@@ -43,6 +48,7 @@ class Query
         content_equal content_include
         category
         price_upper price_lower
-        page per_page ].map {|name| [name, self.send(name)] }.to_h
+        page per_page
+        sort order ].map {|name| [name, self.send(name)] }.to_h
   end
 end

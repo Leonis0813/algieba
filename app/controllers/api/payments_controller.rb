@@ -88,6 +88,7 @@ class Api::PaymentsController < ApplicationController
   end
 
   def index_params
-    %i[ payment_type date_before date_after content_equal content_include category price_upper price_lower page per_page ]
+    %i[ payment_type date_before date_after content_equal content_include category
+        price_upper price_lower page per_page sort order ]
   end
 end

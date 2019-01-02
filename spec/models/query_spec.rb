@@ -4,29 +4,6 @@ require 'rails_helper'
 target = [Query, '#validates']
 
 describe *target, :type => :model do
-  shared_context 'Queryオブジェクトを検証する' do |params|
-    before(:all) do
-      @query = Query.new(params)
-      @query.validate
-    end
-  end
-
-  shared_examples '検証結果が正しいこと' do |result|
-    it_is_asserted_by { @query.errors.empty? == result }
-  end
-
-  shared_examples 'Queryオブジェクトの属性値が正しいこと' do |params|
-    it_is_asserted_by do
-      params[:page] ||= 1
-      params[:per_page] ||= 10
-      @query.attributes.slice(*(params.keys)) == params
-    end
-  end
-
-  shared_examples 'エラーメッセージが正しいこと' do |expected_messages|
-    it_is_asserted_by { @query.errors.messages == expected_messages }
-  end
-
   describe '正常系' do
     valid_params = {
       :payment_type => 'income',
@@ -36,13 +13,21 @@ describe *target, :type => :model do
       :price_lower => 100,
       :page => 2,
       :per_page => 50,
+      :sort => %w[ id date price ],
+      :order => %w[ asc desc ],
     }
 
     CommonHelper.generate_test_case(valid_params).each do |params|
-      context "クエリに#{params.keys.join(',')}を指定した場合" do
-        include_context 'Queryオブジェクトを検証する', params
-        it_behaves_like '検証結果が正しいこと', true
-        it_behaves_like 'Queryオブジェクトの属性値が正しいこと', params
+      it "クエリに#{params.keys.join(',')}を指定した場合、エラーにならないこと" do
+        query = Query.new(params)
+        query.validate
+        is_asserted_by { query.errors.empty? }
+
+        params[:page] ||= 1
+        params[:per_page] ||= 10
+        params[:sort] ||= 'id'
+        params[:order] ||= 'asc'
+        is_asserted_by { query.attributes.slice(*(params.keys)) == params }
       end
     end
   end
@@ -57,14 +42,18 @@ describe *target, :type => :model do
       :price_lower => ['invalid_price', 1.0, -1],
       :page => ['invalid_page', 1.0, -1],
       :per_page => ['invalid_per_page', 1.0, -1],
+      :sort => ['invalid', 1],
+      :order => ['invalid', 1],
     }
 
     CommonHelper.generate_test_case(invalid_params).each do |params|
-      context "クエリに#{params.keys.join(',')}を指定した場合" do
-        include_context 'Queryオブジェクトを検証する', valid_params.merge(params)
+      it "クエリに#{params.keys.join(',')}を指定した場合、エラーになること" do
+        query = Query.new(params)
+        query.validate
+        is_asserted_by { not query.errors.empty? }
 
-        it_behaves_like '検証結果が正しいこと', false
-        it_behaves_like 'エラーメッセージが正しいこと', params.map {|key, _| [key, ['invalid']] }.to_h
+        expected_messages = params.map {|key, _| [key, ['invalid']] }.to_h
+        is_asserted_by { query.errors.messages == expected_messages }
       end
     end
 
@@ -78,11 +67,13 @@ describe *target, :type => :model do
     end
 
     test_cases.each do |params|
-      context '期間が不正な場合' do
-        include_context 'Queryオブジェクトを検証する', params
+      it "期間が不正な場合、エラーになること" do
+        query = Query.new(params)
+        query.validate
+        is_asserted_by { not query.errors.empty? }
 
-        it_behaves_like '検証結果が正しいこと', false
-        it_behaves_like 'エラーメッセージが正しいこと', params.map {|key, _| [key, ['invalid']] }.to_h
+        expected_messages = params.map {|key, _| [key, ['invalid']] }.to_h
+        is_asserted_by { query.errors.messages == expected_messages }
       end
     end
   end
