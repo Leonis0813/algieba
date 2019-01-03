@@ -1,3 +1,6 @@
+# 3.6.4 (2019/01/03)
+- [UPDATE] gems
+
 # 3.6.3 (2018/12/24)
 - [FIX] bug due to d3-rails version up
 
