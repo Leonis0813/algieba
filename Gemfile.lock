@@ -68,10 +68,10 @@ GEM
     coffee-script-source (1.12.2)
     commonjs (0.2.7)
     concurrent-ruby (1.1.4)
-    config (1.7.0)
+    config (1.7.1)
       activesupport (>= 3.0)
       deep_merge (~> 1.2.1)
-      dry-validation (>= 0.10.4)
+      dry-validation (>= 0.12.2)
     connection_pool (2.2.2)
     crass (1.0.4)
     d3-rails (5.7.0)
@@ -353,4 +353,4 @@ DEPENDENCIES
   web-console (~> 2.0)
 
 BUNDLED WITH
-   1.17.2
+   1.17.3
