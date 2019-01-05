@@ -76,7 +76,8 @@ describe '収支情報を管理する', :type => :request do
                 end
 
                 describe '収支情報を検索する' do
-                  include_context 'GET /api/payments', {:payment_type => 'income', :page => 1, :per_page => 100}
+                  params = {:payment_type => 'income', :page => 1, :per_page => 100, :sort => 'price', :order => 'desc'}
+                  include_context 'GET /api/payments', params
                   it_behaves_like 'ステータスコードが正しいこと', '200'
                   it_behaves_like 'レスポンスボディのキーが正しいこと', PaymentHelper.response_keys
 
