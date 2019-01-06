@@ -1,3 +1,6 @@
+# 3.6.6 (2019/01/06)
+- [UPDATE] gems
+
 # 3.6.5 (2019/01/05)
 - [UPDATE] indexing API to sort response body
 
