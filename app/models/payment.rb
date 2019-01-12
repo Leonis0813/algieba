@@ -51,14 +51,19 @@ class Payment < ActiveRecord::Base
 
       oldest = (incomes.keys | expenses.keys).sort.first
       newest = (incomes.keys | expenses.keys).sort.last
-      periods = case interval
-                when 'yearly'
-                  (oldest..newest).to_a
-                when 'monthly'
-                  (oldest..newest).to_a.select {|day| day[-2..-1].to_i.between?(1, 12) }
-                when 'daily'
-                  (Date.parse(oldest)..Date.parse(newest)).to_a.map {|day| day.strftime(format) }
+      periods = if oldest and newest
+                  case interval
+                  when 'yearly'
+                    (oldest..newest).to_a
+                  when 'monthly'
+                    (oldest..newest).to_a.select {|day| day[-2..-1].to_i.between?(1, 12) }
+                  when 'daily'
+                    (Date.parse(oldest)..Date.parse(newest)).to_a.map {|day| day.strftime(format) }
+                  end
+                else
+                  []
                 end
+
       [].tap do |settlements|
         periods.each do |period|
           settlements << {:date => period, :price => (incomes[period].to_i - expenses[period].to_i)}
