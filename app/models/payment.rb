@@ -16,6 +16,7 @@ class Payment < ActiveRecord::Base
 
   class << self
     def settle(interval)
+      return [] unless Payment.exists?
       income_records = Payment.payment_type('income').pluck(:date, :price).map do |date, price|
         {:date => date, :price => price}
       end
@@ -51,17 +52,13 @@ class Payment < ActiveRecord::Base
 
       oldest = (incomes.keys | expenses.keys).sort.first
       newest = (incomes.keys | expenses.keys).sort.last
-      periods = if oldest and newest
-                  case interval
-                  when 'yearly'
-                    (oldest..newest).to_a
-                  when 'monthly'
-                    (oldest..newest).to_a.select {|day| day[-2..-1].to_i.between?(1, 12) }
-                  when 'daily'
-                    (Date.parse(oldest)..Date.parse(newest)).to_a.map {|day| day.strftime(format) }
-                  end
-                else
-                  []
+      periods = case interval
+                when 'yearly'
+                  (oldest..newest).to_a
+                when 'monthly'
+                  (oldest..newest).to_a.select {|day| day[-2..-1].to_i.between?(1, 12) }
+                when 'daily'
+                  (Date.parse(oldest)..Date.parse(newest)).to_a.map {|day| day.strftime(format) }
                 end
 
       [].tap do |settlements|
