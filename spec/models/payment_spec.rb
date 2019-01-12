@@ -6,7 +6,7 @@ describe Payment, :type => :model do
     income = {:payment_type => 'income', :date => '1000-01-01', :content => 'モジュールテスト用データ1', :category => 'algieba', :price => 1000}
     expense = {:payment_type => 'expense', :date => '1000-01-05', :content => 'モジュールテスト用データ2', :category => 'algieba', :price => 100}
 
-    describe '正常系', :wip do
+    describe '正常系' do
       [
         ['yearly', [{:date => '1000', :price => 900}]],
         ['monthly', [{:date => '1000-01', :price => 900}]],
