@@ -1,3 +1,6 @@
+# 3.6.8 (2019/01/13)
+- [UPDATE] gems
+
 # 3.6.7 (2019/01/12)
 - [UPDATE] gems
 - [FIX] settlement API to return empty array if no payments
