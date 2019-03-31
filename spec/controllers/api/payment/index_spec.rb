@@ -23,6 +23,8 @@ describe PaymentsController, :type => :controller do
       [{:price_lower => 100}, [:expense]],
       [{:page => 1}, [:income, :expense]],
       [{:per_page => 1}, [:income]],
+      [{:sort => 'date'}, [:income, :expense]],
+      [{:order => 'desc'}, [:expense, :income]],
       [
         {
           :payment_type => 'income',
@@ -35,6 +37,8 @@ describe PaymentsController, :type => :controller do
           :price_lower => 1000,
           :page => 1,
           :per_page => 1,
+          :sort => 'price',
+          :order => 'asc',
         },
         [:income],
       ],
@@ -84,6 +88,8 @@ describe PaymentsController, :type => :controller do
       {:price_lower => 'invalid_price'},
       {:page => 'invalid_page'},
       {:per_page => 'invalid_per_page'},
+      {:sort => 'invalid_sort'},
+      {:order => 'invalid_order'},
       {
         :payment_type => 'invalid_type',
         :date_before => 'invalid_date',
@@ -92,6 +98,8 @@ describe PaymentsController, :type => :controller do
         :price_lower => 'invalid_price',
         :page => 'invalid_page',
         :per_page => 'invalid_per_page',
+        :sort => 'invalid_sort',
+        :order => 'invalid_order',
       },
     ].each do |query|
       context "#{query.keys.join(',')}が不正な場合" do

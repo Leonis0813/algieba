@@ -1,3 +1,35 @@
+# 3.6.13 (2019/03/30)
+- [UPDATE] gems
+
+# 3.6.12 (2019/03/02)
+- [UPDATE] ruby version to 2.3.7
+- [UPDATE] gems
+
+# 3.6.11 (2019/01/31)
+- [UPDATE] gems
+
+# 3.6.10 (2019/01/23)
+- [UPDATE] gems
+
+# 3.6.9 (2019/01/18)
+- [UPDATE] gems
+
+# 3.6.8 (2019/01/13)
+- [UPDATE] gems
+
+# 3.6.7 (2019/01/12)
+- [UPDATE] gems
+- [FIX] settlement API to return empty array if no payments
+
+# 3.6.6 (2019/01/06)
+- [UPDATE] gems
+
+# 3.6.5 (2019/01/05)
+- [UPDATE] indexing API to sort response body
+
+# 3.6.4 (2019/01/03)
+- [UPDATE] gems
+
 # 3.6.3 (2018/12/24)
 - [FIX] bug due to d3-rails version up
 

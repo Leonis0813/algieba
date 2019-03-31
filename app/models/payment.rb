@@ -16,6 +16,7 @@ class Payment < ActiveRecord::Base
 
   class << self
     def settle(interval)
+      return [] unless Payment.exists?
       income_records = Payment.payment_type('income').pluck(:date, :price).map do |date, price|
         {:date => date, :price => price}
       end
@@ -59,6 +60,7 @@ class Payment < ActiveRecord::Base
                 when 'daily'
                   (Date.parse(oldest)..Date.parse(newest)).to_a.map {|day| day.strftime(format) }
                 end
+
       [].tap do |settlements|
         periods.each do |period|
           settlements << {:date => period, :price => (incomes[period].to_i - expenses[period].to_i)}

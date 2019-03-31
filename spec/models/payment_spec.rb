@@ -3,10 +3,8 @@ require 'rails_helper'
 
 describe Payment, :type => :model do
   describe '#settle' do
-    include_context '事前準備: 収支情報を登録する', [
-                      {:payment_type => 'income', :date => '1000-01-01', :content => 'モジュールテスト用データ1', :category => 'algieba', :price => 1000},
-                      {:payment_type => 'expense', :date => '1000-01-05', :content => 'モジュールテスト用データ2', :category => 'algieba', :price => 100},
-                    ]
+    income = {:payment_type => 'income', :date => '1000-01-01', :content => 'モジュールテスト用データ1', :category => 'algieba', :price => 1000}
+    expense = {:payment_type => 'expense', :date => '1000-01-05', :content => 'モジュールテスト用データ2', :category => 'algieba', :price => 100}
 
     describe '正常系' do
       [
@@ -23,10 +21,20 @@ describe Payment, :type => :model do
         ],
       ].each do |interval, settlement|
         context "#{interval}を指定する場合" do
+          include_context '事前準備: 収支情報を登録する', [income, expense]
           before(:all) { @settlement = Payment.settle(interval) }
+          after(:all) { Payment.destroy_all }
 
           it '計算結果が正しいこと' do
             is_asserted_by { @settlement == settlement }
+          end
+        end
+
+        context '収支情報がない場合' do
+          before(:all) { @settlement = Payment.settle(interval) }
+
+          it '空配列が返ること' do
+            is_asserted_by { @settlement == [] }
           end
         end
       end
