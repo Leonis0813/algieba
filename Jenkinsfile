@@ -3,7 +3,7 @@ pipeline {
   stages {
     stage('build') {
       steps {
-        echo 'polling test2'
+        echo "target: ${env.CHANGE_TARGET}"
       }
     }
   }
