@@ -1,7 +1,7 @@
 pipeline {
   agent any
   stages {
-    stage('build') {
+    stage('test') {
       steps {
         echo "target: ${env.CHANGE_TARGET}"
       }
