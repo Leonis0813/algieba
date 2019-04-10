@@ -1,38 +1,3 @@
-import com.cwctravel.hudson.plugins.extended_choice_parameter.ExtendedChoiceParameterDefinition
-def extendedChoiceParameterDefinition = new ExtendedChoiceParameterDefinition(
-  "name",
-  "PT_CHECKBOX",
-  "VALUE, A, B",
-  null,//project name
-  null,
-  null,
-  null,
-  null,// bindings
-  null,
-  null, // propertykey
-  "VALUE, B", //default value
-  null,
-  null,
-  null,
-  null, //default bindings
-  null,
-  null,
-  null, //descriptionPropertyValue
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,// javascript file
-  null, // javascript
-  false, // save json param to file
-  false, // quote
-  2, // visible item count
-  "DESC",
-  ","
-)
-
 pipeline {
   agent any
 
