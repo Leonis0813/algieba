@@ -45,7 +45,10 @@ pipeline {
     string(name: 'ALGIEBA_VERSION', defaultValue: '', description: 'デプロイするバージョン')
     string(name: 'SUBRA_BRANCH', defaultValue: 'master', description: 'Chefのブランチ')
     choice(name: 'SCOPE', choices: 'app\nfull', description: 'デプロイ範囲')
-    new ExtendedChoiceParameterDefinition("name", "PT_CHECKBOX", "VALUE, A, B", null, null, null, null, null, null, null, "VALUE, B", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, false, false, 2, "DESC", ",")
+    booleanParam(name: 'ModuleTest', defaultValue: true, description: '')
+    booleanParam(name: 'FunctionalTest', defaultValue: true, description: '')
+    booleanParam(name: 'Deploy', defaultValue: true, description: '')
+    booleanParam(name: 'SystemTest', defaultValue: true, description: '')
   }
 
   stages {
@@ -61,19 +64,32 @@ pipeline {
       }
     }
 
-    stage('Test') {
+    stage('Module Test') {
       when {
-        expression { return env.ENVIRONMENT == 'development' }
+        expression { return env.ENVIRONMENT == 'development' && params.ModuleTest }
       }
 
       steps {
         sh "rvm ${RUBY_VERSION} do bundle exec rake spec:models"
+      }
+    }
+
+    stage('Functional Test') {
+      when {
+        expression { return env.ENVIRONMENT == 'development' && params.FunctionalTest }
+      }
+
+      steps {
         sh "rvm ${RUBY_VERSION} do bundle exec rake spec:controllers"
         sh "rvm ${RUBY_VERSION} do bundle exec rake spec:views"
       }
     }
 
     stage('Deploy') {
+      when {
+        expression { return params.Deploy }
+      }
+
       steps {
         ws("${env.WORKSPACE}/../chef") {
           script {
@@ -88,7 +104,7 @@ pipeline {
 
     stage('System Test') {
       when {
-        expression { return env.ENVIRONMENT == 'development' }
+        expression { return env.ENVIRONMENT == 'development' && params.SystemTest }
       }
 
       steps {
