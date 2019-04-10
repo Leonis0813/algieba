@@ -1,5 +1,5 @@
 import com.cwctravel.hudson.plugins.extended_choice_parameter.ExtendedChoiceParameterDefinition
-ExtendedChoiceParameterDefinition extendedChoiceParameterDefinition = new ExtendedChoiceParameterDefinition(
+def extendedChoiceParameterDefinition = new ExtendedChoiceParameterDefinition(
   "name",
   "PT_CHECKBOX",
   "VALUE, A, B",
@@ -32,10 +32,6 @@ ExtendedChoiceParameterDefinition extendedChoiceParameterDefinition = new Extend
   "DESC",
   ","
 )
-params << test
-props << parameters(params)
-
-properties(props)
 
 pipeline {
   agent any
@@ -49,7 +45,7 @@ pipeline {
     string(name: 'ALGIEBA_VERSION', defaultValue: '', description: 'デプロイするバージョン')
     string(name: 'SUBRA_BRANCH', defaultValue: 'master', description: 'Chefのブランチ')
     choice(name: 'SCOPE', choices: 'app\nfull', description: 'デプロイ範囲')
-    extendedChoiceParameterDefinition
+    new ExtendedChoiceParameterDefinition("name", "PT_CHECKBOX", "VALUE, A, B", null, null, null, null, null, null, null, "VALUE, B", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, false, false, 2, "DESC", ",")
   }
 
   stages {
