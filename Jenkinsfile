@@ -6,6 +6,10 @@ pipeline {
     RUBY_VERSION = '2.3.7'
   }
 
+  options {
+    disableConcurrentBuilds()
+  }
+
   parameters {
     string(name: 'ALGIEBA_VERSION', defaultValue: '', description: 'デプロイするバージョン')
     string(name: 'SUBRA_BRANCH', defaultValue: 'master', description: 'Chefのブランチ')
