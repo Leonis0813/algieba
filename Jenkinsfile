@@ -14,10 +14,10 @@ pipeline {
     string(name: 'ALGIEBA_VERSION', defaultValue: '', description: 'デプロイするバージョン')
     string(name: 'SUBRA_BRANCH', defaultValue: 'master', description: 'Chefのブランチ')
     choice(name: 'SCOPE', choices: 'full\napp', description: 'デプロイ範囲')
-    booleanParam(name: 'ModuleTest', defaultValue: true, description: '')
-    booleanParam(name: 'FunctionalTest', defaultValue: true, description: '')
-    booleanParam(name: 'Deploy', defaultValue: true, description: '')
-    booleanParam(name: 'SystemTest', defaultValue: true, description: '')
+    booleanParam(name: 'ModuleTest', defaultValue: true, description: 'Module Testを実行するかどうか')
+    booleanParam(name: 'FunctionalTest', defaultValue: true, description: 'Functional Testを実行するかどうか')
+    booleanParam(name: 'Deploy', defaultValue: true, description: 'Deployを実行するかどうか')
+    booleanParam(name: 'SystemTest', defaultValue: true, description: 'System Testを実行するかどうか')
   }
 
   stages {
