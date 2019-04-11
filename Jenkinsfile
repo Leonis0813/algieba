@@ -13,7 +13,7 @@ pipeline {
   parameters {
     string(name: 'ALGIEBA_VERSION', defaultValue: '', description: 'デプロイするバージョン')
     string(name: 'SUBRA_BRANCH', defaultValue: 'master', description: 'Chefのブランチ')
-    choice(name: 'SCOPE', choices: 'app\nfull', description: 'デプロイ範囲')
+    choice(name: 'SCOPE', choices: 'full\napp', description: 'デプロイ範囲')
     booleanParam(name: 'ModuleTest', defaultValue: true, description: '')
     booleanParam(name: 'FunctionalTest', defaultValue: true, description: '')
     booleanParam(name: 'Deploy', defaultValue: true, description: '')
