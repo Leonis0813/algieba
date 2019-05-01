@@ -1,9 +1,9 @@
 # coding: utf-8
 require 'rails_helper'
 
-describe 'ブラウザから操作する', :type => :request do
+describe 'ブラウザから操作する', type: :request do
   per_page =  Kaminari.config.default_per_page
-  default_inputs = {:date => '1000-01-01', :content => 'regist from view', :categories => 'テスト', :price => 100}
+  default_inputs = {date: '1000-01-01', content: 'regist from view', categories: 'テスト', price: 100}
   color = {'収入' => 'success', '支出' => 'danger'}
 
   shared_context '収支情報を入力する' do |inputs, payment_type|
@@ -70,17 +70,17 @@ describe 'ブラウザから操作する', :type => :request do
     header = {'Authorization' => app_auth_header}
     res = http_client.get("#{base_url}/api/payments", nil, header)
     size = JSON.parse(res.body).size
-    payment = default_inputs.merge(:payment_type => 'income', :category => 'テスト')
+    payment = default_inputs.merge(payment_type: 'income', category: 'テスト')
 
     header = {'Authorization' => app_auth_header}.merge(content_type_json)
     (per_page - 1 - size).times do
-      http_client.post("#{base_url}/api/payments", {:payments => payment.merge(:price => rand(100))}.to_json, header)
+      http_client.post("#{base_url}/api/payments", {payments: payment.merge(price: rand(100))}.to_json, header)
     end
   end
 
   after(:all) do
     header = {'Authorization' => app_auth_header}
-    res = http_client.get("#{base_url}/api/payments", {:content_equal => 'regist from view'}, header)
+    res = http_client.get("#{base_url}/api/payments", {content_equal: 'regist from view'}, header)
     payments = JSON.parse(res.body)
     payments.each {|payment| http_client.delete("#{base_url}/api/payments/#{payment['id']}", nil, header) }
   end
@@ -97,12 +97,12 @@ describe 'ブラウザから操作する', :type => :request do
   end
 
   describe '不正な収支情報を登録する' do
-    include_context '収支情報を入力する', default_inputs.merge(:price => 'invalid_price'), 'income'
+    include_context '収支情報を入力する', default_inputs.merge(price: 'invalid_price'), 'income'
     include_context '登録ボタンを押す'
     before(:all) { @wait.until { @driver.find_element(:class, 'modal-body').displayed? } }
     after(:all) { @wait.until { @driver.find_element(:xpath, '//div/button[text()="OK"]').click rescue false } }
 
-    it_behaves_like '正しくエラーダイアログが表示されていること', :message => '金額 が不正です'
+    it_behaves_like '正しくエラーダイアログが表示されていること', message: '金額 が不正です'
     it_behaves_like '収支情報の数が正しいこと', per_page - 1
   end
 
@@ -207,7 +207,7 @@ describe 'ブラウザから操作する', :type => :request do
       @driver.find_element(:name, 'price_upper').clear
     end
 
-    it_behaves_like '正しくエラーダイアログが表示されていること', :message => '金額 が不正です'
+    it_behaves_like '正しくエラーダイアログが表示されていること', message: '金額 が不正です'
   end
 
   describe '10000円以下の収支情報を検索する' do
@@ -220,7 +220,7 @@ describe 'ブラウザから操作する', :type => :request do
 
     it_behaves_like '表示されている件数が正しいこと', per_page + 1, 1, per_page
     it_behaves_like '収支情報の数が正しいこと', per_page
-    it_behaves_like 'フォームに値がセットされていること', :name => 'price_lower', :value => '10000'
+    it_behaves_like 'フォームに値がセットされていること', name: 'price_lower', value: '10000'
   end
 
   describe '金額でソートする' do
@@ -249,7 +249,7 @@ describe 'ブラウザから操作する', :type => :request do
     end
 
     it_behaves_like '正しくエラーダイアログが表示されていること',
-                    :message => '表示件数には数値を入力してください'
+                    message: '表示件数には数値を入力してください'
 
     it '表示件数が空文字になっていること' do
       is_asserted_by { @driver.find_element(:id, 'per_page').text.empty? }
@@ -265,8 +265,8 @@ describe 'ブラウザから操作する', :type => :request do
 
     it_behaves_like '表示されている件数が正しいこと', per_page + 1, 1, 20
     it_behaves_like '収支情報の数が正しいこと', 20
-    it_behaves_like 'フォームに値がセットされていること', :name => 'price_lower', :value => '10000'
-    it_behaves_like 'フォームに値がセットされていること', :name => 'per_page', :value => '20'
+    it_behaves_like 'フォームに値がセットされていること', name: 'price_lower', value: '10000'
+    it_behaves_like 'フォームに値がセットされていること', name: 'per_page', value: '20'
   end
 
   describe '1000円以上10000円以下の収支情報を検索する' do
@@ -278,8 +278,8 @@ describe 'ブラウザから操作する', :type => :request do
     end
 
     it_behaves_like '表示されている件数が正しいこと', 0, 0, 0
-    it_behaves_like 'フォームに値がセットされていること', :name => 'price_lower', :value => '10000'
-    it_behaves_like 'フォームに値がセットされていること', :name => 'price_upper', :value => '1000'
+    it_behaves_like 'フォームに値がセットされていること', name: 'price_lower', value: '10000'
+    it_behaves_like 'フォームに値がセットされていること', name: 'price_upper', value: '1000'
 
     it 'テーブルにメッセージが表示されていること' do
       is_asserted_by { @wait.until { @driver.find_element(:xpath, '//td').text == 'No data available in table' } }
@@ -298,7 +298,7 @@ describe 'ブラウザから操作する', :type => :request do
 
     it_behaves_like '表示されている件数が正しいこと', per_page + 1, 1, 20
     it_behaves_like '収支情報の数が正しいこと', 20
-    it_behaves_like 'フォームに値がセットされていること', :name => 'category', :value => 'テスト,新カテゴリ'
+    it_behaves_like 'フォームに値がセットされていること', name: 'category', value: 'テスト,新カテゴリ'
   end
 
   describe 'カレンダーを表示する' do

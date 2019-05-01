@@ -7,11 +7,11 @@ class Api::PaymentsController < ApplicationController
 
       @payment = Payment.new(attributes.except(:category))
       @payment.categories << attributes[:category].split(',').map do |category_name|
-        Category.find_or_create_by(:name => category_name)
+        Category.find_or_create_by(name: category_name)
       end
 
       if @payment.save
-        render :status => :created, :template => 'payments/payment'
+        render status: :created, template: 'payments/payment'
       else
         raise BadRequest.new(@payment.errors.messages.keys.map {|key| "invalid_param_#{key}" })
       end
@@ -23,7 +23,7 @@ class Api::PaymentsController < ApplicationController
   def show
     @payment = Payment.find_by(params.permit(:id))
     if @payment
-      render :status => :ok, :template => 'payments/payment'
+      render status: :ok, template: 'payments/payment'
     else
       raise NotFound.new
     end
@@ -36,7 +36,7 @@ class Api::PaymentsController < ApplicationController
         value = query.send(key)
         value ? payments.send(key, value) : payments
       end.order(query.sort => query.order).page(query.page).per(query.per_page)
-      render :status => :ok, :template => 'payments/payments'
+      render status: :ok, template: 'payments/payments'
     else
       raise BadRequest.new(query.errors.messages.keys.map {|key| "invalid_param_#{key}" })
     end
@@ -48,12 +48,12 @@ class Api::PaymentsController < ApplicationController
       attributes = params.permit(*payment_params)
       if attributes[:category]
         @payment.categories = attributes[:category].split(',').map do |category_name|
-          Category.find_or_create_by(:name => category_name)
+          Category.find_or_create_by(name: category_name)
         end
       end
 
       if @payment.update(attributes.except(:category))
-        render :status => :ok, :template => 'payments/payment'
+        render status: :ok, template: 'payments/payment'
       else
         raise BadRequest.new(@payment.errors.messages.keys.map {|key| "invalid_param_#{key}" })
       end
@@ -75,7 +75,7 @@ class Api::PaymentsController < ApplicationController
     query = Settlement.new(params.permit(:interval))
     if query.valid?
       @settlement = Payment.settle(query.interval)
-      render :status => :ok, :template => 'payments/settle'
+      render status: :ok, template: 'payments/settle'
     else
       raise BadRequest.new("#{query.errors.messages[:interval].first}_param_interval")
     end

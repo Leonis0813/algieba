@@ -1,7 +1,7 @@
 # coding: utf-8
 require 'rails_helper'
 
-describe PaymentsController, :type => :controller do
+describe PaymentsController, type: :controller do
   shared_context '収支情報を登録する' do |params|
     before(:all) do
       @res = client.post('/api/payments', params)
@@ -14,12 +14,12 @@ describe PaymentsController, :type => :controller do
 
     [
       ['カテゴリリソースが既に存在している場合', base_payment],
-      ['カテゴリリソースが存在しない場合', base_payment.merge(:category => 'not_exist')],
-      ['複数のカテゴリを指定した場合', base_payment.merge(:category => 'algieba,other_category')],
+      ['カテゴリリソースが存在しない場合', base_payment.merge(category: 'not_exist')],
+      ['複数のカテゴリを指定した場合', base_payment.merge(category: 'algieba,other_category')],
     ].each do |description, payment|
       context description do
         after(:all) { Payment.where(payment.except(:id, :category)).destroy_all }
-        include_context '収支情報を登録する', {:payments => payment}
+        include_context '収支情報を登録する', {payments: payment}
         it_behaves_like 'ステータスコードが正しいこと', '201'
         it_behaves_like '収支情報リソースのキーが正しいこと'
         it_behaves_like 'カテゴリリソースのキーが正しいこと'
@@ -38,12 +38,12 @@ describe PaymentsController, :type => :controller do
     test_cases.each do |deleted_keys|
       context "#{deleted_keys.join(',')}がない場合" do
         selected_keys = payment_params - deleted_keys
-        include_context '収支情報を登録する', {:payments => PaymentHelper.test_payment[:income].slice(*selected_keys)}
+        include_context '収支情報を登録する', {payments: PaymentHelper.test_payment[:income].slice(*selected_keys)}
         it_behaves_like '400エラーをチェックする', deleted_keys.map {|key| "absent_param_#{key}" }
       end
     end
 
-    [nil, {}, {:payments => nil}, {:payments => {}}].each do |params|
+    [nil, {}, {payments: nil}, {payments: {}}].each do |params|
       context 'payments パラメーターがない場合' do
         include_context '収支情報を登録する', params
         it_behaves_like '400エラーをチェックする', ['absent_param_payments']
@@ -51,13 +51,13 @@ describe PaymentsController, :type => :controller do
     end
 
     [
-      {:payment_type => 'invalid_type'},
-      {:date => 'invalid_date'},
-      {:price => 'invalid_price'},
-      {:payment_type => 'invalid_type', :date => 'invalid_date', :price => 'invalid_price'},
+      {payment_type: 'invalid_type'},
+      {date: 'invalid_date'},
+      {price: 'invalid_price'},
+      {payment_type: 'invalid_type', date: 'invalid_date', price: 'invalid_price'},
     ].each do |invalid_param|
       context "#{invalid_param.keys.join(',')}が不正な場合" do
-        include_context '収支情報を登録する', {:payments => PaymentHelper.test_payment[:expense].merge(invalid_param)}
+        include_context '収支情報を登録する', {payments: PaymentHelper.test_payment[:expense].merge(invalid_param)}
         it_behaves_like '400エラーをチェックする', invalid_param.keys.map {|key| "invalid_param_#{key}" }
       end
     end

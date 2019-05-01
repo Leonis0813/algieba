@@ -9,11 +9,11 @@ class Query
                 :page, :per_page,
                 :sort, :order
 
-  validates :payment_type, :inclusion => {:in => %w[ income expense ], :message => 'invalid'}, :allow_nil => true
+  validates :payment_type, inclusion: {in: %w[ income expense ], message: 'invalid'}, allow_nil: true
   validates :price_upper, :price_lower, :page, :per_page,
-            :numericality => {:only_integer => true, :greater_than_or_equal_to => 0, :message => 'invalid'}, :allow_nil => true
-  validates :sort, :inclusion => {:in => %w[ id date price ], :message => 'invalid'}
-  validates :order, :inclusion => {:in => %w[ asc desc ], :message => 'invalid'}
+            numericality: {only_integer: true, greater_than_or_equal_to: 0, message: 'invalid'}, allow_nil: true
+  validates :sort, inclusion: {in: %w[ id date price ], message: 'invalid'}
+  validates :order, inclusion: {in: %w[ asc desc ], message: 'invalid'}
   validate :date_valid?
 
   def initialize(attributes = {})

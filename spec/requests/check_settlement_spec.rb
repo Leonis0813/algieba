@@ -1,11 +1,11 @@
 # coding: utf-8
 require 'rails_helper'
 
-describe '統計情報を確認する', :type => :request do
+describe '統計情報を確認する', type: :request do
   before(:all) do
-    payment = {:date => '2018-01-01', :payment_type => 'income', :content => 'regist from view', :category => 'テスト', :price => 100}
+    payment = {date: '2018-01-01', payment_type: 'income', content: 'regist from view', category: 'テスト', price: 100}
     header = {'Authorization' => app_auth_header}.merge(content_type_json)
-    res = http_client.post("#{base_url}/api/payments", {:payments => payment}.to_json, header)
+    res = http_client.post("#{base_url}/api/payments", {payments: payment}.to_json, header)
     @payment_id = JSON.parse(res.body)['id']
   end
 

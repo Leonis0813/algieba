@@ -2,7 +2,7 @@
 shared_context 'POST /api/payments' do |payment|
   before(:all) do
     header = {'Authorization' => app_auth_header}.merge(content_type_json)
-    @res = http_client.post("#{base_url}/api/payments", {:payments => payment}.to_json, header)
+    @res = http_client.post("#{base_url}/api/payments", {payments: payment}.to_json, header)
     @pbody = JSON.parse(@res.body) rescue nil
   end
 end

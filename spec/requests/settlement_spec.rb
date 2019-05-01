@@ -1,13 +1,13 @@
 # coding: utf-8
 require 'rails_helper'
 
-describe '収支を計算する', :type => :request do
+describe '収支を計算する', type: :request do
   payment = {
-    :payment_type => 'income',
-    :date => '1000-01-01',
-    :content => 'システムテスト用データ',
-    :category => 'システムテスト',
-    :price => 100,
+    payment_type: 'income',
+    date: '1000-01-01',
+    content: 'システムテスト用データ',
+    category: 'システムテスト',
+    price: 100,
   }
 
   before(:all) do
@@ -28,7 +28,7 @@ describe '収支を計算する', :type => :request do
 
     header = {'Authorization' => app_auth_header}.merge(content_type_json)
     @payments.each do |payment|
-      body = {:payments => payment.slice(*payment_params)}.to_json
+      body = {payments: payment.slice(*payment_params)}.to_json
       http_client.post("#{base_url}/api/payments", body, header)
     end
   end
@@ -48,7 +48,7 @@ describe '収支を計算する', :type => :request do
         describe '収支を計算する' do
           before(:all) do
             header = {'Authorization' => app_auth_header}
-            @res = http_client.get("#{base_url}/api/settlement", {:interval => interval}, header)
+            @res = http_client.get("#{base_url}/api/settlement", {interval: interval}, header)
             @pbody = JSON.parse(@res.body) rescue nil
           end
 
