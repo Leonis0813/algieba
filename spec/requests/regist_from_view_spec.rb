@@ -357,7 +357,7 @@ describe 'ブラウザから操作する', type: :request do
       @driver.find_element(:name, 'category').send_keys('テスト,新カテゴリ')
       @driver.find_element(:id, 'search-button').click
       @wait.until do
-        URI.decode(@driver.current_url).include?('category=テスト,新カテゴリ')
+        CGI.unescape(@driver.current_url).include?('category=テスト,新カテゴリ')
       end
     end
 
