@@ -67,7 +67,7 @@ describe *target, type: :model do
     end
 
     test_cases.each do |params|
-      it "期間が不正な場合、エラーになること" do
+      it '期間が不正な場合、エラーになること' do
         query = Query.new(params)
         query.validate
         is_asserted_by { not query.errors.empty? }
