@@ -1,8 +1,9 @@
 # coding: utf-8
 shared_context 'POST /api/payments' do |payment|
   before(:all) do
+    body = {payments: payment}.to_json
     header = {'Authorization' => app_auth_header}.merge(content_type_json)
-    @res = http_client.post("#{base_url}/api/payments", {payments: payment}.to_json, header)
+    @res = http_client.post("#{base_url}/api/payments", body, header)
     @pbody = JSON.parse(@res.body) rescue nil
   end
 end
@@ -43,7 +44,9 @@ end
 
 shared_examples '収支情報リソースの属性値が正しいこと' do |expected_payments|
   it do
-    actual_payments = Array.wrap(@pbody).map {|payment| payment.slice(*payment_params).symbolize_keys }
+    actual_payments = Array.wrap(@pbody).map do |payment|
+      payment.slice(*payment_params).symbolize_keys
+    end
     is_asserted_by { actual_payments == Array.wrap(expected_payments) }
   end
 end

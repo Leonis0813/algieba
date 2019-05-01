@@ -3,8 +3,20 @@ require 'rails_helper'
 
 describe Payment, type: :model do
   describe '#settle' do
-    income = {payment_type: 'income', date: '1000-01-01', content: 'モジュールテスト用データ1', category: 'algieba', price: 1000}
-    expense = {payment_type: 'expense', date: '1000-01-05', content: 'モジュールテスト用データ2', category: 'algieba', price: 100}
+    income = {
+      payment_type: 'income',
+      date: '1000-01-01',
+      content: 'モジュールテスト用データ1',
+      category: 'algieba',
+      price: 1000,
+    }
+    expense = {
+      payment_type: 'expense',
+      date: '1000-01-05',
+      content: 'モジュールテスト用データ2',
+      category: 'algieba',
+      price: 100,
+    }
 
     describe '正常系' do
       [
@@ -42,7 +54,12 @@ describe Payment, type: :model do
   end
 
   describe '#validates' do
-    valid_params = {payment_type: 'income', date: '1000-01-01', content: 'モジュールテスト用データ', price: 1000}
+    valid_params = {
+      payment_type: 'income',
+      date: '1000-01-01',
+      content: 'モジュールテスト用データ',
+      price: 1000,
+    }
 
     shared_context 'Paymentオブジェクトを検証する' do |params|
       before(:all) do
@@ -73,12 +90,14 @@ describe Payment, type: :model do
 
       CommonHelper.generate_test_case(invalid_params).each do |invalid_params|
         context "#{invalid_params.keys.join(',')}が不正な場合" do
-          include_context 'Paymentオブジェクトを検証する', valid_params.merge(invalid_params)
+          params = valid_params.merge(invalid_params)
+          include_context 'Paymentオブジェクトを検証する', params
 
           it_behaves_like '検証結果が正しいこと', false
 
           it 'エラーメッセージが正しいこと' do
-            is_asserted_by { @payment.errors.messages == invalid_params.map {|key, _| [key, ['invalid']] }.to_h }
+            error_messages = invalid_params.map {|key, _| [key, ['invalid']] }.to_h
+            is_asserted_by { @payment.errors.messages == error_messages }
           end
         end
       end

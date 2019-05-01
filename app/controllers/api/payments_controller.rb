@@ -3,7 +3,8 @@ class Api::PaymentsController < ApplicationController
     begin
       attributes = params.require(:payments).permit(*payment_params)
       absent_keys = payment_params - attributes.symbolize_keys.keys
-      raise BadRequest.new(absent_keys.map {|key| "absent_param_#{key}" }) unless absent_keys.empty?
+      error_codes = absent_keys.map {|key| "absent_param_#{key}" }
+      raise BadRequest.new(error_codes) unless absent_keys.empty?
 
       @payment = Payment.new(attributes.except(:category))
       @payment.categories << attributes[:category].split(',').map do |category_name|
@@ -13,7 +14,8 @@ class Api::PaymentsController < ApplicationController
       if @payment.save
         render status: :created, template: 'payments/payment'
       else
-        raise BadRequest.new(@payment.errors.messages.keys.map {|key| "invalid_param_#{key}" })
+        error_codes = @payment.errors.messages.keys.map {|key| "invalid_param_#{key}" }
+        raise BadRequest.new(error_codes)
       end
     rescue ActionController::ParameterMissing
       raise BadRequest.new('absent_param_payments')
@@ -32,13 +34,15 @@ class Api::PaymentsController < ApplicationController
   def index
     query = Query.new(params.permit(*index_params))
     if query.valid?
-      @payments = (index_params - %i[ page per_page sort order ]).inject(Payment.all) do |payments, key|
+      query_params = index_params - %i[ page per_page sort order ]
+      @payments = query_params.inject(Payment.all) do |payments, key|
         value = query.send(key)
         value ? payments.send(key, value) : payments
       end.order(query.sort => query.order).page(query.page).per(query.per_page)
       render status: :ok, template: 'payments/payments'
     else
-      raise BadRequest.new(query.errors.messages.keys.map {|key| "invalid_param_#{key}" })
+      error_codes = query.errors.messages.keys.map {|key| "invalid_param_#{key}" }
+      raise BadRequest.new(error_codes)
     end
   end
 
@@ -55,7 +59,8 @@ class Api::PaymentsController < ApplicationController
       if @payment.update(attributes.except(:category))
         render status: :ok, template: 'payments/payment'
       else
-        raise BadRequest.new(@payment.errors.messages.keys.map {|key| "invalid_param_#{key}" })
+        error_codes = @payment.errors.messages.keys.map {|key| "invalid_param_#{key}" }
+        raise BadRequest.new(error_codes)
       end
     else
       raise NotFound.new
@@ -88,7 +93,9 @@ class Api::PaymentsController < ApplicationController
   end
 
   def index_params
-    %i[ payment_type date_before date_after content_equal content_include category
-        price_upper price_lower page per_page sort order ]
+    %i[
+      payment_type date_before date_after content_equal content_include category
+      price_upper price_lower page per_page sort order
+    ]
   end
 end

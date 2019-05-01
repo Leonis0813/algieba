@@ -47,15 +47,18 @@ describe '収支を計算する', type: :request do
       ].each do |interval, regex|
         describe '収支を計算する' do
           before(:all) do
+            body = {interval: interval}
             header = {'Authorization' => app_auth_header}
-            @res = http_client.get("#{base_url}/api/settlement", {interval: interval}, header)
+            @res = http_client.get("#{base_url}/api/settlement", body, header)
             @pbody = JSON.parse(@res.body) rescue nil
           end
 
           it_behaves_like 'ステータスコードが正しいこと', '200'
 
           it 'レスポンスボディのキーのフォーマットが正しいこと' do
-            @pbody.each {|settlement| is_asserted_by { settlement['date'].match(regex) } }
+            @pbody.each do |settlement|
+              is_asserted_by { settlement['date'].match(regex) }
+            end
           end
         end
       end

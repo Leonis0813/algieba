@@ -3,9 +3,16 @@ require 'rails_helper'
 
 describe '統計情報を確認する', type: :request do
   before(:all) do
-    payment = {date: '2018-01-01', payment_type: 'income', content: 'regist from view', category: 'テスト', price: 100}
+    payment = {
+      date: '2018-01-01',
+      payment_type: 'income',
+      content: 'regist from view',
+      category: 'テスト',
+      price: 100,
+    }
+    body = {payments: payment}.to_json
     header = {'Authorization' => app_auth_header}.merge(content_type_json)
-    res = http_client.post("#{base_url}/api/payments", {payments: payment}.to_json, header)
+    res = http_client.post("#{base_url}/api/payments", body, header)
     @payment_id = JSON.parse(res.body)['id']
   end
 
@@ -28,8 +35,9 @@ describe '統計情報を確認する', type: :request do
     end
 
     it '月次の棒グラフが表示されていること' do
+      xpath = '//*[@id="monthly"][@width="1200"][@height="300"]'
       is_asserted_by do
-        @wait.until { @driver.find_element(:xpath, '//*[@id="monthly"][@width="1200"][@height="300"]') }
+        @wait.until { @driver.find_element(:xpath, xpath) }
       end
     end
 
@@ -44,8 +52,9 @@ describe '統計情報を確認する', type: :request do
     before(:all) { @driver.execute_script('settlement.drawDaily("2018-01")') }
 
     it '日次の棒グラフが表示されていること' do
+      xpath = '//*[@id="daily"][@width="1200"][@height="300"]'
       is_asserted_by do
-        @wait.until { @driver.find_element(:xpath, '//*[@id="daily"][@width="1200"][@height="300"]') }
+        @wait.until { @driver.find_element(:xpath, xpath) }
       end
     end
   end

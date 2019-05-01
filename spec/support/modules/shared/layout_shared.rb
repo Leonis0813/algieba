@@ -1,7 +1,8 @@
 # coding: utf-8
 shared_examples 'ヘッダーが表示されていること' do
   it do
-    base_xpath = '//div[@class="navbar navbar-default navbar-static-top"]/div[@class="container"]'
+    base_xpath =
+      '//div[@class="navbar navbar-default navbar-static-top"]/div[@class="container"]'
     title_xpath = [base_xpath, 'span[@class="navbar-brand"]'].join('/')
     expect(@html).to have_selector(title_xpath, text: 'Payment Manager')
 
