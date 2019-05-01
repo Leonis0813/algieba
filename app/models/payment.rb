@@ -1,4 +1,5 @@
 class Payment < ActiveRecord::Base
+  has_many :category_payments
   has_many :categories, through: :category_payments
 
   validates :payment_type, inclusion: {in: %w[income expense], message: 'invalid'}
