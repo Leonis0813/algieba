@@ -57,10 +57,12 @@ class Payment < ActiveRecord::Base
     private
 
     def group_by_period(records, format)
+      grouped_record = records.group_by do |record|
+        record.date.strftime(format)
+      end
+
       {}.tap do |settlement|
-        records.group_by do |record|
-          record.date.strftime(format)
-        end.each do |period, grouped_records|
+        grouped_record.each do |period, grouped_records|
           settlement.merge!(period => grouped_records.map(&:price).inject(:+))
         end
       end
