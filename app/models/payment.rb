@@ -25,33 +25,13 @@ class Payment < ActiveRecord::Base
     def settle(interval)
       return [] unless Payment.exists?
 
-      income_records = Payment.payment_type('income').pluck(:date, :price)
-      income_records.map! {|date, price| {date: date, price: price} }
-
-      expense_records = Payment.payment_type('expense').pluck(:date, :price)
-      expense_records.map! {|date, price| {date: date, price: price} }
+      income_records = get_records('income')
+      expense_records = get_records('expense')
 
       format = {'yearly' => '%Y', 'monthly' => '%Y-%m', 'daily' => '%Y-%m-%d'}
 
-      incomes = {}.tap do |income|
-        grouped_income_records = income_records.group_by do |record|
-          record[:date].strftime(format[interval])
-        end
-
-        grouped_income_records.each do |period, records|
-          income.merge!(period => records.map {|record| record[:price] }.inject(:+))
-        end
-      end
-
-      expenses = {}.tap do |expense|
-        grouped_expense_records = expense_records.group_by do |record|
-          record[:date].strftime(format[interval])
-        end
-
-        grouped_expense_records.each do |period, records|
-          expense.merge!(period => records.map {|record| record[:price] }.inject(:+))
-        end
-      end
+      incomes = group_by_period(income_records, format[interval])
+      expenses = group_by_period(expense_records, format[interval])
 
       oldest = (incomes.keys | expenses.keys).min
       newest = (incomes.keys | expenses.keys).max
@@ -70,6 +50,25 @@ class Payment < ActiveRecord::Base
             date: period,
             price: (incomes[period].to_i - expenses[period].to_i),
           }
+        end
+      end
+    end
+
+    private
+
+    def get_records(payment_type)
+      records = Payment.payment_type(payment_type).pluck(:date, :price)
+      records.map {|date, price| {date: date, price: price} }
+    end
+
+    def group_by_period(records, format)
+      {}.tap do |record|
+        grouped_record = records.group_by do |record|
+          record[:date].strftime(format)
+        end
+
+        grouped_record.each do |period, records|
+          record.merge!(period => records.map {|record| record[:price] }.inject(:+))
         end
       end
     end
