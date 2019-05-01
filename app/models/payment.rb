@@ -59,8 +59,8 @@ class Payment < ActiveRecord::Base
         end
       end
 
-      oldest = (incomes.keys | expenses.keys).sort.first
-      newest = (incomes.keys | expenses.keys).sort.last
+      oldest = (incomes.keys | expenses.keys).min
+      newest = (incomes.keys | expenses.keys).max
       periods = case interval
                 when 'yearly'
                   (oldest..newest).to_a
