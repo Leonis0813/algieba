@@ -2,23 +2,24 @@ class Api::PaymentsController < ApplicationController
   def create
     begin
       attributes = params.require(:payments).permit(*payment_params)
-      absent_keys = payment_params - attributes.symbolize_keys.keys
-      error_codes = absent_keys.map {|key| "absent_param_#{key}" }
-      raise BadRequest, error_codes unless absent_keys.empty?
-
-      @payment = Payment.new(attributes.except(:category))
-      @payment.categories << attributes[:category].split(',').map do |category_name|
-        Category.find_or_create_by(name: category_name)
-      end
-
-      if @payment.save
-        render status: :created, template: 'payments/payment'
-      else
-        error_codes = @payment.errors.messages.keys.map {|key| "invalid_param_#{key}" }
-        raise BadRequest, error_codes
-      end
     rescue ActionController::ParameterMissing
       raise BadRequest, 'absent_param_payments'
+    end
+
+    absent_keys = payment_params - attributes.symbolize_keys.keys
+    error_codes = absent_keys.map {|key| "absent_param_#{key}" }
+    raise BadRequest, error_codes unless absent_keys.empty?
+
+    @payment = Payment.new(attributes.except(:category))
+    @payment.categories << attributes[:category].split(',').map do |category_name|
+      Category.find_or_create_by(name: category_name)
+    end
+
+    if @payment.save
+      render status: :created, template: 'payments/payment'
+    else
+      error_codes = @payment.errors.messages.keys.map {|key| "invalid_param_#{key}" }
+      raise BadRequest, error_codes
     end
   end
 
