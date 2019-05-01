@@ -77,14 +77,14 @@ describe 'payments/index', type: :view do
       expect(@html).to have_selector("#{category_xpath}/label", text: 'カテゴリ')
       xpath = "#{category_xpath}/input[@id='payments_categories']"
       expect(@html).to have_selector(xpath)
-      xpath = "#{category_xpath}/span[@class='category-list']/button/" +
+      xpath = "#{category_xpath}/span[@class='category-list']/button/" \
               'span[@class="glyphicon glyphicon-list"]'
       expect(@html).to have_selector(xpath)
     end
 
     it 'カテゴリ入力フォームに初期値が表示されていること', if: expected_size > 0 do
       xpath =
-        "#{register_form_xpath}/form[@id='new_payments']/div[@class='form-group']" +
+        "#{register_form_xpath}/form[@id='new_payments']/div[@class='form-group']" \
         "/input[@id='payments_categories'][@value='#{Category.first.name}']"
       expect(@html).to have_selector(xpath)
     end
@@ -157,7 +157,7 @@ describe 'payments/index', type: :view do
         "#{search_form_xpath}/form[@id='new_query']/div[@class='form-group']"
       expect(@html).to have_selector("#{category_xpath}/label", text: 'カテゴリ')
       expect(@html).to have_selector("#{category_xpath}/input[@id='query_category']")
-      xpath = "#{category_xpath}/span[@class='category-list']/button" +
+      xpath = "#{category_xpath}/span[@class='category-list']/button" \
               '/span[@class="glyphicon glyphicon-list"]'
       expect(@html).to have_selector(xpath)
     end
