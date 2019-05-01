@@ -30,7 +30,7 @@ describe PaymentsController, type: :controller do
       }],
       [{}, '更新しない場合'],
     ].each do |params, description|
-      context (description || "#{params.keys.join(',')}を更新する場合") do
+      context description || "#{params.keys.join(',')}を更新する場合" do
         include_context '事前準備: 収支情報を登録する'
         include_context '収支情報を更新する', base_payment[:id], params
         it_behaves_like 'ステータスコードが正しいこと', '200'
