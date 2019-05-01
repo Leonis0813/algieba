@@ -24,6 +24,7 @@ class Payment < ActiveRecord::Base
   class << self
     def settle(interval)
       return [] unless Payment.exists?
+
       income_records = Payment.payment_type('income').pluck(:date, :price)
       income_records.map! {|date, price| {date: date, price: price} }
 

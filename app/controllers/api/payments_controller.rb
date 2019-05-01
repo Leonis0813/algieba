@@ -27,6 +27,7 @@ class Api
     def show
       @payment = Payment.find_by(params.permit(:id))
       raise NotFound unless @payment
+
       render status: :ok, template: 'payments/payment'
     end
 
@@ -67,6 +68,7 @@ class Api
     def destroy
       @payment = Payment.find_by(params.permit(:id)).try(:destroy)
       raise NotFound unless @payment
+
       head :no_content
     end
 
@@ -75,6 +77,7 @@ class Api
       unless query.valid?
         raise BadRequest, "#{query.errors.messages[:interval].first}_param_interval"
       end
+
       @settlement = Payment.settle(query.interval)
       render status: :ok, template: 'payments/settle'
     end

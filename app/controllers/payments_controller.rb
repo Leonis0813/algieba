@@ -3,6 +3,7 @@ class PaymentsController < ApplicationController
     @search_form = Query.new(params.permit(*index_params))
     per_page = request.query_parameters[:per_page]
     raise BadRequest, 'invalid_param_per_page' if per_page and per_page !~ /\A\d*\z/
+
     @per_page = per_page ? per_page.to_i : Kaminari.config.default_per_page
     if @search_form.valid?
       @payments = index_params.inject(Payment.all) do |payments, key|

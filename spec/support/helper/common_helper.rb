@@ -14,12 +14,14 @@ module CommonHelper
 
   def cookie_value
     return @cookie_value if @cookie_value
+
     @cookie_value =
       Base64.strict_encode64("#{Settings.user_id}:#{Settings.user_password}")
   end
 
   def app_auth_header
     return @app_auth_header if @app_auth_header
+
     credential =
       Base64.strict_encode64("#{Settings.application_id}:#{Settings.application_key}")
     @app_auth_header = "Basic #{credential}"
