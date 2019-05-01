@@ -15,7 +15,7 @@ class Payment < ActiveRecord::Base
   scope :date_after, ->(date) { where('date >= ?', date) }
   scope :content_equal, ->(content) { where(content: content) }
   scope :content_include, ->(content) { where('content REGEXP ?', ".*#{content}.*") }
-  scope :category, ->(category) {
+  scope :category, lambda(category) {
     joins(:categories).where('categories.name' => category.split(','))
   }
   scope :price_upper, ->(price) { where('price >= ?', price) }
