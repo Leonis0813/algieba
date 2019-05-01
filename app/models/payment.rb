@@ -46,7 +46,7 @@ class Payment < ActiveRecord::Base
         end
 
         grouped_income_records.each do |period, records|
-          income.merge!(period => records.map{|record| record[:price] }.inject(:+))
+          income.merge!(period => records.map {|record| record[:price] }.inject(:+))
         end
       end
 
@@ -56,7 +56,7 @@ class Payment < ActiveRecord::Base
         end
 
         grouped_expense_records.each do |period, records|
-          expense.merge!(period => records.map{|record| record[:price] }.inject(:+))
+          expense.merge!(period => records.map {|record| record[:price] }.inject(:+))
         end
       end
 
