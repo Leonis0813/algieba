@@ -4,6 +4,6 @@ namespace :db do
     db_config = Rails.configuration.database_configuration
     user = db_config[Rails.env]['username']
     database = db_config[Rails.env]['database']
-    sh "mysqldump -u #{user} #{database} > #{Rails.root}/db/dump.sql"
+    sh "mysqldump -u #{user} #{database} > #{Rails.root.join('db', 'dump.sql')}"
   end
 end
