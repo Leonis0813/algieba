@@ -31,18 +31,11 @@ class Payment < ActiveRecord::Base
       expense_records = Payment.payment_type('expense').pluck(:date, :price)
       expense_records.map! {|date, price| {date: date, price: price} }
 
-      format = case interval
-               when 'yearly'
-                 '%Y'
-               when 'monthly'
-                 '%Y-%m'
-               when 'daily'
-                 '%Y-%m-%d'
-               end
+      format = {'yearly' => '%Y', 'monthly' => '%Y-%m', 'daily' => '%Y-%m-%d'}
 
       incomes = {}.tap do |income|
         grouped_income_records = income_records.group_by do |record|
-          record[:date].strftime(format)
+          record[:date].strftime(format[interval])
         end
 
         grouped_income_records.each do |period, records|
@@ -52,7 +45,7 @@ class Payment < ActiveRecord::Base
 
       expenses = {}.tap do |expense|
         grouped_expense_records = expense_records.group_by do |record|
-          record[:date].strftime(format)
+          record[:date].strftime(format[interval])
         end
 
         grouped_expense_records.each do |period, records|
@@ -62,19 +55,17 @@ class Payment < ActiveRecord::Base
 
       oldest = (incomes.keys | expenses.keys).min
       newest = (incomes.keys | expenses.keys).max
-      periods = case interval
-                when 'yearly'
-                  (oldest..newest).to_a
-                when 'monthly'
-                  (oldest..newest).to_a.select {|day| day[-2..-1].to_i.between?(1, 12) }
-                when 'daily'
-                  (Date.parse(oldest)..Date.parse(newest)).to_a.map do |day|
-                    day.strftime(format)
-                  end
-                end
+      periods = (oldest..newest).to_a
+      periods = {
+        'yearly' => periods,
+        'monthly' => periods.select {|day| day[-2..-1].to_i.between?(1, 12) },
+        'daily' => (Date.parse(oldest)..Date.parse(newest)).to_a.map do |day|
+          day.strftime(format['daily'])
+        end,
+      }
 
       [].tap do |settlements|
-        periods.each do |period|
+        periods[interval].each do |period|
           settlements << {
             date: period,
             price: (incomes[period].to_i - expenses[period].to_i),
