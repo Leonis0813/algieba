@@ -104,8 +104,9 @@ describe PaymentsController, type: :controller do
       },
     ].each do |query|
       context "#{query.keys.join(',')}が不正な場合" do
+        error_codes = query.keys.map {|key| "invalid_param_#{key}" }
         include_context '収支情報を検索する', query
-        it_behaves_like '400エラーをチェックする', query.map {|key, _| "invalid_param_#{key}" }
+        it_behaves_like '400エラーをチェックする', error_codes
       end
     end
   end
