@@ -47,10 +47,11 @@ class Query
       return
     end
 
-    if date_before and date_after and Date.parse(date_before) < Date.parse(date_after)
-      errors.add(:date_before, 'invalid')
-      errors.add(:date_after, 'invalid')
+    unless date_before and date_after and Date.parse(date_before) < Date.parse(date_after)
+      return
     end
+    errors.add(:date_before, 'invalid')
+    errors.add(:date_after, 'invalid')
   end
 
   def attributes

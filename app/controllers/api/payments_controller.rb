@@ -24,11 +24,8 @@ class Api::PaymentsController < ApplicationController
 
   def show
     @payment = Payment.find_by(params.permit(:id))
-    if @payment
-      render status: :ok, template: 'payments/payment'
-    else
-      raise NotFound
-    end
+    raise NotFound unless @payment
+    render status: :ok, template: 'payments/payment'
   end
 
   def index
@@ -48,42 +45,36 @@ class Api::PaymentsController < ApplicationController
 
   def update
     @payment = Payment.find_by(params.permit(:id))
-    if @payment
-      attributes = params.permit(*payment_params)
-      if attributes[:category]
-        @payment.categories = attributes[:category].split(',').map do |category_name|
-          Category.find_or_create_by(name: category_name)
-        end
-      end
+    raise NotFound unless @payment
 
-      if @payment.update(attributes.except(:category))
-        render status: :ok, template: 'payments/payment'
-      else
-        error_codes = @payment.errors.messages.keys.map {|key| "invalid_param_#{key}" }
-        raise BadRequest, error_codes
+    attributes = params.permit(*payment_params)
+    if attributes[:category]
+      @payment.categories = attributes[:category].split(',').map do |category_name|
+        Category.find_or_create_by(name: category_name)
       end
+    end
+
+    if @payment.update(attributes.except(:category))
+      render status: :ok, template: 'payments/payment'
     else
-      raise NotFound
+      error_codes = @payment.errors.messages.keys.map {|key| "invalid_param_#{key}" }
+      raise BadRequest, error_codes
     end
   end
 
   def destroy
     @payment = Payment.find_by(params.permit(:id)).try(:destroy)
-    if @payment
-      head :no_content
-    else
-      raise NotFound
-    end
+    raise NotFound unless @payment
+    head :no_content
   end
 
   def settle
     query = Settlement.new(params.permit(:interval))
-    if query.valid?
-      @settlement = Payment.settle(query.interval)
-      render status: :ok, template: 'payments/settle'
-    else
+    unless query.valid?
       raise BadRequest, "#{query.errors.messages[:interval].first}_param_interval"
     end
+    @settlement = Payment.settle(query.interval)
+    render status: :ok, template: 'payments/settle'
   end
 
   private
