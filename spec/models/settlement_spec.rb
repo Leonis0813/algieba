@@ -30,7 +30,7 @@ describe Settlement, type: :model do
           it_behaves_like '検証結果が正しいこと', false
 
           it 'エラーメッセージが正しいこと' do
-            is_asserted_by { @settlement.errors.messages == {interval: [message] } }
+            is_asserted_by { @settlement.errors.messages == {interval: [message]} }
           end
         end
       end
