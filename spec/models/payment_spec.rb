@@ -29,7 +29,7 @@ describe Payment, type: :model do
            {date: '1000-01-03', price: 0},
            {date: '1000-01-04', price: 0},
            {date: '1000-01-05', price: -100},
-         ]
+         ],
         ],
       ].each do |interval, settlement|
         context "#{interval}を指定する場合" do
