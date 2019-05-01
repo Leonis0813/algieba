@@ -21,7 +21,7 @@ describe 'payments/index', type: :view do
       end.to_h
 
       num.times do
-        payment = Payment.new(param.merge(payment_type: ['income', 'expense'].sample))
+        payment = Payment.new(param.merge(payment_type: %w[ income expense ].sample))
         category = Category.first
         @category[category.name] += 1
         payment.categories << [category]
