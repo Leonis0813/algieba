@@ -22,7 +22,7 @@ when 'development'
     begin
       object.save!
     rescue ActiveRecord::RecordNotUnique => e
-      puts "[Warning] #{e.message}"
+      Rails.logger.warn(e.message)
     end
   end
 end
