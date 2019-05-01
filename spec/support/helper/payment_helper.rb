@@ -17,7 +17,7 @@ module PaymentHelper
         content: '機能テスト用データ2',
         category: 'algieba',
         price: 100,
-      }
+      },
     }
   end
 
