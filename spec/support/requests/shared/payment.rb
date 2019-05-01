@@ -1,4 +1,5 @@
 # coding: utf-8
+
 shared_context 'POST /api/payments' do |payment|
   before(:all) do
     body = {payments: payment}.to_json

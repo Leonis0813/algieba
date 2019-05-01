@@ -1,4 +1,5 @@
 # coding: utf-8
+
 shared_examples 'ヘッダーが表示されていること' do
   it do
     base_xpath =

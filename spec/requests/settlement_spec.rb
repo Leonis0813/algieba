@@ -1,4 +1,5 @@
 # coding: utf-8
+
 require 'rails_helper'
 
 describe '収支を計算する', type: :request do

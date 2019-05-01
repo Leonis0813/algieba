@@ -1,4 +1,5 @@
 # coding: utf-8
+
 shared_context 'Webdriverを起動する' do
   before(:all) do
     @driver ||= Selenium::WebDriver.for :firefox

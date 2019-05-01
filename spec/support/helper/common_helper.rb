@@ -1,4 +1,5 @@
 # coding: utf-8
+
 module CommonHelper
   def http_client
     @http_client ||= HTTPClient.new

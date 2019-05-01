@@ -1,4 +1,5 @@
 # coding: utf-8
+
 module PaymentHelper
   def test_payment
     @test_payment ||= {
