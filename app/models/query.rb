@@ -48,8 +48,8 @@ class Query
 
   def period_valid?
     unless date_before and
-          date_after and
-          Date.parse(date_before) < Date.parse(date_after)
+           date_after and
+           Date.parse(date_before) < Date.parse(date_after)
       return
     end
 
