@@ -3,18 +3,18 @@
 require 'rails_helper'
 
 describe '収支情報を管理する', type: :request do
-  category = 'algieba'
+  test_category = 'algieba'
   valid_payment = {
     payment_type: 'expense',
     date: '1000-01-01',
     content: 'システムテスト用データ',
-    category: category,
+    category: test_category,
     price: 100,
   }
   invalid_payment = {
     payment_type: 'expense',
     date: 'invalid_date',
-    category: category,
+    category: test_category,
     price: 100,
   }
 
@@ -50,13 +50,13 @@ describe '収支情報を管理する', type: :request do
         it_behaves_like 'レスポンスボディのキーが正しいこと', PaymentHelper.response_keys
 
         describe 'カテゴリを検索する' do
-          include_context 'GET /api/categories', keyword: category
+          include_context 'GET /api/categories', keyword: test_category
           it_behaves_like 'ステータスコードが正しいこと', '200'
           it_behaves_like 'レスポンスボディのキーが正しいこと',
                           CategoryHelper.response_keys
 
           it 'カテゴリにalgiebaが含まれていること' do
-            is_asserted_by { @pbody.map {|body| body['name'] }.include?(category) }
+            is_asserted_by { @pbody.map {|body| body['name'] }.include?(test_category) }
           end
 
           describe '収支情報を取得する' do
@@ -69,7 +69,7 @@ describe '収支情報を管理する', type: :request do
             describe '収支情報を更新する' do
               before(:all) do
                 url = "#{base_url}/api/payments/#{@created_payment['id']}"
-                body = {category: 'other'}.to_json
+                body = {test_category: 'other'}.to_json
                 header = {'Authorization' => app_auth_header}.merge(content_type_json)
                 @res = http_client.put(url, body, header)
                 @pbody = JSON.parse(@res.body) rescue nil

@@ -90,15 +90,14 @@ describe Payment, type: :model do
         price: ['invalid_price', 1.0, -1],
       }
 
-      CommonHelper.generate_test_case(invalid_params).each do |invalid_params|
+      CommonHelper.generate_test_case(invalid_params).each do |params|
         context "#{invalid_params.keys.join(',')}が不正な場合" do
-          params = valid_params.merge(invalid_params)
-          include_context 'Paymentオブジェクトを検証する', params
+          include_context 'Paymentオブジェクトを検証する', valid_params.merge(params)
 
           it_behaves_like '検証結果が正しいこと', false
 
           it 'エラーメッセージが正しいこと' do
-            error_messages = invalid_params.map {|key, _| [key, ['invalid']] }.to_h
+            error_messages = params.map {|key, _| [key, ['invalid']] }.to_h
             is_asserted_by { @payment.errors.messages == error_messages }
           end
         end

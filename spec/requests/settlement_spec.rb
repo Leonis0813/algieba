@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 describe '収支を計算する', type: :request do
-  payment = {
+  test_payment = {
     payment_type: 'income',
     date: '1000-01-01',
     content: 'システムテスト用データ',
@@ -35,7 +35,7 @@ describe '収支を計算する', type: :request do
   end
 
   describe '収支情報を登録する' do
-    include_context 'POST /api/payments', payment
+    include_context 'POST /api/payments', test_payment
 
     describe '収支情報を検索する' do
       include_context 'GET /api/payments'

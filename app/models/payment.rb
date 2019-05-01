@@ -25,8 +25,8 @@ class Payment < ActiveRecord::Base
     def settle(interval)
       return [] unless Payment.exists?
 
-      income_records = get_records('income')
-      expense_records = get_records('expense')
+      income_records = Payment.payment_type('income').select(:date, :price)
+      expense_records = Payment.payment_type('expense').select(:date, :price)
 
       format = {'yearly' => '%Y', 'monthly' => '%Y-%m', 'daily' => '%Y-%m-%d'}
 
@@ -56,19 +56,12 @@ class Payment < ActiveRecord::Base
 
     private
 
-    def get_records(payment_type)
-      records = Payment.payment_type(payment_type).pluck(:date, :price)
-      records.map {|date, price| {date: date, price: price} }
-    end
-
     def group_by_period(records, format)
-      {}.tap do |record|
-        grouped_record = records.group_by do |record|
-          record[:date].strftime(format)
-        end
-
-        grouped_record.each do |period, records|
-          record.merge!(period => records.map {|record| record[:price] }.inject(:+))
+      {}.tap do |settlement|
+        records.group_by do |record|
+          record.date.strftime(format)
+        end.each do |period, grouped_records|
+          settlement.merge!(period => grouped_records.map(&:price).inject(:+))
         end
       end
     end
