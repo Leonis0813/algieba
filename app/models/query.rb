@@ -21,6 +21,7 @@ class Query
   validates :sort, inclusion: {in: %w[id date price], message: 'invalid'}
   validates :order, inclusion: {in: %w[asc desc], message: 'invalid'}
   validate :date_valid?
+  validate :period_valid?
 
   def initialize(attributes = {})
     super
@@ -43,10 +44,9 @@ class Query
         errors.add(date_symbol, 'invalid')
       end
     end
-    if errors.messages.include?(:date_before) or errors.messages.include?(:date_after)
-      return
-    end
+  end
 
+  def period_valid?
     unless date_before and date_after and Date.parse(date_before) < Date.parse(date_after)
       return
     end
