@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   namespace :api, format: 'json' do
     resources :categories, only: [:index]
-    resources :payments, except: [:new, :edit]
+    resources :payments, except: %i[ new edit ]
     get '/settlement' => 'payments#settle'
   end
 
