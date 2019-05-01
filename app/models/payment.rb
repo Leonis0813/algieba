@@ -1,5 +1,5 @@
 class Payment < ActiveRecord::Base
-  has_many :category_payments
+  has_many :category_payments, dependent: :destroy
   has_many :categories, through: :category_payments
 
   validates :payment_type, inclusion: {in: %w[income expense], message: 'invalid'}
@@ -37,16 +37,19 @@ class Payment < ActiveRecord::Base
       oldest = (incomes.keys | expenses.keys).min
       newest = (incomes.keys | expenses.keys).max
       periods = (oldest..newest).to_a
-      periods = {
-        'yearly' => periods,
-        'monthly' => periods.select {|day| day[-2..-1].to_i.between?(1, 12) },
-        'daily' => (Date.parse(oldest)..Date.parse(newest)).to_a.map do |day|
-          day.strftime(format['daily'])
-        end,
-      }
+      periods = case interval
+                when 'yearly'
+                  periods
+                when 'monthly'
+                  periods.select {|day| day[-2..-1].to_i.between?(1, 12) }
+                when 'daily'
+                  (Date.parse(oldest)..Date.parse(newest)).to_a.map do |day|
+                    day.strftime(format['daily'])
+                  end
+                end
 
       [].tap do |settlements|
-        periods[interval].each do |period|
+        periods.each do |period|
           settlements << {
             date: period,
             price: (incomes[period].to_i - expenses[period].to_i),

@@ -1,4 +1,4 @@
-class Api
+module Api
   class CategoriesController < ApplicationController
     def index
       query = params.permit(:keyword)

@@ -47,11 +47,13 @@ class Query
   end
 
   def period_valid?
-    unless date_before and
-           date_after and
-           Date.parse(date_before) < Date.parse(date_after)
+    if errors.messages.include?(:date_before) or errors.messages.include?(:date_after)
       return
     end
+
+    return unless date_before and date_after
+
+    return unless Date.parse(date_before) < Date.parse(date_after)
 
     errors.add(:date_before, 'invalid')
     errors.add(:date_after, 'invalid')

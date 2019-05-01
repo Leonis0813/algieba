@@ -1,4 +1,4 @@
-class Api
+module Api
   class PaymentsController < ApplicationController
     def create
       begin
