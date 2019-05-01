@@ -4,7 +4,7 @@ class Api::PaymentsController < ApplicationController
       attributes = params.require(:payments).permit(*payment_params)
       absent_keys = payment_params - attributes.symbolize_keys.keys
       error_codes = absent_keys.map {|key| "absent_param_#{key}" }
-      raise BadRequest.new(error_codes) unless absent_keys.empty?
+      raise BadRequest, error_codes unless absent_keys.empty?
 
       @payment = Payment.new(attributes.except(:category))
       @payment.categories << attributes[:category].split(',').map do |category_name|
@@ -15,10 +15,10 @@ class Api::PaymentsController < ApplicationController
         render status: :created, template: 'payments/payment'
       else
         error_codes = @payment.errors.messages.keys.map {|key| "invalid_param_#{key}" }
-        raise BadRequest.new(error_codes)
+        raise BadRequest, error_codes
       end
     rescue ActionController::ParameterMissing
-      raise BadRequest.new('absent_param_payments')
+      raise BadRequest, 'absent_param_payments'
     end
   end
 
@@ -27,7 +27,7 @@ class Api::PaymentsController < ApplicationController
     if @payment
       render status: :ok, template: 'payments/payment'
     else
-      raise NotFound.new
+      raise NotFound
     end
   end
 
@@ -42,7 +42,7 @@ class Api::PaymentsController < ApplicationController
       render status: :ok, template: 'payments/payments'
     else
       error_codes = query.errors.messages.keys.map {|key| "invalid_param_#{key}" }
-      raise BadRequest.new(error_codes)
+      raise BadRequest, error_codes
     end
   end
 
@@ -60,10 +60,10 @@ class Api::PaymentsController < ApplicationController
         render status: :ok, template: 'payments/payment'
       else
         error_codes = @payment.errors.messages.keys.map {|key| "invalid_param_#{key}" }
-        raise BadRequest.new(error_codes)
+        raise BadRequest, error_codes
       end
     else
-      raise NotFound.new
+      raise NotFound
     end
   end
 
@@ -72,7 +72,7 @@ class Api::PaymentsController < ApplicationController
     if @payment
       head :no_content
     else
-      raise NotFound.new
+      raise NotFound
     end
   end
 
@@ -82,7 +82,7 @@ class Api::PaymentsController < ApplicationController
       @settlement = Payment.settle(query.interval)
       render status: :ok, template: 'payments/settle'
     else
-      raise BadRequest.new("#{query.errors.messages[:interval].first}_param_interval")
+      raise BadRequest, "#{query.errors.messages[:interval].first}_param_interval"
     end
   end
 
