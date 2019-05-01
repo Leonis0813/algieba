@@ -4,7 +4,7 @@ require 'rails_helper'
 
 target = [Query, '#validates']
 
-describe *target, type: :model do
+describe(*target, type: :model) do
   describe '正常系' do
     valid_params = {
       payment_type: 'income',
