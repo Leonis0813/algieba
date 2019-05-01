@@ -220,7 +220,7 @@ describe 'ブラウザから操作する', type: :request do
       @driver.find_element(:xpath, xpath).click
 
       xpath = '//div[@class="bootbox modal fade bootbox-confirm in"]'
-      @wait.until { (@driver.find_element(:xpath, xpath)) rescue true }
+      @wait.until { @driver.find_element(:xpath, xpath) rescue true }
     end
 
     it_behaves_like '表示されている件数が正しいこと', per_page, 1, per_page

@@ -27,7 +27,7 @@ describe *target, type: :model do
         params[:per_page] ||= 10
         params[:sort] ||= 'id'
         params[:order] ||= 'asc'
-        is_asserted_by { query.attributes.slice(*(params.keys)) == params }
+        is_asserted_by { query.attributes.slice(*params.keys) == params }
       end
     end
   end
