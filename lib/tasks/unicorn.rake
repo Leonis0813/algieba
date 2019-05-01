@@ -26,7 +26,7 @@ namespace :unicorn do
     sh "pstree '#{unicorn_pid}'"
   end
 
-  def unicorn_signal signal
+  def unicorn_signal(signal)
     Process.kill signal, unicorn_pid
   end
 
