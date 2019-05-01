@@ -17,14 +17,14 @@ describe PaymentsController, type: :controller do
       [{date_before: '1000-01-01'}, [:income]],
       [{date_after: '1000-01-05'}, [:expense]],
       [{content_equal: '機能テスト用データ1'}, [:income]],
-      [{content_include: '機能テスト'}, %i[ income expense ]],
-      [{category: 'algieba'}, %i[ income expense ]],
-      [{price_upper: 100}, %i[ income expense ]],
+      [{content_include: '機能テスト'}, %i[income expense]],
+      [{category: 'algieba'}, %i[income expense]],
+      [{price_upper: 100}, %i[income expense]],
       [{price_lower: 100}, [:expense]],
-      [{page: 1}, %i[ income expense ]],
+      [{page: 1}, %i[income expense]],
       [{per_page: 1}, [:income]],
-      [{sort: 'date'}, %i[ income expense ]],
-      [{order: 'desc'}, %i[ expense income ]],
+      [{sort: 'date'}, %i[income expense]],
+      [{order: 'desc'}, %i[expense income]],
       [
         {
           payment_type: 'income',
@@ -42,7 +42,7 @@ describe PaymentsController, type: :controller do
         },
         [:income],
       ],
-      [{}, %i[ income expense ]],
+      [{}, %i[income expense]],
     ].each do |query, expected_payment_types|
       description = query.empty? ? '何も指定しない場合' : "#{query.keys.join(',')}を指定する場合"
       expected_payments = expected_payment_types.map do |key|

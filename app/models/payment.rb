@@ -1,7 +1,7 @@
 class Payment < ActiveRecord::Base
   has_and_belongs_to_many :categories
 
-  validates :payment_type, inclusion: {in: %w[ income expense ], message: 'invalid'}
+  validates :payment_type, inclusion: {in: %w[income expense], message: 'invalid'}
   validates :date, presence: {message: 'invalid'}
   validates :price,
             numericality: {

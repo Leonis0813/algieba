@@ -13,8 +13,8 @@ describe *target, type: :model do
       price_lower: 100,
       page: 2,
       per_page: 50,
-      sort: %w[ id date price ],
-      order: %w[ asc desc ],
+      sort: %w[id date price],
+      order: %w[asc desc],
     }
 
     CommonHelper.generate_test_case(valid_params).each do |params|
@@ -63,7 +63,7 @@ describe *target, type: :model do
     }
 
     test_cases = CommonHelper.generate_test_case(invalid_period).select do |test_case|
-      test_case.keys == %i[ date_before date_after ]
+      test_case.keys == %i[date_before date_after]
     end
 
     test_cases.each do |params|

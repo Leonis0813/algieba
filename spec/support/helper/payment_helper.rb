@@ -22,11 +22,11 @@ module PaymentHelper
   end
 
   def payment_params
-    @payment_params ||= %w[ payment_type date content category price ]
+    @payment_params ||= %w[payment_type date content category price]
   end
 
   def response_keys
-    @response_keys ||= %w[ id payment_type date content categories price ]
+    @response_keys ||= %w[id payment_type date content categories price]
   end
 
   module_function :test_payment, :payment_params, :response_keys

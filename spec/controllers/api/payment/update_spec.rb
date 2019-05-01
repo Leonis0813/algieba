@@ -60,7 +60,7 @@ describe PaymentsController, type: :controller do
 
         it 'カテゴリリソースのキーが正しいこと' do
           @pbody['categories'].each do |category|
-            is_asserted_by { category.keys == %w[ id name description ] }
+            is_asserted_by { category.keys == %w[id name description] }
           end
         end
 

@@ -5,6 +5,6 @@ class Settlement
 
   validates :interval,
             presence: {message: 'absent'},
-            inclusion: {in: %w[ daily monthly yearly ], message: 'invalid'},
+            inclusion: {in: %w[daily monthly yearly], message: 'invalid'},
             allow_nil: true
 end

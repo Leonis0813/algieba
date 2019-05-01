@@ -5,6 +5,6 @@ class CreateCategoriesPayments < ActiveRecord::Migration
       t.references :payment, index: true, null: false
     end
 
-    add_index :categories_payments, %i[ category_id payment_id ], unique: true
+    add_index :categories_payments, %i[category_id payment_id], unique: true
   end
 end

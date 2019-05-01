@@ -34,7 +34,7 @@ class Api
     def index
       query = Query.new(params.permit(*index_params))
       if query.valid?
-        query_params = index_params - %i[ page per_page sort order ]
+        query_params = index_params - %i[page per_page sort order]
         @payments = query_params.inject(Payment.all) do |payments, key|
           value = query.send(key)
           value ? payments.send(key, value) : payments
@@ -85,7 +85,7 @@ class Api
     private
 
     def payment_params
-      %i[ payment_type date content category price ]
+      %i[payment_type date content category price]
     end
 
     def index_params

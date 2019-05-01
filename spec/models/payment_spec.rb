@@ -73,7 +73,7 @@ describe Payment, type: :model do
     end
 
     describe '正常系' do
-      %w[ 1000-01-01 1000/01/01 01-01-1000 01/01/1000 10000101 ].each do |date|
+      %w[1000-01-01 1000/01/01 01-01-1000 01/01/1000 10000101].each do |date|
         context "date=#{date}の場合" do
           include_context 'Paymentオブジェクトを検証する', valid_params.merge(date: date)
           it_behaves_like '検証結果が正しいこと', true

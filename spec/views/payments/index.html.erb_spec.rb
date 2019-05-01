@@ -21,7 +21,7 @@ describe 'payments/index', type: :view do
       end.to_h
 
       num.times do
-        payment = Payment.new(param.merge(payment_type: %w[ income expense ].sample))
+        payment = Payment.new(param.merge(payment_type: %w[income expense].sample))
         category = Category.first
         @category[category.name] += 1
         payment.categories << [category]
@@ -254,7 +254,7 @@ describe 'payments/index', type: :view do
   shared_examples 'テーブルのヘッダーが表示されていること' do
     table_header_xpath = "#{payment_list_xpath}//table[@id='payment_table']/thead/tr/th"
 
-    %w[ 種類 日付 内容 カテゴリ 金額 ].each do |attribute|
+    %w[種類 日付 内容 カテゴリ 金額].each do |attribute|
       it "#{attribute}のヘッダーが表示されていること" do
         expect(@html).to have_selector(table_header_xpath, text: attribute)
       end

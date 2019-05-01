@@ -48,7 +48,7 @@ describe 'ブラウザから操作する', type: :request do
   end
 
   shared_examples '入力フォームが全て空であること' do
-    %w[ date content categories price ].each do |column|
+    %w[date content categories price].each do |column|
       it_is_asserted_by { @driver.find_element(:id, "payments_#{column}").text == '' }
     end
   end

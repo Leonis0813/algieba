@@ -127,7 +127,7 @@ describe '収支情報を管理する', type: :request do
                       it_behaves_like 'レスポンスボディのキーが正しいこと',
                                       CategoryHelper.response_keys
 
-                      %w[ algieba other ].each do |category|
+                      %w[algieba other].each do |category|
                         it "カテゴリに#{category}が含まれていること" do
                           is_asserted_by do
                             @pbody.map {|body| body['name'] }.include?(category)
