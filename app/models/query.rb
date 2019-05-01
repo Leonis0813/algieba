@@ -58,6 +58,6 @@ class Query
     %i[
       payment_type date_before date_after content_equal content_include category
       price_upper price_lower page per_page sort order
-    ].map {|name| [name, self.send(name)] }.to_h
+    ].map {|name| [name, send(name)] }.to_h
   end
 end
