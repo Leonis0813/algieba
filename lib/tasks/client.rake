@@ -13,7 +13,7 @@ namespace :client do
   end
 
   desc 'Destroy application'
-  task :destroy, [:application_id] => :environment do |task, args|
+  task :destroy, [:application_id] => :environment do |_, args|
     begin
       Client.find_by(application_id: args.application_id).destroy
       puts "Destroy #{args.application_id}"
