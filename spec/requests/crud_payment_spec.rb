@@ -49,7 +49,7 @@ describe '収支情報を管理する', type: :request do
         it_behaves_like 'レスポンスボディのキーが正しいこと', PaymentHelper.response_keys
 
         describe 'カテゴリを検索する' do
-          include_context 'GET /api/categories', {keyword: category}
+          include_context 'GET /api/categories', keyword: category
           it_behaves_like 'ステータスコードが正しいこと', '200'
           it_behaves_like 'レスポンスボディのキーが正しいこと',
                           CategoryHelper.response_keys
@@ -83,7 +83,7 @@ describe '収支情報を管理する', type: :request do
               end
 
               describe 'カテゴリを検索する' do
-                include_context 'GET /api/categories', {keyword: 'other'}
+                include_context 'GET /api/categories', keyword: 'other'
                 it_behaves_like 'ステータスコードが正しいこと', '200'
                 it_behaves_like 'レスポンスボディのキーが正しいこと',
                                 CategoryHelper.response_keys

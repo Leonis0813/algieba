@@ -96,7 +96,7 @@ describe PaymentsController, type: :controller do
     end
 
     context '存在しないidを指定した場合' do
-      include_context '収支情報を更新する', 100, {payment_type: 'expense'}
+      include_context '収支情報を更新する', 100, payment_type: 'expense'
       it_behaves_like 'ステータスコードが正しいこと', '404'
     end
   end

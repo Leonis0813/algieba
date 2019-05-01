@@ -14,7 +14,7 @@ describe Api::CategoriesController, type: :controller do
   describe '正常系' do
     [['algieba', 1], ['not_exist', 0]].each do |keyword, size|
       context "#{keyword}を指定した場合" do
-        include_context 'カテゴリを検索する', {keyword: keyword}
+        include_context 'カテゴリを検索する', keyword: keyword
 
         it_behaves_like 'ステータスコードが正しいこと', '200'
 

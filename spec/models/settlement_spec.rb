@@ -17,7 +17,7 @@ describe Settlement, type: :model do
     describe '正常系' do
       %w[ yearly monthly daily ].each do |interval|
         context "クエリに#{interval}を指定した場合" do
-          include_context 'Settlementオブジェクトを検証する', {interval: interval}
+          include_context 'Settlementオブジェクトを検証する', interval: interval
           it_behaves_like '検証結果が正しいこと', true
         end
       end
@@ -26,7 +26,7 @@ describe Settlement, type: :model do
     describe '異常系' do
       [[nil, 'absent'], %w[ invalid_interval invalid ]].each do |interval, message|
         context "クエリに#{interval || 'nil'}を指定した場合" do
-          include_context 'Settlementオブジェクトを検証する', {interval: interval}
+          include_context 'Settlementオブジェクトを検証する', interval: interval
           it_behaves_like '検証結果が正しいこと', false
 
           it 'エラーメッセージが正しいこと' do
