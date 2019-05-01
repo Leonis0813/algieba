@@ -269,7 +269,7 @@ describe 'payments/index', type: :view do
 
     it '背景色が正しいこと', if: expected_size > 0 do
       matched_data = @html.gsub("\n", '').
-                     match(%r[<td\s*class='(?<color>.*?)'\s*>(?<payment_type>.*?)</td>])
+                     match(%r{<td\s*class='(?<color>.*?)'\s*>(?<payment_type>.*?)</td>})
       case matched_data[:payment_type]
       when I18n.t('views.payment.income')
         is_asserted_by { matched_data[:color] == 'success' }
