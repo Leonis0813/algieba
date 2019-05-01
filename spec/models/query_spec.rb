@@ -34,7 +34,6 @@ describe *target, type: :model do
   end
 
   describe '異常系' do
-    valid_params = {payment_type: 'income', date_before: '1000-01-01'}
     invalid_params = {
       payment_type: 'invalid_type',
       date_before: ['invalid_date', '1000-13-01', '1000-01-00', '1000-13-00'],

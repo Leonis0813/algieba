@@ -40,7 +40,7 @@ class Query
     ].each do |date_symbol, date_value|
       begin
         Date.parse(date_value) if date_value
-      rescue ArgumentError => e
+      rescue ArgumentError
         errors.add(date_symbol, 'invalid')
       end
     end

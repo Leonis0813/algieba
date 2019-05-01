@@ -10,7 +10,6 @@ describe 'ブラウザから操作する', type: :request do
     categories: 'テスト',
     price: 100,
   }
-  color = {'収入' => 'success', '支出' => 'danger'}
 
   shared_context '収支情報を入力する' do |inputs, payment_type|
     before(:all) do
