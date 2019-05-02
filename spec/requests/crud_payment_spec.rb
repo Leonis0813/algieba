@@ -69,7 +69,7 @@ describe '収支情報を管理する', type: :request do
             describe '収支情報を更新する' do
               before(:all) do
                 url = "#{base_url}/api/payments/#{@created_payment['id']}"
-                body = {test_category: 'other'}.to_json
+                body = {category: 'other'}.to_json
                 header = {'Authorization' => app_auth_header}.merge(content_type_json)
                 @res = http_client.put(url, body, header)
                 @pbody = JSON.parse(@res.body) rescue nil
