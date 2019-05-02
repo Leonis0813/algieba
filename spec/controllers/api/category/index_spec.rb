@@ -1,7 +1,8 @@
 # coding: utf-8
+
 require 'rails_helper'
 
-describe Api::CategoriesController, :type => :controller do
+describe Api::CategoriesController, type: :controller do
   shared_context 'カテゴリを検索する' do |param = {}|
     before(:all) do
       @res = client.get('/api/categories', param)
@@ -14,7 +15,7 @@ describe Api::CategoriesController, :type => :controller do
   describe '正常系' do
     [['algieba', 1], ['not_exist', 0]].each do |keyword, size|
       context "#{keyword}を指定した場合" do
-        include_context 'カテゴリを検索する', {:keyword => keyword}
+        include_context 'カテゴリを検索する', keyword: keyword
 
         it_behaves_like 'ステータスコードが正しいこと', '200'
 
@@ -22,7 +23,7 @@ describe Api::CategoriesController, :type => :controller do
           is_asserted_by { @pbody.size == size }
         end
 
-        it "カテゴリ名が#{keyword}であること", :if => size > 0 do
+        it "カテゴリ名が#{keyword}であること", if: size > 0 do
           is_asserted_by { @pbody.first['name'] == keyword }
         end
       end

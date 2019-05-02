@@ -1,7 +1,8 @@
 # coding: utf-8
+
 require 'rails_helper'
 
-describe StatisticsController, :type => :controller do
+describe StatisticsController, type: :controller do
   shared_context '収支を取得する' do
     before(:all) do
       @res = client.get('/statistics')

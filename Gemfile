@@ -1,52 +1,43 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 4.0'
-gem 'mysql2', '~> 0.3.20'
-gem 'sass-rails', '~> 5.0'
-gem 'uglifier', '>= 1.3.0'
-gem 'coffee-rails', '~> 4.1.0'
-gem 'jquery-rails'
-gem 'turbolinks'
-gem 'jbuilder', '~> 2.0'
-gem 'sdoc', '~> 0.4.0', group: :doc
-gem 'unicorn', '~> 5.4.0'
-gem 'kaminari'
-gem 'config'
-
-gem 'therubyracer'
-gem 'less-rails'
-gem 'twitter-bootstrap-rails'
 gem 'bootbox-rails'
-gem 'momentjs-rails', '>= 2.9.0'
 gem 'bootstrap3-datetimepicker-rails', '~> 4.17.47'
-gem 'jquery-datatables-rails', '~> 3.4.0'
-gem 'i18n-js'
+gem 'coffee-rails', '~> 4.1.0'
+gem 'config'
 gem 'd3-rails'
+gem 'i18n-js'
+gem 'jbuilder', '~> 2.0'
+gem 'jquery-datatables-rails', '~> 3.4.0'
+gem 'jquery-rails'
+gem 'kaminari'
+gem 'less-rails'
+gem 'momentjs-rails', '>= 2.9.0'
+gem 'mysql2', '~> 0.3.20'
+gem 'rails', '~> 4.0'
+gem 'sass-rails', '~> 5.0'
+gem 'sdoc', '~> 0.4.0', group: :doc
+gem 'therubyracer'
+gem 'turbolinks'
+gem 'twitter-bootstrap-rails'
+gem 'uglifier', '>= 1.3.0'
+gem 'unicorn', '~> 5.4.0'
 
 group :development do
-  # Access an IRB console on exception pages or by using <%= console %> in views
+  gem 'rubocop'
+  gem 'rubocop-performance'
   gem 'web-console', '~> 2.0'
 end
 
 group :development, :test do
-  gem 'rspec-rails'
-  gem 'rspec-power_assert'
+  gem 'byebug'
   gem 'capybara'
   gem 'capybara-mechanize'
-  gem 'headless'
-  gem 'selenium-webdriver', '2.53.4'
-
   gem 'fuubar'
-
-  # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'byebug'
-
-  # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
-  gem 'spring'
-
-  # for system test
+  gem 'headless'
   gem 'httpclient'
-
-  # for debug
   gem 'pry'
+  gem 'rspec-power_assert'
+  gem 'rspec-rails'
+  gem 'selenium-webdriver', '2.53.4'
+  gem 'spring'
 end

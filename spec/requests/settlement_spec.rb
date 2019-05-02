@@ -1,13 +1,14 @@
 # coding: utf-8
+
 require 'rails_helper'
 
-describe '収支を計算する', :type => :request do
-  payment = {
-    :payment_type => 'income',
-    :date => '1000-01-01',
-    :content => 'システムテスト用データ',
-    :category => 'システムテスト',
-    :price => 100,
+describe '収支を計算する', type: :request do
+  test_payment = {
+    payment_type: 'income',
+    date: '1000-01-01',
+    content: 'システムテスト用データ',
+    category: 'システムテスト',
+    price: 100,
   }
 
   before(:all) do
@@ -28,13 +29,13 @@ describe '収支を計算する', :type => :request do
 
     header = {'Authorization' => app_auth_header}.merge(content_type_json)
     @payments.each do |payment|
-      body = {:payments => payment.slice(*payment_params)}.to_json
+      body = {payments: payment.slice(*payment_params)}.to_json
       http_client.post("#{base_url}/api/payments", body, header)
     end
   end
 
   describe '収支情報を登録する' do
-    include_context 'POST /api/payments', payment
+    include_context 'POST /api/payments', test_payment
 
     describe '収支情報を検索する' do
       include_context 'GET /api/payments'
@@ -47,15 +48,18 @@ describe '収支を計算する', :type => :request do
       ].each do |interval, regex|
         describe '収支を計算する' do
           before(:all) do
+            body = {interval: interval}
             header = {'Authorization' => app_auth_header}
-            @res = http_client.get("#{base_url}/api/settlement", {:interval => interval}, header)
+            @res = http_client.get("#{base_url}/api/settlement", body, header)
             @pbody = JSON.parse(@res.body) rescue nil
           end
 
           it_behaves_like 'ステータスコードが正しいこと', '200'
 
           it 'レスポンスボディのキーのフォーマットが正しいこと' do
-            @pbody.each {|settlement| is_asserted_by { settlement['date'].match(regex) } }
+            @pbody.each do |settlement|
+              is_asserted_by { settlement['date'].match(regex) }
+            end
           end
         end
       end

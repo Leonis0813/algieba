@@ -1,69 +1,73 @@
 class Payment < ActiveRecord::Base
-  has_and_belongs_to_many :categories
+  has_many :category_payments, dependent: :destroy
+  has_many :categories, through: :category_payments
 
-  validates :payment_type, :inclusion => {:in => %w[ income expense ], :message => 'invalid'}
-  validates :date, :presence => {:message => 'invalid'}
-  validates :price, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0, :message => 'invalid'}
+  validates :payment_type, inclusion: {in: %w[income expense], message: 'invalid'}
+  validates :date, presence: {message: 'invalid'}
+  validates :price,
+            numericality: {
+              only_integer: true,
+              greater_than_or_equal_to: 0,
+              message: 'invalid',
+            }
 
-  scope :payment_type, ->(payment_type) { where(:payment_type => payment_type) }
+  scope :payment_type, ->(payment_type) { where(payment_type: payment_type) }
   scope :date_before, ->(date) { where('date <= ?', date) }
   scope :date_after, ->(date) { where('date >= ?', date) }
-  scope :content_equal, ->(content) { where(:content => content) }
+  scope :content_equal, ->(content) { where(content: content) }
   scope :content_include, ->(content) { where('content REGEXP ?', ".*#{content}.*") }
-  scope :category, ->(category) { joins(:categories).where('categories.name' => category.split(',')) }
+  scope :category, lambda {|category|
+    joins(:categories).where('categories.name' => category.split(','))
+  }
   scope :price_upper, ->(price) { where('price >= ?', price) }
   scope :price_lower, ->(price) { where('price <= ?', price) }
 
   class << self
     def settle(interval)
       return [] unless Payment.exists?
-      income_records = Payment.payment_type('income').pluck(:date, :price).map do |date, price|
-        {:date => date, :price => price}
-      end
 
-      expense_records = Payment.payment_type('expense').pluck(:date, :price).map do |date, price|
-        {:date => date, :price => price}
-      end
+      income_records = Payment.payment_type('income').select(:date, :price)
+      expense_records = Payment.payment_type('expense').select(:date, :price)
 
-      format = case interval
-               when 'yearly'
-                 '%Y'
-               when 'monthly'
-                 '%Y-%m'
-               when 'daily'
-                 '%Y-%m-%d'
-               end
+      format = {'yearly' => '%Y', 'monthly' => '%Y-%m', 'daily' => '%Y-%m-%d'}
 
-      incomes = {}.tap do |income|
-        grouped_income_records = income_records.group_by {|record| record[:date].strftime(format) }
+      incomes = group_by_period(income_records, format[interval])
+      expenses = group_by_period(expense_records, format[interval])
 
-        grouped_income_records.each do |period, records|
-          income.merge!(period => records.map{|record| record[:price] }.inject(:+))
-        end
-      end
-
-      expenses = {}.tap do |expense|
-        grouped_expense_records = expense_records.group_by {|record| record[:date].strftime(format) }
-
-        grouped_expense_records.each do |period, records|
-          expense.merge!(period => records.map{|record| record[:price] }.inject(:+))
-        end
-      end
-
-      oldest = (incomes.keys | expenses.keys).sort.first
-      newest = (incomes.keys | expenses.keys).sort.last
+      oldest = (incomes.keys | expenses.keys).min
+      newest = (incomes.keys | expenses.keys).max
+      periods = (oldest..newest).to_a
       periods = case interval
                 when 'yearly'
-                  (oldest..newest).to_a
+                  periods
                 when 'monthly'
-                  (oldest..newest).to_a.select {|day| day[-2..-1].to_i.between?(1, 12) }
+                  periods.select {|day| day[-2..-1].to_i.between?(1, 12) }
                 when 'daily'
-                  (Date.parse(oldest)..Date.parse(newest)).to_a.map {|day| day.strftime(format) }
+                  (Date.parse(oldest)..Date.parse(newest)).to_a.map do |day|
+                    day.strftime(format['daily'])
+                  end
                 end
 
       [].tap do |settlements|
         periods.each do |period|
-          settlements << {:date => period, :price => (incomes[period].to_i - expenses[period].to_i)}
+          settlements << {
+            date: period,
+            price: (incomes[period].to_i - expenses[period].to_i),
+          }
+        end
+      end
+    end
+
+    private
+
+    def group_by_period(records, format)
+      grouped_record = records.group_by do |record|
+        record.date.strftime(format)
+      end
+
+      {}.tap do |settlement|
+        grouped_record.each do |period, grouped_records|
+          settlement.merge!(period => grouped_records.map(&:price).inject(:+))
         end
       end
     end

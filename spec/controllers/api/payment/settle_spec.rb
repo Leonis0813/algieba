@@ -1,7 +1,8 @@
 # coding: utf-8
+
 require 'rails_helper'
 
-describe PaymentsController, :type => :controller do
+describe PaymentsController, type: :controller do
   shared_context '収支を計算する' do |params = {}|
     before(:all) do
       @res = client.get('/api/settlement', params)
@@ -15,18 +16,19 @@ describe PaymentsController, :type => :controller do
     [
       ['yearly', [{'date' => '1000', 'price' => 900}]],
       ['monthly', [{'date' => '1000-01', 'price' => 900}]],
-      ['daily',
-       [
-         {'date' => '1000-01-01', 'price' => 1000},
-         {'date' => '1000-01-02', 'price' => 0},
-         {'date' => '1000-01-03', 'price' => 0},
-         {'date' => '1000-01-04', 'price' => 0},
-         {'date' => '1000-01-05', 'price' => -100},
-       ]
+      [
+        'daily',
+        [
+          {'date' => '1000-01-01', 'price' => 1000},
+          {'date' => '1000-01-02', 'price' => 0},
+          {'date' => '1000-01-03', 'price' => 0},
+          {'date' => '1000-01-04', 'price' => 0},
+          {'date' => '1000-01-05', 'price' => -100},
+        ],
       ],
     ].each do |interval, expected_settlement|
       context "#{interval}を指定する場合" do
-        include_context '収支を計算する', {:interval => interval}
+        include_context '収支を計算する', interval: interval
 
         it_behaves_like 'ステータスコードが正しいこと', '200'
 
@@ -38,9 +40,9 @@ describe PaymentsController, :type => :controller do
   end
 
   describe '異常系' do
-    [[nil, 'absent'], ['invalid_interval', 'invalid']].each do |interval, message|
+    [[nil, 'absent'], %w[invalid_interval invalid]].each do |interval, message|
       context "#{interval || 'nil'}を指定する場合" do
-        include_context '収支を計算する', {:interval => interval}
+        include_context '収支を計算する', interval: interval
         it_behaves_like '400エラーをチェックする', ["#{message}_param_interval"]
       end
     end
