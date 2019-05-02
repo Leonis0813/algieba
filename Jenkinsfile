@@ -3,7 +3,7 @@ pipeline {
 
   environment {
     PATH = '/usr/local/rvm/bin:/usr/bin:/bin'
-    RUBY_VERSION = '2.3.7'
+    RUBY_VERSION = '2.4.4'
   }
 
   options {
