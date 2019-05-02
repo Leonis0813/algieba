@@ -1,6 +1,7 @@
 # 3.6.15 (2019/05/02)
 - [FIX] coding style
 - [UPDATE] gems
+- [UPDATE] ruby version to 2.4.4
 
 # 3.6.14 (2019/04/21)
 - [UPDATE] gems
