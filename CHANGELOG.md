@@ -1,3 +1,6 @@
+# 3.6.16 (2019/05/03)
+- [UPDATE] gems
+
 # 3.6.15 (2019/05/02)
 - [FIX] coding style
 - [UPDATE] gems
