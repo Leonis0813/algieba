@@ -7,7 +7,7 @@ if ENV['COVERAGE'] == 'on'
   require 'simplecov-rcov'
   SimpleCov.formatter = SimpleCov::Formatter::RcovFormatter
   SimpleCov.start 'rails' do
-    SimpleCov.command_name Time.now.to_s
+    SimpleCov.command_name Time.now.utc.to_s
   end
 end
 
