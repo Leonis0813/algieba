@@ -190,7 +190,8 @@ describe 'ブラウザから操作する', type: :request do
 
     after(:all) do
       xpath = '//div[contains(@class, "bootbox-prompt")]//button[text()="Cancel"]'
-      @driver.find_element(:xpath, xpath).click
+      cancel_button = @wait.until { @driver.find_element(:xpath, xpath) }
+      cancel_button.click
       @wait.until { not @driver.find_element(:class, 'bootbox-prompt').displayed? }
     end
 
