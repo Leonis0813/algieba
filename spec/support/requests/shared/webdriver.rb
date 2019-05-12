@@ -10,6 +10,6 @@ end
 shared_context 'Cookieをセットする' do
   before(:all) do
     @driver.get("#{base_url}/404_path")
-    @driver.manage.add_cookie(name: 'algieba', value: cookie_value)
+    @driver.manage.add_cookie(name: 'LSID', value: cookie_value)
   end
 end
