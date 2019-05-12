@@ -252,7 +252,8 @@ describe 'ブラウザから操作する', type: :request do
     end
 
     after(:all) do
-      @driver.find_element(:xpath, '//div/button[text()="OK"]').click
+      button = @wait.until { @driver.find_element(:xpath, '//div/button[text()="OK"]') }
+      button.click
       @wait.until { not @driver.find_element(:class, 'bootbox-alert').displayed? }
       @driver.find_element(:name, 'price_upper').clear
     end
