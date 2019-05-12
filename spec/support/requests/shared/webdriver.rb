@@ -14,6 +14,7 @@ shared_context 'Cookieをセットする' do
     user_id.send_keys(Settings.user_id)
     password = @wait.until { @driver.find_element(:id, 'password') }
     password.send_keys(Settings.user_password)
+    @driver.find_element(:xpath, '//button[@type="submit"]').click
     @wait.until { @driver.manage.cookie_named('LSID') }
   end
 end
