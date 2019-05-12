@@ -9,7 +9,11 @@ end
 
 shared_context 'Cookieをセットする' do
   before(:all) do
-    @driver.get("#{base_url}/404_path")
-    @driver.manage.add_cookie(name: 'LSID', value: cookie_value)
+    @driver.get("#{base_url.sub('/algieba', '')}/login.html")
+    user_id = @wait.until { @driver.find_element(:id, 'user_id') }
+    user_id.send_keys(Settings.user_id)
+    password = @wait.until { @driver.find_element(:id, 'password') }
+    password.send_keys(Settings.user_password)
+    @wait.until { @driver.manage.cookie_named('LSID') }
   end
 end
