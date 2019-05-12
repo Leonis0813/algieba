@@ -192,7 +192,7 @@ describe 'ブラウザから操作する', type: :request do
       xpath = '//div[contains(@class, "bootbox-prompt")]//button[text()="Cancel"]'
       cancel_button = @wait.until { @driver.find_element(:xpath, xpath) }
       cancel_button.click
-      @wait.until { @driver.find_element(:xpath, xpath) raise true }
+      @wait.until { (@driver.find_element(:xpath, xpath) raise true) }
     end
 
     it '新カテゴリが追加されていること' do
