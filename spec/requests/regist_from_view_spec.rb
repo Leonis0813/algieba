@@ -106,7 +106,7 @@ describe 'ブラウザから操作する', type: :request do
   end
 
   after(:all) do
-    query = {content_equal: 'regist from view'}
+    query = {:per_page => 100}
     header = {'Authorization' => app_auth_header}
     res = http_client.get("#{base_url}/api/payments", query, header)
     payments = JSON.parse(res.body)
