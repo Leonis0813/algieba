@@ -106,7 +106,7 @@ describe 'ブラウザから操作する', type: :request do
   end
 
   after(:all) do
-    query = {content_equal: 'regist from view'}
+    query = {:per_page => 100}
     header = {'Authorization' => app_auth_header}
     res = http_client.get("#{base_url}/api/payments", query, header)
     payments = JSON.parse(res.body)
@@ -190,8 +190,9 @@ describe 'ブラウザから操作する', type: :request do
 
     after(:all) do
       xpath = '//div[contains(@class, "bootbox-prompt")]//button[text()="Cancel"]'
-      @driver.find_element(:xpath, xpath).click
-      @wait.until { not @driver.find_element(:class, 'bootbox-prompt').displayed? }
+      cancel_button = @wait.until { @driver.find_element(:xpath, xpath) }
+      cancel_button.click
+      @wait.until { @driver.find_element(:xpath, xpath) rescue true }
     end
 
     it '新カテゴリが追加されていること' do
@@ -251,8 +252,9 @@ describe 'ブラウザから操作する', type: :request do
     end
 
     after(:all) do
-      @driver.find_element(:xpath, '//div/button[text()="OK"]').click
-      @wait.until { not @driver.find_element(:class, 'bootbox-alert').displayed? }
+      button = @wait.until { @driver.find_element(:xpath, '//div/button[text()="OK"]') }
+      button.click
+      @wait.until { @driver.find_element(:class, 'bootbox-alert') rescue true }
       @driver.find_element(:name, 'price_upper').clear
     end
 
@@ -297,8 +299,9 @@ describe 'ブラウザから操作する', type: :request do
     end
 
     after(:all) do
-      @driver.find_element(:xpath, '//div/button[text()="OK"]').click
-      @wait.until { not @driver.find_element(:class, 'bootbox-alert').displayed? }
+      button = @wait.until { @driver.find_element(:xpath, '//div/button[text()="OK"]') }
+      button.click
+      @wait.until { @driver.find_element(:class, 'bootbox-alert') rescue true }
     end
 
     it_behaves_like '正しくエラーダイアログが表示されていること',
