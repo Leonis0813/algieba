@@ -136,9 +136,8 @@ GEM
     i18n-js (3.2.2)
       i18n (>= 0.6.6)
     jaro_winkler (1.5.2)
-    jbuilder (2.8.0)
+    jbuilder (2.9.0)
       activesupport (>= 4.2.0)
-      multi_json (>= 1.2)
     jquery-datatables-rails (3.4.0)
       actionpack (>= 3.1)
       jquery-rails
