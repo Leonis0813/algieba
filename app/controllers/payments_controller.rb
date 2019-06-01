@@ -12,7 +12,7 @@ class PaymentsController < ApplicationController
       end
       @payment = Payment.new
       @payments = @payments.order(date: :desc).page(params[:page]).per(@per_page)
-      render status: :ok
+      render :status => :ok
     else
       error_codes = @search_form.errors.messages.keys.map {|key| "invalid_param_#{key}" }
       raise BadRequest, error_codes
