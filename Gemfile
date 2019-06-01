@@ -24,7 +24,7 @@ gem 'unicorn', '~> 5.4.0'
 
 group :development do
   gem 'pronto'
-  gem 'pronto-rubocop', require: false
+  gem 'pronto-rubocop', :require => false
   gem 'rubocop'
   gem 'rubocop-performance'
   gem 'web-console', '~> 2.0'
