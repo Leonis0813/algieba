@@ -116,7 +116,7 @@ GEM
     faraday (0.15.4)
       multipart-post (>= 1.2, < 3)
     ffi (1.11.1)
-    fuubar (2.3.2)
+    fuubar (2.4.0)
       rspec-core (~> 3.0)
       ruby-progressbar (~> 1.4)
     gitlab (4.11.0)
