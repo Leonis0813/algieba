@@ -62,11 +62,7 @@ describe(*target, type: :model) do
       date_after: ['1000-01-02', '1000/01/02', '02-01-1000', '02/01/1000', '10000102'],
     }
 
-    test_cases = CommonHelper.generate_test_case(invalid_period).select do |test_case|
-      test_case.keys == %i[date_before date_after]
-    end
-
-    test_cases.each do |params|
+    CommonHelper.generate_test_case(invalid_period).each do |params|
       it '期間が不正な場合、エラーになること' do
         query = Query.new(params)
         query.validate
