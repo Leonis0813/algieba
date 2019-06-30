@@ -4,14 +4,14 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :null_session
 
   rescue_from BadRequest do |e|
-    render :status => :bad_request, :json => e.errors
+    render status: :bad_request, json: e.errors
   end
 
-  rescue_from NotFound do |e|
+  rescue_from NotFound do
     head :not_found
   end
 
-  rescue_from InternalServerError do |e|
+  rescue_from InternalServerError do
     head :internal_server_error
   end
 end
