@@ -1,4 +1,5 @@
 # 3.6.17 (2019/06/30)
+- [ADD] gems for pronto
 - [UPDATE] gems
 
 # 3.6.16 (2019/06/17)
