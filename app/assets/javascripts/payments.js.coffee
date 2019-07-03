@@ -1,4 +1,13 @@
 $ ->
+  showErrorDialog = (errorCodes)->
+    bootbox.alert({
+      title: I18n.t('views.js.form.error.title'),
+      message: '<div class="text-center alert alert-danger">' +
+      I18n.t('views.js.form.error.message', {error_codes: errorCodes.join(', ')}) +
+      '</div>',
+    })
+    return
+
   $('.date-form').datetimepicker({
     format: I18n.t('views.js.datepicker.format'),
     locale: I18n.locale,
@@ -11,7 +20,10 @@ $ ->
       type: 'GET',
       url: '/algieba/api/dictionaries?' + $.param(query)
     }).done((data) ->
-      $('#payments_categories').val(data.dictionaries[0].categories[0].name)
+      category_names = $.map(data.dictionaries[0].categories, (category) ->
+        return category.name
+      )
+      $('#payments_categories').val(category_names.join(','))
       return
     )
     return
@@ -36,18 +48,13 @@ $ ->
     return
 
   $('#new_payments').on 'ajax:error', (event, xhr, status, error) ->
-    error_codes = []
+    errorCodes = []
     $.each($.parseJSON(xhr.responseText), (i, e)->
       attribute = e.error_code.match(/invalid_param_(.+)/)[1]
-      error_codes.push(I18n.t("views.common.attribute.#{attritbute}"))
+      errorCodes.push(I18n.t("views.common.attribute.#{attritbute}"))
       return
     )
-    bootbox.alert({
-      title: I18n.t('views.js.form.error.title'),
-      message: '<div class="text-center alert alert-danger">' +
-      I18n.t('views.js.form.error.message', {error_codes: error_codes.join(', ')}) +
-      '</div>',
-    })
+    showErrorDailog(errorCodes)
     return
 
   $('#search-button').on 'click', ->
@@ -72,18 +79,14 @@ $ ->
       location.href = '/algieba/payments?' + $.param(queries)
       return
     ).fail((xhr, status, error) ->
-      error_codes = []
+      errorCodes = []
       $.each($.parseJSON(xhr.responseText), (i, e)->
         attribute = e.error_code.match(/invalid_param_(.+)/)[1]
-        error_codes.push(I18n.t("views.search.#{attribute}"))
+        errorCodes.push(I18n.t("views.common.attribute.#{attritbute}"))
         return
       )
-      bootbox.alert({
-        title: I18n.t('views.js.form.error.title'),
-        message: '<div class="text-center alert alert-danger">' +
-        I18n.t('views.js.form.error.message', {error_codes: error_codes.join(', ')}) +
-        '</div>',
-      })
+      showErrorDailog(errorCodes)
+      return
     )
     return
 
@@ -99,24 +102,20 @@ $ ->
       url: '/algieba/api/dictionaries',
       data: JSON.stringify(data),
       contentType: 'application/json',
-      dataType: "json",
+      dataType: 'json',
     }).done((data) ->
       bootbox.alert(I18n.t('views.js.form.success.message'))
       $('#phrase').val('')
       $('#dictionary_categories').val('')
     ).fail((xhr, status, error) ->
-      error_codes = []
+      errorCodes = []
       $.each($.parseJSON(xhr.responseText), (i, e)->
         attribute = e.error_code.match(/.+_param_(.+)/)[1]
-        error_codes.push(I18n.t("views.dictionary.create.#{attribute}"))
+        errorCodes.push(I18n.t("views.dictionary.create.#{attribute}"))
         return
       )
-      bootbox.alert({
-        title: I18n.t('views.js.form.error.title'),
-        message: '<div class="text-center alert alert-danger">' +
-        I18n.t('views.js.form.error.message', {error_codes: error_codes.join(', ')}) +
-        '</div>',
-      })
+      showErrorDailog(errorCodes)
+      return
     )
     return
 
