@@ -1,8 +1,10 @@
+<% category_names = Payment.joins(:categories).group('categories.name').order('count_all desc').count.keys %>
 <div class='row center-block'>
   <div class='col-lg-4'>
     <ul class='nav nav-tabs'>
       <li class='active'><a href='#new-payment' data-toggle='tab'><%= t('views.register.tab_name') %></a></li>
       <li><a href='#search-form' data-toggle='tab'><%= t('views.search.tab_name') %></a></li>
+      <li><a href='#new-dictionary' data-toggle='tab'><%= t('views.dictionary.create.tab_name') %></a></li>
     </ul>
 
     <div class='tab-content'>
@@ -18,9 +20,8 @@
             <%= f.text_field :content, {:class => 'form-control', :required => true, :size => 100} %>
           </div>
           <div class='form-group'>
-            <% category_names = Payment.joins(:categories).group('categories.name').order('count_all desc').count.keys %>
             <%= f.label :categories, t('views.common.attribute.category').html_safe %><br>
-            <%= f.text_field :categories, {:name => 'payments[category]', :value => category_names.first, :class => 'form-control category-form', :required => true} %>
+            <%= f.text_field :categories, {:name => 'payments[category]', :value => nil, :class => 'form-control category-form', :required => true} %>
             <span class='category-list' data-names='<%= category_names %>'>
               <%= button_tag(:type => 'button', :class => 'btn btn-default btn-sm') do %>
                 <span class='glyphicon glyphicon-list' />
@@ -65,7 +66,7 @@
           <div class='form-group'>
             <%= f.label :category, t('views.common.attribute.category').html_safe %><br>
             <%= f.text_field :category, {:class => 'form-control category-form', :name => 'category'} %>
-            <span class='category-list' data-names='<%= Payment.joins(:categories).group('categories.name').order('count_all desc').count.keys %>'>
+            <span class='category-list' data-names='<%= category_names %>'>
               <%= button_tag(:type => 'button', :class => 'btn btn-default btn-sm') do %>
                 <span class='glyphicon glyphicon-list' />
               <% end %>
@@ -86,6 +87,30 @@
           </div>
 
           <%= f.submit t('views.search.submit').html_safe, :id => 'search-button', :class => 'btn btn-primary btn-submit' %>
+        <% end %>
+      </div>
+
+      <div id='new-dictionary' class='well tab-pane'>
+        <h3><%= t('views.dictionary.create.title') %></h3>
+        <%= form_for @dictionary, {:url => api_dictionaries_path, :html => {:onClick => 'return false;'}} do |f| %>
+          <div class='form-group'>
+            <%= label_tag :phrase, t('views.dictionary.create.phrase').html_safe %>
+            <%= text_field_tag :phrase, '', :class => 'form-control' %>
+            <% options = {t('views.dictionary.create.include') => 'include', t('views.dictionary.create.equal') => 'equal'} %>
+            <%= select_tag :condition, options_for_select(options, 'include'), :class => 'form-control', :id => 'condition' %>
+          </div>
+
+          <div class='form-group'>
+            <%= f.label :categories, t('views.common.attribute.category').html_safe %><br>
+            <%= f.text_field :categories, {:class => 'form-control category-form', :name => 'category', :value => nil} %>
+            <span class='category-list' data-names='<%= category_names %>'>
+              <%= button_tag(:type => 'button', :class => 'btn btn-default btn-sm') do %>
+                <span class='glyphicon glyphicon-list' />
+              <% end %>
+            </span>
+          </div>
+
+          <%= f.submit t('views.dictionary.create.submit').html_safe, :id => 'btn-create-dictionary', :class => 'btn btn-primary btn-submit' %>
         <% end %>
       </div>
     </div>

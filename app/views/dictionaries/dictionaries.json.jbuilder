@@ -1,4 +1,4 @@
-json.dictionaries(
+json.dictionaries do
   json.array!(@dictionaries) do |dictionary|
     json.(dictionary, :id, :phrase, :condition)
     json.categories do
@@ -7,4 +7,4 @@ json.dictionaries(
       end
     end
   end
-)
+end
