@@ -245,9 +245,6 @@ GEM
     pronto-rubocop (0.10.0)
       pronto (~> 0.10.0)
       rubocop (~> 0.50, >= 0.49.1)
-    pronto-stylelint (0.10.0)
-      pronto (~> 0.10.0)
-      rugged (~> 0.24, >= 0.23.0)
     pry (0.12.2)
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
@@ -425,7 +422,6 @@ DEPENDENCIES
   pronto-coffeelint
   pronto-erb_lint
   pronto-rubocop
-  pronto-stylelint
   pry
   rails (~> 4.0)
   rspec-power_assert
