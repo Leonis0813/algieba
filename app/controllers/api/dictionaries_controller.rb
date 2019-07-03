@@ -14,7 +14,9 @@ module Api
       if @dictionary.save
         render status: :created, template: 'dictionaries/dictionary'
       else
-        error_codes = @dictionary.errors.messages.keys.map {|key| "invalid_param_#{key}" }
+        error_codes = @dictionary.errors.messages.keys.map do |key|
+          "invalid_param_#{key}"
+        end
         raise BadRequest, error_codes
       end
     end

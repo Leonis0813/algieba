@@ -21,7 +21,7 @@
           </div>
           <div class='form-group'>
             <%= f.label :categories, t('views.common.attribute.category').html_safe %><br>
-            <%= f.text_field :categories, {:name => 'payments[category]', :value => nil, :class => 'form-control category-form', :required => true} %>
+            <%= f.text_field :categories, name: 'payments[category]', value: nil, class: 'form-control category-form', required: true %>
             <span class='category-list' data-names='<%= category_names %>'>
               <%= button_tag(:type => 'button', :class => 'btn btn-default btn-sm') do %>
                 <span class='glyphicon glyphicon-list' />
@@ -92,25 +92,25 @@
 
       <div id='new-dictionary' class='well tab-pane'>
         <h3><%= t('views.dictionary.create.title') %></h3>
-        <%= form_for @dictionary, {:url => api_dictionaries_path, :html => {:onClick => 'return false;'}} do |f| %>
+        <%= form_for @dictionary, url: api_dictionaries_path, html: {onClick: 'return false;'} do |f| %>
           <div class='form-group'>
             <%= label_tag :phrase, t('views.dictionary.create.phrase').html_safe %>
-            <%= text_field_tag :phrase, '', :class => 'form-control' %>
+            <%= text_field_tag :phrase, '', class: 'form-control' %>
             <% options = {t('views.dictionary.create.include') => 'include', t('views.dictionary.create.equal') => 'equal'} %>
-            <%= select_tag :condition, options_for_select(options, 'include'), :class => 'form-control', :id => 'condition' %>
+            <%= select_tag :condition, options_for_select(options, 'include'), class: 'form-control', id: 'condition' %>
           </div>
 
           <div class='form-group'>
-            <%= f.label :categories, t('views.common.attribute.category').html_safe %><br>
-            <%= f.text_field :categories, {:class => 'form-control category-form', :name => 'category', :value => nil} %>
+            <%= f.label :categories, t('views.common.attribute.category').html_safe %><br/>
+            <%= f.text_field :categories, class: 'form-control category-form', name: 'category', value: nil %>
             <span class='category-list' data-names='<%= category_names %>'>
-              <%= button_tag(:type => 'button', :class => 'btn btn-default btn-sm') do %>
+              <%= button_tag(type: 'button', class: 'btn btn-default btn-sm') do %>
                 <span class='glyphicon glyphicon-list' />
               <% end %>
             </span>
           </div>
 
-          <%= f.submit t('views.dictionary.create.submit').html_safe, :id => 'btn-create-dictionary', :class => 'btn btn-primary btn-submit' %>
+          <%= f.submit t('views.dictionary.create.submit').html_safe, id: 'btn-create-dictionary', class: 'btn btn-primary btn-submit' %>
         <% end %>
       </div>
     </div>
