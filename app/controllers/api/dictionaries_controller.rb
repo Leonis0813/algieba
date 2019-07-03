@@ -1,12 +1,7 @@
 module Api
   class DictionariesController < ApplicationController
     def create
-      begin
-        attributes = params.permit(*create_params)
-      rescue ActionController::ParameterMissing
-        raise BadRequest, 'absent_param_payments'
-      end
-
+      attributes = params.permit(:phrase, :condition, categories: [])
       absent_keys = create_params - attributes.symbolize_keys.keys
       error_codes = absent_keys.map {|key| "absent_param_#{key}" }
       raise BadRequest, error_codes unless absent_keys.empty?
