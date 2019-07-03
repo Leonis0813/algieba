@@ -33,17 +33,25 @@ en:
       tab_name: 'Search'
       title: 'Input search condition'
       between: '-'
-      include: 'include'
-      equal: 'equal'
+      include: &include 'include'
+      equal: &equal 'equal'
       submit: 'Search'
       date_before: *date
       date_after: *date
       price_upper: *price
       price_lower: *price
     register:
-      tab_name: 'Register'
+      tab_name: 'Register Payments'
       title: 'Input payment info to register'
-      submit: 'Register'
+      submit: &submit 'Register'
+    dictionary:
+      create:
+        tab_name: 'Register dictionaries'
+        title: 'Input dictionary info to register'
+        phrase: 'Phrase'
+        include: *include
+        equal: *equal
+        submit: *submit
     list:
       pagination:
         info: "Show %{from} - %{to}th payments"
