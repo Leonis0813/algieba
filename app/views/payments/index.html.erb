@@ -96,10 +96,8 @@
           <div class='form-group'>
             <%= label_tag :phrase, t('views.dictionary.create.phrase').html_safe %>
             <%= text_field_tag :phrase, '', class: 'form-control' %>
-            <%
-              options = %w[include equal].map {|type| [t("views.dictionary.create.#{type}"), type] }.to_h
-              params = {class: 'form-control', id: 'condition'}
-            %>
+            <% options = %w[include equal].map {|type| [t("views.dictionary.create.#{type}"), type] }.to_h %>
+            <% params = {class: 'form-control', id: 'condition'} %>
             <%= select_tag :condition, options_for_select(options, 'include'), params %>
           </div>
 
