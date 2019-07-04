@@ -8,3 +8,7 @@ linters:
         Enabled: false
       Layout/TrailingBlankLines:
         Enabled: false
+      Lint/UselessAssignment:
+        Enabled: false
+      Metrics/LineLength:
+        Max: 110

@@ -1,9 +1,10 @@
 $ ->
   showErrorDialog = (errorCodes)->
+    param = {error_codes: errorCodes.join(', ')}
     bootbox.alert({
       title: I18n.t('views.js.form.error.title'),
       message: '<div class="text-center alert alert-danger">' +
-      I18n.t('views.js.form.error.message', {error_codes: errorCodes.join(', ')}) +
+      I18n.t('views.js.form.error.message', param) +
       '</div>',
     })
     return
