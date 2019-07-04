@@ -36,6 +36,7 @@ group :development, :test do
   gem 'byebug'
   gem 'capybara'
   gem 'capybara-mechanize'
+  gem 'database_cleaner'
   gem 'fuubar'
   gem 'headless'
   gem 'httpclient'
