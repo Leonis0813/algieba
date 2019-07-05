@@ -10,9 +10,4 @@ shared_context '事前準備: 収支情報を登録する' do |payments = Paymen
       payment.save!
     end
   end
-
-  after(:all) do
-    Payment.destroy_all
-    Category.destroy_all
-  end
 end

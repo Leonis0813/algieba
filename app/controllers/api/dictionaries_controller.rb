@@ -8,16 +8,20 @@ module Api
 
       @dictionary = Dictionary.new(attributes.except(:categories))
       @dictionary.categories << attributes[:categories].map do |category_name|
-        Category.find_or_create_by(name: category_name)
+        Category.find_or_initialize_by(name: category_name)
       end
 
-      if @dictionary.save
-        render status: :created, template: 'dictionaries/dictionary'
-      else
-        error_codes = @dictionary.errors.messages.keys.map do |key|
-          "invalid_param_#{key}"
+      begin
+        if @dictionary.save
+          render status: :created, template: 'dictionaries/dictionary'
+        else
+          error_codes = @dictionary.errors.messages.keys.map do |key|
+            "invalid_param_#{key}"
+          end
+          raise BadRequest, error_codes
         end
-        raise BadRequest, error_codes
+      rescue ActiveRecord::RecordNotUnique
+        raise Duplicated, 'dictionary'
       end
     end
 
