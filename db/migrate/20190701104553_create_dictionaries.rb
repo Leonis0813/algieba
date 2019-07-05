@@ -6,5 +6,7 @@ class CreateDictionaries < ActiveRecord::Migration
 
       t.timestamps null: false
     end
+
+    add_index :dictionaries, %i[phrase condition], unique: true
   end
 end

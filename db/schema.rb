@@ -51,6 +51,8 @@ ActiveRecord::Schema.define(version: 20190701104957) do
     t.datetime "updated_at",             null: false
   end
 
+  add_index "dictionaries", ["phrase", "condition"], name: "index_dictionaries_on_phrase_and_condition", unique: true, using: :btree
+
   create_table "payments", force: :cascade do |t|
     t.string   "payment_type", limit: 255
     t.date     "date"
