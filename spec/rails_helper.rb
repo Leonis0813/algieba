@@ -58,4 +58,9 @@ RSpec.configure do |config|
   config.run_all_when_everything_filtered = true
   config.include CommonHelper
   config.include PaymentHelper
+  config.include DictionaryHelper
+
+  config.before(:suite) do
+    DatabaseCleaner.strategy = :transaction
+  end
 end

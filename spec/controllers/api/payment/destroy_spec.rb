@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-describe PaymentsController, type: :controller do
+describe Api::PaymentsController, type: :controller do
   shared_context '収支情報を削除する' do |id|
     before(:all) do
       @res = client.delete("/api/payments/#{id}")

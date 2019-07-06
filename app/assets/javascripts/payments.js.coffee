@@ -1,9 +1,33 @@
 $ ->
+  showErrorDialog = (errorCodes)->
+    param = {error_codes: errorCodes.join(', ')}
+    bootbox.alert({
+      title: I18n.t('views.js.form.error.title'),
+      message: '<div class="text-center alert alert-danger">' +
+      I18n.t('views.js.form.error.message', param) +
+      '</div>',
+    })
+    return
+
   $('.date-form').datetimepicker({
     format: I18n.t('views.js.datepicker.format'),
     locale: I18n.locale,
     dayViewHeaderFormat: I18n.t('views.js.datepicker.dayViewHeaderFormat')
   })
+
+  $('#payments_content').on 'focusout', ->
+    query = {content: $('#payments_content').val()}
+    $.ajax({
+      type: 'GET',
+      url: '/algieba/api/dictionaries?' + $.param(query)
+    }).done((data) ->
+      category_names = $.map(data.dictionaries[0].categories, (category) ->
+        return category.name
+      )
+      $('#payments_categories').val(category_names.join(','))
+      return
+    )
+    return
 
   $('.category-list').on 'click', ->
     categories = $.map($(@).data('names'), (value) ->
@@ -25,15 +49,13 @@ $ ->
     return
 
   $('#new_payments').on 'ajax:error', (event, xhr, status, error) ->
-    error_codes = []
+    errorCodes = []
     $.each($.parseJSON(xhr.responseText), (i, e)->
-      error_codes.push(I18n.t("views.common.attribute.#{e.error_code.match(/invalid_param_(.+)/)[1]}"))
+      attribute = e.error_code.match(/invalid_param_(.+)/)[1]
+      errorCodes.push(I18n.t("views.common.attribute.#{attribute}"))
       return
     )
-    bootbox.alert({
-      title: I18n.t('views.js.form.error.title'),
-      message: '<div class="text-center alert alert-danger">' + I18n.t('views.js.form.error.message', {error_codes: error_codes.join(', ')}) + '</div>',
-    })
+    showErrorDialog(errorCodes)
     return
 
   $('#search-button').on 'click', ->
@@ -58,15 +80,43 @@ $ ->
       location.href = '/algieba/payments?' + $.param(queries)
       return
     ).fail((xhr, status, error) ->
-      error_codes = []
+      errorCodes = []
       $.each($.parseJSON(xhr.responseText), (i, e)->
-        error_codes.push(I18n.t("views.search.#{e.error_code.match(/invalid_param_(.+)/)[1]}"))
+        attribute = e.error_code.match(/invalid_param_(.+)/)[1]
+        errorCodes.push(I18n.t("views.search.#{attribute}"))
         return
       )
-      bootbox.alert({
-        title: I18n.t('views.js.form.error.title'),
-        message: '<div class="text-center alert alert-danger">' + I18n.t('views.js.form.error.message', {error_codes: error_codes.join(', ')}) + '</div>',
-      })
+      showErrorDialog(errorCodes)
+      return
+    )
+    return
+
+  $('#btn-create-dictionary').on 'click', ->
+    category_string = $('#dictionary_categories').val()
+    data = {
+      phrase: if !$('#phrase').val() then null else $('#phrase').val(),
+      condition: $('#condition option:selected').val(),
+      categories: if !category_string then null else category_string.split(','),
+    }
+    $.ajax({
+      type: 'POST',
+      url: '/algieba/api/dictionaries',
+      data: JSON.stringify(data),
+      contentType: 'application/json',
+      dataType: 'json',
+    }).done((data) ->
+      bootbox.alert(I18n.t('views.js.form.success.message'))
+      $('#phrase').val('')
+      $('#dictionary_categories').val('')
+    ).fail((xhr, status, error) ->
+      errorCodes = []
+      $.each($.parseJSON(xhr.responseText), (i, e)->
+        attribute = e.error_code.match(/.+_param_(.+)/)[1]
+        errorCodes.push(I18n.t("views.dictionary.create.#{attribute}"))
+        return
+      )
+      showErrorDialog(errorCodes)
+      return
     )
     return
 
@@ -88,7 +138,9 @@ $ ->
     ).fail((xhr, status, error) ->
       bootbox.alert({
         title: I18n.t('views.js.pagination.error.title'),
-        message: '<div class="text-center alert alert-danger">' + I18n.t('views.js.pagination.error.message') + '</div>',
+        message: '<div class="text-center alert alert-danger">' +
+        I18n.t('views.js.pagination.error.message') +
+        '</div>',
       })
       $('#per_page').val('')
     )

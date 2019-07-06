@@ -37,7 +37,6 @@ describe Payment, type: :model do
         context "#{interval}を指定する場合" do
           include_context '事前準備: 収支情報を登録する', [income, expense]
           before(:all) { @settlement = Payment.settle(interval) }
-          after(:all) { Payment.destroy_all }
 
           it '計算結果が正しいこと' do
             is_asserted_by { @settlement == settlement }

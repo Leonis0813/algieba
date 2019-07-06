@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-describe 'ブラウザから操作する', type: :request do
+describe 'ブラウザから収支を登録する', type: :request do
   per_page = Kaminari.config.default_per_page
   default_inputs = {
     date: '1000-01-01',
