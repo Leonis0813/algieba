@@ -1,5 +1,6 @@
 # 4.0.0 (2019/07/06)
 - [ADD] new feature to create dictionaries
+- [UPDATE] gems
 
 # 3.6.17 (2019/06/30)
 - [ADD] gems for pronto
