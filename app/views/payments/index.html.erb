@@ -104,7 +104,7 @@
           <div class='form-group'>
             <%= f.label :categories, t('views.common.attribute.category').html_safe %><br />
             <%= f.text_field :categories, class: 'form-control category-form', name: 'category', value: nil %>
-            <span class='category-list' data-names='<%= category_names %>'>
+            <span class='category-list' data-names='<%= Category.pluck(:name).sort %>'>
               <%= button_tag(type: 'button', class: 'btn btn-default btn-sm') do %>
                 <span class='glyphicon glyphicon-list' />
               <% end %>
