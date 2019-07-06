@@ -12,8 +12,8 @@ describe '辞書情報を管理する', type: :request do
 
   shared_context 'POST /api/dictionaries' do |body = default_body|
     before(:all) do
-      header = {'Authorization' => app_auth_header}
-      @res = http_client.post("#{base_url}/api/dictionaries", body, header)
+      header = content_type_json.merge('Authorization' => app_auth_header)
+      @res = http_client.post("#{base_url}/api/dictionaries", body.to_json, header)
       @pbody = JSON.parse(@res.body) rescue nil
     end
   end
@@ -59,13 +59,13 @@ describe '辞書情報を管理する', type: :request do
 
     describe '辞書を作成する' do
       body = default_body.except(:condition, :categories)
-      error_codes = %i[condition categories].map {|key| "absent_params_#{key}" }
+      error_codes = %i[condition categories].map {|key| "absent_param_#{key}" }
       include_context 'POST /api/dictionaries', body
       it_behaves_like '400エラーをチェックする', error_codes
 
       describe '辞書を作成する' do
         body = default_body.merge(condition: 'invalid')
-        error_codes = ['invalid_params_condition']
+        error_codes = ['invalid_param_condition']
         include_context 'POST /api/dictionaries', body
         it_behaves_like '400エラーをチェックする', error_codes
 
