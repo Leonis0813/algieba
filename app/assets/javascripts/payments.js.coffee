@@ -55,7 +55,7 @@ $ ->
       errorCodes.push(I18n.t("views.common.attribute.#{attribute}"))
       return
     )
-    showErrorDailog(errorCodes)
+    showErrorDialog(errorCodes)
     return
 
   $('#search-button').on 'click', ->
@@ -86,7 +86,7 @@ $ ->
         errorCodes.push(I18n.t("views.common.attribute.#{attritbute}"))
         return
       )
-      showErrorDailog(errorCodes)
+      showErrorDialog(errorCodes)
       return
     )
     return
@@ -115,7 +115,7 @@ $ ->
         errorCodes.push(I18n.t("views.dictionary.create.#{attribute}"))
         return
       )
-      showErrorDailog(errorCodes)
+      showErrorDialog(errorCodes)
       return
     )
     return
