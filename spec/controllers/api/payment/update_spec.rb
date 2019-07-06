@@ -2,15 +2,13 @@
 
 require 'rails_helper'
 
-describe PaymentsController, type: :controller do
+describe Api::PaymentsController, type: :controller do
   shared_context '収支情報を更新する' do |id, params = {}|
     before(:all) do
       @res = client.put("/api/payments/#{id}", params)
       @pbody = JSON.parse(@res.body) rescue nil
     end
   end
-
-  after(:all) { Category.destroy_all }
 
   describe '正常系' do
     base_payment = PaymentHelper.test_payment[:income]
@@ -56,7 +54,7 @@ describe PaymentsController, type: :controller do
         it_behaves_like 'ステータスコードが正しいこと', '200'
 
         it 'レスポンスボディのキーが正しいこと' do
-          is_asserted_by { @pbody.keys == response_keys }
+          is_asserted_by { @pbody.keys.sort == PaymentHelper.response_keys }
         end
 
         it 'カテゴリリソースのキーが正しいこと' do

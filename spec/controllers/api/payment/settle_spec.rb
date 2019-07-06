@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-describe PaymentsController, type: :controller do
+describe Api::PaymentsController, type: :controller do
   shared_context '収支を計算する' do |params = {}|
     before(:all) do
       @res = client.get('/api/settlement', params)

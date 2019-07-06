@@ -1,6 +1,7 @@
 # coding: utf-8
 
 shared_context '事前準備: 収支情報を登録する' do |payments = PaymentHelper.test_payment.values|
+  include_context 'トランザクション作成'
   before(:all) do
     payments.each do |payment|
       category_names = payment[:category].split(',')
