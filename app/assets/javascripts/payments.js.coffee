@@ -83,7 +83,7 @@ $ ->
       errorCodes = []
       $.each($.parseJSON(xhr.responseText), (i, e)->
         attribute = e.error_code.match(/invalid_param_(.+)/)[1]
-        errorCodes.push(I18n.t("views.common.attribute.#{attritbute}"))
+        errorCodes.push(I18n.t("views.common.attribute.#{attribute}"))
         return
       )
       showErrorDialog(errorCodes)
