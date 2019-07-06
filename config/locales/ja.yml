@@ -6,7 +6,7 @@ ja:
         payment_type: '種類'
         date: &date '日付'
         content: '内容'
-        category: 'カテゴリ'
+        category: &category 'カテゴリ'
         price: &price '金額'
       payment_type:
         income: '収入'
@@ -18,6 +18,8 @@ ja:
       category-list:
         title: 'カテゴリを選択してください'
       form:
+        success:
+          message: '登録が完了しました'
         error:
           title: 'エラー'
           message: "%{error_codes} が不正です"
@@ -33,8 +35,8 @@ ja:
       tab_name: '検索'
       title: '検索条件を入力してください'
       between: '〜'
-      include: 'を含む'
-      equal: 'と一致する'
+      include: &include 'を含む'
+      equal: &equal 'と一致する'
       submit: '検索'
       date_before: *date
       date_after: *date
@@ -43,7 +45,17 @@ ja:
     register:
       tab_name: '登録'
       title: '収支情報を入力してください'
-      submit: '登録'
+      submit: &submit '登録'
+    dictionary:
+      create:
+        tab_name: '辞書登録'
+        title: '辞書情報を入力してください'
+        phrase: 'フレーズ'
+        condition: '条件'
+        include: *include
+        equal: *equal
+        categories: *category
+        submit: *submit
     list:
       pagination:
         info: "%{total_count}件中%{from}〜%{to}件を表示"

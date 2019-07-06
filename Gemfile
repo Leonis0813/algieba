@@ -26,8 +26,7 @@ group :development do
   gem 'pronto'
   gem 'pronto-coffeelint', require: false
   gem 'pronto-erb_lint', require: false
-  gem 'pronto-rubocop', :require => false
-  gem 'pronto-stylelint', require: false
+  gem 'pronto-rubocop', require: false
   gem 'rubocop'
   gem 'rubocop-performance'
   gem 'web-console', '~> 2.0'
@@ -37,6 +36,8 @@ group :development, :test do
   gem 'byebug'
   gem 'capybara'
   gem 'capybara-mechanize'
+  gem 'database_cleaner'
+  gem 'factory_bot_rails'
   gem 'fuubar'
   gem 'headless'
   gem 'httpclient'
