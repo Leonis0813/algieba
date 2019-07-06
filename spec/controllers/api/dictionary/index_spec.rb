@@ -24,8 +24,8 @@ describe Api::DictionariesController, type: :controller do
 
   shared_examples 'レスポンスが正常であること' do |status: 200, body: nil|
     before(:all) do
-      @response_body = @response_body.tap do |body|
-        body['dictionaries'].map do |dictionary|
+      @response_body = @response_body.tap do |response_body|
+        response_body['dictionaries'].map do |dictionary|
           dictionary.except!('id')
           dictionary['categories'].map do |category|
             category.except!('id')
@@ -58,7 +58,7 @@ describe Api::DictionariesController, type: :controller do
       }.deep_stringify_keys
       include_context 'トランザクション作成'
       include_context '辞書情報を作成する'
-      include_context '辞書情報を検索する', {content: 'test'}
+      include_context '辞書情報を検索する', content: 'test'
 
       it_behaves_like 'レスポンスが正常であること', body: body
     end

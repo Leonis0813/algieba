@@ -38,7 +38,7 @@ describe '辞書情報を管理する', type: :request do
 
   shared_examples '検索時のレスポンスボディのキーが正しいこと' do
     it do
-      @pbody.keys.sort == %w[dictionaries]
+      is_asserted_by { @pbody.keys.sort == %w[dictionaries] }
 
       @pbody['dictionaries'].all? do |dictionary|
         is_asserted_by { dictionary.keys.sort == DictionaryHelper.response_keys }

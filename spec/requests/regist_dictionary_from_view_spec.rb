@@ -24,7 +24,7 @@ describe 'ブラウザから辞書を登録する', type: :request do
 
       category_input = @wait.until { @driver.find_element(:id, 'dictionary_categories') }
       category_input.clear
-      category_input.send_keys(input[:categories].join(',')
+      category_input.send_keys(input[:categories].join(','))
     end
   end
 
