@@ -5,7 +5,7 @@ require 'rails_helper'
 describe 'ブラウザから辞書を登録する', type: :request do
   alert_xpath = '//div[contains(@class, "bootbox-alert")]'
   default_input = {
-    phrase: Time.now.strftime('%F%T'),
+    phrase: Time.now.strftime('%F %T.%6N'),
     condition: 'include',
     categories: ['test'],
   }
