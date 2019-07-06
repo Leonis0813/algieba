@@ -52,28 +52,30 @@ describe Api::DictionariesController, type: :controller do
     end
 
     context 'カテゴリが存在しない場合' do
+      body = default_params.merge(
+        categories: [
+          {name: category_name, description: nil},
+        ],
+      )
       include_context 'トランザクション作成'
       include_context '辞書情報を登録する'
 
-      it_behaves_like 'レスポンスが正常であること', body: default_params.merge(
-                        categories: [
-                          {name: category_name, description: nil},
-                        ],
-                      )
+      it_behaves_like 'レスポンスが正常であること', body: body
       it_behaves_like 'DBに辞書情報が追加されていること',
                       default_params.except(:categories)
     end
 
     context 'カテゴリが既に存在する場合' do
+      body = default_params.merge(
+        categories: [
+          {name: category_name, description: nil},
+        ],
+      )
       include_context 'トランザクション作成'
       before(:all) { Category.create!(name: category_name) }
       include_context '辞書情報を登録する'
 
-      it_behaves_like 'レスポンスが正常であること', body: default_params.merge(
-                        categories: [
-                          {name: category_name, description: nil},
-                        ],
-                      )
+      it_behaves_like 'レスポンスが正常であること', body: body
 
       it 'カテゴリが追加されていないこと' do
         is_asserted_by { Category.where(name: category_name).count == 1 }
@@ -82,16 +84,17 @@ describe Api::DictionariesController, type: :controller do
 
     context 'カテゴリを複数設定する場合' do
       category_names = [category_name, 'test2']
+      body = default_params.merge(
+        categories: [
+          {name: category_name, description: nil},
+          {name: 'test2', description: nil},
+        ],
+      )
       include_context 'トランザクション作成'
       include_context '辞書情報を登録する',
                       default_params.merge(categories: category_names)
 
-      it_behaves_like 'レスポンスが正常であること', body: default_params.merge(
-                        categories: [
-                          {name: category_name, description: nil},
-                          {name: 'test2', description: nil},
-                        ],
-                      )
+      it_behaves_like 'レスポンスが正常であること', body: body
       it_behaves_like 'DBに辞書情報が追加されていること',
                       default_params.except(:categories)
 

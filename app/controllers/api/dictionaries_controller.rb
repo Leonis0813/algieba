@@ -28,11 +28,11 @@ module Api
     def index
       query = params.permit(*index_params)
       @dictionaries = if query.empty?
-                        Dictionary.all
+                        Dictionary.all.order(:condition)
                       else
                         Dictionary.all.select do |dictionary|
                           query[:content].include?(dictionary.phrase)
-                        end
+                        end.sort_by(&:condition)
                       end
       render status: :ok, template: 'dictionaries/dictionaries'
     end

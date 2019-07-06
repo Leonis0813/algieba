@@ -281,7 +281,8 @@ describe 'payments/index', type: :view do
       category_label = @html.xpath("#{form_base_xpath}/label[text()='カテゴリ']")
       is_asserted_by { category_label.present? }
 
-      category_input = @html.xpath("#{form_base_xpath}/input[@id='dictionary_categories']")
+      category_input =
+        @html.xpath("#{form_base_xpath}/input[@id='dictionary_categories']")
       is_asserted_by { category_input.present? }
 
       category_button = @html.xpath("#{form_base_xpath}/span[@class='category-list']" \

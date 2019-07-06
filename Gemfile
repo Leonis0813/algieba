@@ -37,6 +37,7 @@ group :development, :test do
   gem 'capybara'
   gem 'capybara-mechanize'
   gem 'database_cleaner'
+  gem 'factory_bot_rails'
   gem 'fuubar'
   gem 'headless'
   gem 'httpclient'
