@@ -131,7 +131,6 @@ describe 'ブラウザから辞書を登録する', type: :request do
     end
 
     it '新カテゴリが追加されていること' do
-      binding.pry
       is_asserted_by do
         @wait.until { @driver.find_element(:xpath, "//input[@value='new_test']") }
       end
