@@ -1,3 +1,6 @@
+# 4.0.1 (2019/07/07)
+- [UPDATE] gems
+
 # 4.0.0 (2019/07/06)
 - [ADD] new feature to create dictionaries
 - [UPDATE] gems
