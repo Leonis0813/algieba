@@ -4,9 +4,9 @@ shared_context '事前準備: 収支情報を登録する' do |payments = Paymen
   include_context 'トランザクション作成'
   before(:all) do
     payments.each do |payment|
-      category_names = payment[:category].split(',')
+      category_names = payment[:categories]
       categories = category_names.map {|name| Category.find_or_create_by(name: name) }
-      payment = Payment.new(payment.except(:category))
+      payment = Payment.new(payment.except(:categories))
       payment.categories = categories
       payment.save!
     end

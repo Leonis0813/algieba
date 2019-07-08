@@ -8,7 +8,7 @@ module PaymentHelper
         payment_type: 'income',
         date: '1000-01-01',
         content: '機能テスト用データ1',
-        category: 'algieba',
+        categories: ['algieba'],
         price: 1000,
       },
       expense: {
@@ -16,19 +16,15 @@ module PaymentHelper
         payment_type: 'expense',
         date: '1000-01-05',
         content: '機能テスト用データ2',
-        category: 'algieba',
+        categories: ['algieba'],
         price: 100,
       },
     }
-  end
-
-  def payment_params
-    @payment_params ||= %w[payment_type date content category price]
   end
 
   def response_keys
     @response_keys ||= %w[id payment_type date content categories price].sort
   end
 
-  module_function :test_payment, :payment_params, :response_keys
+  module_function :test_payment, :response_keys
 end

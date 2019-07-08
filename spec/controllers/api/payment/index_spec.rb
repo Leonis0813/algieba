@@ -5,8 +5,9 @@ require 'rails_helper'
 describe Api::PaymentsController, type: :controller do
   shared_context '収支情報を検索する' do |params = {}|
     before(:all) do
-      @res = client.get('/api/payments', params)
-      @pbody = JSON.parse(@res.body) rescue nil
+      res = client.get('/api/payments', params)
+      @response_status = res.status
+      @response_body = JSON.parse(res.body) rescue res.body
     end
   end
 
@@ -47,19 +48,45 @@ describe Api::PaymentsController, type: :controller do
     ].each do |query, expected_payment_types|
       description = query.empty? ? '何も指定しない場合' : "#{query.keys.join(',')}を指定する場合"
       expected_payments = expected_payment_types.map do |key|
-        PaymentHelper.test_payment[key].except(:id, :category)
+        payment = PaymentHelper.test_payment[key].except(:id)
+        categories = payment[:categories].map do |category_name|
+          {name: category_name, description: nil}
+        end
+        payment.merge(categories: categories)
       end
-      expected_categories = expected_payment_types.map do |key|
-        PaymentHelper.test_payment[key][:category].split(',')
-      end.sort
 
       context description do
         include_context '収支情報を検索する', query
-        it_behaves_like 'ステータスコードが正しいこと', '200'
-        it_behaves_like '収支情報リソースのキーが正しいこと'
-        it_behaves_like 'カテゴリリソースのキーが正しいこと'
-        it_behaves_like '収支情報リソースの属性値が正しいこと', expected_payments
-        it_behaves_like 'カテゴリリソースの属性値が正しいこと', expected_categories
+
+        it 'ステータスコードが正しいこと' do
+          is_asserted_by { @response_status == 200 }
+        end
+
+        it 'レスポンスボディが正しいこと' do
+          is_asserted_by { @response_body.keys.sort == %w[payments] }
+
+          expected_payments.each_with_index do |payment, i|
+            response_payment = @response_body['payments'][i]
+
+            is_asserted_by { response_payment.keys.sort == PaymentHelper.response_keys }
+
+            payment.except(:categories).each do |key, value|
+              is_asserted_by { response_payment[key.to_s] == value }
+            end
+
+            payment[:categories].each_with_index do |category, j|
+              response_category = response_payment['categories'][j]
+
+              is_asserted_by do
+                response_category.keys.sort == CategoryHelper.response_keys
+              end
+
+              category.each do |key, value|
+                is_asserted_by { response_category[key.to_s] == value }
+              end
+            end
+          end
+        end
       end
     end
 
@@ -72,10 +99,7 @@ describe Api::PaymentsController, type: :controller do
     ].each do |query|
       describe "#{query.keys.join(',')}を指定する場合" do
         include_context '収支情報を検索する', query
-        it_behaves_like 'ステータスコードが正しいこと', '200'
-        it '空配列であること' do
-          is_asserted_by { @pbody == [] }
-        end
+        it_behaves_like 'レスポンスが正しいこと', status: 200, body: {'payments' => []}
       end
     end
   end
@@ -104,9 +128,9 @@ describe Api::PaymentsController, type: :controller do
       },
     ].each do |query|
       context "#{query.keys.join(',')}が不正な場合" do
-        error_codes = query.keys.map {|key| "invalid_param_#{key}" }
+        errors =  query.keys.sort.map {|key| {'error_code' => "invalid_param_#{key}"} }
         include_context '収支情報を検索する', query
-        it_behaves_like '400エラーをチェックする', error_codes
+        it_behaves_like 'レスポンスが正しいこと', body: {'errors' => errors}
       end
     end
   end
