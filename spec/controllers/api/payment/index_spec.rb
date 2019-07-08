@@ -128,7 +128,7 @@ describe Api::PaymentsController, type: :controller do
       },
     ].each do |query|
       context "#{query.keys.join(',')}が不正な場合" do
-        errors =  query.keys.sort.map {|key| {'error_code' => "invalid_param_#{key}"} }
+        errors = query.keys.sort.map {|key| {'error_code' => "invalid_param_#{key}"} }
         include_context '収支情報を検索する', query
         it_behaves_like 'レスポンスが正しいこと', body: {'errors' => errors}
       end
