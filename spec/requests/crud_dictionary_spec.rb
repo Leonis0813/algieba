@@ -63,7 +63,7 @@ describe '辞書情報を管理する', type: :request do
     describe '辞書を作成する' do
       body = default_body.except(:condition, :categories)
       errors = %i[condition categories].sort.map do |key|
-        {'error_code' =>"absent_param_#{key}"}
+        {'error_code' => "absent_param_#{key}"}
       end
       include_context 'POST /api/dictionaries', body
       it_behaves_like 'レスポンスが正しいこと', body: {'errors' => errors}
