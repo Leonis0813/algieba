@@ -61,8 +61,8 @@ $ ->
 
   $('#new_payment').on 'ajax:error', (event, xhr, status, error) ->
     errorCodes = []
-    $.each($.parseJSON(xhr.responseText), (i, e)->
-      attribute = e.error_code.match(/^.+_param_(.+)/)[1]
+    $.each($.parseJSON(xhr.responseText).errors, (i, error) ->
+      attribute = error.error_code.match(/^.+_param_(.+)/)[1]
       errorCodes.push(I18n.t("views.common.attribute.#{attribute}"))
       return
     )
@@ -92,8 +92,8 @@ $ ->
       return
     ).fail((xhr, status, error) ->
       errorCodes = []
-      $.each($.parseJSON(xhr.responseText), (i, e)->
-        attribute = e.error_code.match(/invalid_param_(.+)/)[1]
+      $.each($.parseJSON(xhr.responseText).errors, (i, error) ->
+        attribute = error.error_code.match(/invalid_param_(.+)/)[1]
         errorCodes.push(I18n.t("views.search.#{attribute}"))
         return
       )
@@ -121,8 +121,8 @@ $ ->
       $('#dictionary_categories').val('')
     ).fail((xhr, status, error) ->
       errorCodes = []
-      $.each($.parseJSON(xhr.responseText), (i, e)->
-        attribute = e.error_code.match(/.+_param_(.+)/)[1]
+      $.each($.parseJSON(xhr.responseText).errors, (i, error)->
+        attribute = error.error_code.match(/.+_param_(.+)/)[1]
         errorCodes.push(I18n.t("views.dictionary.create.#{attribute}"))
         return
       )

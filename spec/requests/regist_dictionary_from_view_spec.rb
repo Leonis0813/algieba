@@ -61,7 +61,7 @@ describe 'ブラウザから辞書を登録する', type: :request do
   before(:all) do
     header = {'Authorization' => app_auth_header}
     res = http_client.get("#{base_url}/api/payments", {per_page: 100}, header)
-    JSON.parse(res.body).each do |payment|
+    JSON.parse(res.body)['payments'].each do |payment|
       http_client.delete("#{base_url}/api/payments/#{payment['id']}", nil, header)
     end
   end
@@ -69,7 +69,7 @@ describe 'ブラウザから辞書を登録する', type: :request do
   after(:all) do
     header = {'Authorization' => app_auth_header}
     res = http_client.get("#{base_url}/api/payments", {per_page: 100}, header)
-    JSON.parse(res.body).each do |payment|
+    JSON.parse(res.body)['payments'].each do |payment|
       http_client.delete("#{base_url}/api/payments/#{payment['id']}", nil, header)
     end
   end
