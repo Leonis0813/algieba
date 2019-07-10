@@ -5,8 +5,9 @@ require 'rails_helper'
 describe PaymentsController, type: :controller do
   shared_context '収支情報を検索する' do |params = {}|
     before(:all) do
-      @res = client.get('/payments', params)
-      @pbody = JSON.parse(@res.body) rescue nil
+      res = client.get('/payments', params)
+      @response_status = res.status
+      @response_body = JSON.parse(res.body) rescue res.body
     end
   end
 
@@ -40,7 +41,10 @@ describe PaymentsController, type: :controller do
 
       context description do
         include_context '収支情報を検索する', query
-        it_behaves_like 'ステータスコードが正しいこと', '200'
+
+        it 'ステータスコードが正しいこと' do
+          is_asserted_by { @response_status == 200 }
+        end
       end
     end
   end
@@ -62,9 +66,9 @@ describe PaymentsController, type: :controller do
       },
     ].each do |query|
       context "#{query.keys.join(',')}が不正な場合" do
-        error_codes = query.keys.map {|key| "invalid_param_#{key}" }
+        errors = query.keys.sort.map {|key| {'error_code' => "invalid_param_#{key}"} }
         include_context '収支情報を検索する', query
-        it_behaves_like '400エラーをチェックする', error_codes
+        it_behaves_like 'レスポンスが正しいこと', body: {'errors' => errors}
       end
     end
   end

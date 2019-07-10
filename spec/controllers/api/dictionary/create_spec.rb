@@ -107,22 +107,12 @@ describe Api::DictionariesController, type: :controller do
   end
 
   describe '異常系' do
-    shared_examples 'レスポンスが正常であること' do |status: 400, body: nil|
-      it 'ステータスコードが正しいこと' do
-        is_asserted_by { @response_status == status }
-      end
-
-      it 'レスポンスボディが正しいこと' do
-        is_asserted_by { @response_body == body }
-      end
-    end
-
     %i[phrase condition categories].each do |absent_key|
       context "#{absent_key}がない場合" do
-        body = [{'error_code' => "absent_param_#{absent_key}"}]
+        body = {'errors' => [{'error_code' => "absent_param_#{absent_key}"}]}
         include_context '辞書情報を登録する', default_params.except(absent_key)
 
-        it_behaves_like 'レスポンスが正常であること', body: body
+        it_behaves_like 'レスポンスが正しいこと', body: body
         it_behaves_like 'DBに辞書情報が追加されていないこと',
                         default_params.except(:categories)
       end
@@ -131,16 +121,16 @@ describe Api::DictionariesController, type: :controller do
     %i[phrase condition].each do |invalid_key|
       context "#{invalid_key}が不正な場合" do
         params = default_params.merge(invalid_key => nil)
-        body = [{'error_code' => "invalid_param_#{invalid_key}"}]
+        body = {'errors' => [{'error_code' => "invalid_param_#{invalid_key}"}]}
         include_context '辞書情報を登録する', params
 
-        it_behaves_like 'レスポンスが正常であること', body: body
+        it_behaves_like 'レスポンスが正しいこと', body: body
         it_behaves_like 'DBに辞書情報が追加されていないこと', params.except(:categories)
       end
     end
 
     context '既に同じ辞書が登録されている場合' do
-      body = [{'error_code' => 'duplicated_dictionary'}]
+      body = {'errors' => [{'error_code' => 'duplicated_dictionary'}]}
       include_context 'トランザクション作成'
       before(:all) do
         dictionary = Dictionary.new(default_params.except(:categories))
@@ -149,7 +139,7 @@ describe Api::DictionariesController, type: :controller do
       end
       include_context '辞書情報を登録する'
 
-      it_behaves_like 'レスポンスが正常であること', body: body
+      it_behaves_like 'レスポンスが正しいこと', body: body
 
       it '辞書が追加されていないこと' do
         query = default_params.except(:categories)

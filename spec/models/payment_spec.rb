@@ -8,14 +8,14 @@ describe Payment, type: :model do
       payment_type: 'income',
       date: '1000-01-01',
       content: 'モジュールテスト用データ1',
-      category: 'algieba',
+      categories: ['algieba'],
       price: 1000,
     }
     expense = {
       payment_type: 'expense',
       date: '1000-01-05',
       content: 'モジュールテスト用データ2',
-      category: 'algieba',
+      categories: ['algieba'],
       price: 100,
     }
 

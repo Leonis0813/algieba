@@ -1,5 +1,23 @@
 # coding: utf-8
 
+shared_context 'POST /api/payments' do |body|
+  before(:all) do
+    header = {'Authorization' => app_auth_header}.merge(content_type_json)
+    res = http_client.post("#{base_url}/api/payments", body.to_json, header)
+    @response_status = res.status
+    @response_body = JSON.parse(res.body) rescue res.body
+  end
+end
+
+shared_context 'GET /api/payments' do |params = {}|
+  before(:all) do
+    header = {'Authorization' => app_auth_header}
+    res = http_client.get("#{base_url}/api/payments", params, header)
+    @response_status = res.status
+    @response_body = JSON.parse(res.body) rescue res.body
+  end
+end
+
 shared_context 'Webdriverを起動する' do
   before(:all) do
     @driver ||= Selenium::WebDriver.for :firefox

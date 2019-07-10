@@ -7,25 +7,27 @@ describe 'ブラウザから収支を登録する', type: :request do
   default_inputs = {
     date: '1000-01-01',
     content: 'regist from view',
-    categories: 'テスト',
+    categories: ['テスト'],
     price: 100,
   }
 
   shared_context '収支情報を入力する' do |inputs, payment_type|
     before(:all) do
-      @wait.until { @driver.find_element(:id, 'payments_date').displayed? }
+      @wait.until { @driver.find_element(:id, 'payment_date').displayed? }
       inputs.except(:categories).each do |key, value|
-        element = @driver.find_element(:id, "payments_#{key}")
+        element = @driver.find_element(:id, "payment_#{key}")
         element.clear
         element.send_keys(value.to_s)
       end
-      xpath = '//form[@id="new_payments"]//span[@class="category-list"]/button'
+      xpath = '//form[@id="new_payment"]//span[@class="category-list"]/button'
       @driver.find_element(:xpath, xpath).click
 
-      xpath = "//div[@class='modal-dialog']//input[@value='#{inputs[:categories]}']"
-      @wait.until do
-        @driver.find_element(:xpath, xpath).selected? ||
-          (@driver.find_element(:xpath, xpath).click rescue false)
+      inputs[:categories].each do |category|
+        xpath = "//div[@class='modal-dialog']//input[@value='#{category}']"
+        @wait.until do
+          @driver.find_element(:xpath, xpath).selected? ||
+            (@driver.find_element(:xpath, xpath).click rescue false)
+        end
       end
 
       xpath = '//button[@data-bb-handler="confirm"]'
@@ -34,22 +36,21 @@ describe 'ブラウザから収支を登録する', type: :request do
       xpath = '//h4[text()="カテゴリを選択してください"]'
       @wait.until { (not @driver.find_element(:xpath, xpath).displayed?) rescue true }
 
-      id = "payments_payment_type_#{payment_type}"
+      id = "payment_payment_type_#{payment_type}"
       @wait.until { @driver.find_element(:id, id).click rescue false }
     end
   end
 
   shared_context '登録ボタンを押す' do
     before(:all) do
-      @wait.until do
-        @driver.find_element(:xpath, '//form/input[@value="登録"]').click rescue false
-      end
+      xpath = '//form[@id="new_payment"]/input[@value="登録"]'
+      @wait.until { @driver.find_element(:xpath, xpath).click rescue false }
     end
   end
 
   shared_examples '入力フォームが全て空であること' do
     %w[date content categories price].each do |column|
-      it_is_asserted_by { @driver.find_element(:id, "payments_#{column}").text == '' }
+      it_is_asserted_by { @driver.find_element(:id, "payment_#{column}").text == '' }
     end
   end
 
@@ -93,14 +94,11 @@ describe 'ブラウザから収支を登録する', type: :request do
   end
 
   before(:all) do
-    header = {'Authorization' => app_auth_header}
-    res = http_client.get("#{base_url}/api/payments", nil, header)
-    size = JSON.parse(res.body).size
-    payment = default_inputs.merge(payment_type: 'income', category: 'テスト')
+    payment = default_inputs.merge(payment_type: 'income', categories: ['テスト'])
 
     header = {'Authorization' => app_auth_header}.merge(content_type_json)
-    (per_page - 1 - size).times do
-      body = {payments: payment.merge(price: rand(100))}.to_json
+    (per_page - 1).times do
+      body = payment.merge(price: rand(100)).to_json
       http_client.post("#{base_url}/api/payments", body, header)
     end
   end
@@ -109,8 +107,7 @@ describe 'ブラウザから収支を登録する', type: :request do
     query = {:per_page => 100}
     header = {'Authorization' => app_auth_header}
     res = http_client.get("#{base_url}/api/payments", query, header)
-    payments = JSON.parse(res.body)
-    payments.each do |payment|
+    JSON.parse(res.body)['payments'].each do |payment|
       http_client.delete("#{base_url}/api/payments/#{payment['id']}", nil, header)
     end
   end
@@ -147,8 +144,8 @@ describe 'ブラウザから収支を登録する', type: :request do
 
   describe '収支情報を登録する' do
     before(:all) do
-      @wait.until { @driver.find_element(:id, 'payments_price').enabled? rescue false }
-      element = @driver.find_element(:id, 'payments_price')
+      @wait.until { @driver.find_element(:id, 'payment_price').enabled? rescue false }
+      element = @driver.find_element(:id, 'payment_price')
       element.clear
       element.send_keys('100')
     end
@@ -160,8 +157,8 @@ describe 'ブラウザから収支を登録する', type: :request do
 
   describe 'カレンダーを表示する' do
     before(:all) do
-      @wait.until { @driver.find_element(:id, 'payments_date').displayed? }
-      @driver.find_element(:id, 'payments_date').click
+      @wait.until { @driver.find_element(:id, 'payment_date').displayed? }
+      @driver.find_element(:id, 'payment_date').click
     end
 
     it 'カレンダーが表示されていること' do
@@ -172,7 +169,7 @@ describe 'ブラウザから収支を登録する', type: :request do
   describe '新しいカテゴリで収支情報を登録する' do
     include_context '収支情報を入力する', default_inputs.except, 'income'
     before(:all) do
-      element = @driver.find_element(:id, 'payments_categories')
+      element = @driver.find_element(:id, 'payment_categories')
       element.clear
       element.send_keys('新カテゴリ')
     end

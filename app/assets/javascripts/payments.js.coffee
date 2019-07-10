@@ -38,20 +38,35 @@ $ ->
       title: I18n.t('views.js.category-list.title'),
       inputType: 'checkbox',
       inputOptions: categories,
-      callback: (result) ->
-        if result
-          category_form.val(result.join(','))
+      callback: (results) ->
+        if results
+          category_form.val(results.join(','))
+          return
     })
     return
 
-  $('#new_payments').on 'ajax:success', (event, xhr, status, error) ->
+  $('#new_payment').on 'submit', ->
+    category_array = $('#payment_categories').val().split(',')
+    $.each(category_array, (i, e)->
+      input = '<input type="hidden" name="categories[]" value="' + e + '">'
+      $('#payment_categories').append(input)
+      return
+    )
+    $('#payment_categories').prop('disabled', true)
+    return
+
+  $('#new_payment').on 'ajax:success', (event, xhr, status, error) ->
+    $("#payment_categories").empty()
+    $('#payment_categories').prop('disabled', false)
     location.reload()
     return
 
-  $('#new_payments').on 'ajax:error', (event, xhr, status, error) ->
+  $('#new_payment').on 'ajax:error', (event, xhr, status, error) ->
+    $("#payment_categories").empty()
+    $('#payment_categories').prop('disabled', false)
     errorCodes = []
-    $.each($.parseJSON(xhr.responseText), (i, e)->
-      attribute = e.error_code.match(/invalid_param_(.+)/)[1]
+    $.each($.parseJSON(xhr.responseText).errors, (i, error) ->
+      attribute = error.error_code.match(/^.+_param_(.+)/)[1]
       errorCodes.push(I18n.t("views.common.attribute.#{attribute}"))
       return
     )
@@ -81,8 +96,8 @@ $ ->
       return
     ).fail((xhr, status, error) ->
       errorCodes = []
-      $.each($.parseJSON(xhr.responseText), (i, e)->
-        attribute = e.error_code.match(/invalid_param_(.+)/)[1]
+      $.each($.parseJSON(xhr.responseText).errors, (i, error) ->
+        attribute = error.error_code.match(/invalid_param_(.+)/)[1]
         errorCodes.push(I18n.t("views.search.#{attribute}"))
         return
       )
@@ -110,8 +125,8 @@ $ ->
       $('#dictionary_categories').val('')
     ).fail((xhr, status, error) ->
       errorCodes = []
-      $.each($.parseJSON(xhr.responseText), (i, e)->
-        attribute = e.error_code.match(/.+_param_(.+)/)[1]
+      $.each($.parseJSON(xhr.responseText).errors, (i, error)->
+        attribute = error.error_code.match(/.+_param_(.+)/)[1]
         errorCodes.push(I18n.t("views.dictionary.create.#{attribute}"))
         return
       )

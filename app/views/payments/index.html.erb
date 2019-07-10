@@ -9,18 +9,18 @@
     <div class='tab-content'>
       <div id='new-payment' class='well tab-pane active'>
         <h3><%= t('views.register.title') %></h3>
-        <%= form_for @payment, {:url => api_payments_path, :as => :payments, :remote => true} do |f| %>
+        <%= form_for @payment, url: api_payments_path, remote: true do |f| %>
           <div class='form-group'>
             <%= f.label :date, t('views.common.attribute.date').html_safe %><br>
-            <%= f.text_field :date, {:class => 'form-control date-form', :required => true} %>
+            <%= f.text_field :date, class: 'form-control date-form', name: 'date' %>
           </div>
           <div class='form-group'>
             <%= f.label :content, t('views.common.attribute.content').html_safe %>
-            <%= f.text_field :content, {:class => 'form-control', :required => true, :size => 100} %>
+            <%= f.text_field :content, class: 'form-control', name: 'content', size: 100 %>
           </div>
           <div class='form-group'>
             <%= f.label :categories, t('views.common.attribute.category').html_safe %><br />
-            <% params = {name: 'payments[category]', value: nil, class: 'form-control category-form'} %>
+            <% params = {value: nil, class: 'form-control category-form', name: 'categories'} %>
             <%= f.text_field :categories, params %>
             <span class='category-list' data-names='<%= category_names %>'>
               <%= button_tag(:type => 'button', :class => 'btn btn-default btn-sm') do %>
@@ -30,18 +30,19 @@
           </div>
           <div class='form-group'>
             <%= f.label :price, t('views.common.attribute.price').html_safe %><br>
-            <%= f.text_field :price, {:class => 'form-control price-form', :required => true} %>
+            <%= f.text_field :price, class: 'form-control price-form', name: 'price' %>
           </div>
           <div class='form-group'>
             <%= f.label :payment_type, t('views.common.attribute.payment_type').html_safe %>
             <% [[:income, {}], [:expense, {:checked => true}]].each do |payment_type, options| %>
               <span class='input-custom'>
-                <%= f.radio_button :payment_type, payment_type, options %>
+                <%= f.radio_button :payment_type, payment_type, options.merge(name: 'payment_type') %>
                 <%= f.label "payment_type_#{payment_type}", t("views.common.payment_type.#{payment_type}").html_safe %>
               </span>
             <% end %>
           </div>
-          <%= f.submit t('views.register.submit').html_safe, :class => 'btn btn-primary btn-submit' %>
+          <% params = {id: 'btn-create-payment', class: 'btn btn-primary btn-submit'} %>
+          <%= f.submit t('views.register.submit').html_safe, params %>
         <% end %>
       </div>
 
