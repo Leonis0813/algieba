@@ -1,3 +1,6 @@
+# 4.1.0 (2019/07/11)
+- [UPDATE] API response format
+
 # 4.0.0 (2019/07/06)
 - [ADD] new feature to create dictionaries
 - [UPDATE] gems
