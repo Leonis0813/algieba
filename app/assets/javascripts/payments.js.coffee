@@ -60,6 +60,7 @@ $ ->
     return
 
   $('#new_payment').on 'ajax:error', (event, xhr, status, error) ->
+    $("#payment_categories").empty()
     errorCodes = []
     $.each($.parseJSON(xhr.responseText).errors, (i, error) ->
       attribute = error.error_code.match(/^.+_param_(.+)/)[1]

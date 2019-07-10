@@ -94,13 +94,10 @@ describe 'ブラウザから収支を登録する', type: :request do
   end
 
   before(:all) do
-    header = {'Authorization' => app_auth_header}
-    res = http_client.get("#{base_url}/api/payments", nil, header)
-    size = JSON.parse(res.body).size
     payment = default_inputs.merge(payment_type: 'income', categories: ['テスト'])
 
     header = {'Authorization' => app_auth_header}.merge(content_type_json)
-    (per_page - 1 - size).times do
+    (per_page - 1).times do
       body = payment.merge(price: rand(100)).to_json
       http_client.post("#{base_url}/api/payments", body, header)
     end
