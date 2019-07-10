@@ -56,6 +56,8 @@ $ ->
     return
 
   $('#new_payment').on 'ajax:success', (event, xhr, status, error) ->
+    $("#payment_categories").empty()
+    $('#payment_categories').prop('disabled', false)
     location.reload()
     return
 
