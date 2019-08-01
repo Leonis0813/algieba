@@ -36,6 +36,8 @@ group :development, :test do
   gem 'byebug'
   gem 'capybara'
   gem 'capybara-mechanize'
+  gem 'danger'
+  gem 'danger-simplecov_json'
   gem 'database_cleaner'
   gem 'factory_bot_rails'
   gem 'fuubar'
@@ -45,7 +47,8 @@ group :development, :test do
   gem 'rspec-power_assert'
   gem 'rspec-rails'
   gem 'selenium-webdriver', '2.53.4'
-  gem 'simplecov'
-  gem 'simplecov-rcov'
+  gem 'simplecov', require: false
+  gem 'simplecov-json', require: false
+  gem 'simplecov-rcov', require: false
   gem 'spring'
 end
