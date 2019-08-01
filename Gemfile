@@ -29,6 +29,7 @@ group :development do
   gem 'pronto-rubocop', require: false
   gem 'rubocop'
   gem 'rubocop-performance'
+  gem 'rubocop-rails'
   gem 'web-console', '~> 2.0'
 end
 
