@@ -4,8 +4,12 @@ ENV['COVERAGE'] ||= 'off'
 
 if ENV['COVERAGE'] == 'on'
   require 'simplecov'
+  require 'simplecov-json'
   require 'simplecov-rcov'
-  SimpleCov.formatter = SimpleCov::Formatter::RcovFormatter
+  SimpleCov.formatters = [
+    SimpleCov::Formatter::RcovFormatter,
+    SimpleCov::Formatter::JSONFormatter,
+  ]
   SimpleCov.start 'rails' do
     SimpleCov.command_name Time.now.utc.to_s
   end
