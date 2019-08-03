@@ -3,7 +3,7 @@ pipeline {
 
   environment {
     PATH = '/usr/local/rvm/bin:/usr/bin:/bin'
-    RUBY_VERSION = '2.4.4'
+    RUBY_VERSION = '2.5.5'
   }
 
   options {
@@ -33,6 +33,8 @@ pipeline {
         script {
           sh 'sudo rm -rf coverage'
           sh "rvm ${RUBY_VERSION} do bundle install --path=vendor/bundle"
+          sh "rvm ${RUBY_VERSION} do env RAILS_ENV=test bundle exec rake db:drop"
+          sh "rvm ${RUBY_VERSION} do env RAILS_ENV=test bundle exec rake db:setup"
         }
       }
     }
