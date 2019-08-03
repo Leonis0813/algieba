@@ -1,3 +1,6 @@
+# 4.1.1 (2019/08/03)
+- [UPDATE] ruby version to 2.5.5
+
 # 4.1.0 (2019/07/11)
 - [UPDATE] API response format
 
