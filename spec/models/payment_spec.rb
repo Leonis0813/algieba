@@ -86,7 +86,7 @@ describe Payment, type: :model do
       invalid_params = {
         payment_type: 'invalid_type',
         date: ['invalid_date', '1000-13-01', '1000-01-00', '1000-13-00'],
-        price: ['invalid_price', 1.0, -1],
+        price: [-1],
       }
 
       CommonHelper.generate_test_case(invalid_params).each do |params|
