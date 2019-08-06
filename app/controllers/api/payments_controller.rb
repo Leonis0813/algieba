@@ -3,7 +3,7 @@ module Api
     def create
       attributes = params.permit(:date, :content, :price, :payment_type, categories: [])
 
-      absent_keys = create_params - attributes.symbolize_keys.keys
+      absent_keys = create_params - attributes.keys.map(&:to_sym)
       error_codes = absent_keys.map {|key| "absent_param_#{key}" }
       raise BadRequest, error_codes unless absent_keys.empty?
 
