@@ -1,4 +1,4 @@
-class CreateCategoryDictionaries < ActiveRecord::Migration
+class CreateCategoryDictionaries < ActiveRecord::Migration[4.2]
   def change
     create_table :category_dictionaries do |t|
       t.references :category, index: true, null: false

@@ -1,4 +1,4 @@
-class RemoveClients < ActiveRecord::Migration
+class RemoveClients < ActiveRecord::Migration[4.2]
   def up
     drop_table :clients
   end
