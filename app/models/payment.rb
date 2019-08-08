@@ -2,15 +2,19 @@ class Payment < ActiveRecord::Base
   has_many :category_payments, dependent: :destroy
   has_many :categories, through: :category_payments
 
-  validates :payment_type,
-            inclusion: {in: %w[income expense], message: 'invalid'}
+  validates :payment_type, :content, :price,
+            presence: {message: 'absent'}
   validates :date, presence: {message: 'invalid'}
+  validates :payment_type,
+            inclusion: {in: %w[income expense], message: 'invalid'},
+            allow_nil: true
   validates :price,
             numericality: {
               only_integer: true,
               greater_than_or_equal_to: 0,
               message: 'invalid',
-            }
+            },
+            allow_nil: true
 
   scope :payment_type, ->(payment_type) { where(payment_type: payment_type) }
   scope :date_before, ->(date) { where('date <= ?', date) }
