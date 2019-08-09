@@ -7,4 +7,8 @@ class Settlement
   validates :interval,
             inclusion: {in: %w[daily monthly yearly], message: 'invalid'},
             allow_nil: true
+
+  def attributes
+    {'interval' => interval}
+  end
 end

@@ -11,21 +11,8 @@ describe '収支を計算する', type: :request do
     price: 100,
   }
 
-  before(:all) do
-    header = {'Authorization' => app_auth_header}
-    res = http_client.get("#{base_url}/api/payments", nil, header)
-    JSON.parse(res.body)['payments'].each do |payment|
-      http_client.delete("#{base_url}/api/payments/#{payment['id']}", nil, header)
-    end
-  end
-
-  after(:all) do
-    header = {'Authorization' => app_auth_header}
-    res = http_client.get("#{base_url}/api/payments", nil, header)
-    JSON.parse(res.body)['payments'].each do |payment|
-      http_client.delete("#{base_url}/api/payments/#{payment['id']}", nil, header)
-    end
-  end
+  before(:all) { delete_payments }
+  after(:all) { delete_payments }
 
   describe '収支情報を登録する' do
     include_context 'POST /api/payments', test_payment
@@ -42,13 +29,12 @@ describe '収支を計算する', type: :request do
         describe '収支を計算する' do
           before(:all) do
             body = {interval: interval}
-            header = {'Authorization' => app_auth_header}
-            res = http_client.get("#{base_url}/api/settlement", body, header)
+            res = http_client.get("#{base_url}/api/settlement", body, app_auth_header)
             @response_status = res.status
             @response_body = JSON.parse(res.body) rescue res.body
           end
 
-          it_is_asserted_by { @response_status == 200 }
+          it_behaves_like 'ステータスコードが正しいこと', 200
 
           it 'レスポンスボディのキーのフォーマットが正しいこと' do
             @response_body['settlements'].each do |settlement|

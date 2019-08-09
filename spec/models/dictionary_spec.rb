@@ -5,34 +5,22 @@ require 'rails_helper'
 describe Dictionary, type: :model do
   describe '#validates' do
     describe '正常系' do
-      valid_attributes = {
+      valid_attribute = {
         phrase: 'phrase',
         condition: %w[equal include],
       }
 
-      CommonHelper.generate_test_case(valid_attributes).each do |attributes|
-        it "#{attributes}を指定した場合、エラーにならないこと" do
-          dictionary = Dictionary.new(attributes)
-          dictionary.validate
-          is_asserted_by { dictionary.errors.empty? }
-        end
-      end
+      it_behaves_like '正常な値を指定した場合のテスト', valid_attribute
     end
 
     describe '異常系' do
-      invalid_attributes = {
-        phrase: [nil],
-        condition: ['invalid', 0, 1.0, nil],
+      invalid_attribute = {
+        condition: %w[invalid],
       }
+      absent_keys = %i[phrase condition]
 
-      CommonHelper.generate_test_case(invalid_attributes).each do |attributes|
-        it "#{attributes}を指定した場合、invalidエラーになること" do
-          dictionary = Dictionary.new(attributes)
-          dictionary.validate
-          messages = {phrase: ['invalid'], condition: ['invalid']}
-          is_asserted_by { dictionary.errors.messages == messages }
-        end
-      end
+      it_behaves_like '必須パラメーターがない場合のテスト', absent_keys
+      it_behaves_like '不正な値を指定した場合のテスト', invalid_attribute
     end
   end
 end

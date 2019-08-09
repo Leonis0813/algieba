@@ -30,14 +30,17 @@ describe Api::PaymentsController, type: :controller do
       [{}, '更新しない場合'],
     ].each do |param, description|
       context description || "#{param.keys.join(',')}を更新する場合" do
-        body = base_payment.merge(param).except(:id)
-        response_categories = body[:categories].map do |category_name|
-          {name: category_name, description: nil}
-        end
-        body.merge!(categories: response_categories)
-        include_context '事前準備: 収支情報を登録する'
+        include_context '収支情報を登録する'
         include_context '収支情報を更新する', base_payment[:id], param
-        it_behaves_like '収支リソースのレスポンスが正しいこと', status: 200, body: body
+        before(:all) do
+          body = base_payment.merge(param)
+          categories = body[:categories].map do |category_name|
+            Category.find_by(name: category_name).slice(:id, :name, :description)
+          end
+          @body = body.merge(categories: categories).deep_stringify_keys
+        end
+
+        it_behaves_like 'レスポンスが正しいこと'
       end
     end
 
@@ -47,14 +50,17 @@ describe Api::PaymentsController, type: :controller do
       ['複数のカテゴリを指定した場合', categories: %w[algieba other_category]],
     ].each do |description, param|
       context description do
-        body = base_payment.merge(param).except(:id)
-        response_categories = body[:categories].map do |category_name|
-          {name: category_name, description: nil}
-        end
-        body.merge!(categories: response_categories)
-        include_context '事前準備: 収支情報を登録する'
+        include_context '収支情報を登録する'
         include_context '収支情報を更新する', base_payment[:id], param
-        it_behaves_like '収支リソースのレスポンスが正しいこと', status: 200, body: body
+        before(:all) do
+          body = base_payment.merge(param)
+          categories = body[:categories].map do |category_name|
+            Category.find_by(name: category_name).slice(:id, :name, :description)
+          end
+          @body = body.merge(categories: categories).deep_stringify_keys
+        end
+
+        it_behaves_like 'レスポンスが正しいこと'
       end
     end
   end
@@ -71,9 +77,9 @@ describe Api::PaymentsController, type: :controller do
         errors = params.keys.sort.map do |key|
           {'error_code' => "invalid_param_#{key}"}
         end
-        include_context '事前準備: 収支情報を登録する'
+        include_context '収支情報を登録する'
         include_context '収支情報を更新する', income_id, params
-        it_behaves_like 'レスポンスが正しいこと', body: {'errors' => errors}
+        it_behaves_like 'レスポンスが正しいこと', status: 400, body: {'errors' => errors}
       end
     end
 

@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 describe '辞書情報を管理する', type: :request do
-  now = Time.now.strftime('%F %T.%6N')
+  now = Time.zone.now.strftime('%F %T.%6N')
   default_body = {
     phrase: now,
     condition: 'include',
@@ -12,7 +12,7 @@ describe '辞書情報を管理する', type: :request do
 
   shared_context 'POST /api/dictionaries' do |body = default_body|
     before(:all) do
-      header = content_type_json.merge('Authorization' => app_auth_header)
+      header = content_type_json.merge(app_auth_header)
       res = http_client.post("#{base_url}/api/dictionaries", body.to_json, header)
       @response_status = res.status
       @response_body = JSON.parse(res.body) rescue res.body
@@ -21,8 +21,7 @@ describe '辞書情報を管理する', type: :request do
 
   shared_context 'GET /api/dictionaries' do |query = {content: now}|
     before(:all) do
-      header = {'Authorization' => app_auth_header}
-      res = http_client.get("#{base_url}/api/dictionaries", query, header)
+      res = http_client.get("#{base_url}/api/dictionaries", query, app_auth_header)
       @response_status = res.status
       @response_body = JSON.parse(res.body) rescue res.body
     end
@@ -66,13 +65,13 @@ describe '辞書情報を管理する', type: :request do
         {'error_code' => "absent_param_#{key}"}
       end
       include_context 'POST /api/dictionaries', body
-      it_behaves_like 'レスポンスが正しいこと', body: {'errors' => errors}
+      it_behaves_like 'レスポンスが正しいこと', status: 400, body: {'errors' => errors}
 
       describe '辞書を作成する' do
         body = default_body.merge(condition: 'invalid')
         errors = [{'error_code' => 'invalid_param_condition'}]
         include_context 'POST /api/dictionaries', body
-        it_behaves_like 'レスポンスが正しいこと', body: {'errors' => errors}
+        it_behaves_like 'レスポンスが正しいこと', status: 400, body: {'errors' => errors}
 
         describe '辞書を作成する' do
           include_context 'POST /api/dictionaries'

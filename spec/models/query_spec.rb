@@ -6,60 +6,39 @@ target = [Query, '#validates']
 
 describe(*target, type: :model) do
   describe '正常系' do
-    valid_params = {
-      payment_type: 'income',
-      date_before: ['1000-01-01', '1000/01/01', '01-01-1000', '01/01/1000', '10000101'],
-      date_after: ['1000-01-01', '1000/01/01', '01-01-1000', '01/01/1000', '10000101'],
-      price_upper: 100,
-      price_lower: 100,
+    valid_attribute = {
+      payment_type: %w[income expense],
+      date_before: %w[1000-01-01 1000/01/01 01-01-1000 01/01/1000 10000101],
+      date_after: %w[1000-01-01 1000/01/01 01-01-1000 01/01/1000 10000101],
+      price_upper: 0,
+      price_lower: 0,
       page: 2,
       per_page: 50,
       sort: %w[id date price],
       order: %w[asc desc],
     }
 
-    CommonHelper.generate_test_case(valid_params).each do |params|
-      it "クエリに#{params.keys.join(',')}を指定した場合、エラーにならないこと" do
-        query = Query.new(params)
-        query.validate
-        is_asserted_by { query.errors.empty? }
-
-        params[:page] ||= 1
-        params[:per_page] ||= 10
-        params[:sort] ||= 'id'
-        params[:order] ||= 'asc'
-        is_asserted_by { query.attributes.slice(*params.keys) == params }
-      end
-    end
+    it_behaves_like '正常な値を指定した場合のテスト', valid_attribute
   end
 
   describe '異常系' do
-    invalid_params = {
-      payment_type: 'invalid_type',
-      date_before: ['invalid_date', '1000-13-01', '1000-01-00', '1000-13-00'],
-      date_after: ['invalid_date', '1000-13-01', '1000-01-00', '1000-13-00'],
-      price_upper: ['invalid_price', 1.0, -1],
-      price_lower: ['invalid_price', 1.0, -1],
-      page: ['invalid_page', 1.0, -1],
-      per_page: ['invalid_per_page', 1.0, -1],
-      sort: ['invalid', 1],
-      order: ['invalid', 1],
+    invalid_attribute = {
+      payment_type: 'invalid',
+      date_before: %w[invalid 1000-13-01 1000-01-00 1000-13-00],
+      date_after: %w[invalid 1000-13-01 1000-01-00 1000-13-00],
+      price_upper: [-1],
+      price_lower: [-1],
+      page: [0],
+      per_page: [0],
+      sort: %w[invalid],
+      order: %w[invalid],
     }
 
-    CommonHelper.generate_test_case(invalid_params).each do |params|
-      it "クエリに#{params.keys.join(',')}を指定した場合、エラーになること" do
-        query = Query.new(params)
-        query.validate
-        is_asserted_by { not query.errors.empty? }
-
-        expected_messages = params.map {|key, _| [key, ['invalid']] }.to_h
-        is_asserted_by { query.errors.messages == expected_messages }
-      end
-    end
+    it_behaves_like '不正な値を指定した場合のテスト', invalid_attribute
 
     invalid_period = {
-      date_before: ['1000-01-01', '1000/01/01', '01-01-1000', '01/01/1000', '10000101'],
-      date_after: ['1000-01-02', '1000/01/02', '02-01-1000', '02/01/1000', '10000102'],
+      date_before: %w[1000-01-01 1000/01/01 01-01-1000 01/01/1000 10000101],
+      date_after: %w[1000-01-02 1000/01/02 02-01-1000 02/01/1000 10000102],
     }
 
     CommonHelper.generate_test_case(invalid_period).each do |params|

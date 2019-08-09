@@ -12,14 +12,13 @@ describe '統計情報を確認する', type: :request do
       price: 100,
     }
     body = {payments: payment}.to_json
-    header = {'Authorization' => app_auth_header}.merge(content_type_json)
+    header = app_auth_header.merge(content_type_json)
     res = http_client.post("#{base_url}/api/payments", body, header)
     @payment_id = JSON.parse(res.body)['id']
   end
 
   after(:all) do
-    header = {'Authorization' => app_auth_header}
-    http_client.delete("#{base_url}/api/payments/#{@payment_id}", nil, header)
+    http_client.delete("#{base_url}/api/payments/#{@payment_id}", nil, app_auth_header)
   end
 
   include_context 'Webdriverを起動する'

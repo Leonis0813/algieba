@@ -15,9 +15,9 @@ describe 'payments/index', type: :view do
 
   shared_context '収支情報を登録する' do |num|
     before(:all) do
-      @category = 2.times.map do |i|
+      @category = Array.new(2) do |i|
         name = "category#{i}"
-        Category.create!(name: name)
+        create(:category, name: name)
         [name, 0]
       end.to_h
 
@@ -399,7 +399,6 @@ describe 'payments/index', type: :view do
   end
 
   before(:all) do
-    @html = nil
     @payment = Payment.new
     @search_form = Query.new
     @dictionary = Dictionary.new
