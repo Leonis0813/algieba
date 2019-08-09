@@ -17,7 +17,7 @@ describe 'payments/index', type: :view do
     before(:all) do
       @category = Array.new(2) do |i|
         name = "category#{i}"
-        Category.create!(name: name)
+        create(:category, name: name)
         [name, 0]
       end.to_h
 
@@ -399,7 +399,6 @@ describe 'payments/index', type: :view do
   end
 
   before(:all) do
-    @html = nil
     @payment = Payment.new
     @search_form = Query.new
     @dictionary = Dictionary.new
