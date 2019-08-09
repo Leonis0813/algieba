@@ -35,7 +35,7 @@ describe Payment, type: :model do
         ],
       ].each do |interval, settlement|
         context "#{interval}を指定する場合" do
-          include_context '事前準備: 収支情報を登録する', [income, expense]
+          include_context '収支情報を登録する', [income, expense]
           before(:all) { @settlement = Payment.settle(interval) }
 
           it '計算結果が正しいこと' do

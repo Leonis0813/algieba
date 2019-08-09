@@ -11,7 +11,7 @@ describe PaymentsController, type: :controller do
     end
   end
 
-  include_context '事前準備: 収支情報を登録する'
+  include_context '収支情報を登録する'
 
   describe '正常系' do
     [
@@ -41,34 +41,31 @@ describe PaymentsController, type: :controller do
 
       context description do
         include_context '収支情報を検索する', query
-
-        it 'ステータスコードが正しいこと' do
-          is_asserted_by { @response_status == 200 }
-        end
+        it_behaves_like 'ステータスコードが正しいこと', 200
       end
     end
   end
 
   describe '異常系' do
     [
-      {payment_type: 'invalid_type'},
-      {date_before: 'invalid_date'},
-      {date_after: 'invalid_date'},
-      {price_upper: 'invalid_price'},
-      {price_lower: 'invalid_price'},
-      {per_page: 'invalid_per_page'},
+      {payment_type: 'invalid'},
+      {date_before: 'invalid'},
+      {date_after: 'invalid'},
+      {price_upper: 'invalid'},
+      {price_lower: 'invalid'},
+      {per_page: 'invalid'},
       {
-        payment_type: 'invalid_type',
-        date_before: 'invalid_date',
-        date_after: 'invalid_date',
-        price_upper: 'invalid_price',
-        price_lower: 'invalid_price',
+        payment_type: 'invalid',
+        date_before: 'invalid',
+        date_after: 'invalid',
+        price_upper: 'invalid',
+        price_lower: 'invalid',
       },
     ].each do |query|
       context "#{query.keys.join(',')}が不正な場合" do
         errors = query.keys.sort.map {|key| {'error_code' => "invalid_param_#{key}"} }
         include_context '収支情報を検索する', query
-        it_behaves_like 'レスポンスが正しいこと', body: {'errors' => errors}
+        it_behaves_like 'レスポンスが正しいこと', status: 400, body: {'errors' => errors}
       end
     end
   end

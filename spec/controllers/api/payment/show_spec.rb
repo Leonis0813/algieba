@@ -11,16 +11,18 @@ describe Api::PaymentsController, type: :controller do
     end
   end
 
-  include_context '事前準備: 収支情報を登録する'
+  include_context '収支情報を登録する'
 
   describe '正常系' do
     payment = PaymentHelper.test_payment[:income]
-    response_categories = payment[:categories].map do |category_name|
-      {name: category_name, description: nil}
+    before(:all) do
+      categories = payment[:categories].map do |category_name|
+        Category.find_by(name: category_name).slice(:id, :name, :description)
+      end
+      @body = payment.merge(categories: categories).deep_stringify_keys
     end
-    body = payment.merge(categories: response_categories)
     include_context '収支情報を取得する', payment[:id]
-    it_behaves_like '収支リソースのレスポンスが正しいこと', status: 200, body: body
+    it_behaves_like 'レスポンスが正しいこと'
   end
 
   describe '異常系' do

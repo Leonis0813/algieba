@@ -7,11 +7,11 @@ describe Api::PaymentsController, type: :controller do
     before(:all) do
       res = client.get('/api/settlement', params)
       @response_status = res.status
-      @response_body = JSON.parse(res.body) rescue nil
+      @response_body = JSON.parse(res.body) rescue res.body
     end
   end
 
-  include_context '事前準備: 収支情報を登録する'
+  include_context '収支情報を登録する'
 
   describe '正常系' do
     [
@@ -32,7 +32,7 @@ describe Api::PaymentsController, type: :controller do
     ].each do |interval, expected_body|
       context "#{interval}を指定する場合" do
         include_context '収支を計算する', interval: interval
-        it_behaves_like 'レスポンスが正しいこと', status: 200, body: expected_body
+        it_behaves_like 'レスポンスが正しいこと', body: expected_body
       end
     end
   end
@@ -42,14 +42,14 @@ describe Api::PaymentsController, type: :controller do
       context "#{interval || 'nil'}を指定する場合" do
         body = {'errors' => [{'error_code' => "#{message}_param_interval"}]}
         include_context '収支を計算する', interval: interval
-        it_behaves_like 'レスポンスが正しいこと', body: body
+        it_behaves_like 'レスポンスが正しいこと', status: 400, body: body
       end
     end
 
     context 'interval パラメーターがない場合' do
       body = {'errors' => [{'error_code' => 'absent_param_interval'}]}
       include_context '収支を計算する'
-      it_behaves_like 'レスポンスが正しいこと', body: body
+      it_behaves_like 'レスポンスが正しいこと', status: 400, body: body
     end
   end
 end

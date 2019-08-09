@@ -11,7 +11,7 @@ describe Api::PaymentsController, type: :controller do
     end
   end
 
-  include_context '事前準備: 収支情報を登録する'
+  include_context '収支情報を登録する'
 
   describe '正常系' do
     [
@@ -47,46 +47,20 @@ describe Api::PaymentsController, type: :controller do
       [{}, %i[income expense]],
     ].each do |query, expected_payment_types|
       description = query.empty? ? '何も指定しない場合' : "#{query.keys.join(',')}を指定する場合"
-      expected_payments = expected_payment_types.map do |key|
-        payment = PaymentHelper.test_payment[key].except(:id)
-        categories = payment[:categories].map do |category_name|
-          {name: category_name, description: nil}
-        end
-        payment.merge(categories: categories)
-      end
 
       context description do
-        include_context '収支情報を検索する', query
-
-        it 'ステータスコードが正しいこと' do
-          is_asserted_by { @response_status == 200 }
-        end
-
-        it 'レスポンスボディが正しいこと' do
-          is_asserted_by { @response_body.keys.sort == %w[payments] }
-
-          expected_payments.each_with_index do |payment, i|
-            response_payment = @response_body['payments'][i]
-
-            is_asserted_by { response_payment.keys.sort == PaymentHelper.response_keys }
-
-            payment.except(:categories).each do |key, value|
-              is_asserted_by { response_payment[key.to_s] == value }
+        before(:all) do
+          expected_payments = expected_payment_types.map do |key|
+            payment = PaymentHelper.test_payment[key]
+            categories = payment[:categories].map do |category_name|
+              Category.find_by(name: category_name).slice(:id, :name, :description)
             end
-
-            payment[:categories].each_with_index do |category, j|
-              response_category = response_payment['categories'][j]
-
-              is_asserted_by do
-                response_category.keys.sort == CategoryHelper.response_keys
-              end
-
-              category.each do |key, value|
-                is_asserted_by { response_category[key.to_s] == value }
-              end
-            end
+            payment.merge(categories: categories)
           end
+          @body = {payments: expected_payments}.deep_stringify_keys
         end
+        include_context '収支情報を検索する', query
+        it_behaves_like 'レスポンスが正しいこと'
       end
     end
 
@@ -99,7 +73,7 @@ describe Api::PaymentsController, type: :controller do
     ].each do |query|
       describe "#{query.keys.join(',')}を指定する場合" do
         include_context '収支情報を検索する', query
-        it_behaves_like 'レスポンスが正しいこと', status: 200, body: {'payments' => []}
+        it_behaves_like 'レスポンスが正しいこと', body: {'payments' => []}
       end
     end
   end
@@ -130,7 +104,7 @@ describe Api::PaymentsController, type: :controller do
       context "#{query.keys.join(',')}が不正な場合" do
         errors = query.keys.sort.map {|key| {'error_code' => "invalid_param_#{key}"} }
         include_context '収支情報を検索する', query
-        it_behaves_like 'レスポンスが正しいこと', body: {'errors' => errors}
+        it_behaves_like 'レスポンスが正しいこと', status: 400, body: {'errors' => errors}
       end
     end
   end

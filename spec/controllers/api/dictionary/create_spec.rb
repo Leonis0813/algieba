@@ -27,10 +27,8 @@ describe Api::DictionariesController, type: :controller do
   end
 
   describe '正常系' do
-    shared_examples 'レスポンスが正常であること' do |status: 201, body: nil|
-      it 'ステータスコードが正しいこと' do
-        is_asserted_by { @response_status == status }
-      end
+    shared_examples 'レスポンスが正しいこと' do |status: 201, body: nil|
+      it_behaves_like 'ステータスコードが正しいこと', status
 
       it 'レスポンスボディが正しいこと' do
         is_asserted_by { @response_body.keys.sort == DictionaryHelper.response_keys }
@@ -60,7 +58,7 @@ describe Api::DictionariesController, type: :controller do
       include_context 'トランザクション作成'
       include_context '辞書情報を登録する'
 
-      it_behaves_like 'レスポンスが正常であること', body: body
+      it_behaves_like 'レスポンスが正しいこと', body: body
       it_behaves_like 'DBに辞書情報が追加されていること',
                       default_params.except(:categories)
     end
@@ -72,10 +70,10 @@ describe Api::DictionariesController, type: :controller do
         ],
       )
       include_context 'トランザクション作成'
-      before(:all) { Category.create!(name: category_name) }
+      before(:all) { create(:category, name: category_name) }
       include_context '辞書情報を登録する'
 
-      it_behaves_like 'レスポンスが正常であること', body: body
+      it_behaves_like 'レスポンスが正しいこと', body: body
 
       it 'カテゴリが追加されていないこと' do
         is_asserted_by { Category.where(name: category_name).count == 1 }
@@ -94,7 +92,7 @@ describe Api::DictionariesController, type: :controller do
       include_context '辞書情報を登録する',
                       default_params.merge(categories: category_names)
 
-      it_behaves_like 'レスポンスが正常であること', body: body
+      it_behaves_like 'レスポンスが正しいこと', body: body
       it_behaves_like 'DBに辞書情報が追加されていること',
                       default_params.except(:categories)
 
@@ -112,7 +110,7 @@ describe Api::DictionariesController, type: :controller do
         body = {'errors' => [{'error_code' => "absent_param_#{absent_key}"}]}
         include_context '辞書情報を登録する', default_params.except(absent_key)
 
-        it_behaves_like 'レスポンスが正しいこと', body: body
+        it_behaves_like 'レスポンスが正しいこと', status: 400, body: body
         it_behaves_like 'DBに辞書情報が追加されていないこと',
                         default_params.except(:categories)
       end
@@ -124,7 +122,7 @@ describe Api::DictionariesController, type: :controller do
         body = {'errors' => [{'error_code' => "invalid_param_#{invalid_key}"}]}
         include_context '辞書情報を登録する', params
 
-        it_behaves_like 'レスポンスが正しいこと', body: body
+        it_behaves_like 'レスポンスが正しいこと', status: 400, body: body
         it_behaves_like 'DBに辞書情報が追加されていないこと', params.except(:categories)
       end
     end
@@ -139,7 +137,7 @@ describe Api::DictionariesController, type: :controller do
       end
       include_context '辞書情報を登録する'
 
-      it_behaves_like 'レスポンスが正しいこと', body: body
+      it_behaves_like 'レスポンスが正しいこと', status: 400, body: body
 
       it '辞書が追加されていないこと' do
         query = default_params.except(:categories)
