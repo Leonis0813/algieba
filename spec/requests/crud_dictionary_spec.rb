@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 describe '辞書情報を管理する', type: :request do
-  now = Time.now.strftime('%F %T.%6N')
+  now = Time.zone.now.strftime('%F %T.%6N')
   default_body = {
     phrase: now,
     condition: 'include',

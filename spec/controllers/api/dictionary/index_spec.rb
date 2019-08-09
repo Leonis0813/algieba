@@ -23,14 +23,15 @@ describe Api::DictionariesController, type: :controller do
   describe '正常系' do
     context 'クエリを指定した場合' do
       before(:all) do
+        dictionaries = Dictionary.where(phrase: 'test', condition: 'include')
         @body = {
-          dictionaries: Dictionary.where(:phrase => 'test', condition: 'include').map do |dictionary|
+          dictionaries: dictionaries.map do |dictionary|
             dictionary.slice(:id, :phrase, :condition).merge(
               categories: dictionary.categories.map do |category|
                 category.slice(:id, :name, :description)
-              end
+              end,
             )
-          end
+          end,
         }.deep_stringify_keys
       end
       include_context '辞書情報を検索する', content: 'test'
@@ -41,12 +42,11 @@ describe Api::DictionariesController, type: :controller do
       before(:all) do
         @body = {
           dictionaries: Dictionary.all.order(:condition).map do |dictionary|
-            dictionary.slice(:id, :phrase, :condition).merge(
-              categories: dictionary.categories.map do |category|
-                category.slice(:id, :name, :description)
-              end
-            )
-          end
+            categories = dictionary.categories.map do |category|
+              category.slice(:id, :name, :description)
+            end
+            dictionary.slice(:id, :phrase, :condition).merge(categories: categories)
+          end,
         }.deep_stringify_keys
       end
       include_context '辞書情報を検索する'

@@ -15,7 +15,7 @@ gem 'momentjs-rails'
 gem 'mysql2', '~> 0.3.20'
 gem 'rails', '~> 5.0.0'
 gem 'sass-rails', '~> 5.0'
-gem 'sdoc', :group => :doc
+gem 'sdoc', group: :doc
 gem 'therubyracer'
 gem 'turbolinks'
 gem 'twitter-bootstrap-rails', '3.2.2'

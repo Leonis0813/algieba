@@ -1,4 +1,4 @@
-class Dictionary < ActiveRecord::Base
+class Dictionary < ApplicationRecord
   has_many :category_dictionaries, dependent: :destroy
   has_many :categories, through: :category_dictionaries
 

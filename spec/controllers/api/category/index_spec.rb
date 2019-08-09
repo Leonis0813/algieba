@@ -19,7 +19,7 @@ describe Api::CategoriesController, type: :controller do
       context "#{keyword}を指定した場合" do
         before(:all) do
           @body = {
-            categories: Category.where(:name => keyword).order(:name).map do |category|
+            categories: Category.where(name: keyword).order(:name).map do |category|
               category.slice(:id, :name, :description)
             end,
           }.deep_stringify_keys

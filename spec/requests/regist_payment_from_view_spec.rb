@@ -104,7 +104,7 @@ describe 'ブラウザから収支を登録する', type: :request do
   end
 
   after(:all) do
-    query = {:per_page => 100}
+    query = {per_page: 100}
     header = {'Authorization' => app_auth_header}
     res = http_client.get("#{base_url}/api/payments", query, header)
     JSON.parse(res.body)['payments'].each do |payment|

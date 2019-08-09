@@ -3,7 +3,7 @@ class Query
 
   attribute_names = %i[payment_type date_before date_after content_equal content_include
                        category price_upper price_lower page per_page sort order]
-  attr_accessor *attribute_names
+  attr_accessor(*attribute_names)
 
   validates :payment_type,
             inclusion: {in: %w[income expense], message: 'invalid'},
@@ -41,11 +41,7 @@ class Query
       [:date_before, date_before],
       [:date_after, date_after],
     ].each do |date_symbol, date_value|
-      begin
-        Date.parse(date_value) if date_value
-      rescue ArgumentError
-        errors.add(date_symbol, 'invalid')
-      end
+      Date.parse(date_value) if date_value rescue errors.add(date_symbol, 'invalid')
     end
   end
 
