@@ -20,8 +20,7 @@ describe '収支情報を管理する', type: :request do
 
   shared_context 'GET /api/payments/[:id]' do
     before(:all) do
-      header = {'Authorization' => app_auth_header}
-      res = http_client.get("#{base_url}/api/payments/#{@id}", nil, header)
+      res = http_client.get("#{base_url}/api/payments/#{@id}", nil, app_auth_header)
       @response_status = res.status
       @response_body = JSON.parse(res.body) rescue res.body
     end
@@ -29,8 +28,7 @@ describe '収支情報を管理する', type: :request do
 
   shared_context 'GET /api/categories' do |param = {}|
     before(:all) do
-      header = {'Authorization' => app_auth_header}
-      res = http_client.get("#{base_url}/api/categories", param, header)
+      res = http_client.get("#{base_url}/api/categories", param, app_auth_header)
       @response_status = res.status
       @response_body = JSON.parse(res.body) rescue res.body
     end
@@ -67,7 +65,7 @@ describe '収支情報を管理する', type: :request do
     describe '収支情報を登録する' do
       errors = [{'error_code' => 'absent_param_content'}]
       include_context 'POST /api/payments', invalid_payment
-      it_behaves_like 'レスポンスが正しいこと', body: {'errors' => errors}
+      it_behaves_like 'レスポンスが正しいこと', status: 400, body: {'errors' => errors}
 
       describe '収支情報を登録する' do
         include_context 'POST /api/payments', valid_payment
@@ -95,7 +93,7 @@ describe '収支情報を管理する', type: :request do
               before(:all) do
                 url = "#{base_url}/api/payments/#{@created_payment['id']}"
                 body = {categories: ['other']}.to_json
-                header = {'Authorization' => app_auth_header}.merge(content_type_json)
+                header = app_auth_header.merge(content_type_json)
                 res = http_client.put(url, body, header)
                 @response_status = res.status
                 @response_body = JSON.parse(res.body) rescue res.body
@@ -133,8 +131,7 @@ describe '収支情報を管理する', type: :request do
                   describe '収支情報を削除する' do
                     before(:all) do
                       url = "#{base_url}/api/payments/#{@created_payment['id']}"
-                      header = {'Authorization' => app_auth_header}
-                      res = http_client.delete(url, nil, header)
+                      res = http_client.delete(url, nil, app_auth_header)
                       @response_status = res.status
                       @response_body = JSON.parse(res.body) rescue res.body
                     end
