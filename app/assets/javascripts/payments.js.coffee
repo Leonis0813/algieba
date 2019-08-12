@@ -15,8 +15,8 @@ $ ->
     dayViewHeaderFormat: I18n.t('views.js.datepicker.dayViewHeaderFormat')
   })
 
-  $('#payments_content').on 'focusout', ->
-    query = {content: $('#payments_content').val()}
+  $('#payment_content').on 'focusout', ->
+    query = {content: $('#payment_content').val()}
     $.ajax({
       type: 'GET',
       url: '/algieba/api/dictionaries?' + $.param(query)
@@ -24,7 +24,7 @@ $ ->
       category_names = $.map(data.dictionaries[0].categories, (category) ->
         return category.name
       )
-      $('#payments_categories').val(category_names.join(','))
+      $('#payment_categories').val(category_names.join(','))
       return
     )
     return
@@ -92,6 +92,18 @@ $ ->
               label: '登録する',
               className: 'btn-primary',
               callback: ->
+                data = {
+                  phrase: $('#dialog-phrase').val(),
+                  condition: $('#dialog-condition option:selected').val(),
+                  categories: $('#dialog-categories').val().split(','),
+                }
+                $.ajax({
+                  type: 'POST',
+                  url: '/algieba/api/dictionaries',
+                  data: JSON.stringify(data),
+                  contentType: 'application/json',
+                  dataType: 'json',
+                })
                 return
             }
           }

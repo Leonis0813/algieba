@@ -30,9 +30,13 @@ module Api
       @dictionaries = if query.empty?
                         Dictionary.all.order(:condition)
                       else
-                        Dictionary.where(query.except(:content)).select do |dictionary|
-                          query[:content].include?(dictionary.phrase)
-                        end.sort_by(&:condition)
+                        dictionaries = Dictionary.where(query.except(:content))
+                        if query.has_key?(:content)
+                          dictionaries = dictionaries.select do |dictionary|
+                            query[:content].include?(dictionary.phrase)
+                          end
+                        end
+                        dictionaries.sort_by(&:condition)
                       end
       render status: :ok, template: 'dictionaries/dictionaries'
     end
