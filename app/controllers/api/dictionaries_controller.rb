@@ -30,7 +30,7 @@ module Api
       @dictionaries = if query.empty?
                         Dictionary.all.order(:condition)
                       else
-                        Dictionary.all.select do |dictionary|
+                        Dictionary.where(query.except(:content)).select do |dictionary|
                           query[:content].include?(dictionary.phrase)
                         end.sort_by(&:condition)
                       end
@@ -44,7 +44,7 @@ module Api
     end
 
     def index_params
-      %i[content]
+      %i[condition content phrase]
     end
   end
 end
