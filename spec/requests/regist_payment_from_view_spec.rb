@@ -54,6 +54,22 @@ describe 'ブラウザから収支を登録する', type: :request do
     end
   end
 
+  shared_examples '辞書を登録するダイアログが表示されていること' do |category|
+    it do
+      phrase = @wait.until { @driver.find_element(:id, 'dialog-phrase') }
+      is_asserted_by { phrase.present? }
+      is_asserted_by { phrase.text == 'register from view' }
+
+      xpath = '//select[@id="dialog-condition"]/option[@selected][@value="と一致する"]'
+      selected_condition = @wait.until { @driver.find_element(:xpath, xpath) }
+      is_asserted_by { selected_condition.present? }
+
+      categories = @wait.until { @driver.find_element(:id, 'dialog-categories') }
+      is_asserted_by { categories.present? }
+      is_asserted_by { categories.text == category }
+    end
+  end
+
   before(:all) do
     payment = default_inputs.merge(payment_type: 'income', categories: ['テスト'])
 
@@ -105,8 +121,17 @@ describe 'ブラウザから収支を登録する', type: :request do
     end
     include_context '登録ボタンを押す'
 
-    it_behaves_like '表示されている件数が正しいこと', per_page, 1, per_page
-    it_behaves_like '収支情報の数が正しいこと', per_page
+    it_behaves_like '辞書を登録するダイアログが表示されていること', category: 'テスト'
+
+    describe '辞書登録をキャンセルする' do
+      before(:all) do
+        xpath = '//button[@data-bb-handler="cancel"]'
+        @wait.until { @driver.find_element(:xpath, xpath).click rescue false }
+      end
+
+      it_behaves_like '表示されている件数が正しいこと', per_page, 1, per_page
+      it_behaves_like '収支情報の数が正しいこと', per_page
+    end
   end
 
   describe 'カレンダーを表示する' do
@@ -129,8 +154,16 @@ describe 'ブラウザから収支を登録する', type: :request do
     end
     include_context '登録ボタンを押す'
 
-    it_behaves_like '表示されている件数が正しいこと', per_page + 1, 1, per_page
-    it_behaves_like '収支情報の数が正しいこと', per_page
+    it_behaves_like '辞書を登録するダイアログが表示されていること', category: '新カテゴリ'
+    describe '辞書を登録する' do
+      before(:all) do
+        xpath = '//button[@data-bb-handler="ok"]'
+        @wait.until { @driver.find_element(:xpath, xpath).click rescue false }
+      end
+
+      it_behaves_like '表示されている件数が正しいこと', per_page + 1, 1, per_page
+      it_behaves_like '収支情報の数が正しいこと', per_page
+    end
   end
 
   describe 'カテゴリ一覧を確認する' do
@@ -179,9 +212,37 @@ describe 'ブラウザから収支を登録する', type: :request do
     it_behaves_like '収支情報の数が正しいこと', per_page
   end
 
+  describe '内容を入力する' do
+    before(:all) do
+      @wait.until { @driver.find_element(:id, 'payment_date').displayed? }
+      element = @wait.until { @driver.find_element(:id, 'payment_content') }
+      element.send_keys(default_inputs[:content])
+      element.send_keys(:tab)
+    end
+
+    it 'カテゴリが入力されていること' do
+      category = @wait.until { @driver.find_element(:id, 'payment_categories') }
+      is_asserted_by { category.text == '新カテゴリ' }
+    end
+
+    describe '収支情報を登録する' do
+      before(:all) do
+        @wait.until { @driver.find_element(:id, 'payment_date').displayed? }
+        @wait.until do
+          @driver.find_element(:id, 'payment_date').send_keys(default_inputs[:date])
+        end
+        @wait.until do
+          @driver.find_element(:id, 'payment_payment_type_income').click rescue false
+        end
+      end
+      include_context '登録ボタンを押す'
+
+      it_behaves_like '表示されている件数が正しいこと', per_page + 1, 1, per_page
+      it_behaves_like '収支情報の数が正しいこと', per_page
+    end
+  end
+
   describe '2ページ目にアクセスする' do
-    include_context '収支情報を入力する', default_inputs, 'income'
-    include_context '登録ボタンを押す'
     before(:all) do
       @wait.until do
         @driver.find_element(:xpath, '//span[@class="next"]').click rescue false
