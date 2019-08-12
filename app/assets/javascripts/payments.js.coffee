@@ -15,8 +15,8 @@ $ ->
     dayViewHeaderFormat: I18n.t('views.js.datepicker.dayViewHeaderFormat')
   })
 
-  $('#payments_content').on 'focusout', ->
-    query = {content: $('#payments_content').val()}
+  $('#payment_content').on 'focusout', ->
+    query = {content: $('#payment_content').val()}
     $.ajax({
       type: 'GET',
       url: '/algieba/api/dictionaries?' + $.param(query)
@@ -24,7 +24,7 @@ $ ->
       category_names = $.map(data.dictionaries[0].categories, (category) ->
         return category.name
       )
-      $('#payments_categories').val(category_names.join(','))
+      $('#payment_categories').val(category_names.join(','))
       return
     )
     return
@@ -55,10 +55,83 @@ $ ->
     $('#payment_categories').prop('disabled', true)
     return
 
-  $('#new_payment').on 'ajax:success', (event, xhr, status, error) ->
-    $("#payment_categories").empty()
-    $('#payment_categories').prop('disabled', false)
-    location.reload()
+  $('#new_payment').on 'ajax:success', (event, payment, status) ->
+    query = $.param({phrase: payment.content, condition: 'equal'})
+    $.ajax({
+      type: 'GET',
+      url: '/algieba/api/dictionaries?' + query
+    }).done((data) ->
+      if (data.dictionaries.length == 0)
+        category_names = $.map(payment.categories, (category) ->
+          return category.name
+        ).join(',')
+        bootbox.dialog({
+          title: '以下の情報を辞書に登録しますか？',
+          message: '<div class="form-group">' +
+          '<label for="phrase">' +
+          I18n.t('views.dictionary.create.phrase') +
+          '</label>' +
+          '<input value="' +
+          payment.content +
+          '" id="dialog-phrase" class="form-control">' +
+          '<select id="dialog-condition" class="form-control">' +
+          '<option value="include">' +
+          I18n.t('views.dictionary.create.include') +
+          '</option>' +
+          '<option selected value="equal">' +
+          I18n.t('views.dictionary.create.equal') +
+          '</option>' +
+          '</select>' +
+          '</div>' +
+          '<div class="form-group">' +
+          '<label for="categories">' +
+          I18n.t('views.dictionary.create.categories') +
+          '</label><br />' +
+          '<input class="form-control" value="' +
+          category_names +
+          '" id="dialog-categories" disabled>' +
+          '</div>',
+          buttons: {
+            cancel: {
+              label: I18n.t('views.dictionary.create.cancel'),
+              className: 'btn-default',
+              callback: ->
+                $("#payment_categories").empty()
+                $('#payment_categories').prop('disabled', false)
+                location.reload()
+                return
+            },
+            ok: {
+              label: I18n.t('views.dictionary.create.submit'),
+              className: 'btn-primary',
+              callback: ->
+                data = {
+                  phrase: $('#dialog-phrase').val(),
+                  condition: $('#dialog-condition option:selected').val(),
+                  categories: $('#dialog-categories').val().split(','),
+                }
+                $.ajax({
+                  type: 'POST',
+                  url: '/algieba/api/dictionaries',
+                  data: JSON.stringify(data),
+                  contentType: 'application/json',
+                  dataType: 'json',
+                }).always((xhr, status, error) ->
+                  $("#payment_categories").empty()
+                  $('#payment_categories').prop('disabled', false)
+                  location.reload()
+                  return
+                )
+                return
+            }
+          }
+        })
+        return
+      $("#payment_categories").empty()
+      $('#payment_categories').prop('disabled', false)
+      location.reload()
+      return
+    )
     return
 
   $('#new_payment').on 'ajax:error', (event, xhr, status, error) ->
