@@ -106,7 +106,7 @@ pipeline {
         expression { return env.ENVIRONMENT == 'development' && params.SystemTest }
       }
 
-      steps
+      steps {
         sh "rvm ${RUBY_VERSION} do env RAILS_ENV=development bundle exec rake db:drop"
         sh "rvm ${RUBY_VERSION} do env RAILS_ENV=development bundle exec rake db:setup"
         sh "rvm ${RUBY_VERSION} do env REMOTE_HOST=http://localhost/algieba bundle exec rake spec:requests"
