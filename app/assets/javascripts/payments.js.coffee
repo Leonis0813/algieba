@@ -55,10 +55,49 @@ $ ->
     $('#payment_categories').prop('disabled', true)
     return
 
-  $('#new_payment').on 'ajax:success', (event, xhr, status, error) ->
-    $("#payment_categories").empty()
-    $('#payment_categories').prop('disabled', false)
-    location.reload()
+  $('#new_payment').on 'ajax:success', (event, payment, status) ->
+    query = $.param({phrase: payment.content, condition: 'equal'})
+    $.ajax({
+      type: 'GET',
+      url: '/algieba/api/dictionaries?' + query
+    }).done((data) ->
+      if (data.dictionaries.length == 0)
+        category_names = $.map(payment.categories, (category) ->
+          return category.name
+        )
+        bootbox.dialog({
+          title: '以下の情報を辞書に登録しますか？',
+          message: '<div class="form-group">' +
+          '<label for="phrase">' + I18n.t('views.dictionary.create.phrase') + '</label>' +
+          '<input type="text" name="phrase" value="' + payment.content + '" id="dialog-phrase" class="form-control">' +
+          '<select name="condition" id="dialog-condition" class="form-control">' +
+          '<option value="include">' + I18n.t('views.dictionary.create.include') + '</option>' +
+          '<option selected value="equal">' + I18n.t('views.dictionary.create.equal') + '</option>' +
+          '</select>' +
+          '</div>' +
+          '<div class="form-group">' +
+          '<label for="categories">' + I18n.t('views.dictionary.create.categories') + '</label><br />' +
+          '<input class="form-control" name="categories" value="' + category_names.join(',') + '" type="text" id="dialog-categories" disabled>' +
+          '</div>',
+          buttons: {
+            cancel: {
+              label: '登録しない',
+              className: 'btn-default',
+            },
+            ok: {
+              label: '登録する',
+              className: 'btn-primary',
+              callback: ->
+                return
+            }
+          }
+        })
+        return
+      $("#payment_categories").empty()
+      $('#payment_categories').prop('disabled', false)
+      location.reload()
+      return
+    )
     return
 
   $('#new_payment').on 'ajax:error', (event, xhr, status, error) ->
