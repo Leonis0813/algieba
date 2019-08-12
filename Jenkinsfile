@@ -34,7 +34,8 @@ pipeline {
           sh 'sudo rm -rf coverage'
           sh "rvm ${RUBY_VERSION} do bundle install --path=vendor/bundle"
           sh "rvm ${RUBY_VERSION} do bundle exec rails db:environment:set RAILS_ENV=test"
-          sh "rvm ${RUBY_VERSION} do env RAILS_ENV=test bundle exec rake db:migrate:reset"
+          sh "rvm ${RUBY_VERSION} do env RAILS_ENV=test bundle exec rake db:drop"
+          sh "rvm ${RUBY_VERSION} do env RAILS_ENV=test bundle exec rake db:setup"
         }
       }
     }
