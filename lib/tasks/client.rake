@@ -14,11 +14,9 @@ namespace :client do
 
   desc 'Destroy application'
   task :destroy, [:application_id] => :environment do |_, args|
-    begin
-      Client.find_by(application_id: args.application_id).destroy
-      puts "Destroy #{args.application_id}"
-    rescue StandardError => e
-      p e
-    end
+    Client.find_by(application_id: args.application_id).destroy
+    puts "Destroy #{args.application_id}"
+  rescue StandardError => e
+    p e
   end
 end

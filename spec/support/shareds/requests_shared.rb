@@ -2,7 +2,7 @@
 
 shared_context 'POST /api/payments' do |body|
   before(:all) do
-    header = {'Authorization' => app_auth_header}.merge(content_type_json)
+    header = app_auth_header.merge(content_type_json)
     res = http_client.post("#{base_url}/api/payments", body.to_json, header)
     @response_status = res.status
     @response_body = JSON.parse(res.body) rescue res.body
@@ -11,8 +11,7 @@ end
 
 shared_context 'GET /api/payments' do |params = {}|
   before(:all) do
-    header = {'Authorization' => app_auth_header}
-    res = http_client.get("#{base_url}/api/payments", params, header)
+    res = http_client.get("#{base_url}/api/payments", params, app_auth_header)
     @response_status = res.status
     @response_body = JSON.parse(res.body) rescue res.body
   end
@@ -34,5 +33,53 @@ shared_context 'Cookieをセットする' do
     password.send_keys(Settings.user_password)
     @driver.find_element(:xpath, '//button[@type="submit"]').click
     @wait.until { @driver.manage.cookie_named('LSID') }
+  end
+end
+
+shared_examples '収支検索時のレスポンスが正しいこと' do
+  it_is_asserted_by { @response_status == 200 }
+
+  it 'レスポンスボディが正しいこと' do
+    is_asserted_by { @response_body.keys.sort == %w[payments] }
+
+    @response_body['payments'].each do |payment|
+      is_asserted_by { payment.keys.sort == PaymentHelper.response_keys }
+
+      payment['categories'].each do |category|
+        is_asserted_by { category.keys.sort == CategoryHelper.response_keys }
+      end
+    end
+  end
+end
+
+shared_examples '正しくエラーダイアログが表示されていること' do |message: ''|
+  alert_xpath = '//div[contains(@class, "bootbox-alert")]'
+
+  it 'タイトルが正しいこと' do
+    xpath = "#{alert_xpath}//h4"
+    is_asserted_by { @driver.find_element(:xpath, xpath).text == 'エラー' }
+  end
+
+  it 'メッセージが正しいこと' do
+    xpath = "#{alert_xpath}//div[contains(@class, 'alert-danger')]"
+    is_asserted_by { @driver.find_element(:xpath, xpath).text == message }
+  end
+
+  it 'OKボタンがあること' do
+    xpath = "#{alert_xpath}//div[@class='modal-footer']/button"
+    is_asserted_by { @driver.find_element(:xpath, xpath).text == 'OK' }
+  end
+end
+
+shared_examples '表示されている件数が正しいこと' do |total, from, to|
+  it_is_asserted_by do
+    text = "#{total}件中#{from}〜#{to}件を表示"
+    @wait.until { @driver.find_element(:xpath, '//div/h4').text == text }
+  end
+end
+
+shared_examples '収支情報の数が正しいこと' do |expected_size|
+  it_is_asserted_by do
+    @driver.find_elements(:xpath, '//table/tbody/tr').size == expected_size
   end
 end

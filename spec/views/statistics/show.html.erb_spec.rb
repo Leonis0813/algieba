@@ -5,7 +5,7 @@ require 'rails_helper'
 describe 'statistics/show', type: :view do
   before(:each) do
     render template: 'statistics/show', layout: 'layouts/application'
-    @html = response
+    @html ||= Nokogiri.parse(response)
   end
 
   describe '<html><body>' do

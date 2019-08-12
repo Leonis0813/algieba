@@ -1,5 +1,10 @@
-# 4.1.3 (2019/08/12)
+# 4.2.0 (2019/08/12)
+- [UPDATE] payments view to show dialog for creating dictionary
 - [UPDATE] gems
+
+# 4.1.3 (2019/08/10)
+- [REFACTOR] models
+>>>>>>> develop
 
 # 4.1.2 (2019/08/07)
 - [UPDATE] rails version to 5.0.x

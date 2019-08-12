@@ -7,7 +7,7 @@ describe Api::PaymentsController, type: :controller do
     before(:all) do
       res = client.post('/api/payments', params)
       @response_status = res.status
-      @response_body = JSON.parse(res.body) rescue nil
+      @response_body = JSON.parse(res.body) rescue res.body
     end
   end
 
@@ -15,9 +15,7 @@ describe Api::PaymentsController, type: :controller do
     base_payment = PaymentHelper.test_payment[:income]
 
     shared_examples 'レスポンスが正しいこと' do |body|
-      it 'ステータスコードが正しいこと' do
-        is_asserted_by { @response_status == 201 }
-      end
+      it_behaves_like 'ステータスコードが正しいこと', 201
 
       it 'レスポンスボディが正しいこと' do
         is_asserted_by { @response_body.keys.sort == PaymentHelper.response_keys }
@@ -65,16 +63,6 @@ describe Api::PaymentsController, type: :controller do
       end
     end.flatten(1)
 
-    shared_examples 'レスポンスが正しいこと' do |body|
-      it 'ステータスコードが正しいこと' do
-        is_asserted_by { @response_status == 400 }
-      end
-
-      it 'レスポンスボディが正しいこと' do
-        is_asserted_by { @response_body == body }
-      end
-    end
-
     test_cases.each do |absent_keys|
       context "#{absent_keys.join(',')}がない場合" do
         selected_keys = payment_params - absent_keys
@@ -82,7 +70,7 @@ describe Api::PaymentsController, type: :controller do
         errors = absent_keys.sort.map {|key| {'error_code' => "absent_param_#{key}"} }
         include_context 'トランザクション作成'
         include_context '収支情報を登録する', income
-        it_behaves_like 'レスポンスが正しいこと', 'errors' => errors
+        it_behaves_like 'レスポンスが正しいこと', status: 400, body: {'errors' => errors}
       end
     end
 
@@ -99,7 +87,7 @@ describe Api::PaymentsController, type: :controller do
         end
         include_context 'トランザクション作成'
         include_context '収支情報を登録する', expense
-        it_behaves_like 'レスポンスが正しいこと', 'errors' => errors
+        it_behaves_like 'レスポンスが正しいこと', status: 400, body: {'errors' => errors}
       end
     end
   end

@@ -5,7 +5,7 @@ require 'rails_helper'
 describe 'ブラウザから辞書を登録する', type: :request do
   alert_xpath = '//div[contains(@class, "bootbox-alert")]'
   default_input = {
-    phrase: Time.now.strftime('%F %T.%6N'),
+    phrase: Time.zone.now.strftime('%F %T.%6N'),
     condition: 'include',
     categories: ['test'],
   }
@@ -58,21 +58,8 @@ describe 'ブラウザから辞書を登録する', type: :request do
     end
   end
 
-  before(:all) do
-    header = {'Authorization' => app_auth_header}
-    res = http_client.get("#{base_url}/api/payments", {per_page: 100}, header)
-    JSON.parse(res.body)['payments'].each do |payment|
-      http_client.delete("#{base_url}/api/payments/#{payment['id']}", nil, header)
-    end
-  end
-
-  after(:all) do
-    header = {'Authorization' => app_auth_header}
-    res = http_client.get("#{base_url}/api/payments", {per_page: 100}, header)
-    JSON.parse(res.body)['payments'].each do |payment|
-      http_client.delete("#{base_url}/api/payments/#{payment['id']}", nil, header)
-    end
-  end
+  before(:all) { delete_payments }
+  after(:all) { delete_payments }
 
   body = {
     payment_type: 'expense',

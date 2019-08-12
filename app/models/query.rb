@@ -1,23 +1,26 @@
 class Query
   include ActiveModel::Model
 
-  attr_accessor :payment_type,
-                :date_before, :date_after,
-                :content_equal, :content_include,
-                :category,
-                :price_upper, :price_lower,
-                :page, :per_page,
-                :sort, :order
+  attribute_names = %i[payment_type date_before date_after content_equal content_include
+                       category price_upper price_lower page per_page sort order]
+  attr_accessor(*attribute_names)
 
   validates :payment_type,
-            inclusion: {in: %w[income expense], message: 'invalid'}, allow_nil: true
-  validates :price_upper, :price_lower, :page, :per_page,
+            inclusion: {in: %w[income expense], message: 'invalid'},
+            allow_nil: true
+  validates :price_upper, :price_lower,
             numericality: {
               only_integer: true,
               greater_than_or_equal_to: 0,
               message: 'invalid',
             },
             allow_nil: true
+  validates :page, :per_page,
+            numericality: {
+              only_integer: true,
+              greater_than_or_equal_to: 1,
+              message: 'invalid',
+            }
   validates :sort, inclusion: {in: %w[id date price], message: 'invalid'}
   validates :order, inclusion: {in: %w[asc desc], message: 'invalid'}
   validate :date_valid?
@@ -38,11 +41,7 @@ class Query
       [:date_before, date_before],
       [:date_after, date_after],
     ].each do |date_symbol, date_value|
-      begin
-        Date.parse(date_value) if date_value
-      rescue ArgumentError
-        errors.add(date_symbol, 'invalid')
-      end
+      Date.parse(date_value) if date_value rescue errors.add(date_symbol, 'invalid')
     end
   end
 
@@ -60,9 +59,6 @@ class Query
   end
 
   def attributes
-    %i[
-      payment_type date_before date_after content_equal content_include category
-      price_upper price_lower page per_page sort order
-    ].map {|name| [name, send(name)] }.to_h
+    self.class.attribute_names.map {|name| [name, send(name)] }.to_h
   end
 end
