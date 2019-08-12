@@ -210,30 +210,8 @@ describe 'ブラウザから収支を登録する', type: :request do
     it_behaves_like '収支情報の数が正しいこと', per_page
   end
 
-  describe '内容を入力する' do
-    before(:all) do
-      @wait.until { @driver.find_element(:id, 'payment_date').displayed? }
-      element = @wait.until { @driver.find_element(:id, 'payment_content') }
-      element.send_keys(default_inputs[:content])
-      element.send_keys(:tab)
-    end
-
-    it 'カテゴリが入力されていること' do
-      xpath = '//input[@id="payment_categories"][@value="新カテゴリ"]'
-      is_asserted_by { @wait.until { @driver.find_element(:xpath, xpath) } }
-    end
-  end
-
   describe '収支情報を登録する' do
-    before(:all) do
-      @wait.until { @driver.find_element(:id, 'payment_date').displayed? }
-      @wait.until do
-        @driver.find_element(:id, 'payment_date').send_keys(default_inputs[:date])
-      end
-      @wait.until do
-        @driver.find_element(:id, 'payment_payment_type_income').click rescue false
-      end
-    end
+    include_context '収支情報を入力する', default_inputs, 'income'
     include_context '登録ボタンを押す'
 
     it_behaves_like '表示されている件数が正しいこと', per_page + 1, 1, per_page

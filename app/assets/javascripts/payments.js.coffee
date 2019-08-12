@@ -127,6 +127,9 @@ $ ->
           }
         })
         return
+      $("#payment_categories").empty()
+      $('#payment_categories').prop('disabled', false)
+      location.reload()
       return
     )
     return
