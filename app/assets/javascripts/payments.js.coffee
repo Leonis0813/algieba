@@ -95,6 +95,9 @@ $ ->
             cancel: {
               label: I18n.t('views.dictionary.create.cancel'),
               className: 'btn-default',
+              callback: ->
+                location.reload()
+                return
             },
             ok: {
               label: I18n.t('views.dictionary.create.submit'),
@@ -111,15 +114,15 @@ $ ->
                   data: JSON.stringify(data),
                   contentType: 'application/json',
                   dataType: 'json',
-                })
+                }).always((xhr, status, error) ->
+                  location.reload()
+                  return
+                )
                 return
             }
           }
         })
         return
-      $("#payment_categories").empty()
-      $('#payment_categories').prop('disabled', false)
-      location.reload()
       return
     )
     return
