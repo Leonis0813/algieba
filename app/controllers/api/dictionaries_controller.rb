@@ -31,7 +31,7 @@ module Api
                         Dictionary.all.order(:condition)
                       else
                         dictionaries = Dictionary.where(query.except(:content))
-                        if query.has_key?(:content)
+                        if query.key?(:content)
                           dictionaries = dictionaries.select do |dictionary|
                             query[:content].include?(dictionary.phrase)
                           end

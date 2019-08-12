@@ -71,25 +71,33 @@ $ ->
           '<label for="phrase">' +
           I18n.t('views.dictionary.create.phrase') +
           '</label>' +
-          '<input value="' + payment.content + '" id="dialog-phrase" class="form-control">' +
+          '<input value="' +
+          payment.content +
+          '" id="dialog-phrase" class="form-control">' +
           '<select id="dialog-condition" class="form-control">' +
-          '<option value="include">' + I18n.t('views.dictionary.create.include') + '</option>' +
-          '<option selected value="equal">' + I18n.t('views.dictionary.create.equal') + '</option>' +
+          '<option value="include">' +
+          I18n.t('views.dictionary.create.include') +
+          '</option>' +
+          '<option selected value="equal">' +
+          I18n.t('views.dictionary.create.equal') +
+          '</option>' +
           '</select>' +
           '</div>' +
           '<div class="form-group">' +
           '<label for="categories">' +
           I18n.t('views.dictionary.create.categories') +
           '</label><br />' +
-          '<input class="form-control" value="' + category_names + '" id="dialog-categories" disabled>' +
+          '<input class="form-control" value="' +
+          category_names +
+          '" id="dialog-categories" disabled>' +
           '</div>',
           buttons: {
             cancel: {
-              label: '登録しない',
+              label: I18n.t('views.dictionary.create.cancel'),
               className: 'btn-default',
             },
             ok: {
-              label: '登録する',
+              label: I18n.t('views.dictionary.create.submit'),
               className: 'btn-primary',
               callback: ->
                 data = {
