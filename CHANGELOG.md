@@ -4,7 +4,6 @@
 
 # 4.1.3 (2019/08/10)
 - [REFACTOR] models
->>>>>>> develop
 
 # 4.1.2 (2019/08/07)
 - [UPDATE] rails version to 5.0.x
