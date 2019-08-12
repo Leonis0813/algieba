@@ -1,5 +1,6 @@
 # 4.2.0 (2019/08/12)
 - [UPDATE] payments view to show dialog for creating dictionary
+- [UPDATE] gems
 
 # 4.1.3 (2019/08/10)
 - [REFACTOR] models
