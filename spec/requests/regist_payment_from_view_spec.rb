@@ -26,25 +26,34 @@ describe 'ブラウザから収支を登録する', type: :request do
         xpath = "//div[@class='modal-dialog']//input[@value='#{category}']"
         @wait.until do
           @driver.find_element(:xpath, xpath).selected? ||
-            (@driver.find_element(:xpath, xpath).click rescue false)
+            (@driver.find_element(:xpath, xpath).click || true rescue false)
         end
       end
 
       xpath = '//button[@data-bb-handler="confirm"]'
-      @wait.until { @driver.find_element(:xpath, xpath).click rescue false }
+      @wait.until do
+        res = @driver.find_element(:xpath, xpath).click rescue false
+        res.nil? ? true : false
+      end
 
       xpath = '//h4[text()="カテゴリを選択してください"]'
       @wait.until { (not @driver.find_element(:xpath, xpath).displayed?) rescue true }
 
       id = "payment_payment_type_#{payment_type}"
-      @wait.until { @driver.find_element(:id, id).click rescue false }
+      @wait.until do
+        res = @driver.find_element(:id, id).click rescue false
+        res.nil? ? true : false
+      end
     end
   end
 
   shared_context '登録ボタンを押す' do
     before(:all) do
       xpath = '//form[@id="new_payment"]/input[@value="登録"]'
-      @wait.until { @driver.find_element(:xpath, xpath).click rescue false }
+      @wait.until do
+        res = @driver.find_element(:xpath, xpath).click rescue false
+        res.nil? ? true : false
+      end
     end
   end
 
@@ -100,7 +109,9 @@ describe 'ブラウザから収支を登録する', type: :request do
 
     after(:all) do
       @wait.until do
-        @driver.find_element(:xpath, '//div/button[text()="OK"]').click rescue false
+        res =
+          @driver.find_element(:xpath, '//div/button[text()="OK"]').click rescue false
+        res.nil? ? true : false
       end
     end
 
@@ -124,7 +135,10 @@ describe 'ブラウザから収支を登録する', type: :request do
   describe '辞書登録をキャンセルする' do
     before(:all) do
       xpath = '//button[@data-bb-handler="cancel"]'
-      @wait.until { @driver.find_element(:xpath, xpath).click rescue false }
+      @wait.until do
+        res = @driver.find_element(:xpath, xpath).click rescue false
+        res.nil? ? true : false
+      end
     end
 
     it_behaves_like '表示されている件数が正しいこと', per_page, 1, per_page
@@ -157,7 +171,10 @@ describe 'ブラウザから収支を登録する', type: :request do
   describe '辞書を登録する' do
     before(:all) do
       xpath = '//button[@data-bb-handler="ok"]'
-      @wait.until { @driver.find_element(:xpath, xpath).click rescue false }
+      @wait.until do
+        res = @driver.find_element(:xpath, xpath).click rescue false
+        res.nil? ? true : false
+      end
     end
 
     it_behaves_like '表示されている件数が正しいこと', per_page + 1, 1, per_page
@@ -221,7 +238,8 @@ describe 'ブラウザから収支を登録する', type: :request do
   describe '2ページ目にアクセスする' do
     before(:all) do
       @wait.until do
-        @driver.find_element(:xpath, '//span[@class="next"]').click rescue false
+        res = @driver.find_element(:xpath, '//span[@class="next"]').click rescue false
+        res.nil? ? true : false
       end
       @wait.until { URI.parse(@driver.current_url).query == 'page=2' }
     end
