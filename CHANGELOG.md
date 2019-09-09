@@ -1,3 +1,6 @@
+# 4.2.1 (2019/09/09)
+- [UPDATE] gems
+
 # 4.2.0 (2019/08/12)
 - [UPDATE] payments view to show dialog for creating dictionary
 - [UPDATE] gems

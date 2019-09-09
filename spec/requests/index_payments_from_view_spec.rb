@@ -63,7 +63,9 @@ describe 'ブラウザから収支を検索する', type: :request do
   describe '10000円以下の収支情報を検索する' do
     before(:all) do
       @wait.until do
-        @driver.find_element(:xpath, '//a[@href="#search-form"]').click rescue false
+        res =
+          @driver.find_element(:xpath, '//a[@href="#search-form"]').click rescue false
+        res.nil? ? true : false
       end
       @driver.find_element(:name, 'price_lower').send_keys('10000')
       @driver.find_element(:id, 'search-button').click
@@ -127,7 +129,9 @@ describe 'ブラウザから収支を検索する', type: :request do
   describe '1000円以上10000円以下の収支情報を検索する' do
     before(:all) do
       @wait.until do
-        @driver.find_element(:xpath, '//a[@href="#search-form"]').click rescue false
+        res =
+          @driver.find_element(:xpath, '//a[@href="#search-form"]').click rescue false
+        res.nil? ? true : false
       end
       @driver.find_element(:name, 'price_upper').send_keys('1000')
       @driver.find_element(:id, 'search-button').click
@@ -151,7 +155,9 @@ describe 'ブラウザから収支を検索する', type: :request do
   describe 'テスト，または新カテゴリの収支情報を検索する' do
     before(:all) do
       @wait.until do
-        @driver.find_element(:xpath, '//a[@href="#search-form"]').click rescue false
+        res =
+          @driver.find_element(:xpath, '//a[@href="#search-form"]').click rescue false
+        res.nil? ? true : false
       end
       @driver.find_element(:name, 'price_upper').clear
       @driver.find_element(:name, 'price_lower').clear
@@ -171,7 +177,9 @@ describe 'ブラウザから収支を検索する', type: :request do
   describe 'カレンダーを表示する' do
     before(:all) do
       @wait.until do
-        @driver.find_element(:xpath, '//a[@href="#search-form"]').click rescue false
+        res =
+          @driver.find_element(:xpath, '//a[@href="#search-form"]').click rescue false
+        res.nil? ? true : false
       end
       @driver.find_element(:id, 'query_date_after').click
     end

@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   environment {
-    PATH = '/usr/local/rvm/bin:/usr/bin:/bin'
+    PATH = '/usr/local/rvm/bin:/usr/local/bin:/usr/bin:/bin'
     RUBY_VERSION = '2.5.5'
   }
 

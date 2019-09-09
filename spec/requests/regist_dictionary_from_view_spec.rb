@@ -13,7 +13,8 @@ describe 'ブラウザから辞書を登録する', type: :request do
   shared_context '辞書情報を入力する' do |input = default_input|
     before(:all) do
       @wait.until do
-        @driver.find_element(:xpath, '//a[text()="辞書登録"]').click rescue false
+        res = @driver.find_element(:xpath, '//a[text()="辞書登録"]').click rescue false
+        res.nil? ? true : false
       end
 
       phrase_input = @wait.until { @driver.find_element(:id, 'phrase') }
@@ -23,7 +24,10 @@ describe 'ブラウザから辞書を登録する', type: :request do
       select_xpath = '//select[@id="condition"]'
       @wait.until { @driver.find_element(:xpath, select_xpath) }
       option_xpath = "#{select_xpath}/option[@value='#{input[:condition]}']"
-      @wait.until { @driver.find_element(:xpath, option_xpath).click }
+      @wait.until do
+        res = @driver.find_element(:xpath, option_xpath).click rescue false
+        res.nil? ? true : false
+      end
 
       category_input = @wait.until { @driver.find_element(:id, 'dictionary_categories') }
       category_input.clear
@@ -34,8 +38,9 @@ describe 'ブラウザから辞書を登録する', type: :request do
   shared_context '登録ボタンを押す' do
     before(:all) do
       @wait.until do
-        @driver.find_element(:id, 'btn-create-dictionary') rescue false
-      end.click
+        res = @driver.find_element(:id, 'btn-create-dictionary').click rescue false
+        res.nil? ? true : false
+      end
     end
   end
 
@@ -79,7 +84,10 @@ describe 'ブラウザから辞書を登録する', type: :request do
     include_context '登録ボタンを押す'
     after(:all) do
       xpath = "#{alert_xpath}//div[@class='modal-footer']/button"
-      @wait.until { @driver.find_element(:xpath, xpath).click rescue false }
+      @wait.until do
+        res = @driver.find_element(:xpath, xpath).click rescue false
+        res.nil? ? true : false
+      end
     end
 
     it_behaves_like '登録に成功していること'
@@ -92,7 +100,10 @@ describe 'ブラウザから辞書を登録する', type: :request do
     include_context '登録ボタンを押す'
     after(:all) do
       xpath = "#{alert_xpath}//div[@class='modal-footer']/button"
-      @wait.until { @driver.find_element(:xpath, xpath).click rescue false }
+      @wait.until do
+        res = @driver.find_element(:xpath, xpath).click rescue false
+        res.nil? ? true : false
+      end
     end
 
     it_behaves_like '登録に成功していること'
@@ -103,10 +114,14 @@ describe 'ブラウザから辞書を登録する', type: :request do
     before(:all) do
       @driver.get("#{base_url}/payments")
       @wait.until do
-        @driver.find_element(:xpath, '//a[text()="辞書登録"]').click rescue false
+        res = @driver.find_element(:xpath, '//a[text()="辞書登録"]').click rescue false
+        res.nil? ? true : false
       end
       xpath = '//form[@id="new_dictionary"]//span[@class="category-list"]/button'
-      @wait.until { @driver.find_element(:xpath, xpath).click rescue false }
+      @wait.until do
+        res = @driver.find_element(:xpath, xpath).click rescue false
+        res.nil? ? true : false
+      end
       @wait.until { @driver.find_element(:class, 'bootbox-prompt').displayed? }
     end
 
