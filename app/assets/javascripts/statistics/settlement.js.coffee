@@ -18,7 +18,9 @@ class window.Settlement
       _monthlyBar = new Bar('monthly', Settlement.WIDTH, Settlement.HEIGHT)
 
       d3.json('api/settlement?interval=monthly').then((data) ->
-        bars = data.filter((element, index, array) -> index > (array.length - 1) - 36)
+        bars = data.settlements.filter((_, index, array) ->
+          index > (array.length - 1) - 36
+        )
 
         scale = {
           x: d3.scaleBand().rangeRound(Settlement.X_AXIS.RANGE),
@@ -50,7 +52,9 @@ class window.Settlement
       _dailyBar = new Bar('daily', Settlement.WIDTH, Settlement.HEIGHT)
 
       d3.json('api/settlement?interval=daily').then((data) ->
-        bars = data.filter((element, index, array) -> element.date.indexOf(month) == 0)
+        bars = data.settlements.filter((element) ->
+          element.date.indexOf(month) == 0
+        )
 
         scale = {
           x: d3.scaleBand().rangeRound(Settlement.X_AXIS.RANGE),
