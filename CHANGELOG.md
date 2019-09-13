@@ -1,3 +1,6 @@
+# 4.2.2 (2019/09/13)
+- [FIX] statistics view
+
 # 4.2.1 (2019/09/09)
 - [UPDATE] gems
 
