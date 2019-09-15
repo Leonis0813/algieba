@@ -15,7 +15,11 @@ class window.SettlementByPeriod
     _dailyBar = null
 
     @drawMonthly = ->
-      _monthlyBar = new Bar('monthly', SettlementByPeriod.WIDTH, SettlementByPeriod.HEIGHT)
+      _monthlyBar = new Bar(
+        'monthly',
+        SettlementByPeriod.WIDTH,
+        SettlementByPeriod.HEIGHT
+      )
 
       d3.json('api/settlements/period?interval=monthly').then((data) ->
         bars = data.settlements.filter((_, index, array) ->
@@ -80,15 +84,15 @@ class window.SettlementByPeriod
 
     _createBars = (bars, scale) ->
       bars.map((bar) ->
-          {
-            x: scale.x(bar.date) + SettlementByPeriod.X_AXIS.ORIGIN.x,
-            y: if bar.price < 0 then scale.y(0) else scale.y(bar.price),
-            width: scale.x.bandwidth(),
-            height: Math.abs(scale.y(bar.price) - scale.y(0)),
-            date: bar.date,
-            price: bar.price,
-          }
-        )
+        {
+          x: scale.x(bar.date) + SettlementByPeriod.X_AXIS.ORIGIN.x,
+          y: if bar.price < 0 then scale.y(0) else scale.y(bar.price),
+          width: scale.x.bandwidth(),
+          height: Math.abs(scale.y(bar.price) - scale.y(0)),
+          date: bar.date,
+          price: bar.price,
+        }
+      )
 
     _setColor = (id) ->
       d3.select("##{id}")
@@ -105,7 +109,10 @@ class window.SettlementByPeriod
             .append('text')
             .text(bar.price)
             .attr('x', bar.x)
-            .attr('y', if bar.price > 0 then 0.9 * scale.y(bar.price) else scale.y(10000))
+            .attr(
+              'y',
+              if bar.price > 0 then 0.9 * scale.y(bar.price) else scale.y(10000)
+            )
             .attr('class', 'price')
           return
         )
