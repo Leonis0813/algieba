@@ -51,7 +51,17 @@ class Settlement
   private
 
   def calculate_by_category
+    category_price = Payment.joins(:categories)
+      .select('categories.name', 'price')
+      .payment_type('income')
+      .group('categories.name')
+      .sum(:price)
 
+    [].tap do |settlements|
+      category_price.each do |category, price|
+        settlements << {category: category, price: price}
+      end
+    end
   end
 
   def calculate_by_period
