@@ -24,7 +24,13 @@ class Settlement
 
   attr_accessor :aggregation_type, :interval, :payment_type
 
-  validates :aggregation_type, :interval, presence: {message: 'absent'}
+  validates :aggregation_type, presence: {message: 'absent'}
+  validates :interval,
+            presence: {message: 'absent'},
+            if: -> { aggregation_type == AGGREGATION_TYPE_PERIOD }
+  validates :payment_type,
+            presence: {message: 'absent'},
+            if: -> { aggregation_type == AGGREGATION_TYPE_CATEGORY }
   validates :aggregation_type,
             inclusion: {in: AGGREGATION_TYPES, message: 'invalid'},
             allow_nil: true
