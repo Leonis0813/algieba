@@ -1,18 +1,18 @@
 module Api
   class SettlementsController < ApplicationController
     def category
-      query = Settlement.new(params.permit(:payment_type))
-      query.aggregation_type = Settlement::AGGREGATION_TYPE_CATEGORY
-      check_query_param(query, :payment_type)
-      @settlements = Settlement.calculate
+      settlement = Settlement.new(params.permit(:payment_type))
+      settlement.aggregation_type = Settlement::AGGREGATION_TYPE_CATEGORY
+      check_query_param(settlement, :payment_type)
+      @settlements = settlement.calculate
       render status: :ok, template: 'settlements/category'
     end
 
     def period
-      query = Settlement.new(params.permit(:interval))
-      query.aggregation_type = Settlement::AGGREGATION_TYPE_PERIOD
-      check_query_param(query, :interval)
-      @settlements = Settlement.calculate
+      settlement = Settlement.new(params.permit(:interval))
+      settlement.aggregation_type = Settlement::AGGREGATION_TYPE_PERIOD
+      check_query_param(settlement, :interval)
+      @settlements = settlement.calculate
       render status: :ok, template: 'settlements/period'
     end
 

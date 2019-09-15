@@ -30,72 +30,70 @@ class Settlement
             allow_nil: true
   validates :interval,
             inclusion: {in: INTERVALS, message: 'invalid'},
-            allow_nil: true
+            allow_nil: true,
             if: -> { aggregation_type == AGGREGATION_TYPE_PERIOD }
   validates :payment_type,
             inclusion: {in: Payment::PAYMENT_TYPES, message: 'invalid'},
-            allow_nil: true
+            allow_nil: true,
             if: -> { aggregation_type == AGGREGATION_TYPE_CATEGORY }
 
-  class << self
-    def calculate
-      return [] unless Payment.exists?
+  def calculate
+    return [] unless Payment.exists?
 
-      case aggregation_type
-      when AGGREGATION_TYPE_CATEGORY
-        calculate_by_category
-      when AGGREGATION_TYPE_PERIOD
-        calculate_by_period
-      end
+    case aggregation_type
+    when AGGREGATION_TYPE_CATEGORY
+      calculate_by_category
+    when AGGREGATION_TYPE_PERIOD
+      calculate_by_period
     end
+  end
 
-    private
+  private
 
-    def calculate_by_category
+  def calculate_by_category
 
-    end
+  end
 
-    def calculate_by_period
-      columns = %i[date price]
-      incomes = Payment.payment_type(Payment::PAYMENT_TYPE_INCOME).select(columns)
-      expenses = Payment.payment_type(Payment::PAYMENT_TYPE_EXPENSE).select(columns)
+  def calculate_by_period
+    columns = %i[date price]
+    incomes = Payment.payment_type(Payment::PAYMENT_TYPE_INCOME).select(columns)
+    expenses = Payment.payment_type(Payment::PAYMENT_TYPE_EXPENSE).select(columns)
 
-      incomes = group_by_period(incomes, FORMAT[interval])
-      expenses = group_by_period(expenses, FORMAT[interval])
+    incomes = group_by_period(incomes, FORMAT[interval])
+    expenses = group_by_period(expenses, FORMAT[interval])
 
-      oldest = (incomes.keys | expenses.keys).min
-      newest = (incomes.keys | expenses.keys).max
-      periods = (oldest..newest).to_a
-      periods = case interval
-                when INTERVAL_YEARLY
-                  periods
-                when INTERVAL_MONTHLY
-                  periods.select {|day| day[-2..-1].to_i.between?(1, 12) }
-                when INTERVAL_DAILY
-                  (Date.parse(oldest)..Date.parse(newest)).to_a.map do |day|
-                    day.strftime(FORMAT[INTERVAL_DAILY])
-                  end
+    oldest = (incomes.keys | expenses.keys).min
+    newest = (incomes.keys | expenses.keys).max
+    periods = (oldest..newest).to_a
+    periods = case interval
+              when INTERVAL_YEARLY
+                periods
+              when INTERVAL_MONTHLY
+                periods.select {|day| day[-2..-1].to_i.between?(1, 12) }
+              when INTERVAL_DAILY
+                (Date.parse(oldest)..Date.parse(newest)).to_a.map do |day|
+                  day.strftime(FORMAT[INTERVAL_DAILY])
                 end
+              end
 
-      [].tap do |settlements|
-        periods.each do |period|
-          settlements << {
-            date: period,
-            price: (incomes[period].to_i - expenses[period].to_i),
-          }
-        end
+    [].tap do |settlements|
+      periods.each do |period|
+        settlements << {
+          date: period,
+          price: (incomes[period].to_i - expenses[period].to_i),
+        }
       end
     end
+  end
 
-    def group_by_period(records, format)
-      grouped_record = records.group_by do |record|
-        record.date.strftime(format)
-      end
+  def group_by_period(records, format)
+    grouped_record = records.group_by do |record|
+      record.date.strftime(format)
+    end
 
-      {}.tap do |settlement|
-        grouped_record.each do |period, grouped_records|
-          settlement.merge!(period => grouped_records.map(&:price).inject(:+))
-        end
+    {}.tap do |settlement|
+      grouped_record.each do |period, grouped_records|
+        settlement.merge!(period => grouped_records.map(&:price).inject(:+))
       end
     end
   end
