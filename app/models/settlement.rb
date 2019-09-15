@@ -1,26 +1,26 @@
 class Settlement
   include ActiveModel::Model
 
-  AGGREGATION_TYPE_CATEGORY = 'category'
-  AGGREGATION_TYPE_PERIOD = 'period'
+  AGGREGATION_TYPE_CATEGORY = 'category'.freeze
+  AGGREGATION_TYPE_PERIOD = 'period'.freeze
   AGGREGATION_TYPES = [
     AGGREGATION_TYPE_CATEGORY,
     AGGREGATION_TYPE_PERIOD,
-  ]
+  ].freeze
 
-  INTERVAL_DAILY = 'daily'
-  INTERVAL_MONTHLY = 'monthly'
-  INTERVAL_YEARLY = 'yearly'
+  INTERVAL_DAILY = 'daily'.freeze
+  INTERVAL_MONTHLY = 'monthly'.freeze
+  INTERVAL_YEARLY = 'yearly'.freeze
   INTERVALS = [
     INTERVAL_DAILY,
     INTERVAL_MONTHLY,
     INTERVAL_YEARLY,
-  ]
+  ].freeze
   FORMAT = {
     INTERVAL_DAILY => '%Y-%m-%d',
     INTERVAL_MONTHLY => '%Y-%m',
     INTERVAL_YEARLY => '%Y',
-  }
+  }.freeze
 
   attr_accessor :aggregation_type, :interval, :payment_type
 
@@ -52,10 +52,10 @@ class Settlement
 
   def calculate_by_category
     category_price = Payment.joins(:categories)
-      .select('categories.name', 'price')
-      .payment_type('income')
-      .group('categories.name')
-      .sum(:price)
+                            .select('categories.name', 'price')
+                            .payment_type(payment_type)
+                            .group('categories.name')
+                            .sum(:price)
 
     [].tap do |settlements|
       category_price.each do |category, price|

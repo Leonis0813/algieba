@@ -1,10 +1,10 @@
 class Payment < ApplicationRecord
-  PAYMENT_TYPE_INCOME = 'income'
-  PAYMENT_TYPE_EXPENSE = 'expense'
+  PAYMENT_TYPE_INCOME = 'income'.freeze
+  PAYMENT_TYPE_EXPENSE = 'expense'.freeze
   PAYMENT_TYPES = [
     PAYMENT_TYPE_INCOME,
     PAYMENT_TYPE_EXPENSE,
-  ]
+  ].freeze
 
   has_many :category_payments, dependent: :destroy
   has_many :categories, through: :category_payments
