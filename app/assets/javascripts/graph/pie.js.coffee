@@ -32,7 +32,7 @@ class window.Pie
       return
 
     _generateColors = (size) ->
-      deg = Math.round( 320 / size );
+      deg = Math.round(320 / size)
       h = 0
       s = 0.8
       v = 0.8

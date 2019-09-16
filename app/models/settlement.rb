@@ -54,6 +54,14 @@ class Settlement
     end
   end
 
+  def attributes
+    {
+      'aggregation_type' => aggregation_type,
+      'interval' => interval,
+      'payment_type' => payment_type,
+    }
+  end
+
   private
 
   def calculate_by_category
@@ -112,13 +120,5 @@ class Settlement
         settlement.merge!(period => grouped_records.map(&:price).inject(:+))
       end
     end
-  end
-
-  def attributes
-    {
-      'aggregation_type' => aggregation_type,
-      'interval' => interval,
-      'payment_type' => payment_type,
-    }
   end
 end
