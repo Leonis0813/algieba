@@ -60,9 +60,7 @@ describe '統計情報を確認する', type: :request do
   end
 
   describe 'カテゴリ別収支を確認する' do
-    before(:all) do
-      @driver.find_element(:xpath, '//li/a[text()="カテゴリ別"]').click
-    end
+    before(:all) { @driver.find_element(:xpath, '//li/a[text()="カテゴリ別"]').click }
 
     it '収入の割合を表す円グラフが表示されていること' do
       xpath = '//*[@id="income"][@width="500"][@height="500"]'
