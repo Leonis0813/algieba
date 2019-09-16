@@ -49,7 +49,7 @@ describe '統計情報を確認する', type: :request do
   end
 
   describe 'x軸のラベルをクリックする' do
-    before(:all) { @driver.execute_script('settlement.drawDaily("2018-01")') }
+    before(:all) { @driver.execute_script('period.drawDaily("2018-01")') }
 
     it '日次の棒グラフが表示されていること' do
       xpath = '//*[@id="daily"][@width="1200"][@height="300"]'
