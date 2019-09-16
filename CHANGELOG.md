@@ -1,3 +1,6 @@
+# 4.3.0 (2019/09/16)
+- [UPDATE] statics view to show rate for each category
+
 # 4.2.2 (2019/09/13)
 - [FIX] statistics view
 
