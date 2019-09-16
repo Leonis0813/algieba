@@ -19,8 +19,8 @@ describe Settlement, type: :model do
 
       context 'aggregation_typeが不正な場合' do
         before(:all) do
-          attribute = build(:settlement).attributes.merge('aggregation_type' => 'invalid')
-          object = Settlement.new(attribute)
+          attribute = build(:settlement).attributes
+          object = Settlement.new(attribute.merge('aggregation_type' => 'invalid'))
           object.validate
           @errors = object.errors
         end
@@ -38,7 +38,7 @@ describe Settlement, type: :model do
         context "aggregation_typeが#{aggregation_type}の場合" do
           before(:all) do
             attribute = build(:settlement).attributes.except(param)
-            attribute.merge!('aggregation_type' => aggregation_type)
+            attribute['aggregation_type'] = aggregation_type
             object = Settlement.new(attribute)
             object.validate
             @errors = object.errors
