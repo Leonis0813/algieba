@@ -2,10 +2,10 @@
 
 require 'rails_helper'
 
-describe Api::PaymentsController, type: :controller do
+describe Api::SettlementsController, type: :controller do
   shared_context '収支を計算する' do |params = {}|
     before(:all) do
-      res = client.get('/api/settlement', params)
+      res = client.get('/api/settlements/period', params)
       @response_status = res.status
       @response_body = JSON.parse(res.body) rescue res.body
     end

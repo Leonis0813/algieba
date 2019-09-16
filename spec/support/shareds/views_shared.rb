@@ -1,5 +1,9 @@
 # coding: utf-8
 
+shared_context 'HTML初期化' do
+  before(:all) { @html = nil }
+end
+
 shared_examples 'ヘッダーが表示されていること' do
   it do
     base_xpath =

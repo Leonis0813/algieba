@@ -9,10 +9,6 @@ describe 'payments/index', type: :view do
   payment_list_xpath =
     "#{main_content_xpath}/div[@class='row center-block']/div[@class='col-lg-8']"
 
-  shared_context 'HTML初期化' do
-    before(:all) { @html = nil }
-  end
-
   shared_context '収支情報を登録する' do |num|
     before(:all) do
       @category = Array.new(2) do |i|

@@ -1,0 +1,42 @@
+<ul class='nav nav-tabs'>
+  <li class='active'><a href='#period' data-toggle='tab'>期間別</a></li>
+  <li><a href='#category' data-toggle='tab'>カテゴリ別</a></li>
+</ul>
+
+<div class='tab-content'>
+  <div id='period' class='tab-pane active'>
+    <span class='graph'>
+      <svg id='monthly'></svg>
+    </span>
+    <span class='graph'>
+      <svg id='daily'></svg>
+    </span>
+  </div>
+  <div id='category' class='tab-pane'>
+    <div class="rows">
+      <div class="col-lg-6">
+        <h4 class="title-stat-category">収入</h4>
+        <span class='graph'>
+          <svg id='income'></svg>
+        </span>
+      </div>
+
+      <div class="col-lg-6">
+        <h4 class="title-stat-category">支出</h4>
+        <span class='graph'>
+          <svg id='expense'></svg>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function() {
+    period = new SettlementByPeriod();
+    period.drawMonthly();
+    category = new SettlementByCategory();
+    category.draw('income');
+    category.draw('expense');
+  });
+</script>
