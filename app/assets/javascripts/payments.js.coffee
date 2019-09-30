@@ -1,9 +1,33 @@
 $ ->
+  showErrorDialog = (errorCodes)->
+    param = {error_codes: errorCodes.join(', ')}
+    bootbox.alert({
+      title: I18n.t('views.js.form.error.title'),
+      message: '<div class="text-center alert alert-danger">' +
+      I18n.t('views.js.form.error.message', param) +
+      '</div>',
+    })
+    return
+
   $('.date-form').datetimepicker({
     format: I18n.t('views.js.datepicker.format'),
     locale: I18n.locale,
     dayViewHeaderFormat: I18n.t('views.js.datepicker.dayViewHeaderFormat')
   })
+
+  $('#payment_content').on 'focusout', ->
+    query = {content: $('#payment_content').val()}
+    $.ajax({
+      type: 'GET',
+      url: '/algieba/api/dictionaries?' + $.param(query)
+    }).done((data) ->
+      category_names = $.map(data.dictionaries[0].categories, (category) ->
+        return category.name
+      )
+      $('#payment_categories').val(category_names.join(','))
+      return
+    )
+    return
 
   $('.category-list').on 'click', ->
     categories = $.map($(@).data('names'), (value) ->
@@ -14,26 +38,112 @@ $ ->
       title: I18n.t('views.js.category-list.title'),
       inputType: 'checkbox',
       inputOptions: categories,
-      callback: (result) ->
-        if result
-          category_form.val(result.join(','))
+      callback: (results) ->
+        if results
+          category_form.val(results.join(','))
+          return
     })
     return
 
-  $('#new_payments').on 'ajax:success', (event, xhr, status, error) ->
-    location.reload()
-    return
-
-  $('#new_payments').on 'ajax:error', (event, xhr, status, error) ->
-    error_codes = []
-    $.each($.parseJSON(xhr.responseText), (i, e)->
-      error_codes.push(I18n.t("views.common.attribute.#{e.error_code.match(/invalid_param_(.+)/)[1]}"))
+  $('#new_payment').on 'submit', ->
+    category_array = $('#payment_categories').val().split(',')
+    $.each(category_array, (i, e)->
+      input = '<input type="hidden" name="categories[]" value="' + e + '">'
+      $('#payment_categories').append(input)
       return
     )
-    bootbox.alert({
-      title: I18n.t('views.js.form.error.title'),
-      message: '<div class="text-center alert alert-danger">' + I18n.t('views.js.form.error.message', {error_codes: error_codes.join(', ')}) + '</div>',
-    })
+    $('#payment_categories').prop('disabled', true)
+    return
+
+  $('#new_payment').on 'ajax:success', (event, payment, status) ->
+    query = $.param({phrase: payment.content, condition: 'equal'})
+    $.ajax({
+      type: 'GET',
+      url: '/algieba/api/dictionaries?' + query
+    }).done((data) ->
+      if (data.dictionaries.length == 0)
+        category_names = $.map(payment.categories, (category) ->
+          return category.name
+        ).join(',')
+        bootbox.dialog({
+          title: '以下の情報を辞書に登録しますか？',
+          message: '<div class="form-group">' +
+          '<label for="phrase">' +
+          I18n.t('views.dictionary.create.phrase') +
+          '</label>' +
+          '<input value="' +
+          payment.content +
+          '" id="dialog-phrase" class="form-control">' +
+          '<select id="dialog-condition" class="form-control">' +
+          '<option value="include">' +
+          I18n.t('views.dictionary.create.include') +
+          '</option>' +
+          '<option selected value="equal">' +
+          I18n.t('views.dictionary.create.equal') +
+          '</option>' +
+          '</select>' +
+          '</div>' +
+          '<div class="form-group">' +
+          '<label for="categories">' +
+          I18n.t('views.dictionary.create.categories') +
+          '</label><br />' +
+          '<input class="form-control" value="' +
+          category_names +
+          '" id="dialog-categories" disabled>' +
+          '</div>',
+          buttons: {
+            cancel: {
+              label: I18n.t('views.dictionary.create.cancel'),
+              className: 'btn-default',
+              callback: ->
+                $("#payment_categories").empty()
+                $('#payment_categories').prop('disabled', false)
+                location.reload()
+                return
+            },
+            ok: {
+              label: I18n.t('views.dictionary.create.submit'),
+              className: 'btn-primary',
+              callback: ->
+                data = {
+                  phrase: $('#dialog-phrase').val(),
+                  condition: $('#dialog-condition option:selected').val(),
+                  categories: $('#dialog-categories').val().split(','),
+                }
+                $.ajax({
+                  type: 'POST',
+                  url: '/algieba/api/dictionaries',
+                  data: JSON.stringify(data),
+                  contentType: 'application/json',
+                  dataType: 'json',
+                }).always((xhr, status, error) ->
+                  $("#payment_categories").empty()
+                  $('#payment_categories').prop('disabled', false)
+                  location.reload()
+                  return
+                )
+                return
+            }
+          }
+        })
+        return
+      $("#payment_categories").empty()
+      $('#payment_categories').prop('disabled', false)
+      location.reload()
+      return
+    )
+    return
+
+  $('#new_payment').on 'ajax:error', (event, xhr, status, error) ->
+    $("#payment_categories").empty()
+    $('#payment_categories').prop('disabled', false)
+    errorCodes = []
+    $.each($.parseJSON(xhr.responseText).errors, (i, error) ->
+      attribute = error.error_code.match(/^.+_param_(.+)/)[1]
+      errorCodes.push(I18n.t("views.common.attribute.#{attribute}"))
+      return
+    )
+    showErrorDialog(errorCodes)
     return
 
   $('#search-button').on 'click', ->
@@ -58,15 +168,43 @@ $ ->
       location.href = '/algieba/payments?' + $.param(queries)
       return
     ).fail((xhr, status, error) ->
-      error_codes = []
-      $.each($.parseJSON(xhr.responseText), (i, e)->
-        error_codes.push(I18n.t("views.search.#{e.error_code.match(/invalid_param_(.+)/)[1]}"))
+      errorCodes = []
+      $.each($.parseJSON(xhr.responseText).errors, (i, error) ->
+        attribute = error.error_code.match(/invalid_param_(.+)/)[1]
+        errorCodes.push(I18n.t("views.search.#{attribute}"))
         return
       )
-      bootbox.alert({
-        title: I18n.t('views.js.form.error.title'),
-        message: '<div class="text-center alert alert-danger">' + I18n.t('views.js.form.error.message', {error_codes: error_codes.join(', ')}) + '</div>',
-      })
+      showErrorDialog(errorCodes)
+      return
+    )
+    return
+
+  $('#btn-create-dictionary').on 'click', ->
+    category_string = $('#dictionary_categories').val()
+    data = {
+      phrase: if !$('#phrase').val() then null else $('#phrase').val(),
+      condition: $('#condition option:selected').val(),
+      categories: if !category_string then null else category_string.split(','),
+    }
+    $.ajax({
+      type: 'POST',
+      url: '/algieba/api/dictionaries',
+      data: JSON.stringify(data),
+      contentType: 'application/json',
+      dataType: 'json',
+    }).done((data) ->
+      bootbox.alert(I18n.t('views.js.form.success.message'))
+      $('#phrase').val('')
+      $('#dictionary_categories').val('')
+    ).fail((xhr, status, error) ->
+      errorCodes = []
+      $.each($.parseJSON(xhr.responseText).errors, (i, error)->
+        attribute = error.error_code.match(/.+_param_(.+)/)[1]
+        errorCodes.push(I18n.t("views.dictionary.create.#{attribute}"))
+        return
+      )
+      showErrorDialog(errorCodes)
+      return
     )
     return
 
@@ -88,7 +226,9 @@ $ ->
     ).fail((xhr, status, error) ->
       bootbox.alert({
         title: I18n.t('views.js.pagination.error.title'),
-        message: '<div class="text-center alert alert-danger">' + I18n.t('views.js.pagination.error.message') + '</div>',
+        message: '<div class="text-center alert alert-danger">' +
+        I18n.t('views.js.pagination.error.message') +
+        '</div>',
       })
       $('#per_page').val('')
     )

@@ -4,8 +4,12 @@ ENV['COVERAGE'] ||= 'off'
 
 if ENV['COVERAGE'] == 'on'
   require 'simplecov'
+  require 'simplecov-json'
   require 'simplecov-rcov'
-  SimpleCov.formatter = SimpleCov::Formatter::RcovFormatter
+  SimpleCov.formatters = [
+    SimpleCov::Formatter::RcovFormatter,
+    SimpleCov::Formatter::JSONFormatter,
+  ]
   SimpleCov.start 'rails' do
     SimpleCov.command_name Time.now.utc.to_s
   end
@@ -58,4 +62,9 @@ RSpec.configure do |config|
   config.run_all_when_everything_filtered = true
   config.include CommonHelper
   config.include PaymentHelper
+  config.include DictionaryHelper
+
+  config.before(:suite) do
+    DatabaseCleaner.strategy = :transaction
+  end
 end

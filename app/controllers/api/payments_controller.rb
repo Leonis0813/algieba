@@ -1,19 +1,15 @@
 module Api
   class PaymentsController < ApplicationController
     def create
-      begin
-        attributes = params.require(:payments).permit(*payment_params)
-      rescue ActionController::ParameterMissing
-        raise BadRequest, 'absent_param_payments'
-      end
+      attributes = params.permit(:date, :content, :price, :payment_type, categories: [])
 
-      absent_keys = payment_params - attributes.symbolize_keys.keys
+      absent_keys = create_params - attributes.keys.map(&:to_sym)
       error_codes = absent_keys.map {|key| "absent_param_#{key}" }
       raise BadRequest, error_codes unless absent_keys.empty?
 
-      @payment = Payment.new(attributes.except(:category))
-      @payment.categories << attributes[:category].split(',').map do |category_name|
-        Category.find_or_create_by(name: category_name)
+      @payment = Payment.new(attributes.except(:categories))
+      @payment.categories << attributes[:categories].map do |category_name|
+        Category.find_or_initialize_by(name: category_name)
       end
 
       if @payment.save
@@ -50,14 +46,14 @@ module Api
       @payment = Payment.find_by(params.permit(:id))
       raise NotFound unless @payment
 
-      attributes = params.permit(*payment_params)
-      if attributes[:category]
-        @payment.categories = attributes[:category].split(',').map do |category_name|
+      attributes = params.permit(:date, :content, :price, :payment_type, categories: [])
+      if attributes[:categories]
+        @payment.categories = attributes[:categories].map do |category_name|
           Category.find_or_create_by(name: category_name)
         end
       end
 
-      if @payment.update(attributes.except(:category))
+      if @payment.update(attributes.except(:categories))
         render status: :ok, template: 'payments/payment'
       else
         error_codes = @payment.errors.messages.keys.map {|key| "invalid_param_#{key}" }
@@ -72,20 +68,10 @@ module Api
       head :no_content
     end
 
-    def settle
-      query = Settlement.new(params.permit(:interval))
-      unless query.valid?
-        raise BadRequest, "#{query.errors.messages[:interval].first}_param_interval"
-      end
-
-      @settlement = Payment.settle(query.interval)
-      render status: :ok, template: 'payments/settle'
-    end
-
     private
 
-    def payment_params
-      %i[payment_type date content category price]
+    def create_params
+      %i[payment_type date content categories price]
     end
 
     def index_params

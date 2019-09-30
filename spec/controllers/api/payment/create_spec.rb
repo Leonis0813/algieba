@@ -2,61 +2,75 @@
 
 require 'rails_helper'
 
-describe PaymentsController, type: :controller do
+describe Api::PaymentsController, type: :controller do
   shared_context '収支情報を登録する' do |params|
     before(:all) do
-      @res = client.post('/api/payments', params)
-      @pbody = JSON.parse(@res.body) rescue nil
+      res = client.post('/api/payments', params)
+      @response_status = res.status
+      @response_body = JSON.parse(res.body) rescue res.body
     end
   end
 
   describe '正常系' do
     base_payment = PaymentHelper.test_payment[:income]
 
+    shared_examples 'レスポンスが正しいこと' do |body|
+      it_behaves_like 'ステータスコードが正しいこと', 201
+
+      it 'レスポンスボディが正しいこと' do
+        is_asserted_by { @response_body.keys.sort == PaymentHelper.response_keys }
+
+        body.except(:categories).each do |key, value|
+          is_asserted_by { @response_body[key.to_s] == value }
+        end
+
+        body[:categories].each_with_index do |category, i|
+          category.each do |key, value|
+            is_asserted_by do
+              @response_body['categories'][i].keys.sort == CategoryHelper.response_keys
+            end
+
+            is_asserted_by { @response_body['categories'][i][key.to_s] == value }
+          end
+        end
+      end
+    end
+
     [
-      ['カテゴリリソースが既に存在している場合', base_payment],
-      ['カテゴリリソースが存在しない場合', base_payment.merge(category: 'not_exist')],
-      [
-        '複数のカテゴリを指定した場合',
-        base_payment.merge(category: 'algieba,other_category'),
-      ],
-    ].each do |description, payment|
+      ['カテゴリが既に存在している場合', {}],
+      ['カテゴリが存在しない場合', {categories: ['not_exist']}],
+      ['複数のカテゴリを指定した場合', {categories: %w[algieba other_category]}],
+    ].each do |description, categories|
       context description do
-        after(:all) { Payment.where(payment.except(:id, :category)).destroy_all }
-        include_context '収支情報を登録する', payments: payment
-        it_behaves_like 'ステータスコードが正しいこと', '201'
-        it_behaves_like '収支情報リソースのキーが正しいこと'
-        it_behaves_like 'カテゴリリソースのキーが正しいこと'
-        it_behaves_like '収支情報リソースの属性値が正しいこと',
-                        payment.except(:id, :category)
-        it_behaves_like 'カテゴリリソースの属性値が正しいこと',
-                        [payment[:category].split(',').sort]
+        body = base_payment.merge(categories)
+        response_categories = body[:categories].map do |category_name|
+          {name: category_name, description: nil}
+        end
+
+        include_context 'トランザクション作成'
+        include_context '収支情報を登録する', body
+        it_behaves_like 'レスポンスが正しいこと',
+                        body.merge(categories: response_categories).except(:id)
       end
     end
   end
 
   describe '異常系' do
-    payment_params = PaymentHelper.payment_params.map(&:to_sym)
+    payment_params = (PaymentHelper.response_keys - ['id']).map(&:to_sym)
     test_cases = [].tap do |tests|
       (payment_params.size - 1).times do |i|
         tests << payment_params.combination(i + 1).to_a
       end
     end.flatten(1)
 
-    test_cases.each do |deleted_keys|
-      context "#{deleted_keys.join(',')}がない場合" do
-        selected_keys = payment_params - deleted_keys
+    test_cases.each do |absent_keys|
+      context "#{absent_keys.join(',')}がない場合" do
+        selected_keys = payment_params - absent_keys
         income = PaymentHelper.test_payment[:income].slice(*selected_keys)
-        error_codes = deleted_keys.map {|key| "absent_param_#{key}" }
-        include_context '収支情報を登録する', payments: income
-        it_behaves_like '400エラーをチェックする', error_codes
-      end
-    end
-
-    [nil, {}, {payments: nil}, {payments: {}}].each do |params|
-      context 'payments パラメーターがない場合' do
-        include_context '収支情報を登録する', params
-        it_behaves_like '400エラーをチェックする', ['absent_param_payments']
+        errors = absent_keys.sort.map {|key| {'error_code' => "absent_param_#{key}"} }
+        include_context 'トランザクション作成'
+        include_context '収支情報を登録する', income
+        it_behaves_like 'レスポンスが正しいこと', status: 400, body: {'errors' => errors}
       end
     end
 
@@ -68,9 +82,12 @@ describe PaymentsController, type: :controller do
     ].each do |invalid_param|
       context "#{invalid_param.keys.join(',')}が不正な場合" do
         expense = PaymentHelper.test_payment[:expense].merge(invalid_param)
-        error_codes = invalid_param.keys.map {|key| "invalid_param_#{key}" }
-        include_context '収支情報を登録する', payments: expense
-        it_behaves_like '400エラーをチェックする', error_codes
+        errors = invalid_param.keys.sort.map do |key|
+          {'error_code' => "invalid_param_#{key}"}
+        end
+        include_context 'トランザクション作成'
+        include_context '収支情報を登録する', expense
+        it_behaves_like 'レスポンスが正しいこと', status: 400, body: {'errors' => errors}
       end
     end
   end

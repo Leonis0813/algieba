@@ -1,3 +1,32 @@
+# 4.3.0 (2019/09/16)
+- [UPDATE] statics view to show rate for each category
+
+# 4.2.2 (2019/09/13)
+- [FIX] statistics view
+
+# 4.2.1 (2019/09/09)
+- [UPDATE] gems
+
+# 4.2.0 (2019/08/12)
+- [UPDATE] payments view to show dialog for creating dictionary
+- [UPDATE] gems
+
+# 4.1.3 (2019/08/10)
+- [REFACTOR] models
+
+# 4.1.2 (2019/08/07)
+- [UPDATE] rails version to 5.0.x
+
+# 4.1.1 (2019/08/03)
+- [UPDATE] ruby version to 2.5.5
+
+# 4.1.0 (2019/07/11)
+- [UPDATE] API response format
+
+# 4.0.0 (2019/07/06)
+- [ADD] new feature to create dictionaries
+- [UPDATE] gems
+
 # 3.6.17 (2019/06/30)
 - [ADD] gems for pronto
 - [UPDATE] gems

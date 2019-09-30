@@ -12,14 +12,13 @@ describe '統計情報を確認する', type: :request do
       price: 100,
     }
     body = {payments: payment}.to_json
-    header = {'Authorization' => app_auth_header}.merge(content_type_json)
+    header = app_auth_header.merge(content_type_json)
     res = http_client.post("#{base_url}/api/payments", body, header)
     @payment_id = JSON.parse(res.body)['id']
   end
 
   after(:all) do
-    header = {'Authorization' => app_auth_header}
-    http_client.delete("#{base_url}/api/payments/#{@payment_id}", nil, header)
+    http_client.delete("#{base_url}/api/payments/#{@payment_id}", nil, app_auth_header)
   end
 
   include_context 'Webdriverを起動する'
@@ -50,10 +49,28 @@ describe '統計情報を確認する', type: :request do
   end
 
   describe 'x軸のラベルをクリックする' do
-    before(:all) { @driver.execute_script('settlement.drawDaily("2018-01")') }
+    before(:all) { @driver.execute_script('period.drawDaily("2018-01")') }
 
     it '日次の棒グラフが表示されていること' do
       xpath = '//*[@id="daily"][@width="1200"][@height="300"]'
+      is_asserted_by do
+        @wait.until { @driver.find_element(:xpath, xpath) }
+      end
+    end
+  end
+
+  describe 'カテゴリ別収支を確認する' do
+    before(:all) { @driver.find_element(:xpath, '//li/a[text()="カテゴリ別"]').click }
+
+    it '収入の割合を表す円グラフが表示されていること' do
+      xpath = '//*[@id="income"][@width="500"][@height="500"]'
+      is_asserted_by do
+        @wait.until { @driver.find_element(:xpath, xpath) }
+      end
+    end
+
+    it '支出の割合を表す円グラフが表示されていること' do
+      xpath = '//*[@id="expense"][@width="500"][@height="500"]'
       is_asserted_by do
         @wait.until { @driver.find_element(:xpath, xpath) }
       end

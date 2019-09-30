@@ -25,7 +25,7 @@ module CommonHelper
 
     credential =
       Base64.strict_encode64("#{Settings.application_id}:#{Settings.application_key}")
-    @app_auth_header = "Basic #{credential}"
+    @app_auth_header = {'Authorization' => "Basic #{credential}"}
   end
 
   def client

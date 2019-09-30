@@ -1,13 +1,14 @@
 Rails.application.routes.draw do
   namespace :api, format: 'json' do
-    resources :categories, only: [:index]
+    resources :categories, only: %i[index]
+    resources :dictionaries, only: %i[create index]
     resources :payments, except: %i[new edit]
-    get '/settlement' => 'payments#settle'
+    resource :settlements, only: [] do
+      get 'category' => 'settlements#category'
+      get 'period' => 'settlements#period'
+    end
   end
 
-  resources :payments, only: [:index], format: 'html'
-  get '/statistics' => 'statistics#show', format: 'html'
-  get '/statistics/settlements' => 'statistics/settlements#show'
-  get '/login' => 'login#form', format: 'html'
-  post '/login' => 'login#authenticate_user'
+  resources :payments, only: %i[index], format: 'html'
+  resources :statistics, only: %i[index], format: 'html'
 end

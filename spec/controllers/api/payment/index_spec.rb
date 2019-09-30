@@ -2,15 +2,16 @@
 
 require 'rails_helper'
 
-describe PaymentsController, type: :controller do
+describe Api::PaymentsController, type: :controller do
   shared_context '収支情報を検索する' do |params = {}|
     before(:all) do
-      @res = client.get('/api/payments', params)
-      @pbody = JSON.parse(@res.body) rescue nil
+      res = client.get('/api/payments', params)
+      @response_status = res.status
+      @response_body = JSON.parse(res.body) rescue res.body
     end
   end
 
-  include_context '事前準備: 収支情報を登録する'
+  include_context '収支情報を登録する'
 
   describe '正常系' do
     [
@@ -46,20 +47,20 @@ describe PaymentsController, type: :controller do
       [{}, %i[income expense]],
     ].each do |query, expected_payment_types|
       description = query.empty? ? '何も指定しない場合' : "#{query.keys.join(',')}を指定する場合"
-      expected_payments = expected_payment_types.map do |key|
-        PaymentHelper.test_payment[key].except(:id, :category)
-      end
-      expected_categories = expected_payment_types.map do |key|
-        PaymentHelper.test_payment[key][:category].split(',')
-      end.sort
 
       context description do
+        before(:all) do
+          expected_payments = expected_payment_types.map do |key|
+            payment = PaymentHelper.test_payment[key]
+            categories = payment[:categories].map do |category_name|
+              Category.find_by(name: category_name).slice(:id, :name, :description)
+            end
+            payment.merge(categories: categories)
+          end
+          @body = {payments: expected_payments}.deep_stringify_keys
+        end
         include_context '収支情報を検索する', query
-        it_behaves_like 'ステータスコードが正しいこと', '200'
-        it_behaves_like '収支情報リソースのキーが正しいこと'
-        it_behaves_like 'カテゴリリソースのキーが正しいこと'
-        it_behaves_like '収支情報リソースの属性値が正しいこと', expected_payments
-        it_behaves_like 'カテゴリリソースの属性値が正しいこと', expected_categories
+        it_behaves_like 'レスポンスが正しいこと'
       end
     end
 
@@ -72,10 +73,7 @@ describe PaymentsController, type: :controller do
     ].each do |query|
       describe "#{query.keys.join(',')}を指定する場合" do
         include_context '収支情報を検索する', query
-        it_behaves_like 'ステータスコードが正しいこと', '200'
-        it '空配列であること' do
-          is_asserted_by { @pbody == [] }
-        end
+        it_behaves_like 'レスポンスが正しいこと', body: {'payments' => []}
       end
     end
   end
@@ -104,9 +102,9 @@ describe PaymentsController, type: :controller do
       },
     ].each do |query|
       context "#{query.keys.join(',')}が不正な場合" do
-        error_codes = query.keys.map {|key| "invalid_param_#{key}" }
+        errors = query.keys.sort.map {|key| {'error_code' => "invalid_param_#{key}"} }
         include_context '収支情報を検索する', query
-        it_behaves_like '400エラーをチェックする', error_codes
+        it_behaves_like 'レスポンスが正しいこと', status: 400, body: {'errors' => errors}
       end
     end
   end

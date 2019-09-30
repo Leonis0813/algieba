@@ -2,8 +2,8 @@ pipeline {
   agent any
 
   environment {
-    PATH = '/usr/local/rvm/bin:/usr/bin:/bin'
-    RUBY_VERSION = '2.4.4'
+    PATH = '/usr/local/rvm/bin:/usr/local/bin:/usr/bin:/bin'
+    RUBY_VERSION = '2.5.5'
   }
 
   options {
@@ -33,6 +33,9 @@ pipeline {
         script {
           sh 'sudo rm -rf coverage'
           sh "rvm ${RUBY_VERSION} do bundle install --path=vendor/bundle"
+          sh "rvm ${RUBY_VERSION} do bundle exec rails db:environment:set RAILS_ENV=test"
+          sh "rvm ${RUBY_VERSION} do env RAILS_ENV=test bundle exec rake db:drop"
+          sh "rvm ${RUBY_VERSION} do env RAILS_ENV=test bundle exec rake db:setup"
         }
       }
     }
@@ -104,6 +107,8 @@ pipeline {
       }
 
       steps {
+        sh "rvm ${RUBY_VERSION} do env RAILS_ENV=development bundle exec rake db:drop"
+        sh "rvm ${RUBY_VERSION} do env RAILS_ENV=development bundle exec rake db:setup"
         sh "rvm ${RUBY_VERSION} do env REMOTE_HOST=http://localhost/algieba bundle exec rake spec:requests"
       }
     }
