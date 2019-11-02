@@ -21,25 +21,24 @@ $ ->
       type: 'GET',
       url: '/algieba/api/dictionaries?' + $.param(query)
     }).done((data) ->
-      dictionaries = $.grep(data.dictionaries, (dictionary) ->
-        return dictionary.condition == 'equal'
-      )
-      if dictionaries.length == 0
-        dictionaries = data.dictionaries
-        return
-      if dictionaries.length > 1
-        dictionaries.sort((a, b) ->
-          if a.phrase.length > b.phrase.length
-            return -1
-          if a.phrase.length < b.phrase.length
-            return 1
-          return 0
+      if data.dictionaries.length > 0
+        dictionaries = $.grep(data.dictionaries, (dictionary) ->
+          return dictionary.condition == 'equal'
         )
+        if dictionaries.length == 0
+          dictionaries = data.dictionaries
+          dictionaries.sort((a, b) ->
+            if a.phrase.length > b.phrase.length
+              return -1
+            if a.phrase.length < b.phrase.length
+              return 1
+            return 0
+          )
+        category_names = $.map(dictionaries[0].categories, (category) ->
+          return category.name
+        )
+        $('#payment_categories').val(category_names.join(','))
         return
-      category_names = $.map(dictionaries[0].categories, (category) ->
-        return category.name
-      )
-      $('#payment_categories').val(category_names.join(','))
       return
     )
     return
