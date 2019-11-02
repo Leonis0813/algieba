@@ -21,7 +21,7 @@ $ ->
       type: 'GET',
       url: '/algieba/api/dictionaries?' + $.param(query)
     }).done((data) ->
-      dictionaries = $.grep(data.dictionaries, (dictionary, i) ->
+      dictionaries = $.grep(data.dictionaries, (dictionary) ->
         return dictionary.condition == 'equal'
       )
       if dictionaries.length > 1
