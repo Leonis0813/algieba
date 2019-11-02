@@ -1,5 +1,6 @@
 # 4.3.1 (2019/11/02)
 - [FIX] dictionaries order to display
+- [UPDATE] gems
 
 # 4.3.0 (2019/09/16)
 - [UPDATE] statics view to show rate for each category
