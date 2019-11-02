@@ -68,16 +68,6 @@ module Api
       head :no_content
     end
 
-    def settle
-      query = Settlement.new(params.permit(:interval))
-      unless query.valid?
-        raise BadRequest, "#{query.errors.messages[:interval].first}_param_interval"
-      end
-
-      @settlement = Payment.settle(query.interval)
-      render status: :ok, template: 'payments/settle'
-    end
-
     private
 
     def create_params
