@@ -24,6 +24,9 @@ $ ->
       dictionaries = $.grep(data.dictionaries, (dictionary) ->
         return dictionary.condition == 'equal'
       )
+      if dictionaries.length == 0
+        dictionaries = data.dictionaries
+        return
       if dictionaries.length > 1
         dictionaries.sort((a, b) ->
           if a.phrase.length > b.phrase.length
