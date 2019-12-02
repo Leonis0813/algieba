@@ -1,3 +1,6 @@
+# 4.3.2 (2019/12/02)
+- [UPDATE] ruby version to 2.6.3
+
 # 4.3.1 (2019/11/02)
 - [FIX] dictionaries order to display
 - [UPDATE] gems
