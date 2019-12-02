@@ -1,4 +1,4 @@
-#! /usr/local/rvm/rubies/ruby-2.5.5/bin/ruby
+#! /usr/local/rvm/rubies/ruby-2.6.3/bin/ruby
 
 require 'json'
 require 'net/https'
@@ -23,4 +23,4 @@ rescue StandardError
   exit 1
 end
 
-system "rvm 2.5.5 do env CHANGE_ID=#{target_pr['number']} bundle exec danger"
+system "rvm 2.6.3 do env CHANGE_ID=#{target_pr['number']} bundle exec danger"
