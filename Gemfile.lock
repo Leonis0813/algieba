@@ -176,7 +176,7 @@ GEM
       rspec-core (~> 3.0)
       ruby-progressbar (~> 1.4)
     git (1.5.0)
-    gitlab (4.12.0)
+    gitlab (4.13.0)
       httparty (~> 0.14, >= 0.14.0)
       terminal-table (~> 1.5, >= 1.5.1)
     globalid (0.4.2)
