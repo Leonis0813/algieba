@@ -5,6 +5,9 @@ class CreateTags < ActiveRecord::Migration[5.0]
       t.string :name, null: false, default: ''
 
       t.timestamps null: false
+
+      t.index :tag_id, unique: true
+      t.index :name, unique: true
     end
   end
 end
