@@ -33,12 +33,12 @@ class PaymentsController < ApplicationController
     )
   end
 
-   def per_page
-     return @per_page if @per_page
+  def per_page
+    return @per_page if @per_page
 
-     per_page = index_param[:per_page] || Kaminari.config.default_per_page
-     raise BadRequest, 'invalid_param_per_page' unless per_page.to_s.match?('\A\d*\z')
+    per_page = index_param[:per_page] || Kaminari.config.default_per_page
+    raise BadRequest, 'invalid_param_per_page' unless per_page.to_s.match?('\A\d*\z')
 
-     @per_page = per_page.to_i
-   end
+    @per_page = per_page.to_i
+  end
 end
