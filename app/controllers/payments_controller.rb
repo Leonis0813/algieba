@@ -1,17 +1,14 @@
 class PaymentsController < ApplicationController
   def index
-    @search_form = Query.new(params.permit(*index_params))
-    per_page = request.query_parameters[:per_page]
-    raise BadRequest, 'invalid_param_per_page' if per_page and per_page !~ /\A\d*\z/
+    @search_form = Query.new(index_param)
 
-    @per_page = per_page ? per_page.to_i : Kaminari.config.default_per_page
     if @search_form.valid?
-      @payments = index_params.inject(Payment.all) do |payments, key|
+      @payments = index_param.keys.inject(Payment.all) do |payments, key|
         value = @search_form.send(key)
         value ? payments.send(key, value) : payments
       end
       @payment = Payment.new
-      @payments = @payments.order(date: :desc).page(params[:page]).per(@per_page)
+      @payments = @payments.order(date: :desc).page(params[:page]).per(per_page)
       @dictionary = Dictionary.new
       render status: :ok
     else
@@ -22,10 +19,26 @@ class PaymentsController < ApplicationController
 
   private
 
-  def index_params
-    %i[
-      payment_type date_before date_after content_equal content_include category
-      price_upper price_lower
-    ]
+  def index_param
+    @index_param ||= request.query_parameters.slice(
+      :payment_type,
+      :date_before,
+      :date_after,
+      :content_equal,
+      :content_include,
+      :category,
+      :tag,
+      :price_upper,
+      :price_lower,
+    )
   end
+
+   def per_page
+     return @per_page if @per_page
+
+     per_page = index_param[:per_page] || Kaminari.config.default_per_page
+     raise BadRequest, 'invalid_param_per_page' unless per_page.to_s.match?('\A\d*\z')
+
+     @per_page = per_page.to_i
+   end
 end
