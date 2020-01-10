@@ -8,6 +8,8 @@ class Payment < ApplicationRecord
 
   has_many :category_payments, dependent: :destroy
   has_many :categories, through: :category_payments
+  has_many :payment_tags, dependent: :destroy
+  has_many :tags, through: :payment_tags
 
   validates :payment_type, :content, :price,
             presence: {message: 'absent'}
