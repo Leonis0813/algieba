@@ -33,6 +33,9 @@ class Payment < ApplicationRecord
   scope :category, lambda {|category|
     joins(:categories).where('categories.name' => category.split(','))
   }
+  scope :tag, lambda {|tag|
+    joins(:tags).where('tags.name' => tag.split(','))
+  }
   scope :price_upper, ->(price) { where('price >= ?', price) }
   scope :price_lower, ->(price) { where('price <= ?', price) }
 end
