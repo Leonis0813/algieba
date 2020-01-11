@@ -3,7 +3,7 @@ class PaymentsController < ApplicationController
     @search_form = Query.new(index_param)
 
     if @search_form.valid?
-      @payments = index_param.keys.inject(Payment.all) do |payments, key|
+      @payments = scope_param.keys.inject(Payment.all) do |payments, key|
         value = @search_form.send(key)
         value ? payments.send(key, value) : payments
       end
@@ -30,6 +30,19 @@ class PaymentsController < ApplicationController
       :tag,
       :price_upper,
       :price_lower,
+      :page,
+      :per_page,
+      :sort,
+      :order,
+    )
+  end
+
+  def scope_param
+    @scope_param ||= index_param.except(
+      :page,
+      :per_page,
+      :sort,
+      :order,
     )
   end
 
