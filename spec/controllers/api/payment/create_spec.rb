@@ -20,7 +20,7 @@ describe Api::PaymentsController, type: :controller do
       it 'レスポンスボディが正しいこと' do
         is_asserted_by { @response_body.keys.sort == PaymentHelper.response_keys }
 
-        body.except(:categories).each do |key, value|
+        body.except(:categories, :tags).each do |key, value|
           is_asserted_by { @response_body[key.to_s] == value }
         end
 
@@ -31,6 +31,16 @@ describe Api::PaymentsController, type: :controller do
             end
 
             is_asserted_by { @response_body['categories'][i][key.to_s] == value }
+          end
+        end
+
+        body[:tags].each_with_index do |tag, i|
+          tag.each do |key, value|
+            is_asserted_by do
+              @response_body['tags'][i].keys.sort == TagHelper.response_keys
+            end
+
+            is_asserted_by { @response_body['tags'][i][key.to_s] == value }
           end
         end
       end
@@ -46,17 +56,21 @@ describe Api::PaymentsController, type: :controller do
         response_categories = body[:categories].map do |category_name|
           {name: category_name, description: nil}
         end
+        response_tags = body[:tags].map {|tag_name| {name: tag_name} }
+        expected_response = body.merge(
+          categories: response_categories,
+          tags: response_tags,
+        ).except(:id)
 
         include_context 'トランザクション作成'
         include_context '収支情報を登録する', body
-        it_behaves_like 'レスポンスが正しいこと',
-                        body.merge(categories: response_categories).except(:id)
+        it_behaves_like 'レスポンスが正しいこと', expected_response
       end
     end
   end
 
   describe '異常系' do
-    payment_params = (PaymentHelper.response_keys - ['id']).map(&:to_sym)
+    payment_params = (PaymentHelper.response_keys - %w[id tags]).map(&:to_sym)
     test_cases = [].tap do |tests|
       (payment_params.size - 1).times do |i|
         tests << payment_params.combination(i + 1).to_a

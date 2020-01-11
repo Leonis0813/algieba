@@ -16,6 +16,7 @@ describe Tag, type: :model do
     describe '異常系' do
       invalid_attribute = {
         tag_id: ['0' * 33, 'g' * 32],
+        name: ['0' * 11],
       }
 
       it_behaves_like '必須パラメーターがない場合のテスト', %i[tag_id name]
