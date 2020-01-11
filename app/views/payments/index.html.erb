@@ -92,7 +92,7 @@
             <%= f.select :payment_type, options, {:include_blank => true}, {:class => 'form-control payment-type-list', :name => 'payment_type'} %>
           </div>
 
-          <%= f.submit t('views.search.submit'), :id => 'search-button', :class => 'btn btn-primary btn-submit' %>
+          <%= f.submit t('views.search.submit'), id: 'search-button', class: 'btn btn-primary btn-submit' %>
         <% end %>
       </div>
 
@@ -108,7 +108,7 @@
           </div>
 
           <div class='form-group'>
-            <%= f.label :categories, t('views.common.attribute.category') %><br />
+            <%= f.label :categories, t('views.common.attribute.category') %><br>
             <%= f.text_field :categories, class: 'form-control category-form', name: 'category', value: nil %>
             <span class='category-list' data-names='<%= Category.pluck(:name).sort %>'>
               <%= button_tag(type: 'button', class: 'btn btn-default btn-sm') do %>
