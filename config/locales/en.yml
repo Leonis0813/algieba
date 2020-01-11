@@ -6,7 +6,8 @@ en:
         payment_type: 'Payment Type'
         date: &date 'Date'
         content: 'Content'
-        categories: &category 'Categories'
+        category: &category 'Categories'
+        tag: 'Tag'
         price: &price 'Price'
       payment_type:
         income: 'Income'

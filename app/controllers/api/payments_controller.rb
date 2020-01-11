@@ -1,14 +1,14 @@
 module Api
   class PaymentsController < ApplicationController
     def create
-      required_param_keys = %i[payment_type date content categories tags price]
+      required_param_keys = %i[payment_type date content categories price]
       check_absent_param(create_params, required_param_keys)
 
-      @payment = Payment.new(create_param.except(:categories, :tags))
-      @payment.categories = create_param[:categories].map do |category_name|
+      @payment = Payment.new(create_params.except(:categories, :tags))
+      @payment.categories = create_params[:categories].map do |category_name|
         Category.find_or_initialize_by(name: category_name)
       end
-      @payment.tags = create_param[:tags].map do |tag_name|
+      @payment.tags = Array.wrap(create_params[:tags]).map do |tag_name|
         Tag.find_by(name: tag_name) || Tag.new(tag_id: SecureRandom.hex, name: tag_name)
       end
 

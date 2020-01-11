@@ -7,6 +7,7 @@ ja:
         date: &date '日付'
         content: '内容'
         category: &category 'カテゴリ'
+        tag: 'タグ'
         price: &price '金額'
       payment_type:
         income: '収入'

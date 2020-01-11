@@ -66,7 +66,15 @@ $ ->
       $('#payment_categories').append(input)
       return
     )
+    if $('#payment_tags').val() != ''
+      tag_array = $('#payment_tags').val().split(',')
+      $.each(tag_array, (i, e)->
+        input = '<input type="hidden" name="tags[]" value="' + e + '">'
+        $('#payment_tags').append(input)
+        return
+      )
     $('#payment_categories').prop('disabled', true)
+    $('#payment_tags').prop('disabled', true)
     return
 
   $('#new_payment').on 'ajax:success', (event, payment, status) ->

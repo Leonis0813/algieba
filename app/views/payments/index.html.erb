@@ -1,4 +1,4 @@
-<div class='row center-block'>
+ <div class='row center-block'>
   <div class='col-lg-4'>
     <ul class='nav nav-tabs'>
       <li class='active'><a href='#new-payment' data-toggle='tab'><%= t('views.register.tab_name') %></a></li>
@@ -9,17 +9,18 @@
     <div class='tab-content'>
       <div id='new-payment' class='well tab-pane active'>
         <h3><%= t('views.register.title') %></h3>
+        <h4><span style='color: red'>* </span>は必須項目です</h4>
         <%= form_for @payment, url: api_payments_path, remote: true do |f| %>
           <div class='form-group'>
-            <%= f.label :date, t('views.common.attribute.date').html_safe %><br>
+            <%= f.label :date, t('views.common.attribute.date').html_safe, class: 'required' %><br>
             <%= f.text_field :date, class: 'form-control date-form', name: 'date' %>
           </div>
           <div class='form-group'>
-            <%= f.label :content, t('views.common.attribute.content').html_safe %>
+            <%= f.label :content, t('views.common.attribute.content').html_safe, class: 'required' %>
             <%= f.text_field :content, class: 'form-control', name: 'content', size: 100 %>
           </div>
           <div class='form-group'>
-            <%= f.label :categories, t('views.common.attribute.category').html_safe %><br />
+            <%= f.label :categories, t('views.common.attribute.category').html_safe, class: 'required' %><br />
             <% params = {value: nil, class: 'form-control category-form', name: 'categories'} %>
             <%= f.text_field :categories, params %>
             <span class='category-list' data-names='<%= category_names %>'>
@@ -29,7 +30,11 @@
             </span>
           </div>
           <div class='form-group'>
-            <%= f.label :price, t('views.common.attribute.price').html_safe %><br>
+            <%= f.label :tags, t('views.common.attribute.tag').html_safe %><br />
+            <%= f.text_field :tags, class: 'form-control', name: 'tags', value: nil %>
+          </div>
+          <div class='form-group'>
+            <%= f.label :price, t('views.common.attribute.price').html_safe, class: 'required' %><br>
             <%= f.text_field :price, class: 'form-control price-form', name: 'price' %>
           </div>
           <div class='form-group'>
