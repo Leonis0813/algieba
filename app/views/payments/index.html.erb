@@ -81,9 +81,9 @@
 
           <div class='form-group'>
             <%= f.label :tag, t('views.common.attribute.tag') %><br>
-            <%= f.text_field :tag, {readonly: true, class: 'form-control tag-form', name: 'tag'} %>
+            <%= f.text_field :tag, readonly: true, class: 'form-control tag-form', name: 'tag' %>
             <span class='tag-list' data-names='<%= tag_names %>'>
-              <%= button_tag(:type => 'button', :class => 'btn btn-default btn-sm') do %>
+              <%= button_tag(type: 'button', class: 'btn btn-default btn-sm') do %>
                 <span class='glyphicon glyphicon-list' />
               <% end %>
             </span>
