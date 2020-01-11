@@ -4,7 +4,10 @@
   <td class='payment_type <%= td_class %>'><span class="glyphicon <%= icon %>" /></td>
   <td class='date <%= td_class %>'><%= payment.date %></td>
   <td class='content <%= td_class %>' title='<%= payment.content %>'><%= payment.content %></td>
-  <td class='category <%= td_class %>' title='<%= payment.categories.pluck(:name).join(',') %>'><%= payment.categories.pluck(:name).join(',') %></td>
+  <% category_name = payment.categories.pluck(:name).join(',') %>
+  <td class='category <%= td_class %>' title='<%= category_name %>'><%= truncate(category_name, length: 10) %></td>
+  <% tag_name = payment.tags.pluck(:name).join(',') %>
+  <td class='tag <%= td_class %>' title='<%= tag_name %>'><%= truncate(tag_name, length: 10) %></td>
   <td class='price <%= td_class %>'><%= payment.price %></td>
   <td width='16' class='delete'>
     <%= button_tag(:class => 'btn btn-default btn-mini', :height => 16, :value => payment.id) do %>
