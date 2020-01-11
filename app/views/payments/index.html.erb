@@ -80,6 +80,16 @@
           </div>
 
           <div class='form-group'>
+            <%= f.label :tag, t('views.common.attribute.tag') %><br>
+            <%= f.text_field :tag, {readonly: true, class: 'form-control tag-form', name: 'tag'} %>
+            <span class='tag-list' data-names='<%= tag_names %>'>
+              <%= button_tag(:type => 'button', :class => 'btn btn-default btn-sm') do %>
+                <span class='glyphicon glyphicon-list' />
+              <% end %>
+            </span>
+          </div>
+
+          <div class='form-group'>
             <%= f.label :price_upper, t('views.common.attribute.price') %><br>
             <%= f.text_field :price_upper, {:class => 'form-control price-form', :name => 'price_upper'} %>
             <%= t('views.search.between') %>

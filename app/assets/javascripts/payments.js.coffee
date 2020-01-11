@@ -59,6 +59,22 @@ $ ->
     })
     return
 
+  $('.tag-list').on 'click', ->
+    tags = $.map($(@).data('names'), (value) ->
+      return {text: value, value: value}
+    )
+    tag_form = $(@).parent().find('.tag-form')
+    bootbox.prompt({
+      title: I18n.t('views.js.tag-list.title'),
+      inputType: 'checkbox',
+      inputOptions: tags,
+      callback: (results) ->
+        if results
+          tag_form.val(results.join(','))
+          return
+    })
+    return
+
   $('#new_payment').on 'submit', ->
     category_array = $('#payment_categories').val().split(',')
     $.each(category_array, (i, e)->
