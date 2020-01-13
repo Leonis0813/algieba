@@ -76,8 +76,10 @@ describe 'ブラウザから収支を登録する', type: :request do
     end
   end
 
-  shared_examples '辞書を登録するダイアログが表示されていること' do
-    |phrase: 'regist from view', category: nil|
+  shared_examples '辞書を登録するダイアログが表示されていること' do |
+    phrase: 'regist from view',
+    category: nil
+  |
     it do
       xpath = "//input[@id='dialog-phrase'][@value='#{phrase}']"
       is_asserted_by { @wait.until { @driver.find_element(:xpath, xpath) } }
