@@ -6,7 +6,8 @@ en:
         payment_type: 'Payment Type'
         date: &date 'Date'
         content: 'Content'
-        categories: &category 'Categories'
+        category: &category 'Categories'
+        tag: 'Tag'
         price: &price 'Price'
       payment_type:
         income: 'Income'
@@ -17,6 +18,8 @@ en:
         dayViewHeaderFormat: 'MM/YYYY'
       category-list:
         title: 'Select categories'
+      tag-list:
+        title: 'Select tags'
       form:
         success:
           message: 'Success registration.'

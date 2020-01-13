@@ -2,7 +2,7 @@ class Query
   include ActiveModel::Model
 
   attribute_names = %i[payment_type date_before date_after content_equal content_include
-                       category price_upper price_lower page per_page sort order]
+                       category tag price_upper price_lower page per_page sort order]
   attr_accessor(*attribute_names)
 
   validates :payment_type,

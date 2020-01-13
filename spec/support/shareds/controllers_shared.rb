@@ -5,10 +5,11 @@ shared_context '収支情報を登録する' do |payments = PaymentHelper.test_p
 
   before(:all) do
     payments.each do |payment|
-      category_names = payment[:categories]
-      categories = category_names.map {|name| Category.find_or_create_by(name: name) }
-      payment = Payment.new(payment.except(:categories))
+      categories = payment[:categories].map {|name| build(:category, name: name) }
+      tags = payment[:tags].map {|name| build(:tag, name: name) }
+      payment = Payment.new(payment.except(:categories, :tags))
       payment.categories = categories
+      payment.tags = tags
       payment.save!
     end
   end

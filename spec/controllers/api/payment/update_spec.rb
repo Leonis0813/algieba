@@ -37,7 +37,10 @@ describe Api::PaymentsController, type: :controller do
           categories = body[:categories].map do |category_name|
             Category.find_by(name: category_name).slice(:id, :name, :description)
           end
-          @body = body.merge(categories: categories).deep_stringify_keys
+          tags = body[:tags].map do |tag_name|
+            Tag.find_by(name: tag_name).slice(:tag_id, :name)
+          end
+          @body = body.merge(categories: categories, tags: tags).deep_stringify_keys
         end
 
         it_behaves_like 'レスポンスが正しいこと'
@@ -57,7 +60,10 @@ describe Api::PaymentsController, type: :controller do
           categories = body[:categories].map do |category_name|
             Category.find_by(name: category_name).slice(:id, :name, :description)
           end
-          @body = body.merge(categories: categories).deep_stringify_keys
+          tags = body[:tags].map do |tag_name|
+            Tag.find_by(name: tag_name).slice(:tag_id, :name)
+          end
+          @body = body.merge(categories: categories, tags: tags).deep_stringify_keys
         end
 
         it_behaves_like 'レスポンスが正しいこと'

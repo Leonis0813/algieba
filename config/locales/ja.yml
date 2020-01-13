@@ -7,6 +7,7 @@ ja:
         date: &date '日付'
         content: '内容'
         category: &category 'カテゴリ'
+        tag: 'タグ'
         price: &price '金額'
       payment_type:
         income: '収入'
@@ -17,6 +18,8 @@ ja:
         dayViewHeaderFormat: 'YYYY年 MM月'
       category-list:
         title: 'カテゴリを選択してください'
+      tag-list:
+        title: 'タグを選択してください'
       form:
         success:
           message: '登録が完了しました'
