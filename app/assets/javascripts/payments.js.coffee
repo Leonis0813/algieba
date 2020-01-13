@@ -279,7 +279,7 @@ $ ->
     order: [[1, "desc"]],
     columnDefs: [
       {
-        "targets": [0, 5],
+        "targets": [0, 6],
         "sorting": false,
       },
     ]
