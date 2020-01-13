@@ -69,25 +69,31 @@ describe 'payments/index', type: :view do
       is_asserted_by { title.text == '収支情報を入力してください' }
     end
 
+    it '必須項目の説明が表示されていること' do
+      description = @html.xpath("#{register_form_xpath}/h4")
+      is_asserted_by { description.present? }
+      is_asserted_by { description.text == '* は必須項目です' }
+    end
+
     it '日付入力フォームが表示されていること' do
-      date_label = @html.xpath("#{form_base_xpath}/label[text()='日付']")
-      is_asserted_by { date_label.present? }
+      label_xpath = "#{form_base_xpath}/label[text()='日付'][@class='required']"
+      is_asserted_by { @html.xpath(label_xpath).present? }
 
       date_input = @html.xpath("#{form_base_xpath}/input[@id='payment_date']")
       is_asserted_by { date_input.present? }
     end
 
     it '内容入力フォームが表示されていること' do
-      content_label = @html.xpath("#{form_base_xpath}/label[text()='内容']")
-      is_asserted_by { content_label.present? }
+      label_xpath = "#{form_base_xpath}/label[text()='内容'][@class='required']"
+      is_asserted_by { @html.xpath(label_xpath).present? }
 
       content_input = @html.xpath("#{form_base_xpath}/input[@id='payment_content']")
       is_asserted_by { content_input.present? }
     end
 
     it 'カテゴリ入力フォームが表示されていること' do
-      category_label = @html.xpath("#{form_base_xpath}/label[text()='カテゴリ']")
-      is_asserted_by { category_label.present? }
+      label_xpath = "#{form_base_xpath}/label[text()='カテゴリ'][@class='required']"
+      is_asserted_by { @html.xpath(label_xpath).present? }
 
       category_input = @html.xpath("#{form_base_xpath}/input[@id='payment_categories']")
       is_asserted_by { category_input.present? }
@@ -101,6 +107,14 @@ describe 'payments/index', type: :view do
       xpath = "#{form_base_xpath}/input[@id='payment_categories']" \
               "[@value='#{Category.first.name}']"
       is_asserted_by { @html.xpath(xpath).present? }
+    end
+
+    it 'タグ入力フォームが表示されていること' do
+      label_xpath = "#{form_base_xpath}/label[text()='タグ']"
+      is_asserted_by { @html.xpath(label_xpath).present? }
+
+      tag_input = @html.xpath("#{form_base_xpath}/input[@id='payment_tags']")
+      is_asserted_by { tag_input.present? }
     end
 
     it '金額入力フォームが表示されていること' do
@@ -197,6 +211,18 @@ describe 'payments/index', type: :view do
       category_button = @html.xpath("#{form_base_xpath}/span[@class='category-list']" \
                                     '/button/span[@class="glyphicon glyphicon-list"]')
       is_asserted_by { category_button.present? }
+    end
+
+    it 'タグ入力フォームが表示されていること' do
+      tag_label = @html.xpath("#{form_base_xpath}/label[text()='タグ']")
+      is_asserted_by { tag_label.present? }
+
+      input_xpath = "#{form_base_xpath}/input[@id='query_tag'][@readonly='readonly']"
+      is_asserted_by { @html.xpath(input_xpath).present? }
+
+      tag_button = @html.xpath("#{form_base_xpath}/span[@class='tag-list']" \
+                               '/button/span[@class="glyphicon glyphicon-list"]')
+      is_asserted_by { tag_button.present? }
     end
 
     it '金額入力フォームが表示されていること' do

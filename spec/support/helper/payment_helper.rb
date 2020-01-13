@@ -9,6 +9,7 @@ module PaymentHelper
         date: '1000-01-01',
         content: '機能テスト用データ1',
         categories: ['algieba'],
+        tags: ['test_data'],
         price: 1000,
       },
       expense: {
@@ -17,13 +18,14 @@ module PaymentHelper
         date: '1000-01-05',
         content: '機能テスト用データ2',
         categories: ['algieba'],
+        tags: ['test_data'],
         price: 100,
       },
     }
   end
 
   def response_keys
-    @response_keys ||= %w[id payment_type date content categories price].sort
+    @response_keys ||= %w[id payment_type date content categories tags price].sort
   end
 
   def delete_payments

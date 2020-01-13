@@ -56,6 +56,12 @@ describe '収支情報を管理する', type: :request do
         is_asserted_by { category.keys.sort == CategoryHelper.response_keys }
       end
     end
+
+    it do
+      @response_body['tags'].each do |tag|
+        is_asserted_by { tag.keys.sort == TagHelper.response_keys }
+      end
+    end
   end
 
   describe 'カテゴリを検索する' do

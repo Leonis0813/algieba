@@ -19,7 +19,10 @@ describe Api::PaymentsController, type: :controller do
       categories = payment[:categories].map do |category_name|
         Category.find_by(name: category_name).slice(:id, :name, :description)
       end
-      @body = payment.merge(categories: categories).deep_stringify_keys
+      tags = payment[:tags].map do |tag_name|
+        Tag.find_by(name: tag_name).slice(:tag_id, :name)
+      end
+      @body = payment.merge(categories: categories, tags: tags).deep_stringify_keys
     end
     include_context '収支情報を取得する', payment[:id]
     it_behaves_like 'レスポンスが正しいこと'

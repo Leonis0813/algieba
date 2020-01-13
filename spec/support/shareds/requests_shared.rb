@@ -74,7 +74,9 @@ end
 shared_examples '表示されている件数が正しいこと' do |total, from, to|
   it_is_asserted_by do
     text = "#{total}件中#{from}〜#{to}件を表示"
-    @wait.until { @driver.find_element(:xpath, '//div/h4').text == text }
+    @wait.until do
+      @driver.find_element(:xpath, '//div[@class="col-lg-8"]/div/h4').text == text
+    end
   end
 end
 
