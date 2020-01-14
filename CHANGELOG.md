@@ -1,3 +1,6 @@
+# 4.4.1 (2020/01/14)
+- [UPDATE] gems
+
 # 4.4.0 (2019/01/13)
 - [UPDATE] payment resource to set tags
 - [UPDATE] gems
