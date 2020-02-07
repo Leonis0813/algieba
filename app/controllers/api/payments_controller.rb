@@ -1,6 +1,6 @@
 module Api
   class PaymentsController < ApplicationController
-    before_filter :check_request_payment, only: %i[show update destroy]
+    before_action :check_request_payment, only: %i[show update destroy]
 
     def create
       required_param_keys = %i[payment_type date content categories price]
