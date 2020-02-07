@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200110111100) do
+ActiveRecord::Schema.define(version: 20200207114056) do
 
   create_table "categories", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string   "name",                      null: false
@@ -41,10 +41,12 @@ ActiveRecord::Schema.define(version: 20200110111100) do
   end
 
   create_table "dictionaries", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.string   "phrase",     null: false
-    t.string   "condition",  null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string   "dictionary_id", default: "", null: false
+    t.string   "phrase",                     null: false
+    t.string   "condition",                  null: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+    t.index ["dictionary_id"], name: "index_dictionaries_on_dictionary_id", unique: true, using: :btree
     t.index ["phrase", "condition"], name: "index_dictionaries_on_phrase_and_condition", unique: true, using: :btree
   end
 
