@@ -11,9 +11,12 @@ class Payment < ApplicationRecord
   has_many :payment_tags, dependent: :destroy
   has_many :tags, through: :payment_tags
 
-  validates :payment_type, :content, :price,
+  validates :payment_id, :payment_type, :content, :price,
             presence: {message: 'absent'}
   validates :date, presence: {message: 'invalid'}
+  validates :payment_id,
+            format: {with: /\A[0-9a-f]{32}\z/, message: 'invalid'},
+            allow_nil: true
   validates :payment_type,
             inclusion: {in: PAYMENT_TYPES, message: 'invalid'},
             allow_nil: true
