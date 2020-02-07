@@ -1,2 +1,2 @@
-json.(@dictionary, :id, :phrase, :condition)
-json.categories(@dictionary.categories, :id, :name, :description)
+json.(@dictionary, :dictionary_id, :phrase, :condition)
+json.categories(@dictionary.categories, :category_id, :name, :description)

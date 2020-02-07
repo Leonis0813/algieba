@@ -1,1 +1,1 @@
-json.categories(@categories, :id, :name, :description)
+json.categories(@categories, :category_id, :name, :description)
