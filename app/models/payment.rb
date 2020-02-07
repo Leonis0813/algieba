@@ -41,4 +41,8 @@ class Payment < ApplicationRecord
   }
   scope :price_upper, ->(price) { where('price >= ?', price) }
   scope :price_lower, ->(price) { where('price <= ?', price) }
+
+  after_initialize do |payment|
+    payment.payment_id ||= SecureRandom.hex
+  end
 end

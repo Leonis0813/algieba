@@ -10,4 +10,8 @@ class Dictionary < ApplicationRecord
   validates :condition,
             inclusion: {in: %w[equal include], message: 'invalid'},
             allow_nil: true
+
+  after_initialize do |dictionary|
+    dictionary.dictionary_id ||= SecureRandom.hex
+  end
 end
