@@ -11,7 +11,7 @@ class Tag < ApplicationRecord
             length: {maximum: 10, message: 'invalid'},
             allow_nil: true
 
-  after_initialize do |tag|
-    tag.tag_id ||= SecureRandom.hex
+  after_initialize if: :new_record? do |tag|
+    tag.tag_id = SecureRandom.hex
   end
 end

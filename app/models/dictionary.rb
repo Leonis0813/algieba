@@ -11,7 +11,7 @@ class Dictionary < ApplicationRecord
             inclusion: {in: %w[equal include], message: 'invalid'},
             allow_nil: true
 
-  after_initialize do |dictionary|
-    dictionary.dictionary_id ||= SecureRandom.hex
+  after_initialize if: :new_record? do |dictionary|
+    dictionary.dictionary_id = SecureRandom.hex
   end
 end

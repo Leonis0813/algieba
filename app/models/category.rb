@@ -10,7 +10,7 @@ class Category < ApplicationRecord
             format: {with: /\A[0-9a-f]{32}\z/, message: 'invalid'},
             allow_nil: true
 
-  after_initialize do |category|
-    category.category_id ||= SecureRandom.hex
+  after_initialize if: :new_record? do |category|
+    category.category_id = SecureRandom.hex
   end
 end
