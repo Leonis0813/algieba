@@ -32,9 +32,9 @@ describe Api::DictionariesController, type: :controller do
           dictionaries = Dictionary.where(phrase: 'test', condition: 'include')
           @body = {
             dictionaries: dictionaries.map do |dictionary|
-              dictionary.slice(:id, :phrase, :condition).merge(
+              dictionary.slice(:dictionary_id, :phrase, :condition).merge(
                 categories: dictionary.categories.map do |category|
-                  category.slice(:id, :name, :description)
+                  category.slice(:category_id, :name, :description)
                 end,
               )
             end,
@@ -50,9 +50,9 @@ describe Api::DictionariesController, type: :controller do
         @body = {
           dictionaries: Dictionary.all.order(:condition).map do |dictionary|
             categories = dictionary.categories.map do |category|
-              category.slice(:id, :name, :description)
+              category.slice(:category_id, :name, :description)
             end
-            dictionary.slice(:id, :phrase, :condition).merge(categories: categories)
+            dictionary.slice(:dictionary_id, :phrase, :condition).merge(categories: categories)
           end,
         }.deep_stringify_keys
       end

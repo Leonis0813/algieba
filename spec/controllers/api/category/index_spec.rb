@@ -20,7 +20,7 @@ describe Api::CategoriesController, type: :controller do
         before(:all) do
           @body = {
             categories: Category.where(name: keyword).order(:name).map do |category|
-              category.slice(:id, :name, :description)
+              category.slice(:category_id, :name, :description)
             end,
           }.deep_stringify_keys
         end
@@ -33,7 +33,7 @@ describe Api::CategoriesController, type: :controller do
       before(:all) do
         @body = {
           categories: Category.all.order(:name).map do |category|
-            category.slice(:id, :name, :description)
+            category.slice(:category_id, :name, :description)
           end,
         }.deep_stringify_keys
       end

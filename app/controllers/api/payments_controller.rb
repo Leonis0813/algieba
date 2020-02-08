@@ -10,7 +10,7 @@ module Api
       @payment.categories = create_params[:categories].map do |category_name|
         Category.find_or_initialize_by(name: category_name)
       end
-      @payment.tags = create_params[:tags].map do |tag_name|
+      @payment.tags = Array.wrap(create_params[:tags]).map do |tag_name|
         Tag.find_or_initialize_by(name: tag_name)
       end
 

@@ -12,7 +12,7 @@ describe Api::PaymentsController, type: :controller do
   end
 
   describe '正常系' do
-    base_payment = PaymentHelper.test_payment[:income]
+    base_payment = PaymentHelper.test_payment[:income].except(:id)
 
     shared_examples 'レスポンスが正しいこと' do |body|
       it_behaves_like 'ステータスコードが正しいこと', 201
@@ -20,7 +20,7 @@ describe Api::PaymentsController, type: :controller do
       it 'レスポンスボディが正しいこと' do
         is_asserted_by { @response_body.keys.sort == PaymentHelper.response_keys }
 
-        body.except(:categories, :tags).each do |key, value|
+        body.except(:payment_id, :categories, :tags).each do |key, value|
           is_asserted_by { @response_body[key.to_s] == value }
         end
 
@@ -67,10 +67,47 @@ describe Api::PaymentsController, type: :controller do
         it_behaves_like 'レスポンスが正しいこと', expected_response
       end
     end
+
+    [
+      ['タグが既に存在している場合', {}],
+      ['タグが存在しない場合', {tags: ['not_exist']}],
+      ['複数のタグを指定した場合', {tags: %w[algieba other_tag]}],
+    ].each do |description, tags|
+      context description do
+        body = base_payment.merge(tags)
+        response_categories = body[:categories].map do |category_name|
+          {name: category_name, description: nil}
+        end
+        response_tags = body[:tags].map {|tag_name| {name: tag_name} }
+        expected_response = body.merge(
+          categories: response_categories,
+          tags: response_tags,
+        ).except(:id)
+
+        include_context 'トランザクション作成'
+        include_context '収支情報を登録する', body
+        it_behaves_like 'レスポンスが正しいこと', expected_response
+      end
+    end
+
+    context 'タグを指定しない場合' do
+      body = base_payment.except(:tags)
+      response_categories = body[:categories].map do |category_name|
+        {name: category_name, description: nil}
+      end
+      expected_response = body.merge(
+        categories: response_categories,
+        tags: [],
+      ).except(:id)
+
+      include_context 'トランザクション作成'
+      include_context '収支情報を登録する', body
+      it_behaves_like 'レスポンスが正しいこと', expected_response
+    end
   end
 
   describe '異常系' do
-    payment_params = (PaymentHelper.response_keys - %w[id tags]).map(&:to_sym)
+    payment_params = (PaymentHelper.response_keys - %w[payment_id tags]).map(&:to_sym)
     test_cases = [].tap do |tests|
       (payment_params.size - 1).times do |i|
         tests << payment_params.combination(i + 1).to_a
