@@ -13,11 +13,11 @@
 ActiveRecord::Schema.define(version: 20200207120605) do
 
   create_table "categories", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.string   "category_id",               default: "", null: false
-    t.string   "name",                                   null: false
+    t.string   "category_id"
+    t.string   "name",                      null: false
     t.text     "description", limit: 65535
-    t.datetime "created_at",                             null: false
-    t.datetime "updated_at",                             null: false
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
     t.index ["category_id"], name: "index_categories_on_category_id", unique: true, using: :btree
     t.index ["name"], name: "index_categories_on_name", unique: true, using: :btree
   end
@@ -43,11 +43,11 @@ ActiveRecord::Schema.define(version: 20200207120605) do
   end
 
   create_table "dictionaries", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.string   "dictionary_id", default: "", null: false
-    t.string   "phrase",                     null: false
-    t.string   "condition",                  null: false
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
+    t.string   "dictionary_id"
+    t.string   "phrase",        null: false
+    t.string   "condition",     null: false
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
     t.index ["dictionary_id"], name: "index_dictionaries_on_dictionary_id", unique: true, using: :btree
     t.index ["phrase", "condition"], name: "index_dictionaries_on_phrase_and_condition", unique: true, using: :btree
   end
@@ -63,13 +63,13 @@ ActiveRecord::Schema.define(version: 20200207120605) do
   end
 
   create_table "payments", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.string   "payment_id",   default: "", null: false
+    t.string   "payment_id"
     t.string   "payment_type"
     t.date     "date"
     t.string   "content"
     t.integer  "price"
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
     t.index ["payment_id"], name: "index_payments_on_payment_id", unique: true, using: :btree
   end
 
