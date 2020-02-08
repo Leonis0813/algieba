@@ -3,6 +3,8 @@
 require 'rails_helper'
 
 describe Api::PaymentsController, type: :controller do
+  category_keys = CategoryHelper.response_keys
+
   shared_context '収支情報を検索する' do |query = {}|
     before(:all) do
       res = client.get('/api/payments', query)
@@ -53,7 +55,7 @@ describe Api::PaymentsController, type: :controller do
           expected_payments = expected_payment_types.map do |key|
             payment = PaymentHelper.test_payment[key]
             categories = payment[:categories].map do |category_name|
-              Category.find_by(name: category_name).slice(:category_id, :name, :description)
+              Category.find_by(name: category_name).slice(*category_keys)
             end
             tags = payment[:tags].map do |tag_name|
               Tag.find_by(name: tag_name).slice(:tag_id, :name)

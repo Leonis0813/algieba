@@ -28,7 +28,7 @@ describe Api::PaymentsController, type: :controller do
       @body = payment.except(:id).merge(
         payment_id: @payment_id,
         categories: categories,
-        tags: tags
+        tags: tags,
       ).deep_stringify_keys
     end
     include_context '収支情報を取得する'

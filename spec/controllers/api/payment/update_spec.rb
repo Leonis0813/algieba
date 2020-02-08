@@ -4,6 +4,7 @@ require 'rails_helper'
 
 describe Api::PaymentsController, type: :controller do
   base_payment = PaymentHelper.test_payment[:income]
+  category_keys = CategoryHelper.response_keys
 
   shared_context '収支情報を更新する' do |payment_id: nil, body: {}|
     before(:all) do
@@ -37,7 +38,7 @@ describe Api::PaymentsController, type: :controller do
         before(:all) do
           response_body = base_payment.except(:id).merge(body)
           categories = response_body[:categories].map do |category_name|
-            Category.find_by(name: category_name).slice(:category_id, :name, :description)
+            Category.find_by(name: category_name).slice(*category_keys)
           end
           tags = response_body[:tags].map do |tag_name|
             Tag.find_by(name: tag_name).slice(:tag_id, :name)
@@ -65,7 +66,7 @@ describe Api::PaymentsController, type: :controller do
         before(:all) do
           response_body = base_payment.except(:id).merge(body)
           categories = response_body[:categories].map do |category_name|
-            Category.find_by(name: category_name).slice(:category_id, :name, :description)
+            Category.find_by(name: category_name).slice(*category_keys)
           end
           tags = response_body[:tags].map do |tag_name|
             Tag.find_by(name: tag_name).slice(:tag_id, :name)
