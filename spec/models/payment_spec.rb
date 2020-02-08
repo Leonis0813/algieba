@@ -23,7 +23,7 @@ describe Payment, type: :model do
         date: %w[invalid 1000-13-01 1000-01-00 1000-13-00],
         price: [-1],
       }
-      absent_keys = %i[payment_id payment_type content price]
+      absent_keys = %i[payment_type content price]
 
       it_behaves_like '必須パラメーターがない場合のテスト', absent_keys
       it_behaves_like '不正な値を指定した場合のテスト', invalid_attribute

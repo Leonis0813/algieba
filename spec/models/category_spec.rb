@@ -19,7 +19,7 @@ describe Category, type: :model do
         category_id: ['0' * 33, 'g' * 32],
       }
 
-      it_behaves_like '必須パラメーターがない場合のテスト', %i[category_id name]
+      it_behaves_like '必須パラメーターがない場合のテスト', %i[name]
       it_behaves_like '不正な値を指定した場合のテスト', invalid_attribute
     end
   end

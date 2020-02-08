@@ -19,7 +19,7 @@ describe Dictionary, type: :model do
         dictionary_id: ['0' * 33, 'g' * 32],
         condition: %w[invalid],
       }
-      absent_keys = %i[dictionary_id phrase condition]
+      absent_keys = %i[phrase condition]
 
       it_behaves_like '必須パラメーターがない場合のテスト', absent_keys
       it_behaves_like '不正な値を指定した場合のテスト', invalid_attribute
