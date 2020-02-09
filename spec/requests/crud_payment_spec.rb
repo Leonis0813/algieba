@@ -20,7 +20,8 @@ describe '収支情報を管理する', type: :request do
 
   shared_context 'GET /api/payments/[:payment_id]' do
     before(:all) do
-      res = http_client.get("#{base_url}/api/payments/#{@payment_id}", nil, app_auth_header)
+      url = "#{base_url}/api/payments/#{@payment_id}"
+      res = http_client.get(url, nil, app_auth_header)
       @response_status = res.status
       @response_body = JSON.parse(res.body) rescue res.body
     end

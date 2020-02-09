@@ -40,7 +40,8 @@ module PaymentHelper
     payments_path = "#{base_url}/api/payments"
     res = http_client.get(payments_path, {per_page: 100}, app_auth_header)
     JSON.parse(res.body)['payments'].each do |payment|
-      http_client.delete("#{payments_path}/#{payment['payment_id']}", nil, app_auth_header)
+      url = "#{payments_path}/#{payment['payment_id']}"
+      http_client.delete(url, nil, app_auth_header)
     end
   end
 
