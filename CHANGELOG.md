@@ -1,3 +1,6 @@
+# 4.4.1 (2020/02/09)
+- [UPDATE] resources to add resource id
+
 # 4.4.0 (2019/01/13)
 - [UPDATE] payment resource to set tags
 - [UPDATE] gems
