@@ -10,7 +10,7 @@
   <td class='tag <%= td_class %>' title='<%= tag_name %>'><%= truncate(tag_name, length: 10) %></td>
   <td class='price <%= td_class %>'><%= payment.price %></td>
   <td width='16' class='delete'>
-    <%= button_tag(:class => 'btn btn-default btn-mini', :height => 16, :value => payment.id) do %>
+    <%= button_tag(:class => 'btn btn-default btn-mini', :height => 16, :value => payment.payment_id) do %>
       <span class='glyphicon glyphicon-trash' />
     <% end %>
   </td>
