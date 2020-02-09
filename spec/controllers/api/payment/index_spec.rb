@@ -3,15 +3,22 @@
 require 'rails_helper'
 
 describe Api::PaymentsController, type: :controller do
-  shared_context '収支情報を検索する' do |params = {}|
+  category_keys = CategoryHelper.response_keys
+
+  shared_context '収支情報を検索する' do |query = {}|
     before(:all) do
-      res = client.get('/api/payments', params)
+      res = client.get('/api/payments', query)
       @response_status = res.status
       @response_body = JSON.parse(res.body) rescue res.body
     end
   end
 
   include_context '収支情報を登録する'
+  before(:all) do
+    PaymentHelper.test_payment.values.each do |attribute|
+      Payment.find(attribute[:id]).update!(payment_id: attribute[:id].to_s * 32)
+    end
+  end
 
   describe '正常系' do
     [
@@ -53,12 +60,16 @@ describe Api::PaymentsController, type: :controller do
           expected_payments = expected_payment_types.map do |key|
             payment = PaymentHelper.test_payment[key]
             categories = payment[:categories].map do |category_name|
-              Category.find_by(name: category_name).slice(:id, :name, :description)
+              Category.find_by(name: category_name).slice(*category_keys)
             end
             tags = payment[:tags].map do |tag_name|
               Tag.find_by(name: tag_name).slice(:tag_id, :name)
             end
-            payment.merge(categories: categories, tags: tags)
+            payment.except(:id).merge(
+              payment_id: Payment.find(payment[:id]).payment_id,
+              categories: categories,
+              tags: tags,
+            )
           end
           @body = {payments: expected_payments}.deep_stringify_keys
         end

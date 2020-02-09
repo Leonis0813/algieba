@@ -6,6 +6,7 @@ describe Dictionary, type: :model do
   describe '#validates' do
     describe '正常系' do
       valid_attribute = {
+        dictionary_id: ['0' * 32],
         phrase: 'phrase',
         condition: %w[equal include],
       }
@@ -15,6 +16,7 @@ describe Dictionary, type: :model do
 
     describe '異常系' do
       invalid_attribute = {
+        dictionary_id: ['0' * 33, 'g' * 32],
         condition: %w[invalid],
       }
       absent_keys = %i[phrase condition]

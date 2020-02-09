@@ -3,6 +3,9 @@
 require 'rails_helper'
 
 describe Api::DictionariesController, type: :controller do
+  dictionary_keys = DictionaryHelper.response_keys - %w[categories]
+  category_keys = CategoryHelper.response_keys
+
   shared_context '辞書情報を検索する' do |query|
     before(:all) do
       response = client.get('/api/dictionaries', query)
@@ -32,9 +35,9 @@ describe Api::DictionariesController, type: :controller do
           dictionaries = Dictionary.where(phrase: 'test', condition: 'include')
           @body = {
             dictionaries: dictionaries.map do |dictionary|
-              dictionary.slice(:id, :phrase, :condition).merge(
+              dictionary.slice(*dictionary_keys).merge(
                 categories: dictionary.categories.map do |category|
-                  category.slice(:id, :name, :description)
+                  category.slice(*category_keys)
                 end,
               )
             end,
@@ -50,9 +53,9 @@ describe Api::DictionariesController, type: :controller do
         @body = {
           dictionaries: Dictionary.all.order(:condition).map do |dictionary|
             categories = dictionary.categories.map do |category|
-              category.slice(:id, :name, :description)
+              category.slice(*category_keys)
             end
-            dictionary.slice(:id, :phrase, :condition).merge(categories: categories)
+            dictionary.slice(*dictionary_keys).merge(categories: categories)
           end,
         }.deep_stringify_keys
       end

@@ -1,4 +1,5 @@
-# 4.4.1 (2020/02/07)
+# 4.4.1 (2020/02/09)
+- [UPDATE] resources to add resource id
 - [UPDATE] gems
 
 # 4.4.0 (2019/01/13)
