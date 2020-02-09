@@ -25,7 +25,15 @@ module PaymentHelper
   end
 
   def response_keys
-    @response_keys ||= %w[payment_id payment_type date content categories tags price].sort
+    @response_keys ||= %w[
+      payment_id
+      payment_type
+      date
+      content
+      categories
+      tags
+      price
+    ].sort
   end
 
   def delete_payments
