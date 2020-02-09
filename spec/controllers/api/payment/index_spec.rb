@@ -14,6 +14,11 @@ describe Api::PaymentsController, type: :controller do
   end
 
   include_context '収支情報を登録する'
+  before(:all) do
+    PaymentHelper.test_payment.values do |attribute|
+      Payment.find(attribute[:id]).update!(payment_id: attribute[:id] * 32)
+    end
+  end
 
   describe '正常系' do
     [
