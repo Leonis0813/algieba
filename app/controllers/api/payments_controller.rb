@@ -1,5 +1,7 @@
 module Api
   class PaymentsController < ApplicationController
+    before_action :check_request_payment, only: %i[show update destroy]
+
     def create
       required_param_keys = %i[payment_type date content categories price]
       check_absent_param(create_params, required_param_keys)
@@ -9,7 +11,7 @@ module Api
         Category.find_or_initialize_by(name: category_name)
       end
       @payment.tags = Array.wrap(create_params[:tags]).map do |tag_name|
-        Tag.find_by(name: tag_name) || Tag.new(tag_id: SecureRandom.hex, name: tag_name)
+        Tag.find_or_initialize_by(name: tag_name)
       end
 
       if @payment.save
@@ -21,9 +23,6 @@ module Api
     end
 
     def show
-      @payment = Payment.find_by(params.permit(:id))
-      raise NotFound unless @payment
-
       render status: :ok, template: 'payments/payment'
     end
 
@@ -43,32 +42,35 @@ module Api
     end
 
     def update
-      @payment = Payment.find_by(params.permit(:id))
-      raise NotFound unless @payment
-
       attributes = params.permit(:date, :content, :price, :payment_type, categories: [])
       if attributes[:categories]
-        @payment.categories = attributes[:categories].map do |category_name|
+        payment.categories = attributes[:categories].map do |category_name|
           Category.find_or_create_by(name: category_name)
         end
       end
 
-      if @payment.update(attributes.except(:categories))
+      if payment.update(attributes.except(:categories))
         render status: :ok, template: 'payments/payment'
       else
-        error_codes = @payment.errors.messages.keys.map {|key| "invalid_param_#{key}" }
+        error_codes = payment.errors.messages.keys.map {|key| "invalid_param_#{key}" }
         raise BadRequest, error_codes
       end
     end
 
     def destroy
-      @payment = Payment.find_by(params.permit(:id)).try(:destroy)
-      raise NotFound unless @payment
-
+      payment.destroy
       head :no_content
     end
 
     private
+
+    def check_request_payment
+      raise NotFound unless payment
+    end
+
+    def payment
+      @payment ||= Payment.find_by(request.path_parameters.slice(:payment_id))
+    end
 
     def create_params
       @create_params ||= request.request_parameters.slice(

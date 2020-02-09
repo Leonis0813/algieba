@@ -14,7 +14,7 @@ describe '統計情報を確認する', type: :request do
     body = {payments: payment}.to_json
     header = app_auth_header.merge(content_type_json)
     res = http_client.post("#{base_url}/api/payments", body, header)
-    @payment_id = JSON.parse(res.body)['id']
+    @payment_id = JSON.parse(res.body)['payment_id']
   end
 
   after(:all) do

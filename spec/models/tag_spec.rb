@@ -19,7 +19,7 @@ describe Tag, type: :model do
         name: ['0' * 11],
       }
 
-      it_behaves_like '必須パラメーターがない場合のテスト', %i[tag_id name]
+      it_behaves_like '必須パラメーターがない場合のテスト', %i[name]
       it_behaves_like '不正な値を指定した場合のテスト', invalid_attribute
     end
   end

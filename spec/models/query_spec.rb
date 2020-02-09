@@ -14,7 +14,7 @@ describe(*target, type: :model) do
       price_lower: 0,
       page: 2,
       per_page: 50,
-      sort: %w[id date price],
+      sort: %w[payment_id date price],
       order: %w[asc desc],
     }
 

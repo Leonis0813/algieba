@@ -21,7 +21,7 @@ class Query
               greater_than_or_equal_to: 1,
               message: 'invalid',
             }
-  validates :sort, inclusion: {in: %w[id date price], message: 'invalid'}
+  validates :sort, inclusion: {in: %w[payment_id date price], message: 'invalid'}
   validates :order, inclusion: {in: %w[asc desc], message: 'invalid'}
   validate :date_valid?
   validate :period_valid?
@@ -30,7 +30,7 @@ class Query
     super
     self.page ||= 1
     self.per_page ||= 10
-    self.sort ||= 'id'
+    self.sort ||= 'payment_id'
     self.order ||= 'asc'
   end
 
