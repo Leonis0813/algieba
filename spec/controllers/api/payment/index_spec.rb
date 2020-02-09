@@ -15,8 +15,8 @@ describe Api::PaymentsController, type: :controller do
 
   include_context '収支情報を登録する'
   before(:all) do
-    PaymentHelper.test_payment.values do |attribute|
-      Payment.find(attribute[:id]).update!(payment_id: attribute[:id] * 32)
+    PaymentHelper.test_payment.values.each do |attribute|
+      Payment.find(attribute[:id]).update!(payment_id: attribute[:id].to_s * 32)
     end
   end
 
