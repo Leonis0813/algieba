@@ -30,7 +30,7 @@
 
     <div id='search-form' class='well tab-pane'>
       <h3><%= t('views.search.title') %></h3>
-      <%= form_for @search_form, {:url => tagss_path, :method => :get} do |f| %>
+      <%= form_for @search_form, {:url => tags_path, :method => :get} do |f| %>
 
         <div class='form-group'>
           <%= label_tag :name, t('views.common.attribute.name') %>

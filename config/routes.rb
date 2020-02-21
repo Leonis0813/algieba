@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
-  root 'payments#index'
+  top = "#{Rails.application.config.relative_url_root}/management/payments"
+
+  root to: redirect(top)
 
   namespace :api, format: 'json' do
     resources :categories, only: %i[index]
@@ -11,9 +13,13 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :payments, only: %i[index], format: 'html'
-  resources :categories, only: %i[index], format: 'html'
-  resources :dictionaries, only: %i[index], format: 'html'
-  resources :tags, only: %i[index], format: 'html'
+  scope :management do
+    get '/', to: redirect(top)
+    resources :payments, only: %i[index], format: 'html'
+    resources :categories, only: %i[index], format: 'html'
+    resources :dictionaries, only: %i[index], format: 'html'
+    resources :tags, only: %i[index], format: 'html'
+  end
+
   resources :statistics, only: %i[index], format: 'html'
 end
