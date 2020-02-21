@@ -44,17 +44,15 @@
 
   <div class='col-lg-8'>
     <div>
-      <%
-        info = {
-          total_count: @tags.total_count,
-          from: @tags.total_count.zero? ? 0 : @tags.offset_value + 1,
-          to: @tags.offset_value + @tags.size,
-        }
-      %>
+      <% info = {
+           total_count: @tags.total_count,
+           from: @tags.total_count.zero? ? 0 : @tags.offset_value + 1,
+           to: @tags.offset_value + @tags.size,
+         } %>
       <h4 style='padding: 0px 10px;display: inline'><%= t('views.list.pagination.info', info) %></h4>
       <form style='padding: 0px 10px;display: inline' id='per_page_form' class='form-inline pull-right' onSubmit='return false;'>
         <label for='per_page'><%= t('views.list.pagination.label') %></label>
-        <input type='text' id='per_page' class='form-control' name='per_page' value='<%= @per_page %>' size='10' >
+        <input type='text' id='per_page' class='form-control' name='per_page' value='<%= @per_page %>' size='10'>
       </form>
     </div>
     <%= paginate @tags %>

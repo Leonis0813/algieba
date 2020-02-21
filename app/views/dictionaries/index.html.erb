@@ -72,13 +72,11 @@
 
   <div class='col-lg-8'>
     <div>
-      <%
-        info = {
-          total_count: @dictionaries.total_count,
-          from: @dictionaries.total_count.zero? ? 0 : @dictionaries.offset_value + 1,
-          to: @dictionaries.offset_value + @dictionaries.size
-        }
-      %>
+      <% info = {
+           total_count: @dictionaries.total_count,
+           from: @dictionaries.total_count.zero? ? 0 : @dictionaries.offset_value + 1,
+           to: @dictionaries.offset_value + @dictionaries.size,
+         } %>
       <h4 style='padding: 0px 10px;display: inline'><%= t('views.list.pagination.info', info) %></h4>
       <form style='padding: 0px 10px;display: inline' id='per_page_form' class='form-inline pull-right' onSubmit='return false;'>
         <label for='per_page'><%= t('views.list.pagination.label') %></label>
