@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  root 'payments#index'
+
   namespace :api, format: 'json' do
     resources :categories, only: %i[index]
     resources :dictionaries, only: %i[create index]
@@ -10,5 +12,8 @@ Rails.application.routes.draw do
   end
 
   resources :payments, only: %i[index], format: 'html'
+  resources :categories, only: %i[index], format: 'html'
+  resources :dictionaries, only: %i[index], format: 'html'
+  resources :tags, only: %i[index], format: 'html'
   resources :statistics, only: %i[index], format: 'html'
 end
