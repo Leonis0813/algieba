@@ -4,7 +4,7 @@ module Api
 
     def assign_payments
       check_absent_param(assign_payments_param, %i[payment_ids])
-      unless assign_payments_param[:payment_ids].kind_of?(Array)
+      unless assign_payments_param[:payment_ids].is_a?(Array)
         raise BadRequest, 'invalid_param_payment_ids'
       end
 

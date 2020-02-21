@@ -30,11 +30,11 @@
 
     <div id='search-form' class='well tab-pane'>
       <h3><%= t('views.search.title') %></h3>
-      <%= form_for @search_form, {:url => tags_path, :method => :get} do |f| %>
+      <%= form_for @search_form, url: tags_path, method: :get do |f| %>
 
         <div class='form-group'>
           <%= label_tag :name, t('views.common.attribute.name') %>
-          <%= text_field_tag :name, '', :class => 'form-control', :name => :name_include, :value => @search_form.name_include %>
+          <%= text_field_tag :name, '', class: 'form-control', name: :name_include, value: @search_form.name_include %>
         </div>
 
         <%= f.submit t('views.search.submit'), id: 'tag-search-button', class: 'btn btn-primary btn-submit' %>
@@ -44,12 +44,12 @@
 
   <div class='col-lg-8'>
     <div>
-      <% from = @tags.total_count == 0 ? 0 : @tags.offset_value + 1 %>
-      <% info = {:total_count => @tags.total_count, :from => from, :to => @tags.offset_value + @tags.size} %>
+      <% from = @tags.total_count.zero? ? 0 : @tags.offset_value + 1 %>
+      <% info = {total_count: @tags.total_count, from: from, to: @tags.offset_value + @tags.size} %>
       <h4 style='padding: 0px 10px;display: inline'><%= t('views.list.pagination.info', info) %></h4>
       <form style='padding: 0px 10px;display: inline' id='per_page_form' class='form-inline pull-right' onSubmit='return false;'>
         <label for='per_page'><%= t('views.list.pagination.label') %></label>
-        <input type='text' id='per_page' class='form-control' name='per_page' value='<%= @per_page %>' size='10'/>
+        <input type='text' id='per_page' class='form-control' name='per_page' value='<%= @per_page %>' size='10' >
       </form>
     </div>
     <%= paginate @tags %>
