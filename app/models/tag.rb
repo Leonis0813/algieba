@@ -11,6 +11,8 @@ class Tag < ApplicationRecord
             length: {maximum: 10, message: 'invalid'},
             allow_nil: true
 
+  scope :name_include, ->(name) { where('name REGEXP ?', ".*#{name}.*") }
+
   after_initialize if: :new_record? do |tag|
     tag.tag_id = SecureRandom.hex
   end

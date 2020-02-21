@@ -1,7 +1,7 @@
-class Query::Dictionary
+class Query::Tag
   include ActiveModel::Model
 
-  attribute_names = %i[phrase_include]
+  attribute_names = %i[name_include]
   attr_accessor(*attribute_names)
 
   def attributes
