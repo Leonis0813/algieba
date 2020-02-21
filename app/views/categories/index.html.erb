@@ -4,7 +4,7 @@
       <li>
         <%= link_to '収支', payments_path %>
       </li>
-      <li>
+      <li class='active'>
         <%= link_to 'カテゴリ', categories_path %>
       </li>
       <li>
@@ -19,16 +19,22 @@
 
 <div class='row center-block'>
   <div class='col-lg-4'>
+    <ul class='nav nav-tabs'>
+      <li class='active'>
+        <a href='#search-form' data-toggle='tab'><%= t('views.search.tab_name') %></a>
+      </li>
+    </ul>
+
     <div id='search-form' class='well tab-pane'>
       <h3><%= t('views.search.title') %></h3>
-      <%= form_for @search_form, {:url => categories_path, :method => :get, :remote => true, :html => {:onClick => 'return false;'}} do |f| %>
+      <%= form_for @search_form, {:url => categories_path, :method => :get} do |f| %>
 
         <div class='form-group'>
           <%= label_tag :name, t('views.common.attribute.content') %>
-          <%= text_field_tag :name, '', :class => 'form-control', :value => @search_form.name_include %>
+          <%= text_field_tag :name, '', :class => 'form-control', :name => :name_include, :value => @search_form.name_include %>
         </div>
 
-        <%= f.submit t('views.search.submit'), id: 'search-button', class: 'btn btn-primary btn-submit' %>
+        <%= f.submit t('views.search.submit'), id: 'category-search-button', class: 'btn btn-primary btn-submit' %>
       <% end %>
     </div>
   </div>

@@ -1,6 +1,6 @@
 class PaymentsController < ApplicationController
   def index
-    @search_form = Query.new(index_param)
+    @search_form = Query::Payment.new(index_param)
 
     if @search_form.valid?
       @payments = scope_param.keys.inject(Payment.all) do |payments, key|
@@ -9,7 +9,6 @@ class PaymentsController < ApplicationController
       end
       @payment = Payment.new
       @payments = @payments.order(date: :desc).page(params[:page]).per(per_page)
-      @dictionary = Dictionary.new
       render status: :ok
     else
       error_codes = @search_form.errors.messages.keys.map {|key| "invalid_param_#{key}" }
