@@ -1,21 +1,4 @@
-<nav class='navbar navbar-inverse navbar-static-top' style='background-color: #555555'>
-  <div class='container'>
-    <ul class='nav navbar-nav'>
-      <li>
-        <%= link_to '収支', payments_path %>
-      </li>
-      <li>
-        <%= link_to 'カテゴリ', categories_path %>
-      </li>
-      <li class='active'>
-        <%= link_to '辞書', dictionaries_path %>
-      </li>
-      <li>
-        <%= link_to 'タグ', tags_path %>
-      </li>
-    </ul>
-  </div>
-</nav>
+<%= render 'layouts/management' %>
 
 <div class='row center-block'>
   <div class='col-lg-4'>
