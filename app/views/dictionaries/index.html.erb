@@ -60,8 +60,8 @@
         <%= form_for @search_form, url: dictionaries_path, method: :get do |f| %>
 
           <div class='form-group'>
-            <%= label_tag :name, t('views.common.attribute.content') %>
-            <%= text_field_tag :name, '', class: 'form-control', name: :phrase_include, value: @search_form.phrase_include %>
+            <%= label_tag :phrase_include, t('views.common.attribute.content') %>
+            <%= text_field_tag :phrase_include, '', class: 'form-control', value: @search_form.phrase_include %>
           </div>
 
           <%= f.submit t('views.search.submit'), id: 'dictionary-search-button', class: 'btn btn-primary btn-submit' %>
@@ -72,12 +72,17 @@
 
   <div class='col-lg-8'>
     <div>
-      <% from = @dictionaries.total_count.zero? ? 0 : @dictionaries.offset_value + 1 %>
-      <% info = {total_count: @dictionaries.total_count, from: from, to: @dictionaries.offset_value + @dictionaries.size} %>
+      <%
+        info = {
+          total_count: @dictionaries.total_count,
+          from: @dictionaries.total_count.zero? ? 0 : @dictionaries.offset_value + 1,
+          to: @dictionaries.offset_value + @dictionaries.size
+        }
+      %>
       <h4 style='padding: 0px 10px;display: inline'><%= t('views.list.pagination.info', info) %></h4>
       <form style='padding: 0px 10px;display: inline' id='per_page_form' class='form-inline pull-right' onSubmit='return false;'>
         <label for='per_page'><%= t('views.list.pagination.label') %></label>
-        <input type='text' id='per_page' class='form-control' name='per_page' value='<%= @per_page %>' size='10' >
+        <input type='text' id='per_page' class='form-control' name='per_page' value='<%= @per_page %>' size='10'>
       </form>
     </div>
     <%= paginate @dictionaries %>

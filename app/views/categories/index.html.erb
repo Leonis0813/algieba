@@ -30,8 +30,8 @@
       <%= form_for @search_form, url: categories_path, method: :get do |f| %>
 
         <div class='form-group'>
-          <%= label_tag :name, t('views.common.attribute.content') %>
-          <%= text_field_tag :name, '', class: 'form-control', name: :name_include, value: @search_form.name_include %>
+          <%= label_tag :name_include, t('views.common.attribute.content') %>
+          <%= text_field_tag :name_include, '', class: 'form-control', value: @search_form.name_include %>
         </div>
 
         <%= f.submit t('views.search.submit'), id: 'category-search-button', class: 'btn btn-primary btn-submit' %>
@@ -41,8 +41,13 @@
 
   <div class='col-lg-8'>
     <div>
-      <% from = @categories.total_count.zero? ? 0 : @categories.offset_value + 1 %>
-      <% info = {total_count: @categories.total_count, from: from, to: @categories.offset_value + @categories.size} %>
+      <%
+        info = {
+          total_count: @categories.total_count,
+          from: @categories.total_count.zero? ? 0 : @categories.offset_value + 1,
+          to: @categories.offset_value + @categories.size
+        }
+      %>
       <h4 style='padding: 0px 10px;display: inline'><%= t('views.list.pagination.info', info) %></h4>
       <form style='padding: 0px 10px;display: inline' id='per_page_form' class='form-inline pull-right' onSubmit='return false;'>
         <label for='per_page'><%= t('views.list.pagination.label') %></label>
