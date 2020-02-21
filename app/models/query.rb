@@ -10,7 +10,6 @@ class Query
               greater_than_or_equal_to: 1,
               message: 'invalid',
             }
-  validates :sort, inclusion: {in: %w[payment_id date price], message: 'invalid'}
   validates :order, inclusion: {in: %w[asc desc], message: 'invalid'}
 
   def initialize(attributes = {})

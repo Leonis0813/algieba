@@ -27,7 +27,7 @@ module Api
     end
 
     def index
-      query = Query.new(params.permit(*index_params))
+      query = PaymentQuery.new(params.permit(*index_params))
       if query.valid?
         query_params = index_params - %i[page per_page sort order]
         @payments = query_params.inject(Payment.all) do |payments, key|

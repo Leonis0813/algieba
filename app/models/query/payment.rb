@@ -1,8 +1,6 @@
-class Query::Payment
-  include ActiveModel::Model
-
+class PaymentQuery < Query
   attribute_names = %i[payment_type date_before date_after content_equal content_include
-                       category tag price_upper price_lower page per_page sort order]
+                       category tag price_upper price_lower sort]
   attr_accessor(*attribute_names)
 
   validates :payment_type,
@@ -15,24 +13,10 @@ class Query::Payment
               message: 'invalid',
             },
             allow_nil: true
-  validates :page, :per_page,
-            numericality: {
-              only_integer: true,
-              greater_than_or_equal_to: 1,
-              message: 'invalid',
-            }
   validates :sort, inclusion: {in: %w[payment_id date price], message: 'invalid'}
-  validates :order, inclusion: {in: %w[asc desc], message: 'invalid'}
+
   validate :date_valid?
   validate :period_valid?
-
-  def initialize(attributes = {})
-    super
-    self.page ||= 1
-    self.per_page ||= 10
-    self.sort ||= 'payment_id'
-    self.order ||= 'asc'
-  end
 
   def date_valid?
     return unless date_before or date_after
@@ -59,6 +43,6 @@ class Query::Payment
   end
 
   def attributes
-    self.class.attribute_names.map {|name| [name, send(name)] }.to_h
+    super.merge(self.class.attribute_names.map {|name| [name, send(name)] }.to_h)
   end
 end

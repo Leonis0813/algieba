@@ -1,6 +1,6 @@
 class TagsController < ApplicationController
   def index
-    @search_form = Query::Tag.new(index_param)
+    @search_form = TagQuery.new(index_param)
 
     if @search_form.valid?
       @tags = scope_param.keys.inject(Tag.all) do |tags, key|

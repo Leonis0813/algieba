@@ -1,6 +1,6 @@
 class PaymentsController < ApplicationController
   def index
-    @search_form = Query::Payment.new(index_param)
+    @search_form = PaymentQuery.new(index_param)
 
     if @search_form.valid?
       @payments = scope_param.keys.inject(Payment.all) do |payments, key|

@@ -1,6 +1,6 @@
 class DictionariesController < ApplicationController
   def index
-    @search_form = Query::Dictionary.new(index_param)
+    @search_form = DictionaryQuery.new(index_param)
 
     if @search_form.valid?
       @dictionaries = scope_param.keys.inject(Dictionary.all) do |dictionaries, key|

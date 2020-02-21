@@ -1,6 +1,6 @@
 class CategoriesController < ApplicationController
   def index
-    @search_form = Query::Category.new(index_param)
+    @search_form = CategoryQuery.new(index_param)
 
     if @search_form.valid?
       @categories = scope_param.keys.inject(Category.all) do |categories, key|
