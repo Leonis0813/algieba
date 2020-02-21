@@ -7,6 +7,9 @@ Rails.application.routes.draw do
     resources :categories, only: %i[index]
     resources :dictionaries, only: %i[create index]
     resources :payments, except: %i[new edit], param: :payment_id
+    resources :tag, only: [] do
+      post 'payments' => 'tags#assign_payments', param: :tag_id
+    end
     resource :settlements, only: [] do
       get 'category' => 'settlements#category'
       get 'period' => 'settlements#period'
