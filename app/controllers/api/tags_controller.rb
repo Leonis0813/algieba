@@ -4,9 +4,7 @@ module Api
 
     def create
       check_absent_param(create_param, %i[name])
-      unless create_param[:name].is_a?(String)
-        raise BadRequest, 'invalid_param_name'
-      end
+      raise BadRequest, 'invalid_param_name' unless create_param[:name].is_a?(String)
 
       @tag = Tag.new(create_param)
       begin
