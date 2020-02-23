@@ -6,9 +6,9 @@ class DictionariesController < ApplicationController
       @dictionaries = scope_param.keys.inject(Dictionary.all) do |dictionaries, key|
         value = @search_form.send(key)
         value ? dictionaries.send(key, value) : dictionaries
-      end
+      end.order(:phrase).page(@search_form.page).per(@search_form.per_page)
       @dictionary = Dictionary.new
-      @dictionaries = @dictionaries.order(:phrase).page(params[:page]).per(per_page)
+
       render status: :ok
     else
       error_codes = @search_form.errors.messages.keys.map {|key| "invalid_param_#{key}" }
@@ -31,14 +31,5 @@ class DictionariesController < ApplicationController
       :page,
       :per_page,
     )
-  end
-
-  def per_page
-    return @per_page if @per_page
-
-    per_page = index_param[:per_page] || Kaminari.config.default_per_page
-    raise BadRequest, 'invalid_param_per_page' unless per_page.to_s.match?('\A\d*\z')
-
-    @per_page = per_page.to_i
   end
 end
