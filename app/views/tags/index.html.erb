@@ -32,7 +32,7 @@
             <%= text_field_tag :name, '', class: 'form-control' %>
           </div>
 
-          <%= f.submit t("#{i18n_path}.form.create.submit"), id: 'tag-create-button', class: 'btn btn-primary btn-submit' %>
+          <%= f.submit t("#{i18n_path}.form.create.submit"), id: 'btn-create-tag', class: 'btn btn-primary btn-submit' %>
         <% end %>
       </div>
 
@@ -55,7 +55,7 @@
           </span>
         </div>
 
-        <%= button_tag t("#{i18n_path}.form.assign.submit"), id: 'tag-assign-button', class: 'btn btn-primary btn-submit' %>
+        <%= button_tag t("#{i18n_path}.form.assign.submit"), id: 'btn-assign-tag', class: 'btn btn-primary btn-submit' %>
       </div>
 
       <div id='search-form' class='well tab-pane'>
@@ -97,7 +97,7 @@
         <tr>
           <% %w[name].each do |attribute| %>
             <th class='<%= attribute %>'>
-              <%= t("#{i18n_path}.table.attribute.#{attribute}") %>
+              <%= t("#{i18n_path}.attribute.#{attribute}") %>
             </th>
           <% end %>
           <th style='border: none'></th>

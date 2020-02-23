@@ -1,3 +1,25 @@
-# Place all the behaviors and hooks related to the matching controller here.
-# All this logic will automatically be available in application.js.
-# You can use CoffeeScript in this file: http://coffeescript.org/
+$ ->
+  $('#btn-create-tag').on 'click', ->
+    data = {
+      name: $('#name').val()
+    }
+    console.log(data)
+    $.ajax({
+      type: 'POST',
+      url: '/algieba/api/tags',
+      data: JSON.stringify(data),
+      contentType: 'application/json',
+      dataType: 'json',
+    }).done((data) ->
+      location.reload()
+    ).fail((xhr, status, error) ->
+      errorCodes = []
+      $.each($.parseJSON(xhr.responseText).errors, (i, error)->
+        attribute = error.error_code.match(/.+_param_(.+)/)[1]
+        errorCodes.push(I18n.t("views.dictionary.create.#{attribute}"))
+        return
+      )
+      showErrorDialog(errorCodes)
+      return
+    )
+    return

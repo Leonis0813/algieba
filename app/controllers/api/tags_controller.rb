@@ -3,7 +3,7 @@ module Api
     before_action :check_request_tag
 
     def create
-      check_absent_params(create_param, %i[name])
+      check_absent_param(create_param, %i[name])
       unless create_param[:name].is_a?(String)
         raise BadRequest, 'invalid_param_name'
       end
