@@ -1,6 +1,6 @@
 module Api
   class TagsController < ApplicationController
-    before_action :check_request_tag
+    before_action :check_request_tag, only: %i[assign_payments]
 
     def create
       check_absent_param(create_param, %i[name])
