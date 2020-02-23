@@ -7,6 +7,7 @@ class TagsController < ApplicationController
         value = @search_form.send(key)
         value ? tags.send(key, value) : tags
       end
+      @tag = Tag.new
       @tags = @tags.order(:name).page(params[:page]).per(per_page)
       render status: :ok
     else

@@ -1,6 +1,12 @@
 <tr>
-  <td class='phrase'><%= dictionary.phrase %></td>
-  <td class='condition' title='<%= dictionary.condition %>'><%= truncate(dictionary.condition, length: 20) %></td>
+  <td class='phrase'>
+    <%= dictionary.phrase %>
+  </td>
+  <td class='condition' title='<%= dictionary.condition %>'>
+    <%= truncate(dictionary.condition, length: 20) %>
+  </td>
   <% category_name = dictionary.categories.pluck(:name).join(',') %>
-  <td class='category' title='<%= category_name %>'><%= truncate(category_name, length: 20) %></td>
+  <td class='category' title='<%= category_name %>'>
+    <%= truncate(category_name, length: 20) %>
+  </td>
 </tr>

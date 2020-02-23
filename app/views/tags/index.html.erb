@@ -1,27 +1,76 @@
 <%= render 'layouts/management' %>
+<% i18n_path = 'views.management.tags' %>
 
 <div class='row center-block'>
   <div class='col-lg-4'>
     <ul class='nav nav-tabs'>
       <li class='active'>
-        <a href='#assign-form' data-toggle='tab'><%= t('views.assign.tab_name') %></a>
+        <a href='#create-form' data-toggle='tab'>
+          <%= t("#{i18n_path}.form.tab.create") %>
+        </a>
       </li>
       <li>
-        <a href='#search-form' data-toggle='tab'><%= t('views.search.tab_name') %></a>
+        <a href='#assign-form' data-toggle='tab'>
+          <%= t("#{i18n_path}.form.tab.assign") %>
+        </a>
+      </li>
+      <li>
+        <a href='#search-form' data-toggle='tab'>
+          <%= t("#{i18n_path}.form.tab.index") %>
+        </a>
       </li>
     </ul>
 
-    <div id='search-form' class='well tab-pane'>
-      <h3><%= t('views.search.title') %></h3>
-      <%= form_for @search_form, url: tags_path, method: :get do |f| %>
+    <div class='tab-content'>
+      <div id='create-form' class='well tab-pane active'>
+        <h3>
+          <%= t("#{i18n_path}.form.create.title") %>
+        </h3>
+        <%= form_for @tag, url: api_tags_path, html: {onClick: 'return false;'} do |f| %>
+          <div class='form-group'>
+            <%= label_tag :name, t("#{i18n_path}.attribute.name") %>
+            <%= text_field_tag :name, '', class: 'form-control' %>
+          </div>
 
+          <%= f.submit t("#{i18n_path}.form.create.submit"), id: 'tag-create-button', class: 'btn btn-primary btn-submit' %>
+        <% end %>
+      </div>
+
+      <div id='assign-form' class='well tab-pane'>
+        <h3>
+          <%= t("#{i18n_path}.form.assign.title") %>
+        </h3>
         <div class='form-group'>
-          <%= label_tag :name_include, t('views.common.attribute.name') %>
-          <%= text_field_tag :name_include, '', class: 'form-control', value: @search_form.name_include %>
+          <%= label_tag :content_include, t("#{i18n_path}.form.assign.content") %>
+          <%= text_field_tag :content_include, '', class: 'form-control', value: @search_form.name_include %>
         </div>
 
-        <%= f.submit t('views.search.submit'), id: 'tag-search-button', class: 'btn btn-primary btn-submit' %>
-      <% end %>
+        <div class='form-group'>
+          <%= label_tag :tag, t("#{i18n_path}.form.assign.tag") %><br>
+          <%= text_field_tag :tag, '', readonly: true, class: 'form-control tag-form' %>
+          <span class='tag-list' data-names='<%= tag_names %>'>
+            <%= button_tag(type: 'button', class: 'btn btn-default btn-sm') do %>
+              <span class='glyphicon glyphicon-list' />
+            <% end %>
+          </span>
+        </div>
+
+        <%= button_tag t("#{i18n_path}.form.assign.submit"), id: 'tag-assign-button', class: 'btn btn-primary btn-submit' %>
+      </div>
+
+      <div id='search-form' class='well tab-pane'>
+        <h3>
+          <%= t("#{i18n_path}.form.index.title") %>
+        </h3>
+        <%= form_for @search_form, url: tags_path, method: :get do |f| %>
+          <div class='form-group'>
+            <%= label_tag :name_include, t("#{i18n_path}.attribute.name") %>
+            <%= text_field_tag :name_include, '', class: 'form-control', value: @search_form.name_include %>
+          </div>
+
+          <%= f.submit t("#{i18n_path}.form.index.submit"), id: 'tag-search-button', class: 'btn btn-primary btn-submit' %>
+        <% end %>
+      </div>
     </div>
   </div>
 
@@ -32,18 +81,24 @@
            from: @tags.total_count.zero? ? 0 : @tags.offset_value + 1,
            to: @tags.offset_value + @tags.size,
          } %>
-      <h4 style='padding: 0px 10px;display: inline'><%= t('views.list.pagination.info', info) %></h4>
+      <h4 style='padding: 0px 10px;display: inline'>
+        <%= t("#{i18n_path}.table.pagination.info", info) %>
+      </h4>
       <form style='padding: 0px 10px;display: inline' id='per_page_form' class='form-inline pull-right' onSubmit='return false;'>
-        <label for='per_page'><%= t('views.list.pagination.label') %></label>
+        <label for='per_page'>
+          <%= t("#{i18n_path}.table.pagination.label") %>
+        </label>
         <input type='text' id='per_page' class='form-control' name='per_page' value='<%= @per_page %>' size='10'>
       </form>
     </div>
     <%= paginate @tags %>
-    <table id='tag_table' class='table table-hover'>
+    <table id='table-tag' class='table table-hover'>
       <thead>
         <tr>
           <% %w[name].each do |attribute| %>
-            <th id='<%= "header_#{attribute}" %>'><%= t("views.common.attribute.#{attribute}") %></th>
+            <th class='<%= attribute %>'>
+              <%= t("#{i18n_path}.table.attribute.#{attribute}") %>
+            </th>
           <% end %>
           <th style='border: none'></th>
         </tr>
