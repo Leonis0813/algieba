@@ -55,6 +55,7 @@ describe Api::TagsController, type: :controller do
     end
 
     [
+      [:name, ['a', 'b']],
       [:name, 'a' * 11],
     ].each do |invalid_key, value|
       context "#{invalid_key}が不正な場合" do

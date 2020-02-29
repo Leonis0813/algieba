@@ -27,9 +27,14 @@ module Api
         raise BadRequest, 'invalid_param_payment_ids'
       end
 
-      tag.payments += Payment.where(payment_id: assign_payments_param[:payment_ids])
+      payments = Payment.where(payment_id: assign_payments_param[:payment_ids])
+      unless assign_payments_param[:payment_ids].size == payments.size
+        raise BadRequest, 'invalid_param_payment_ids'
+      end
+
+      tag.payments += payments
       tag.save!
-      render :ok, nothing: true
+      head :ok
     end
 
     private
