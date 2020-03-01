@@ -2,6 +2,15 @@ ja:
   views:
     title: '家計簿'
     management:
+      common:
+        pagination:
+          info: "%{total_count}件中%{from}〜%{to}件を表示"
+          first: '◀◀'
+          previous: '◀'
+          next: '▶'
+          last: '▶▶'
+          truncate: '...'
+          label: '表示件数'
       payments:
         attribute:
           date: '日付'
@@ -33,15 +42,6 @@ ja:
               income: *income
               expense: *expense
             submit: &index_submit '検索'
-        table: &table
-          pagination:
-            info: "%{total_count}件中%{from}〜%{to}件を表示"
-            first: '◀◀'
-            previous: '◀'
-            next: '▶'
-            last: '▶▶'
-            truncate: '...'
-            label: '表示件数'
       categories:
         attribute:
           name: '名前'
@@ -52,7 +52,6 @@ ja:
           index:
             title: *title
             submit: *index_submit
-        table: *table
       dictionaries:
         attribute:
           phrase: 'フレーズ'
@@ -71,7 +70,6 @@ ja:
           index:
             title: *title
             submit: *index_submit
-        table: *table
       tags:
         attribute:
           name: '名前'
@@ -91,7 +89,6 @@ ja:
           index:
             title: *title
             submit: *index_submit
-        table: *table
     js:
       datepicker:
         format: 'YYYY-MM-DD'
