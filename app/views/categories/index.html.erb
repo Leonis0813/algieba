@@ -33,11 +33,11 @@
            to: @categories.offset_value + @categories.size,
          } %>
       <h4 style='padding: 0px 10px;display: inline'>
-        <%= t("#{i18n_path}.table.pagination.info", info) %>
+        <%= t('views.management.common.pagination.info', info) %>
       </h4>
       <form style='padding: 0px 10px;display: inline' id='per_page_form' class='form-inline pull-right' onSubmit='return false;'>
         <label for='per_page'>
-          <%= t("#{i18n_path}.table.pagination.label") %>
+          <%= t('views.management.common.pagination.label') %>
         </label>
         <input type='text' id='per_page' class='form-control' name='per_page' value='<%= @per_page %>' size='10'>
       </form>
@@ -51,7 +51,6 @@
               <%= t("#{i18n_path}.attribute.#{attribute}") %>
             </th>
           <% end %>
-          <th style='border: none'></th>
         </tr>
       </thead>
       <tbody>

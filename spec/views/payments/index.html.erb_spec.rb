@@ -31,16 +31,15 @@ describe 'payments/index', type: :view do
 
   shared_examples '画面共通テスト' do |expected: {}|
     it_behaves_like 'ヘッダーが表示されていること'
-    it_behaves_like '収支登録フォームが表示されていること', expected[:size] || 0
+    it_behaves_like '登録フォームが表示されていること'
     it_behaves_like '検索フォームが表示されていること'
-    it_behaves_like '辞書登録フォームが表示されていること'
     it_behaves_like '件数情報が表示されていること',
                     total: expected[:total] || 0,
                     from: expected[:from] || 0,
                     to: expected[:to] || 0
   end
 
-  shared_examples '収支登録フォームが表示されていること' do |expected_size: 0|
+  shared_examples '登録フォームが表示されていること' do
     register_form_xpath = [
       main_content_xpath,
       'div[@class="row center-block"]',
@@ -60,19 +59,19 @@ describe 'payments/index', type: :view do
         "#{main_content_xpath}/div/div/ul/li[@class='active']/a[@href='#new-payment']"
       tab = @html.xpath(xpath)
       is_asserted_by { tab.present? }
-      is_asserted_by { tab.text == '登録' }
+      is_asserted_by { tab.text.strip == '登録' }
     end
 
     it 'タイトルが表示されていること' do
       title = @html.xpath("#{register_form_xpath}/h3")
       is_asserted_by { title.present? }
-      is_asserted_by { title.text == '収支情報を入力してください' }
+      is_asserted_by { title.text.strip == '収支情報を入力してください' }
     end
 
     it '必須項目の説明が表示されていること' do
       description = @html.xpath("#{register_form_xpath}/h4")
       is_asserted_by { description.present? }
-      is_asserted_by { description.text == '* は必須項目です' }
+      is_asserted_by { description.text.strip == '* は必須項目です' }
     end
 
     it '日付入力フォームが表示されていること' do
@@ -101,12 +100,6 @@ describe 'payments/index', type: :view do
       category_button = @html.xpath("#{form_base_xpath}/span[@class='category-list']" \
                                     '/button/span[@class="glyphicon glyphicon-list"]')
       is_asserted_by { category_button.present? }
-    end
-
-    it 'カテゴリ入力フォームに初期値が表示されていること', if: expected_size > 0 do
-      xpath = "#{form_base_xpath}/input[@id='payment_categories']" \
-              "[@value='#{Category.first.name}']"
-      is_asserted_by { @html.xpath(xpath).present? }
     end
 
     it 'タグ入力フォームが表示されていること' do
@@ -157,30 +150,30 @@ describe 'payments/index', type: :view do
 
     form_base_xpath = [
       search_form_xpath,
-      'form[@id="new_query"]',
+      'form[@id="new_payment_query"]',
       'div[@class="form-group"]',
     ].join('/')
 
     it 'タブが表示されていること' do
       tab = @html.xpath("#{main_content_xpath}/div/div/ul/li/a[@href='#search-form']")
       is_asserted_by { tab.present? }
-      is_asserted_by { tab.text == '検索' }
+      is_asserted_by { tab.text.strip == '検索' }
     end
 
     it 'タイトルが表示されていること' do
       title = @html.xpath("#{search_form_xpath}/h3")
       is_asserted_by { title.present? }
-      is_asserted_by { title.text == '検索条件を入力してください' }
+      is_asserted_by { title.text.strip == '検索条件を入力してください' }
     end
 
     it '日付入力フォームが表示されていること' do
       date_label = @html.xpath("#{form_base_xpath}/label[text()='日付']")
       is_asserted_by { date_label.present? }
 
-      date_after = @html.xpath("#{form_base_xpath}/input[@id='query_date_after']")
+      date_after = @html.xpath("#{form_base_xpath}/input[@id='payment_query_date_after']")
       is_asserted_by { date_after.present? }
 
-      date_before = @html.xpath("#{form_base_xpath}/input[@id='query_date_before']")
+      date_before = @html.xpath("#{form_base_xpath}/input[@id='payment_query_date_before']")
       is_asserted_by { date_before.present? }
     end
 
@@ -205,7 +198,7 @@ describe 'payments/index', type: :view do
       category_label = @html.xpath("#{form_base_xpath}/label[text()='カテゴリ']")
       is_asserted_by { category_label.present? }
 
-      category_input = @html.xpath("#{form_base_xpath}/input[@id='query_category']")
+      category_input = @html.xpath("#{form_base_xpath}/input[@id='payment_query_category']")
       is_asserted_by { category_input.present? }
 
       category_button = @html.xpath("#{form_base_xpath}/span[@class='category-list']" \
@@ -217,7 +210,7 @@ describe 'payments/index', type: :view do
       tag_label = @html.xpath("#{form_base_xpath}/label[text()='タグ']")
       is_asserted_by { tag_label.present? }
 
-      input_xpath = "#{form_base_xpath}/input[@id='query_tag'][@readonly='readonly']"
+      input_xpath = "#{form_base_xpath}/input[@id='payment_query_tag'][@readonly='readonly']"
       is_asserted_by { @html.xpath(input_xpath).present? }
 
       tag_button = @html.xpath("#{form_base_xpath}/span[@class='tag-list']" \
@@ -229,10 +222,10 @@ describe 'payments/index', type: :view do
       price_label = @html.xpath("#{form_base_xpath}/label[text()='金額']")
       is_asserted_by { price_label.present? }
 
-      price_upper = @html.xpath("#{form_base_xpath}/input[@id='query_price_upper']")
+      price_upper = @html.xpath("#{form_base_xpath}/input[@id='payment_query_price_upper']")
       is_asserted_by { price_upper.present? }
 
-      price_lower = @html.xpath("#{form_base_xpath}/input[@id='query_price_lower']")
+      price_lower = @html.xpath("#{form_base_xpath}/input[@id='payment_query_price_lower']")
       is_asserted_by { price_lower.present? }
     end
 
@@ -240,7 +233,7 @@ describe 'payments/index', type: :view do
       payment_type_label = @html.xpath("#{form_base_xpath}/label[text()='種類']")
       is_asserted_by { payment_type_label.present? }
 
-      select_xpath = "#{form_base_xpath}/select[@id='query_payment_type']"
+      select_xpath = "#{form_base_xpath}/select[@id='payment_query_payment_type']"
       all = @html.xpath("#{select_xpath}/option[@value='']")
       is_asserted_by { all.present? }
       income = @html.xpath("#{select_xpath}/option[@value='income'][text()='収入']")
@@ -250,71 +243,7 @@ describe 'payments/index', type: :view do
     end
 
     it '検索ボタンが表示されていること' do
-      xpath = "#{search_form_xpath}/form[@id='new_query']/input[@id='search-button']"
-      is_asserted_by { @html.xpath(xpath).present? }
-    end
-  end
-
-  shared_examples '辞書登録フォームが表示されていること' do
-    new_dictionary_xpath = [
-      main_content_xpath,
-      'div[@class="row center-block"]',
-      'div[@class="col-lg-4"]',
-      'div[@class="tab-content"]',
-      'div[@id="new-dictionary"][@class="well tab-pane"]',
-    ].join('/')
-
-    form_base_xpath = [
-      new_dictionary_xpath,
-      'form[@id="new_dictionary"]',
-      'div[@class="form-group"]',
-    ].join('/')
-
-    it 'タブが表示されていること' do
-      tab = @html.xpath("#{main_content_xpath}/div/div/ul/li/a[@href='#new-dictionary']")
-      is_asserted_by { tab.present? }
-      is_asserted_by { tab.text == '辞書登録' }
-    end
-
-    it 'タイトルが表示されていること' do
-      title = @html.xpath("#{new_dictionary_xpath}/h3")
-      is_asserted_by { title.present? }
-      is_asserted_by { title.text == '辞書情報を入力してください' }
-    end
-
-    it 'フレーズ入力フォームが表示されていること' do
-      phrase_label = @html.xpath("#{form_base_xpath}/label[text()='フレーズ']")
-      is_asserted_by { phrase_label.present? }
-
-      phrase_input = @html.xpath("#{form_base_xpath}/input[@id='phrase']")
-      is_asserted_by { phrase_input.present? }
-
-      select_xpath = "#{form_base_xpath}/select[@id='condition']"
-      phrase_include = @html.xpath("#{select_xpath}/option[@value='include']" \
-                                   '[@selected][text()="を含む"]')
-      is_asserted_by { phrase_include.present? }
-
-      phrase_equal = @html.xpath("#{select_xpath}/option[@value='equal']" \
-                                 '[text()="と一致する"]')
-      is_asserted_by { phrase_equal.present? }
-    end
-
-    it 'カテゴリ入力フォームが表示されていること' do
-      category_label = @html.xpath("#{form_base_xpath}/label[text()='カテゴリ']")
-      is_asserted_by { category_label.present? }
-
-      category_input =
-        @html.xpath("#{form_base_xpath}/input[@id='dictionary_categories']")
-      is_asserted_by { category_input.present? }
-
-      category_button = @html.xpath("#{form_base_xpath}/span[@class='category-list']" \
-                                    '/button/span[@class="glyphicon glyphicon-list"]')
-      is_asserted_by { category_button.present? }
-    end
-
-    it '登録ボタンが表示されていること' do
-      xpath = "#{new_dictionary_xpath}/form[@id='new_dictionary']" \
-              '/input[@id="btn-create-dictionary"]'
+      xpath = "#{search_form_xpath}/form[@id='new_payment_query']/input[@id='search-button']"
       is_asserted_by { @html.xpath(xpath).present? }
     end
   end
@@ -323,7 +252,7 @@ describe 'payments/index', type: :view do
     it do
       info = @html.xpath("#{payment_list_xpath}/div/h4")
       is_asserted_by { info.present? }
-      is_asserted_by { info.text == "#{total}件中#{from}〜#{to}件を表示" }
+      is_asserted_by { info.text.strip == "#{total}件中#{from}〜#{to}件を表示" }
     end
   end
 
@@ -359,22 +288,22 @@ describe 'payments/index', type: :view do
 
     it '2ページ目が表示されていること' do
       two_link = @html.xpath("#{paging_xpath}/li/span[@class='page']" \
-                             '/a[@href="/payments?page=2"]')
+                             '/a[@href="/management/payments?page=2"]')
       is_asserted_by { two_link.present? }
       is_asserted_by { two_link.text == '2' }
     end
 
     it '次のページへのボタンが表示されていること' do
       next_link = @html.xpath("#{paging_xpath}/li/span[@class='next']" \
-                              '/a[@href="/payments?page=2"]')
+                              '/a[@href="/management/payments?page=2"]')
       is_asserted_by { next_link.present? }
-      is_asserted_by { next_link.text == I18n.t('views.list.pagination.next') }
+      is_asserted_by { next_link.text == I18n.t('views.management.common..pagination.next') }
     end
 
     it '最後のページへのボタンが表示されていること' do
       last_link = @html.xpath("#{paging_xpath}/li/span[@class='last']/a")
       is_asserted_by { last_link.present? }
-      is_asserted_by { last_link.text == I18n.t('views.list.pagination.last') }
+      is_asserted_by { last_link.text == I18n.t('views.management.common.pagination.last') }
     end
   end
 
@@ -388,9 +317,11 @@ describe 'payments/index', type: :view do
   shared_examples 'テーブルのヘッダーが表示されていること' do
     table_header_xpath = "#{payment_list_xpath}//table[@id='payment_table']/thead/tr/th"
 
-    %w[種類 日付 内容 カテゴリ 金額].each do |attribute|
-      it "#{attribute}のヘッダーが表示されていること" do
-        is_asserted_by { @html.xpath("#{table_header_xpath}[text()='#{attribute}']") }
+    %w[種類 日付 内容 カテゴリ タグ 金額].each_with_index do |text, i|
+      it "#{text}のヘッダーが表示されていること" do
+        headers = @html.xpath(table_header_xpath)
+        is_asserted_by { headers[i].present? }
+        is_asserted_by { headers[i].text.strip == text }
       end
     end
   end
@@ -422,8 +353,7 @@ describe 'payments/index', type: :view do
 
   before(:all) do
     @payment = Payment.new
-    @search_form = Query.new
-    @dictionary = Dictionary.new
+    @search_form = PaymentQuery.new
     Kaminari.config.default_per_page = per_page
   end
 

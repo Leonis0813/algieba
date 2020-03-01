@@ -1,9 +1,10 @@
 <tr>
-  <td class='phrase'>
-    <%= dictionary.phrase %>
+  <td class='phrase', title='<%= dictionary.phrase %>'>
+    <%= truncate(dictionary.phrase, length: 20) %>
   </td>
-  <td class='condition' title='<%= dictionary.condition %>'>
-    <%= truncate(dictionary.condition, length: 20) %>
+  <td class='condition'>
+    <% condition_i18n_path = "views.management.dictionaries.form.create.condition.#{dictionary.condition}" %>
+    <%= I18n.t(condition_i18n_path) %>
   </td>
   <% category_name = dictionary.categories.pluck(:name).join(',') %>
   <td class='category' title='<%= category_name %>'>
