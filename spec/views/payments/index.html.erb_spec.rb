@@ -252,7 +252,7 @@ describe 'payments/index', type: :view do
     it '検索ボタンが表示されていること' do
       search_button = @html.xpath("#{search_form_xpath}/form[@id='new_payment_query']" \
                                   '/input[@id="btn-payment-search"]')
-      is_asserted_by { @html.xpath(xpath).present? }
+      is_asserted_by { search_button.present? }
     end
   end
 
