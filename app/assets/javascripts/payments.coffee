@@ -184,7 +184,7 @@ $ ->
     showErrorDialog(errorCodes)
     return
 
-  $('#search-button').on 'click', ->
+  $('#btn-payment-search').on 'click', ->
     all_queries = $('#new_query').serializeArray()
     queries = $.grep(all_queries, (query) ->
       return query.name != "content_type" && query.name != "utf8" && query.value != ""

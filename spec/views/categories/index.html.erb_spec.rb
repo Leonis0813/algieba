@@ -4,7 +4,6 @@ require 'rails_helper'
 
 describe 'categories/index', type: :view do
   per_page = 1
-  param = {date: '1000-01-01', content: 'モジュールテスト用データ', price: 100}
   main_content_xpath = '//div[@id="main-content"]'
   category_list_xpath =
     "#{main_content_xpath}/div[@class='row center-block']/div[@class='col-lg-8']"
@@ -26,7 +25,7 @@ describe 'categories/index', type: :view do
                     to: expected[:to] || 0
   end
 
-  shared_examples '検索フォームが表示されていること' do |expected_size: 0|
+  shared_examples '検索フォームが表示されていること' do
     search_form_xpath = [
       main_content_xpath,
       'div[@class="row center-block"]',

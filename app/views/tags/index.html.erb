@@ -32,7 +32,8 @@
             <%= text_field_tag :name, '', class: 'form-control' %>
           </div>
 
-          <%= f.submit t("#{i18n_path}.form.create.submit"), id: 'btn-create-tag', class: 'btn btn-primary btn-submit' %>
+          <% attribute = {id: 'btn-tag-create', class: 'btn btn-primary btn-submit'} %>
+          <%= f.submit t("#{i18n_path}.form.create.submit"), attribute %>
         <% end %>
       </div>
 
@@ -55,7 +56,8 @@
           </span>
         </div>
 
-        <%= button_tag t("#{i18n_path}.form.assign.submit"), id: 'btn-assign-tag', class: 'btn btn-primary btn-submit' %>
+        <% attribute = {id: 'btn-tag-assign', class: 'btn btn-primary btn-submit'} %>
+        <%= button_tag t("#{i18n_path}.form.assign.submit"), attribute %>
       </div>
 
       <div id='search-form' class='well tab-pane'>
@@ -68,7 +70,8 @@
             <%= text_field_tag :name_include, '', class: 'form-control', value: @search_form.name_include %>
           </div>
 
-          <%= f.submit t("#{i18n_path}.form.index.submit"), id: 'tag-search-button', class: 'btn btn-primary btn-submit' %>
+          <% attribute = {id: 'btn-tag-search', class: 'btn btn-primary btn-submit' %>
+          <%= f.submit t("#{i18n_path}.form.index.submit"), attribute %>
         <% end %>
       </div>
     </div>

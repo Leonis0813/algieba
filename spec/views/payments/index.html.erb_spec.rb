@@ -170,10 +170,12 @@ describe 'payments/index', type: :view do
       date_label = @html.xpath("#{form_base_xpath}/label[text()='日付']")
       is_asserted_by { date_label.present? }
 
-      date_after = @html.xpath("#{form_base_xpath}/input[@id='payment_query_date_after']")
+      date_after =
+        @html.xpath("#{form_base_xpath}/input[@id='payment_query_date_after']")
       is_asserted_by { date_after.present? }
 
-      date_before = @html.xpath("#{form_base_xpath}/input[@id='payment_query_date_before']")
+      date_before =
+        @html.xpath("#{form_base_xpath}/input[@id='payment_query_date_before']")
       is_asserted_by { date_before.present? }
     end
 
@@ -198,7 +200,8 @@ describe 'payments/index', type: :view do
       category_label = @html.xpath("#{form_base_xpath}/label[text()='カテゴリ']")
       is_asserted_by { category_label.present? }
 
-      category_input = @html.xpath("#{form_base_xpath}/input[@id='payment_query_category']")
+      category_input =
+        @html.xpath("#{form_base_xpath}/input[@id='payment_query_category']")
       is_asserted_by { category_input.present? }
 
       category_button = @html.xpath("#{form_base_xpath}/span[@class='category-list']" \
@@ -210,8 +213,10 @@ describe 'payments/index', type: :view do
       tag_label = @html.xpath("#{form_base_xpath}/label[text()='タグ']")
       is_asserted_by { tag_label.present? }
 
-      input_xpath = "#{form_base_xpath}/input[@id='payment_query_tag'][@readonly='readonly']"
-      is_asserted_by { @html.xpath(input_xpath).present? }
+      tag_input_xpath =
+        "#{form_base_xpath}/input[@id='payment_query_tag'][@readonly='readonly']"
+      tag_input = @html.xpath(tag_input_xpath)
+      is_asserted_by { tag_input.present? }
 
       tag_button = @html.xpath("#{form_base_xpath}/span[@class='tag-list']" \
                                '/button/span[@class="glyphicon glyphicon-list"]')
@@ -222,10 +227,12 @@ describe 'payments/index', type: :view do
       price_label = @html.xpath("#{form_base_xpath}/label[text()='金額']")
       is_asserted_by { price_label.present? }
 
-      price_upper = @html.xpath("#{form_base_xpath}/input[@id='payment_query_price_upper']")
+      price_upper =
+        @html.xpath("#{form_base_xpath}/input[@id='payment_query_price_upper']")
       is_asserted_by { price_upper.present? }
 
-      price_lower = @html.xpath("#{form_base_xpath}/input[@id='payment_query_price_lower']")
+      price_lower =
+        @html.xpath("#{form_base_xpath}/input[@id='payment_query_price_lower']")
       is_asserted_by { price_lower.present? }
     end
 
@@ -243,7 +250,8 @@ describe 'payments/index', type: :view do
     end
 
     it '検索ボタンが表示されていること' do
-      xpath = "#{search_form_xpath}/form[@id='new_payment_query']/input[@id='search-button']"
+      search_button = @html.xpath("#{search_form_xpath}/form[@id='new_payment_query']" \
+                                  '/input[@id="btn-payment-search"]')
       is_asserted_by { @html.xpath(xpath).present? }
     end
   end
@@ -296,14 +304,16 @@ describe 'payments/index', type: :view do
     it '次のページへのボタンが表示されていること' do
       next_link = @html.xpath("#{paging_xpath}/li/span[@class='next']" \
                               '/a[@href="/management/payments?page=2"]')
+      expected_text = I18n.t('views.management.common..pagination.next')
       is_asserted_by { next_link.present? }
-      is_asserted_by { next_link.text == I18n.t('views.management.common..pagination.next') }
+      is_asserted_by { next_link.text == expected_text }
     end
 
     it '最後のページへのボタンが表示されていること' do
       last_link = @html.xpath("#{paging_xpath}/li/span[@class='last']/a")
+      expected_text = I18n.t('views.management.common.pagination.last')
       is_asserted_by { last_link.present? }
-      is_asserted_by { last_link.text == I18n.t('views.management.common.pagination.last') }
+      is_asserted_by { last_link.text == expected_text }
     end
   end
 

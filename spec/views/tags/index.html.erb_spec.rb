@@ -4,7 +4,6 @@ require 'rails_helper'
 
 describe 'tags/index', type: :view do
   per_page = 1
-  param = {date: '1000-01-01', content: 'モジュールテスト用データ', price: 100}
   main_content_xpath = '//div[@id="main-content"]'
   payment_list_xpath =
     "#{main_content_xpath}/div[@class='row center-block']/div[@class='col-lg-8']"
@@ -115,7 +114,8 @@ describe 'tags/index', type: :view do
       is_asserted_by { tag_label.present? }
       is_asserted_by { tag_label.text.strip == 'タグ' }
 
-      tag_input = @html.xpath("#{form_base_xpath}/input[@id='tag'][@readonly='readonly']")
+      tag_input =
+        @html.xpath("#{form_base_xpath}/input[@id='tag'][@readonly='readonly']")
       is_asserted_by { tag_input.present? }
 
       tag_button = @html.xpath("#{form_base_xpath}/span[@class='tag-list']" \
@@ -167,7 +167,8 @@ describe 'tags/index', type: :view do
     end
 
     it '検索ボタンが表示されていること' do
-      search_button = @html.xpath("#{search_form_xpath}/form[@id='new_tag_query']/input[@id='tag-search-button']")
+      search_button = @html.xpath("#{search_form_xpath}/form[@id='new_tag_query']" \
+                                  '/input[@id="btn-tag-search"]')
       is_asserted_by { search_button.present? }
     end
   end
@@ -220,14 +221,16 @@ describe 'tags/index', type: :view do
     it '次のページへのボタンが表示されていること' do
       next_link = @html.xpath("#{paging_xpath}/li/span[@class='next']" \
                               '/a[@href="/management/tags?page=2"]')
+      expected_text = I18n.t('views.management.common..pagination.next')
       is_asserted_by { next_link.present? }
-      is_asserted_by { next_link.text == I18n.t('views.management.common..pagination.next') }
+      is_asserted_by { next_link.text == expected_text }
     end
 
     it '最後のページへのボタンが表示されていること' do
       last_link = @html.xpath("#{paging_xpath}/li/span[@class='last']/a")
+      expected_text = I18n.t('views.management.common.pagination.last')
       is_asserted_by { last_link.present? }
-      is_asserted_by { last_link.text == I18n.t('views.management.common.pagination.last') }
+      is_asserted_by { last_link.text == expected_text }
     end
   end
 

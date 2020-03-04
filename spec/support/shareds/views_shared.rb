@@ -37,10 +37,10 @@ shared_examples '管理画面のサブヘッダーが表示されていること
   ].join('/')
 
   [
-    ['payments', '収支'],
-    ['categories', 'カテゴリ'],
-    ['dictionaries', '辞書'],
-    ['tags', 'タグ'],
+    %w[payments 収支],
+    %w[categories カテゴリ],
+    %w[dictionaries 辞書],
+    %w[tags タグ],
   ].each do |resource, title|
     it "#{title}情報の管理画面へのリンクが表示されていること" do
       link_xpath = [

@@ -57,7 +57,8 @@
             <%= text_field_tag :phrase_include, '', class: 'form-control', value: @search_form.phrase_include %>
           </div>
 
-          <%= f.submit t("#{i18n_path}.form.index.submit"), id: 'dictionary-search-button', class: 'btn btn-primary btn-submit' %>
+          <% attribute = {id: 'btn-dictionary-search', class: 'btn btn-primary btn-submit'} %>
+          <%= f.submit t("#{i18n_path}.form.index.submit"), attribute %>
         <% end %>
       </div>
     </div>

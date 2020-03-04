@@ -29,7 +29,7 @@ describe Api::TagsController, type: :controller do
     end
   end
 
-  shared_examples 'タグが収支情報に設定されていないこと' do |query|
+  shared_examples 'タグが収支情報に設定されていないこと' do
     it_is_asserted_by do
       @not_assigned_payments.all? do |payment|
         not @tag.payments.exists?(payment_id: payment.payment_id)

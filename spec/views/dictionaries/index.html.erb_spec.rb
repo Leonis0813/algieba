@@ -72,21 +72,24 @@ describe 'dictionaries/index', type: :view do
       condition_select_xpath = "#{form_base_xpath}/select"
 
       [
-        ['include', 'を含む'],
-        ['equal', 'と一致する'],
+        %w[include を含む],
+        %w[equal と一致する],
       ].each do |value, text|
-        condition_option = @html.xpath("#{condition_select_xpath}/option[@value='#{value}']")
+        condition_option =
+          @html.xpath("#{condition_select_xpath}/option[@value='#{value}']")
         is_asserted_by { condition_option.present? }
         is_asserted_by { condition_option.text.strip == text }
       end
     end
 
     it 'カテゴリ入力フォームが表示されていること' do
-      categories_label = @html.xpath("#{form_base_xpath}/label[@for='dictionary_categories']")
+      categories_label =
+        @html.xpath("#{form_base_xpath}/label[@for='dictionary_categories']")
       is_asserted_by { categories_label.present? }
       is_asserted_by { categories_label.text.strip == 'カテゴリ' }
 
-      categories_input = @html.xpath("#{form_base_xpath}/input[@id='dictionary_categories']")
+      categories_input =
+        @html.xpath("#{form_base_xpath}/input[@id='dictionary_categories']")
       is_asserted_by { categories_input.present? }
 
       categories_button = @html.xpath("#{form_base_xpath}/span[@class='category-list']" \
@@ -137,8 +140,9 @@ describe 'dictionaries/index', type: :view do
     end
 
     it '検索ボタンが表示されていること' do
-      search_button = @html.xpath("#{search_form_xpath}/form[@id='new_dictionary_query']" \
-                                  '/input[@id="dictionary-search-button"][@value="検索"]')
+      search_button =
+        @html.xpath("#{search_form_xpath}/form[@id='new_dictionary_query']" \
+                    '/input[@id="btn-dictionary-search"][@value="検索"]')
       is_asserted_by { search_button.present? }
     end
   end
@@ -191,14 +195,16 @@ describe 'dictionaries/index', type: :view do
     it '次のページへのボタンが表示されていること' do
       next_link = @html.xpath("#{paging_xpath}/li/span[@class='next']" \
                               '/a[@href="/management/dictionaries?page=2"]')
+      expected_text = I18n.t('views.management.common..pagination.next')
       is_asserted_by { next_link.present? }
-      is_asserted_by { next_link.text == I18n.t('views.management.common..pagination.next') }
+      is_asserted_by { next_link.text == expected_text }
     end
 
     it '最後のページへのボタンが表示されていること' do
       last_link = @html.xpath("#{paging_xpath}/li/span[@class='last']/a")
+      expected_text = I18n.t('views.management.common.pagination.last')
       is_asserted_by { last_link.present? }
-      is_asserted_by { last_link.text == I18n.t('views.management.common.pagination.last') }
+      is_asserted_by { last_link.text == expected_text }
     end
   end
 
@@ -210,7 +216,8 @@ describe 'dictionaries/index', type: :view do
   end
 
   shared_examples 'テーブルのヘッダーが表示されていること' do
-    table_header_xpath = "#{dictionary_list_xpath}/table[@id='table-dictionary']/thead/tr/th"
+    table_header_xpath =
+      "#{dictionary_list_xpath}/table[@id='table-dictionary']/thead/tr/th"
 
     %w[フレーズ 条件 カテゴリ].each_with_index do |text, i|
       it "#{text}のヘッダーが表示されていること" do
@@ -223,10 +230,10 @@ describe 'dictionaries/index', type: :view do
 
   shared_examples 'テーブルに表示されている辞書が正しいこと' do |expected_size: 0|
     before(:each) do
-      table_body_xpath = "#{dictionary_list_xpath}/table[@id='table-dictionary']/tbody/tr"
+      table_body_xpath =
+        "#{dictionary_list_xpath}/table[@id='table-dictionary']/tbody/tr"
       @table_rows = @html.xpath(table_body_xpath)
     end
-
 
     expected_size.times do |i|
       it do
