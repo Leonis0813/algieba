@@ -124,7 +124,7 @@ describe 'tags/index', type: :view do
     end
 
     it '設定ボタンが表示されていること' do
-      assign_button = @html.xpath("#{assign_form_xpath}/button[@id='btn-assign-tag']")
+      assign_button = @html.xpath("#{assign_form_xpath}/button[@id='btn-tag-assign']")
       is_asserted_by { assign_button.present? }
       is_asserted_by { assign_button.text.strip == '設定' }
     end

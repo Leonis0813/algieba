@@ -11,6 +11,7 @@ describe DictionariesController, type: :controller do
     end
   end
 
+  include_context 'トランザクション作成'
   before(:all) { create(:dictionary) }
 
   describe '正常系' do
