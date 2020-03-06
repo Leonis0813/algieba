@@ -79,7 +79,7 @@ describe 'ブラウザから収支を検索する', type: :request do
   end
 
   describe '金額でソートする' do
-    before(:all) { @driver.find_element(:xpath, '//th[text()="金額"]').click }
+    before(:all) { @driver.find_element(:id, 'header_price').click }
 
     it '金額でソートされていること' do
       is_asserted_by { @driver.find_element(:class, 'sorting_asc').text == '金額' }
@@ -181,7 +181,7 @@ describe 'ブラウザから収支を検索する', type: :request do
           @driver.find_element(:xpath, '//a[@href="#search-form"]').click rescue false
         res.nil? ? true : false
       end
-      @driver.find_element(:id, 'query_date_after').click
+      @driver.find_element(:id, 'payment_query_date_after').click
     end
 
     it 'カレンダーが表示されていること' do
