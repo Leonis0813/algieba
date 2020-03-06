@@ -185,7 +185,7 @@ $ ->
     return
 
   $('#btn-payment-search').on 'click', ->
-    all_queries = $('#new_query').serializeArray()
+    all_queries = $('#new_payment_query').serializeArray()
     queries = $.grep(all_queries, (query) ->
       return query.name != "content_type" && query.name != "utf8" && query.value != ""
     )
