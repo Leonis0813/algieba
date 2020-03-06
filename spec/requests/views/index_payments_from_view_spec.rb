@@ -34,7 +34,7 @@ describe 'ブラウザから収支を検索する', type: :request do
   include_context 'Cookieをセットする'
 
   describe '管理画面を開く' do
-    before(:all) { @driver.get("#{base_url}/payments") }
+    before(:all) { @driver.get(base_url) }
 
     it '日付でソートされていること' do
       is_asserted_by { @driver.find_element(:class, 'sorting_desc').text == '日付' }

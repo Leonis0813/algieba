@@ -201,9 +201,9 @@ $ ->
 
     $.ajax({
       type: 'GET',
-      url: '/algieba/payments?' + $.param(queries)
+      url: '/algieba/management/payments?' + $.param(queries)
     }).done((data) ->
-      location.href = '/algieba/payments?' + $.param(queries)
+      location.href = '/algieba/management/payments?' + $.param(queries)
       return
     ).fail((xhr, status, error) ->
       errorCodes = []
@@ -223,9 +223,9 @@ $ ->
 
     url = ''
     if (query == '')
-      url = '/algieba/payments?per_page=' + per_page
+      url = '/algieba/management/payments?per_page=' + per_page
     else
-      url = '/algieba/payments?' + query + '&per_page=' + per_page
+      url = '/algieba/management/payments?' + query + '&per_page=' + per_page
     $.ajax({
       type: 'GET',
       url: url
