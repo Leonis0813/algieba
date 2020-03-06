@@ -178,7 +178,7 @@ $ ->
     errorCodes = []
     $.each($.parseJSON(xhr.responseText).errors, (i, error) ->
       attribute = error.error_code.match(/^.+_param_(.+)/)[1]
-      errorCodes.push(I18n.t("views.common.attribute.#{attribute}"))
+      errorCodes.push(I18n.t("views.management.payments.attribute.#{attribute}"))
       return
     )
     showErrorDialog(errorCodes)
@@ -208,11 +208,11 @@ $ ->
     ).fail((xhr, status, error) ->
       errorCodes = []
       $.each($.parseJSON(xhr.responseText).errors, (i, error) ->
-        attribute = error.error_code.match(/invalid_param_(.+)/)[1]
-        errorCodes.push(I18n.t("views.search.#{attribute}"))
+        attribute = error.error_code.match(/invalid_param_(.+)_.*$/)[1]
+        errorCodes.push(I18n.t("views.management.payments.attribute.#{attribute}"))
         return
       )
-      showErrorDialog(errorCodes)
+      showErrorDialog($.unique(errorCodes))
       return
     )
     return
