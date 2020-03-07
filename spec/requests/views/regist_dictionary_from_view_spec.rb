@@ -9,6 +9,7 @@ describe 'ブラウザから辞書を登録する', type: :request do
     condition: 'include',
     categories: ['test'],
   }
+  new_category_name = "new_category_#{Time.now.to_i}"
 
   shared_context '登録前の件数を確認する' do
     before(:all) do
@@ -99,7 +100,7 @@ describe 'ブラウザから辞書を登録する', type: :request do
   describe '新しいカテゴリで辞書情報を登録する' do
     input = default_input.merge(
       condition: 'equal',
-      categories: ["new_test_#{Time.now.to_i}"],
+      categories: [new_category_name],
     )
     include_context '登録前の件数を確認する'
     include_context '辞書情報を入力する', input
@@ -128,7 +129,9 @@ describe 'ブラウザから辞書を登録する', type: :request do
 
     it '新カテゴリが追加されていること' do
       is_asserted_by do
-        @wait.until { @driver.find_element(:xpath, "//input[@value='new_test']") }
+        @wait.until do
+          @driver.find_element(:xpath, "//input[@value='#{new_category_name}']")
+        end
       end
     end
   end
