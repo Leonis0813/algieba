@@ -1,6 +1,7 @@
 # 4.5.0 (2020/03/07)
 - [ADD] view to manage tags and categories
 - [UPDATE] whole view design
+- [UPDATE] gems
 
 # 4.4.1 (2020/02/09)
 - [UPDATE] resources to add resource id
