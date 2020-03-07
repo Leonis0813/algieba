@@ -1,17 +1,94 @@
 ja:
   views:
     title: '家計簿'
-    common:
-      attribute:
-        payment_type: '種類'
-        date: &date '日付'
-        content: '内容'
-        category: &category 'カテゴリ'
-        tag: 'タグ'
-        price: &price '金額'
-      payment_type:
-        income: '収入'
-        expense: '支出'
+    management:
+      common:
+        pagination:
+          info: "%{total_count}件中%{from}〜%{to}件を表示"
+          first: '◀◀'
+          previous: '◀'
+          next: '▶'
+          last: '▶▶'
+          truncate: '...'
+          label: '表示件数'
+      payments:
+        attribute:
+          date: '日付'
+          content: &content '内容'
+          categories: &categories 'カテゴリ'
+          tags: 'タグ'
+          price: '金額'
+          payment_type: '種類'
+        form:
+          tab:
+            create: &create '登録'
+            index: &index '検索'
+          create:
+            title: '収支情報を入力してください'
+            payment_type:
+              income: &income '収入'
+              expense: &expense '支出'
+            submit: &create_submit '登録'
+          index:
+            title: &title '検索条件を入力してください'
+            date:
+              between: &between '〜'
+            content:
+              include: &include 'を含む'
+              equal: &equal 'と一致する'
+            price:
+              between: *between
+            payment_type:
+              income: *income
+              expense: *expense
+            submit: &index_submit '検索'
+      categories:
+        attribute:
+          name: '名前'
+          description: '説明'
+        form:
+          tab:
+            index: *index
+          index:
+            title: *title
+            submit: *index_submit
+      dictionaries:
+        attribute:
+          phrase: 'フレーズ'
+          condition: '条件'
+          categories: *categories
+        form:
+          tab:
+            create: *create
+            index: *index
+          create:
+            title: '辞書情報を入力してください'
+            condition:
+              include: *include
+              equal: *equal
+            submit: *create_submit
+          index:
+            title: *title
+            submit: *index_submit
+      tags:
+        attribute:
+          name: '名前'
+        form:
+          tab:
+            create: *create
+            assign: '設定'
+            index: *index
+          create:
+            title: 'タグ名を入力してください'
+            submit: *create_submit
+          assign:
+            title: '設定するタグと収支情報を入力してください'
+            content: *content
+            tag: 'タグ'
+            submit: '設定'
+          index:
+            title: *title
+            submit: *index_submit
     js:
       datepicker:
         format: 'YYYY-MM-DD'
@@ -34,38 +111,3 @@ ja:
         message: '本当に削除しますか？'
         confirm: 'はい'
         cancel: 'いいえ'
-    search:
-      tab_name: '検索'
-      title: '検索条件を入力してください'
-      between: '〜'
-      include: &include 'を含む'
-      equal: &equal 'と一致する'
-      submit: '検索'
-      date_before: *date
-      date_after: *date
-      price_upper: *price
-      price_lower: *price
-    register:
-      tab_name: '登録'
-      title: '収支情報を入力してください'
-      submit: &submit '登録'
-    dictionary:
-      create:
-        tab_name: '辞書登録'
-        title: '辞書情報を入力してください'
-        phrase: 'フレーズ'
-        condition: '条件'
-        include: *include
-        equal: *equal
-        categories: *category
-        submit: *submit
-        cancel: 'キャンセル'
-    list:
-      pagination:
-        info: "%{total_count}件中%{from}〜%{to}件を表示"
-        first: '◀◀'
-        previous: '◀'
-        next: '▶'
-        last: '▶▶'
-        truncate: '...'
-        label: '表示件数'

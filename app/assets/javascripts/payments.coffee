@@ -178,14 +178,14 @@ $ ->
     errorCodes = []
     $.each($.parseJSON(xhr.responseText).errors, (i, error) ->
       attribute = error.error_code.match(/^.+_param_(.+)/)[1]
-      errorCodes.push(I18n.t("views.common.attribute.#{attribute}"))
+      errorCodes.push(I18n.t("views.management.payments.attribute.#{attribute}"))
       return
     )
     showErrorDialog(errorCodes)
     return
 
-  $('#search-button').on 'click', ->
-    all_queries = $('#new_query').serializeArray()
+  $('#btn-payment-search').on 'click', ->
+    all_queries = $('#new_payment_query').serializeArray()
     queries = $.grep(all_queries, (query) ->
       return query.name != "content_type" && query.name != "utf8" && query.value != ""
     )
@@ -201,47 +201,18 @@ $ ->
 
     $.ajax({
       type: 'GET',
-      url: '/algieba/payments?' + $.param(queries)
+      url: '/algieba/management/payments?' + $.param(queries)
     }).done((data) ->
-      location.href = '/algieba/payments?' + $.param(queries)
+      location.href = '/algieba/management/payments?' + $.param(queries)
       return
     ).fail((xhr, status, error) ->
       errorCodes = []
       $.each($.parseJSON(xhr.responseText).errors, (i, error) ->
-        attribute = error.error_code.match(/invalid_param_(.+)/)[1]
-        errorCodes.push(I18n.t("views.search.#{attribute}"))
+        attribute = error.error_code.match(/invalid_param_(.+)_.*$/)[1]
+        errorCodes.push(I18n.t("views.management.payments.attribute.#{attribute}"))
         return
       )
-      showErrorDialog(errorCodes)
-      return
-    )
-    return
-
-  $('#btn-create-dictionary').on 'click', ->
-    category_string = $('#dictionary_categories').val()
-    data = {
-      phrase: if !$('#phrase').val() then null else $('#phrase').val(),
-      condition: $('#condition option:selected').val(),
-      categories: if !category_string then null else category_string.split(','),
-    }
-    $.ajax({
-      type: 'POST',
-      url: '/algieba/api/dictionaries',
-      data: JSON.stringify(data),
-      contentType: 'application/json',
-      dataType: 'json',
-    }).done((data) ->
-      bootbox.alert(I18n.t('views.js.form.success.message'))
-      $('#phrase').val('')
-      $('#dictionary_categories').val('')
-    ).fail((xhr, status, error) ->
-      errorCodes = []
-      $.each($.parseJSON(xhr.responseText).errors, (i, error)->
-        attribute = error.error_code.match(/.+_param_(.+)/)[1]
-        errorCodes.push(I18n.t("views.dictionary.create.#{attribute}"))
-        return
-      )
-      showErrorDialog(errorCodes)
+      showErrorDialog($.unique(errorCodes))
       return
     )
     return
@@ -252,9 +223,9 @@ $ ->
 
     url = ''
     if (query == '')
-      url = '/algieba/payments?per_page=' + per_page
+      url = '/algieba/management/payments?per_page=' + per_page
     else
-      url = '/algieba/payments?' + query + '&per_page=' + per_page
+      url = '/algieba/management/payments?' + query + '&per_page=' + per_page
     $.ajax({
       type: 'GET',
       url: url

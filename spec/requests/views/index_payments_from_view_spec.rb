@@ -34,7 +34,7 @@ describe 'ブラウザから収支を検索する', type: :request do
   include_context 'Cookieをセットする'
 
   describe '管理画面を開く' do
-    before(:all) { @driver.get("#{base_url}/payments") }
+    before(:all) { @driver.get(base_url) }
 
     it '日付でソートされていること' do
       is_asserted_by { @driver.find_element(:class, 'sorting_desc').text == '日付' }
@@ -45,7 +45,7 @@ describe 'ブラウザから収支を検索する', type: :request do
     before(:all) do
       @driver.find_element(:xpath, '//a[@href="#search-form"]').click
       @driver.find_element(:name, 'price_upper').send_keys('invalid')
-      @driver.find_element(:id, 'search-button').click
+      @driver.find_element(:id, 'btn-payment-search').click
       @wait.until { @driver.find_element(:class, 'bootbox-alert').displayed? }
     end
 
@@ -68,7 +68,7 @@ describe 'ブラウザから収支を検索する', type: :request do
         res.nil? ? true : false
       end
       @driver.find_element(:name, 'price_lower').send_keys('10000')
-      @driver.find_element(:id, 'search-button').click
+      @driver.find_element(:id, 'btn-payment-search').click
       @wait.until { @driver.current_url.include?('price_lower=10000') }
     end
 
@@ -79,7 +79,7 @@ describe 'ブラウザから収支を検索する', type: :request do
   end
 
   describe '金額でソートする' do
-    before(:all) { @driver.find_element(:xpath, '//th[text()="金額"]').click }
+    before(:all) { @driver.find_element(:id, 'header_price').click }
 
     it '金額でソートされていること' do
       is_asserted_by { @driver.find_element(:class, 'sorting_asc').text == '金額' }
@@ -134,7 +134,7 @@ describe 'ブラウザから収支を検索する', type: :request do
         res.nil? ? true : false
       end
       @driver.find_element(:name, 'price_upper').send_keys('1000')
-      @driver.find_element(:id, 'search-button').click
+      @driver.find_element(:id, 'btn-payment-search').click
       @wait.until { @driver.current_url.include?('price_upper=1000') }
     end
 
@@ -162,7 +162,7 @@ describe 'ブラウザから収支を検索する', type: :request do
       @driver.find_element(:name, 'price_upper').clear
       @driver.find_element(:name, 'price_lower').clear
       @driver.find_element(:name, 'category').send_keys('テスト,新カテゴリ')
-      @driver.find_element(:id, 'search-button').click
+      @driver.find_element(:id, 'btn-payment-search').click
       @wait.until do
         CGI.unescape(@driver.current_url).include?('category=テスト,新カテゴリ')
       end
@@ -181,7 +181,7 @@ describe 'ブラウザから収支を検索する', type: :request do
           @driver.find_element(:xpath, '//a[@href="#search-form"]').click rescue false
         res.nil? ? true : false
       end
-      @driver.find_element(:id, 'query_date_after').click
+      @driver.find_element(:id, 'payment_query_date_after').click
     end
 
     it 'カレンダーが表示されていること' do

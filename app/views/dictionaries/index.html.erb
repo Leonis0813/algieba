@@ -1,0 +1,101 @@
+<%= render 'layouts/management' %>
+<% i18n_path = 'views.management.dictionaries' %>
+
+<div class='row center-block'>
+  <div class='col-lg-4'>
+    <ul class='nav nav-tabs'>
+      <li class='active'>
+        <a href='#new-dictionary' data-toggle='tab'>
+          <%= t("#{i18n_path}.form.tab.create") %>
+        </a>
+      </li>
+      <li>
+        <a href='#search-form' data-toggle='tab'>
+          <%= t("#{i18n_path}.form.tab.index") %>
+        </a>
+      </li>
+    </ul>
+
+    <div class='tab-content'>
+      <div id='new-dictionary' class='well tab-pane active'>
+        <h3>
+          <%= t("#{i18n_path}.form.create.title") %>
+        </h3>
+        <%= form_for @dictionary, url: api_dictionaries_path, html: {onClick: 'return false;'} do |f| %>
+          <div class='form-group'>
+            <%= label_tag :phrase, t("#{i18n_path}.attribute.phrase") %>
+            <%= text_field_tag :phrase, '', class: 'form-control' %>
+            <% options = %w[include equal].map do |condition|
+                 [t("#{i18n_path}.form.create.condition.#{condition}"), condition]
+               end.to_h %>
+            <% params = {class: 'form-control', id: 'condition'} %>
+            <%= select_tag :condition, options_for_select(options, 'include'), params %>
+          </div>
+
+          <div class='form-group'>
+            <%= f.label :categories, t("#{i18n_path}.attribute.categories") %><br>
+            <%= f.text_field :categories, class: 'form-control category-form', name: 'category', value: nil %>
+            <span class='category-list' data-names='<%= Category.pluck(:name).sort %>'>
+              <%= button_tag(type: 'button', class: 'btn btn-default btn-sm') do %>
+                <span class='glyphicon glyphicon-list' />
+              <% end %>
+            </span>
+          </div>
+
+          <% params = {id: 'btn-create-dictionary', class: 'btn btn-primary btn-submit'} %>
+          <%= f.submit t("#{i18n_path}.form.create.submit"), params %>
+        <% end %>
+      </div>
+
+      <div id='search-form' class='well tab-pane'>
+        <h3>
+          <%= t("#{i18n_path}.form.index.title") %>
+        </h3>
+        <%= form_for @search_form, url: dictionaries_path, method: :get do |f| %>
+          <div class='form-group'>
+            <%= label_tag :phrase_include, t("#{i18n_path}.attribute.phrase") %>
+            <%= text_field_tag :phrase_include, '', class: 'form-control', value: @search_form.phrase_include %>
+          </div>
+
+          <% attribute = {id: 'btn-dictionary-search', class: 'btn btn-primary btn-submit'} %>
+          <%= f.submit t("#{i18n_path}.form.index.submit"), attribute %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class='col-lg-8'>
+    <div>
+      <% info = {
+           total_count: @dictionaries.total_count,
+           from: @dictionaries.total_count.zero? ? 0 : @dictionaries.offset_value + 1,
+           to: @dictionaries.offset_value + @dictionaries.size,
+         } %>
+      <h4 style='padding: 0px 10px;display: inline'>
+        <%= t('views.management.common.pagination.info', info) %>
+      </h4>
+      <form style='padding: 0px 10px;display: inline' id='per_page_form' class='form-inline pull-right' onSubmit='return false;'>
+        <label for='per_page'>
+          <%= t('views.management.common.pagination.label') %>
+        </label>
+        <input type='text' id='per_page' class='form-control' name='per_page' value='<%= @per_page %>' size='10'>
+      </form>
+    </div>
+    <%= paginate @dictionaries %>
+    <table id='table-dictionary' class='table table-hover'>
+      <thead>
+        <tr>
+          <% %w[phrase condition categories].each do |attribute| %>
+            <th class='<%= attribute %>'>
+              <%= t("#{i18n_path}.attribute.#{attribute}") %>
+            </th>
+          <% end %>
+          <th style='border: none'></th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= render @dictionaries %>
+      </tbody>
+    </table>
+  </div>
+</div>

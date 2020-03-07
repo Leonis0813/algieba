@@ -5,7 +5,7 @@ require 'rails_helper'
 describe PaymentsController, type: :controller do
   shared_context '収支情報を検索する' do |params = {}|
     before(:all) do
-      res = client.get('/payments', params)
+      res = client.get('/management/payments', params)
       @response_status = res.status
       @response_body = JSON.parse(res.body) rescue res.body
     end
