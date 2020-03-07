@@ -10,6 +10,8 @@ class Category < ApplicationRecord
             format: {with: /\A[0-9a-f]{32}\z/, message: 'invalid'},
             allow_nil: true
 
+  scope :name_include, ->(name) { where('name REGEXP ?', ".*#{name}.*") }
+
   after_initialize if: :new_record? do |category|
     category.category_id = SecureRandom.hex
   end

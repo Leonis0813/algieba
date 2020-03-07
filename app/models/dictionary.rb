@@ -11,6 +11,8 @@ class Dictionary < ApplicationRecord
             inclusion: {in: %w[equal include], message: 'invalid'},
             allow_nil: true
 
+  scope :phrase_include, ->(phrase) { where('phrase REGEXP ?', ".*#{phrase}.*") }
+
   after_initialize if: :new_record? do |dictionary|
     dictionary.dictionary_id = SecureRandom.hex
   end

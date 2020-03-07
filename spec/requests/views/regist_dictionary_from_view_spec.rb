@@ -9,14 +9,19 @@ describe 'ブラウザから辞書を登録する', type: :request do
     condition: 'include',
     categories: ['test'],
   }
+  new_category_name = "new_category_#{Time.now.to_i}"
+
+  shared_context '登録前の件数を確認する' do
+    before(:all) do
+      element = @wait.until do
+        @driver.find_element(:xpath, '//div[@class="col-lg-8"]/div/h4')
+      end
+      @before_total_count = element.text.match(/(.*)件中/)[1].to_i
+    end
+  end
 
   shared_context '辞書情報を入力する' do |input = default_input|
     before(:all) do
-      @wait.until do
-        res = @driver.find_element(:xpath, '//a[text()="辞書登録"]').click rescue false
-        res.nil? ? true : false
-      end
-
       phrase_input = @wait.until { @driver.find_element(:id, 'phrase') }
       phrase_input.clear
       phrase_input.send_keys(input[:phrase])
@@ -26,7 +31,7 @@ describe 'ブラウザから辞書を登録する', type: :request do
       option_xpath = "#{select_xpath}/option[@value='#{input[:condition]}']"
       @wait.until do
         res = @driver.find_element(:xpath, option_xpath).click rescue false
-        res.nil? ? true : false
+        res.nil?
       end
 
       category_input = @wait.until { @driver.find_element(:id, 'dictionary_categories') }
@@ -39,21 +44,19 @@ describe 'ブラウザから辞書を登録する', type: :request do
     before(:all) do
       @wait.until do
         res = @driver.find_element(:id, 'btn-create-dictionary').click rescue false
-        res.nil? ? true : false
+        res.nil?
       end
     end
   end
 
   shared_examples '登録に成功していること' do
-    it 'タイトルが正しいこと' do
-      xpath = "#{alert_xpath}//div[@class='bootbox-body']"
-      @wait.until { @driver.find_element(:xpath, xpath).displayed? }
-      is_asserted_by { @driver.find_element(:xpath, xpath).text == '登録が完了しました' }
-    end
+    it '件数が増えていること' do
+      element = @wait.until do
+        @driver.find_element(:xpath, '//div[@class="col-lg-8"]/div/h4')
+      end
+      after_total_count = element.text.match(/(.*)件中/)[1].to_i
 
-    it 'OKボタンがあること' do
-      xpath = "#{alert_xpath}//div[@class='modal-footer']/button"
-      is_asserted_by { @driver.find_element(:xpath, xpath).text == 'OK' }
+      is_asserted_by { after_total_count == @before_total_count + 1 }
     end
   end
 
@@ -77,34 +80,31 @@ describe 'ブラウザから辞書を登録する', type: :request do
   include_context 'Webdriverを起動する'
   include_context 'Cookieをセットする'
 
-  before(:all) { @driver.get("#{base_url}/payments") }
+  before(:all) do
+    @driver.get(base_url)
+    @wait.until do
+      res = @driver.find_element(:xpath, '//li/a[text()="辞書"]').click rescue false
+      res.nil?
+    end
+  end
 
   describe '辞書情報を登録する' do
+    include_context '登録前の件数を確認する'
     include_context '辞書情報を入力する'
     include_context '登録ボタンを押す'
-    after(:all) do
-      xpath = "#{alert_xpath}//div[@class='modal-footer']/button"
-      @wait.until do
-        res = @driver.find_element(:xpath, xpath).click rescue false
-        res.nil? ? true : false
-      end
-    end
 
     it_behaves_like '登録に成功していること'
     it_behaves_like '入力フォームが全て空であること'
   end
 
   describe '新しいカテゴリで辞書情報を登録する' do
-    input = default_input.merge(condition: 'equal', categories: ['new_test'])
+    input = default_input.merge(
+      condition: 'equal',
+      categories: [new_category_name],
+    )
+    include_context '登録前の件数を確認する'
     include_context '辞書情報を入力する', input
     include_context '登録ボタンを押す'
-    after(:all) do
-      xpath = "#{alert_xpath}//div[@class='modal-footer']/button"
-      @wait.until do
-        res = @driver.find_element(:xpath, xpath).click rescue false
-        res.nil? ? true : false
-      end
-    end
 
     it_behaves_like '登録に成功していること'
     it_behaves_like '入力フォームが全て空であること'
@@ -112,15 +112,10 @@ describe 'ブラウザから辞書を登録する', type: :request do
 
   describe 'カテゴリ一覧を確認する' do
     before(:all) do
-      @driver.get("#{base_url}/payments")
-      @wait.until do
-        res = @driver.find_element(:xpath, '//a[text()="辞書登録"]').click rescue false
-        res.nil? ? true : false
-      end
       xpath = '//form[@id="new_dictionary"]//span[@class="category-list"]/button'
       @wait.until do
         res = @driver.find_element(:xpath, xpath).click rescue false
-        res.nil? ? true : false
+        res.nil?
       end
       @wait.until { @driver.find_element(:class, 'bootbox-prompt').displayed? }
     end
@@ -134,7 +129,9 @@ describe 'ブラウザから辞書を登録する', type: :request do
 
     it '新カテゴリが追加されていること' do
       is_asserted_by do
-        @wait.until { @driver.find_element(:xpath, "//input[@value='new_test']") }
+        @wait.until do
+          @driver.find_element(:xpath, "//input[@value='#{new_category_name}']")
+        end
       end
     end
   end

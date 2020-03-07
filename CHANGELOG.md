@@ -1,4 +1,6 @@
-# 4.4.2 (2020/03/07)
+# 4.5.0 (2020/03/07)
+- [ADD] view to manage tags and categories
+- [UPDATE] whole view design
 - [UPDATE] gems
 
 # 4.4.1 (2020/02/09)

@@ -1,0 +1,61 @@
+<%= render 'layouts/management' %>
+<% i18n_path = 'views.management.categories' %>'
+
+<div class='row center-block'>
+  <div class='col-lg-4'>
+    <ul class='nav nav-tabs'>
+      <li class='active'>
+        <a href='#search-form' data-toggle='tab'>
+          <%= t("#{i18n_path}.form.tab.index") %>
+        </a>
+      </li>
+    </ul>
+
+    <div id='search-form' class='well tab-pane'>
+      <h3>
+        <%= t("#{i18n_path}.form.index.title") %>
+      </h3>
+      <%= form_for @search_form, url: categories_path, method: :get do |f| %>
+        <div class='form-group'>
+          <%= label_tag :name_include, t("#{i18n_path}.attribute.name") %>
+          <%= text_field_tag :name_include, '', class: 'form-control', value: @search_form.name_include %>
+        </div>
+        <%= f.submit t("#{i18n_path}.form.index.submit"), class: 'btn btn-primary btn-submit' %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class='col-lg-8'>
+    <div>
+      <% info = {
+           total_count: @categories.total_count,
+           from: @categories.total_count.zero? ? 0 : @categories.offset_value + 1,
+           to: @categories.offset_value + @categories.size,
+         } %>
+      <h4 style='padding: 0px 10px;display: inline'>
+        <%= t('views.management.common.pagination.info', info) %>
+      </h4>
+      <form style='padding: 0px 10px;display: inline' id='per_page_form' class='form-inline pull-right' onSubmit='return false;'>
+        <label for='per_page'>
+          <%= t('views.management.common.pagination.label') %>
+        </label>
+        <input type='text' id='per_page' class='form-control' name='per_page' value='<%= @per_page %>' size='10'>
+      </form>
+    </div>
+    <%= paginate @categories %>
+    <table id='table-category' class='table table-hover'>
+      <thead>
+        <tr>
+          <% %w[name description].each do |attribute| %>
+            <th class='<%= attribute %>'>
+              <%= t("#{i18n_path}.attribute.#{attribute}") %>
+            </th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <%= render @categories %>
+      </tbody>
+    </table>
+  </div>
+</div>

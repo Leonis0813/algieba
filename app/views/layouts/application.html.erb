@@ -15,20 +15,21 @@
     </script>
   </head>
   <body>
-
-    <div class='navbar navbar-default navbar-static-top'>
+    <nav class='navbar navbar-inverse navbar-static-top' style='margin-bottom:0px'>
       <div class='container'>
-        <span class='navbar-brand'>Payment Manager</span>
-        <div class='navbar-collapse collapse navbar-responsive-collapse'>
-          <ul class='nav navbar-nav'>
-            <li><%= link_to '管理画面', payments_path %></li>
-            <li><%= link_to '統計画面', statistics_path %></li>
-          </ul>
-        </div>
+        <%= link_to 'Payment Manager', payments_path, class: 'navbar-brand' %>
+        <ul class='nav navbar-nav'>
+          <li id='link-management'>
+            <%= link_to '管理画面', payments_path %>
+          </li>
+          <li id='link-statistics'>
+            <%= link_to '統計画面', statistics_path %>
+          </li>
+        </ul>
       </div>
-    </div>
+    </nav>
 
-    <div id='main-content' class='container'>
+    <div id='main-content'>
       <%= bootstrap_flash %>
       <%= yield %>
     </div>

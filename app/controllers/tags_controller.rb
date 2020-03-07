@@ -1,14 +1,14 @@
-class PaymentsController < ApplicationController
+class TagsController < ApplicationController
   def index
-    @search_form = PaymentQuery.new(index_param)
+    @search_form = TagQuery.new(index_param)
 
     if @search_form.valid?
-      @payments = scope_param.keys.inject(Payment.all) do |payments, key|
+      @tags = scope_param.keys.inject(Tag.all) do |tags, key|
         value = @search_form.send(key)
-        value ? payments.send(key, value) : payments
+        value ? tags.send(key, value) : tags
       end
-      @payment = Payment.new
-      @payments = @payments.order(date: :desc).page(params[:page]).per(per_page)
+      @tag = Tag.new
+      @tags = @tags.order(:name).page(params[:page]).per(per_page)
       render status: :ok
     else
       error_codes = @search_form.errors.messages.keys.map {|key| "invalid_param_#{key}" }
@@ -20,19 +20,9 @@ class PaymentsController < ApplicationController
 
   def index_param
     @index_param ||= request.query_parameters.slice(
-      :payment_type,
-      :date_before,
-      :date_after,
-      :content_equal,
-      :content_include,
-      :category,
-      :tag,
-      :price_upper,
-      :price_lower,
+      :name_include,
       :page,
       :per_page,
-      :sort,
-      :order,
     )
   end
 
@@ -40,8 +30,6 @@ class PaymentsController < ApplicationController
     @scope_param ||= index_param.except(
       :page,
       :per_page,
-      :sort,
-      :order,
     )
   end
 

@@ -108,10 +108,11 @@ describe 'ブラウザから収支を登録する', type: :request do
   include_context 'Cookieをセットする'
 
   describe '管理画面を開く' do
-    before(:all) { @driver.get("#{base_url}/payments") }
+    before(:all) { @driver.get(base_url) }
 
     it '日付でソートされていること' do
-      is_asserted_by { @driver.find_element(:class, 'sorting_desc').text == '日付' }
+      element = @wait.until { @driver.find_element(:class, 'sorting_desc') }
+      is_asserted_by { element.text.strip == '日付' }
     end
   end
 
