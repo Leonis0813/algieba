@@ -1,0 +1,114 @@
+<%= render 'layouts/management' %>
+<% i18n_path = 'views.management.tags' %>
+
+<div class='row center-block'>
+  <div class='col-lg-4'>
+    <ul class='nav nav-tabs'>
+      <li class='active'>
+        <a href='#create-form' data-toggle='tab'>
+          <%= t("#{i18n_path}.form.tab.create") %>
+        </a>
+      </li>
+      <li>
+        <a href='#assign-form' data-toggle='tab'>
+          <%= t("#{i18n_path}.form.tab.assign") %>
+        </a>
+      </li>
+      <li>
+        <a href='#search-form' data-toggle='tab'>
+          <%= t("#{i18n_path}.form.tab.index") %>
+        </a>
+      </li>
+    </ul>
+
+    <div class='tab-content'>
+      <div id='create-form' class='well tab-pane active'>
+        <h3>
+          <%= t("#{i18n_path}.form.create.title") %>
+        </h3>
+        <%= form_for @tag, url: api_tags_path, html: {onClick: 'return false;'} do |f| %>
+          <div class='form-group'>
+            <%= label_tag :name, t("#{i18n_path}.attribute.name") %>
+            <%= text_field_tag :name, '', class: 'form-control' %>
+          </div>
+
+          <% attribute = {id: 'btn-tag-create', class: 'btn btn-primary btn-submit'} %>
+          <%= f.submit t("#{i18n_path}.form.create.submit"), attribute %>
+        <% end %>
+      </div>
+
+      <div id='assign-form' class='well tab-pane'>
+        <h3>
+          <%= t("#{i18n_path}.form.assign.title") %>
+        </h3>
+        <div class='form-group'>
+          <%= label_tag :content_include, t("#{i18n_path}.form.assign.content") %>
+          <%= text_field_tag :content_include, '', class: 'form-control', value: @search_form.name_include %>
+        </div>
+
+        <div class='form-group'>
+          <%= label_tag :tag, t("#{i18n_path}.form.assign.tag") %><br>
+          <%= text_field_tag :tag, '', readonly: true, class: 'form-control tag-form' %>
+          <span class='tag-list' data-names='<%= tag_names %>'>
+            <%= button_tag(type: 'button', class: 'btn btn-default btn-sm') do %>
+              <span class='glyphicon glyphicon-list' />
+            <% end %>
+          </span>
+        </div>
+
+        <% attribute = {id: 'btn-tag-assign', class: 'btn btn-primary btn-submit'} %>
+        <%= button_tag t("#{i18n_path}.form.assign.submit"), attribute %>
+      </div>
+
+      <div id='search-form' class='well tab-pane'>
+        <h3>
+          <%= t("#{i18n_path}.form.index.title") %>
+        </h3>
+        <%= form_for @search_form, url: tags_path, method: :get do |f| %>
+          <div class='form-group'>
+            <%= label_tag :name_include, t("#{i18n_path}.attribute.name") %>
+            <%= text_field_tag :name_include, '', class: 'form-control', value: @search_form.name_include %>
+          </div>
+
+          <% attribute = {id: 'btn-tag-search', class: 'btn btn-primary btn-submit'} %>
+          <%= f.submit t("#{i18n_path}.form.index.submit"), attribute %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class='col-lg-8'>
+    <div>
+      <% info = {
+           total_count: @tags.total_count,
+           from: @tags.total_count.zero? ? 0 : @tags.offset_value + 1,
+           to: @tags.offset_value + @tags.size,
+         } %>
+      <h4 style='padding: 0px 10px;display: inline'>
+        <%= t('views.management.common.pagination.info', info) %>
+      </h4>
+      <form style='padding: 0px 10px;display: inline' id='per_page_form' class='form-inline pull-right' onSubmit='return false;'>
+        <label for='per_page'>
+          <%= t('views.management.common.pagination.label') %>
+        </label>
+        <input type='text' id='per_page' class='form-control' name='per_page' value='<%= @per_page %>' size='10'>
+      </form>
+    </div>
+    <%= paginate @tags %>
+    <table id='table-tag' class='table table-hover'>
+      <thead>
+        <tr>
+          <% %w[name].each do |attribute| %>
+            <th class='<%= attribute %>'>
+              <%= t("#{i18n_path}.attribute.#{attribute}") %>
+            </th>
+          <% end %>
+          <th style='border: none'></th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= render @tags %>
+      </tbody>
+    </table>
+  </div>
+</div>

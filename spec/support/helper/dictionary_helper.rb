@@ -4,6 +4,6 @@ module DictionaryHelper
   module_function
 
   def response_keys
-    @response_keys ||= %w[id phrase condition categories].sort
+    @response_keys ||= %w[dictionary_id phrase condition categories].sort
   end
 end

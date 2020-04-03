@@ -35,6 +35,11 @@ form {
   padding: 0px 5px;
 }
 
+.required:after {
+  color: red;
+  content: ' *';
+}
+
 .date-form {
   display: inline;
   width: 40%;
@@ -45,7 +50,7 @@ form {
   margin: 5px 0px;
 }
 
-.category-form {
+.category-form, .tag-form {
   display: inline;
   width: 80%;
 }
@@ -72,14 +77,18 @@ form {
 }
 
 #header_content {
-  width: 45%;
+  width: 35%;
 }
 
-#header_category {
-  width: 20%;
+#header_categories {
+  width: 15%;
 }
 
-.content, .category {
+#header_tags {
+  width: 15%;
+}
+
+.content, .categories {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

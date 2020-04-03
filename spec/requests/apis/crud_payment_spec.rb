@@ -18,9 +18,10 @@ describe '収支情報を管理する', type: :request do
     price: 100,
   }
 
-  shared_context 'GET /api/payments/[:id]' do
+  shared_context 'GET /api/payments/[:payment_id]' do
     before(:all) do
-      res = http_client.get("#{base_url}/api/payments/#{@id}", nil, app_auth_header)
+      url = "#{base_url}/api/payments/#{@payment_id}"
+      res = http_client.get(url, nil, app_auth_header)
       @response_status = res.status
       @response_body = JSON.parse(res.body) rescue res.body
     end
@@ -56,6 +57,12 @@ describe '収支情報を管理する', type: :request do
         is_asserted_by { category.keys.sort == CategoryHelper.response_keys }
       end
     end
+
+    it do
+      @response_body['tags'].each do |tag|
+        is_asserted_by { tag.keys.sort == TagHelper.response_keys }
+      end
+    end
   end
 
   describe 'カテゴリを検索する' do
@@ -85,13 +92,13 @@ describe '収支情報を管理する', type: :request do
           end
 
           describe '収支情報を取得する' do
-            before(:all) { @id = @created_payment['id'] }
-            include_context 'GET /api/payments/[:id]'
+            before(:all) { @payment_id = @created_payment['payment_id'] }
+            include_context 'GET /api/payments/[:payment_id]'
             it_behaves_like '収支情報のレスポンスが正しいこと'
 
             describe '収支情報を更新する' do
               before(:all) do
-                url = "#{base_url}/api/payments/#{@created_payment['id']}"
+                url = "#{base_url}/api/payments/#{@payment_id}"
                 body = {categories: ['other']}.to_json
                 header = app_auth_header.merge(content_type_json)
                 res = http_client.put(url, body, header)
@@ -130,7 +137,7 @@ describe '収支情報を管理する', type: :request do
 
                   describe '収支情報を削除する' do
                     before(:all) do
-                      url = "#{base_url}/api/payments/#{@created_payment['id']}"
+                      url = "#{base_url}/api/payments/#{@payment_id}"
                       res = http_client.delete(url, nil, app_auth_header)
                       @response_status = res.status
                       @response_body = JSON.parse(res.body) rescue res.body
@@ -139,8 +146,7 @@ describe '収支情報を管理する', type: :request do
                     it_behaves_like 'レスポンスが正しいこと', status: 204, body: ''
 
                     describe '収支情報を取得する' do
-                      before(:all) { @id = @created_payment['id'] }
-                      include_context 'GET /api/payments/[:id]'
+                      include_context 'GET /api/payments/[:payment_id]'
                       it_behaves_like 'レスポンスが正しいこと', status: 404, body: ''
                     end
 

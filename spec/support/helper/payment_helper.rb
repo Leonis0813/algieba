@@ -9,6 +9,7 @@ module PaymentHelper
         date: '1000-01-01',
         content: '機能テスト用データ1',
         categories: ['algieba'],
+        tags: ['test_data'],
         price: 1000,
       },
       expense: {
@@ -17,20 +18,30 @@ module PaymentHelper
         date: '1000-01-05',
         content: '機能テスト用データ2',
         categories: ['algieba'],
+        tags: ['test_data'],
         price: 100,
       },
     }
   end
 
   def response_keys
-    @response_keys ||= %w[id payment_type date content categories price].sort
+    @response_keys ||= %w[
+      payment_id
+      payment_type
+      date
+      content
+      categories
+      tags
+      price
+    ].sort
   end
 
   def delete_payments
     payments_path = "#{base_url}/api/payments"
     res = http_client.get(payments_path, {per_page: 100}, app_auth_header)
     JSON.parse(res.body)['payments'].each do |payment|
-      http_client.delete("#{payments_path}/#{payment['id']}", nil, app_auth_header)
+      url = "#{payments_path}/#{payment['payment_id']}"
+      http_client.delete(url, nil, app_auth_header)
     end
   end
 

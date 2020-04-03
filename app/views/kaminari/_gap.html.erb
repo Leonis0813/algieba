@@ -6,5 +6,5 @@
     remote:        data-remote
 -%>
 <li>
-  <span class="page gap"><%= t('views.list.pagination.truncate').html_safe %></span>
+  <%= content_tag(:span, t('views.management.common.pagination.truncate'), class: 'page gap') %>
 </li>

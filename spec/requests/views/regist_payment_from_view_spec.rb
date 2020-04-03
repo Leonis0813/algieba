@@ -3,6 +3,9 @@
 require 'rails_helper'
 
 describe 'ブラウザから収支を登録する', type: :request do
+  now = Time.now.to_i
+  new_phrase = "test at #{now}"
+  new_category = "新カテゴリ_#{now}"
   per_page = Kaminari.config.default_per_page
   default_inputs = {
     date: '1000-01-01',
@@ -57,15 +60,28 @@ describe 'ブラウザから収支を登録する', type: :request do
     end
   end
 
+  shared_context '辞書登録をキャンセルする' do
+    before(:all) do
+      xpath = '//button[@data-bb-handler="cancel"]'
+      @wait.until do
+        res = @driver.find_element(:xpath, xpath).click rescue false
+        res.nil? ? true : false
+      end
+    end
+  end
+
   shared_examples '入力フォームが全て空であること' do
     %w[date content categories price].each do |column|
       it_is_asserted_by { @driver.find_element(:id, "payment_#{column}").text == '' }
     end
   end
 
-  shared_examples '辞書を登録するダイアログが表示されていること' do |category: nil|
+  shared_examples '辞書を登録するダイアログが表示されていること' do |
+    phrase: 'regist from view',
+    category: nil
+  |
     it do
-      xpath = '//input[@id="dialog-phrase"][@value="regist from view"]'
+      xpath = "//input[@id='dialog-phrase'][@value='#{phrase}']"
       is_asserted_by { @wait.until { @driver.find_element(:xpath, xpath) } }
 
       xpath = '//select[@id="dialog-condition"]/option[@selected][@value="equal"]'
@@ -92,10 +108,11 @@ describe 'ブラウザから収支を登録する', type: :request do
   include_context 'Cookieをセットする'
 
   describe '管理画面を開く' do
-    before(:all) { @driver.get("#{base_url}/payments") }
+    before(:all) { @driver.get(base_url) }
 
     it '日付でソートされていること' do
-      is_asserted_by { @driver.find_element(:class, 'sorting_desc').text == '日付' }
+      element = @wait.until { @driver.find_element(:class, 'sorting_desc') }
+      is_asserted_by { element.text.strip == '日付' }
     end
   end
 
@@ -133,13 +150,7 @@ describe 'ブラウザから収支を登録する', type: :request do
   end
 
   describe '辞書登録をキャンセルする' do
-    before(:all) do
-      xpath = '//button[@data-bb-handler="cancel"]'
-      @wait.until do
-        res = @driver.find_element(:xpath, xpath).click rescue false
-        res.nil? ? true : false
-      end
-    end
+    include_context '辞書登録をキャンセルする'
 
     it_behaves_like '表示されている件数が正しいこと', per_page, 1, per_page
     it_behaves_like '収支情報の数が正しいこと', per_page
@@ -157,15 +168,18 @@ describe 'ブラウザから収支を登録する', type: :request do
   end
 
   describe '新しいカテゴリで収支情報を登録する' do
-    include_context '収支情報を入力する', default_inputs, 'income'
+    input = default_inputs.merge(content: new_phrase)
+    include_context '収支情報を入力する', input, 'income'
     before(:all) do
       element = @driver.find_element(:id, 'payment_categories')
       element.clear
-      element.send_keys('新カテゴリ')
+      element.send_keys(new_category)
     end
     include_context '登録ボタンを押す'
 
-    it_behaves_like '辞書を登録するダイアログが表示されていること', category: '新カテゴリ'
+    it_behaves_like '辞書を登録するダイアログが表示されていること',
+                    phrase: new_phrase,
+                    category: new_category
   end
 
   describe '辞書を登録する' do
@@ -194,8 +208,10 @@ describe 'ブラウザから収支を登録する', type: :request do
       @wait.until { @driver.find_element(:xpath, xpath) rescue true }
     end
 
-    it '新カテゴリが追加されていること' do
-      is_asserted_by { @driver.find_element(:xpath, "//input[@value='新カテゴリ']") }
+    it "#{new_category}が追加されていること" do
+      is_asserted_by do
+        @driver.find_element(:xpath, "//input[@value='#{new_category}']")
+      end
     end
   end
 
@@ -227,9 +243,15 @@ describe 'ブラウザから収支を登録する', type: :request do
     it_behaves_like '収支情報の数が正しいこと', per_page
   end
 
-  describe '収支情報を登録する' do
+  describe 'タグを指定して収支情報を登録する' do
     include_context '収支情報を入力する', default_inputs, 'income'
+    before(:all) do
+      element = @driver.find_element(:id, 'payment_tags')
+      element.clear
+      element.send_keys('テスト')
+    end
     include_context '登録ボタンを押す'
+    include_context '辞書登録をキャンセルする'
 
     it_behaves_like '表示されている件数が正しいこと', per_page + 1, 1, per_page
     it_behaves_like '収支情報の数が正しいこと', per_page

@@ -14,7 +14,7 @@ describe '統計情報を確認する', type: :request do
     body = {payments: payment}.to_json
     header = app_auth_header.merge(content_type_json)
     res = http_client.post("#{base_url}/api/payments", body, header)
-    @payment_id = JSON.parse(res.body)['id']
+    @payment_id = JSON.parse(res.body)['payment_id']
   end
 
   after(:all) do
@@ -26,7 +26,7 @@ describe '統計情報を確認する', type: :request do
 
   describe '統計情報確認画面を開く' do
     before(:all) do
-      @driver.get("#{base_url}/payments")
+      @driver.get(base_url)
       @driver.find_element(:xpath, '//li/a[text()="統計画面"]').click
     end
 
