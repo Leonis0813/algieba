@@ -1,7 +1,6 @@
 class PaymentQuery < Query
-  attribute_names = %i[payment_type date_before date_after content_equal content_include
-                       category tag price_upper price_lower sort]
-  attr_accessor(*attribute_names)
+  attr_accessor :payment_type, :date_before, :date_after, :content_equal,
+                :content_include, :category, :tag, :price_upper, :price_lower, :sort
 
   validates :payment_type,
             inclusion: {in: %w[income expense], message: 'invalid'},
@@ -40,9 +39,5 @@ class PaymentQuery < Query
 
     errors.add(:date_before, 'invalid')
     errors.add(:date_after, 'invalid')
-  end
-
-  def attributes
-    super.merge(self.class.attribute_names.map {|name| [name, send(name)] }.to_h)
   end
 end
