@@ -15,7 +15,7 @@ class Payment < ApplicationRecord
             presence: {message: 'absent'}
   validates :date, presence: {message: 'invalid'}
   validates :payment_id,
-            format: {with: /\A[0-9a-f]{32}\z/, message: 'invalid'},
+            format: {with: ID_FORMAT, message: 'invalid'},
             allow_nil: true
   validates :payment_type,
             inclusion: {in: PAYMENT_TYPE_LIST, message: 'invalid'},
