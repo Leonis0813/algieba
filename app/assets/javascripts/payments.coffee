@@ -94,10 +94,10 @@ $ ->
     return
 
   $('#new_payment').on 'ajax:success', (event, payment, status) ->
-    query = $.param({phrase: payment.content, condition: 'equal'})
     $.ajax({
       type: 'GET',
-      url: '/algieba/api/dictionaries?' + query
+      url: '/algieba/api/dictionaries',
+      data: {phrase: payment.content}
     }).done((data) ->
       if (data.dictionaries.length == 0)
         category_names = $.map(payment.categories, (category) ->
