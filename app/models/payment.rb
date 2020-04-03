@@ -1,7 +1,7 @@
 class Payment < ApplicationRecord
   PAYMENT_TYPE_INCOME = 'income'.freeze
   PAYMENT_TYPE_EXPENSE = 'expense'.freeze
-  PAYMENT_TYPES = [
+  PAYMENT_TYPE_LIST = [
     PAYMENT_TYPE_INCOME,
     PAYMENT_TYPE_EXPENSE,
   ].freeze
@@ -18,7 +18,7 @@ class Payment < ApplicationRecord
             format: {with: /\A[0-9a-f]{32}\z/, message: 'invalid'},
             allow_nil: true
   validates :payment_type,
-            inclusion: {in: PAYMENT_TYPES, message: 'invalid'},
+            inclusion: {in: PAYMENT_TYPE_LIST, message: 'invalid'},
             allow_nil: true
   validates :price,
             numericality: {
