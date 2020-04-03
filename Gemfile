@@ -30,6 +30,7 @@ group :development do
   gem 'rubocop'
   gem 'rubocop-performance'
   gem 'rubocop-rails'
+  gem 'rugged', '~> 0.28.0'
   gem 'web-console'
 end
 
