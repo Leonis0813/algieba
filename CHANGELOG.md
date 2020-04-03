@@ -1,3 +1,8 @@
+# 4.5.1 (2020/04/03)
+- [FIX] confirmation dialog texts for dictionary registration
+- [FIX] displaying condition of confirmation dialog for dictionary registration
+- [UPDATE] gems
+
 # 4.5.0 (2020/03/07)
 - [ADD] view to manage tags and categories
 - [UPDATE] whole view design

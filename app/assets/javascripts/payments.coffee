@@ -94,10 +94,10 @@ $ ->
     return
 
   $('#new_payment').on 'ajax:success', (event, payment, status) ->
-    query = $.param({phrase: payment.content, condition: 'equal'})
     $.ajax({
       type: 'GET',
-      url: '/algieba/api/dictionaries?' + query
+      url: '/algieba/api/dictionaries',
+      data: {phrase: payment.content}
     }).done((data) ->
       if (data.dictionaries.length == 0)
         category_names = $.map(payment.categories, (category) ->
@@ -107,23 +107,23 @@ $ ->
           title: '以下の情報を辞書に登録しますか？',
           message: '<div class="form-group">' +
           '<label for="phrase">' +
-          I18n.t('views.dictionary.create.phrase') +
+          I18n.t('views.management.dictionaries.attribute.phrase') +
           '</label>' +
           '<input value="' +
           payment.content +
           '" id="dialog-phrase" class="form-control">' +
           '<select id="dialog-condition" class="form-control">' +
           '<option value="include">' +
-          I18n.t('views.dictionary.create.include') +
+          I18n.t('views.management.dictionaries.form.create.condition.include') +
           '</option>' +
           '<option selected value="equal">' +
-          I18n.t('views.dictionary.create.equal') +
+          I18n.t('views.management.dictionaries.form.create.condition.equal') +
           '</option>' +
           '</select>' +
           '</div>' +
           '<div class="form-group">' +
           '<label for="categories">' +
-          I18n.t('views.dictionary.create.categories') +
+          I18n.t('views.management.dictionaries.attribute.categories') +
           '</label><br />' +
           '<input class="form-control" value="' +
           category_names +
@@ -131,7 +131,7 @@ $ ->
           '</div>',
           buttons: {
             cancel: {
-              label: I18n.t('views.dictionary.create.cancel'),
+              label: I18n.t('views.management.payments.dialog.dictionary.cancel'),
               className: 'btn-default',
               callback: ->
                 $("#payment_categories").empty()
@@ -140,7 +140,7 @@ $ ->
                 return
             },
             ok: {
-              label: I18n.t('views.dictionary.create.submit'),
+              label: I18n.t('views.management.payments.dialog.dictionary.submit'),
               className: 'btn-primary',
               callback: ->
                 data = {
