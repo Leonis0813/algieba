@@ -1,3 +1,6 @@
+# 4.5.2 (2020/04/04)
+- [UPDATE] gems
+
 # 4.5.1 (2020/04/03)
 - [FIX] confirmation dialog texts for dictionary registration
 - [FIX] displaying condition of confirmation dialog for dictionary registration
