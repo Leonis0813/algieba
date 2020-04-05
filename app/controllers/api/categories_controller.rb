@@ -7,7 +7,7 @@ module Api
                       Category.where(name: index_params[:keyword])
                     end
 
-      render status: :ok, template: 'categories/categories'
+      render status: :ok
     end
 
     private

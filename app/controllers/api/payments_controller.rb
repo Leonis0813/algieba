@@ -15,7 +15,7 @@ module Api
       end
 
       if @payment.save
-        render status: :created, template: 'payments/payment'
+        render status: :created
       else
         error_codes = @payment.errors.messages.keys.map {|key| "invalid_param_#{key}" }
         raise BadRequest, error_codes
@@ -23,7 +23,7 @@ module Api
     end
 
     def show
-      render status: :ok, template: 'payments/payment'
+      render status: :ok
     end
 
     def index
@@ -33,7 +33,7 @@ module Api
           value = query.send(key)
           value ? payments.send(key, value) : payments
         end.order(query.sort => query.order).page(query.page).per(query.per_page)
-        render status: :ok, template: 'payments/payments'
+        render status: :ok
       else
         error_codes = query.errors.messages.keys.map {|key| "invalid_param_#{key}" }
         raise BadRequest, error_codes
@@ -48,7 +48,7 @@ module Api
       end
 
       if request_payment.update(update_params.except(:categories))
-        render status: :ok, template: 'payments/payment'
+        render status: :ok
       else
         error_codes = request_payment.errors.messages.keys.map do |key|
           "invalid_param_#{key}"

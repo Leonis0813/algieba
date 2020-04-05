@@ -10,7 +10,7 @@ module Api
 
       begin
         if @dictionary.save
-          render status: :created, template: 'dictionaries/dictionary'
+          render status: :created
         else
           error_codes = @dictionary.errors.messages.keys.map do |key|
             "invalid_param_#{key}"
@@ -34,7 +34,7 @@ module Api
                         end
                         dictionaries.sort_by(&:condition)
                       end
-      render status: :ok, template: 'dictionaries/dictionaries'
+      render status: :ok
     end
 
     private

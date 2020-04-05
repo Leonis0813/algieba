@@ -9,7 +9,7 @@ module Api
       @tag = Tag.new(create_param)
       begin
         if @tag.save
-          render status: :created, template: 'tags/tag'
+          render status: :created
         else
           error_codes = @tag.errors.messages.keys.map do |key|
             "invalid_param_#{key}"
