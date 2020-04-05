@@ -23,13 +23,14 @@ module Api
     end
 
     def show
+      @payment = request_payment
       render status: :ok
     end
 
     def index
       query = PaymentQuery.new(index_params)
       if query.valid?
-        @payments = scope_params.inject(Payment.all) do |payments, key|
+        @payments = scope_params.keys.inject(Payment.all) do |payments, key|
           value = query.send(key)
           value ? payments.send(key, value) : payments
         end.order(query.sort => query.order).page(query.page).per(query.per_page)
@@ -48,6 +49,7 @@ module Api
       end
 
       if request_payment.update(update_params.except(:categories))
+        @payment = request_payment.reload
         render status: :ok
       else
         error_codes = request_payment.errors.messages.keys.map do |key|
