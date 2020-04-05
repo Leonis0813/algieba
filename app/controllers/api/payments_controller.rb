@@ -27,10 +27,9 @@ module Api
     end
 
     def index
-      query = PaymentQuery.new(params.permit(*index_params))
+      query = PaymentQuery.new(index_params)
       if query.valid?
-        query_params = index_params - %i[page per_page sort order]
-        @payments = query_params.inject(Payment.all) do |payments, key|
+        @payments = scope_params.inject(Payment.all) do |payments, key|
           value = query.send(key)
           value ? payments.send(key, value) : payments
         end.order(query.sort => query.order).page(query.page).per(query.per_page)
@@ -42,34 +41,35 @@ module Api
     end
 
     def update
-      attributes = params.permit(:date, :content, :price, :payment_type, categories: [])
-      if attributes[:categories]
-        payment.categories = attributes[:categories].map do |category_name|
+      if update_params[:categories]
+        request_payment.categories = update_params[:categories].map do |category_name|
           Category.find_or_create_by(name: category_name)
         end
       end
 
-      if payment.update(attributes.except(:categories))
+      if request_payment.update(update_params.except(:categories))
         render status: :ok, template: 'payments/payment'
       else
-        error_codes = payment.errors.messages.keys.map {|key| "invalid_param_#{key}" }
+        error_codes = request_payment.errors.messages.keys.map do |key|
+          "invalid_param_#{key}"
+        end
         raise BadRequest, error_codes
       end
     end
 
     def destroy
-      payment.destroy
+      request_payment.destroy
       head :no_content
     end
 
     private
 
     def check_request_payment
-      raise NotFound unless payment
+      raise NotFound unless request_payment
     end
 
-    def payment
-      @payment ||= Payment.find_by(request.path_parameters.slice(:payment_id))
+    def request_payment
+      @request_payment ||= Payment.find_by(request.path_parameters.slice(:payment_id))
     end
 
     def create_params
@@ -84,10 +84,40 @@ module Api
     end
 
     def index_params
-      %i[
-        payment_type date_before date_after content_equal content_include category
-        price_upper price_lower page per_page sort order
-      ]
+      @index_params ||= request.query_parameters.slice(
+        :payment_type,
+        :date_before,
+        :date_after,
+        :content_equal,
+        :content_include,
+        :category,
+        :price_upper,
+        :price_lower,
+        :page,
+        :per_page,
+        :sort,
+        :order,
+      )
+    end
+
+    def update_params
+      @update_params ||= request.request_parameters.slice(
+        :payment_type,
+        :date,
+        :content,
+        :categories,
+        :tags,
+        :price,
+      )
+    end
+
+    def scope_params
+      @scope_params ||= index_params.except(
+        :page,
+        :per_page,
+        :sort,
+        :order,
+      )
     end
   end
 end
