@@ -1,8 +1,8 @@
 class Query
   include ActiveModel::Model
 
-  DEFAULT_PAGE = 1.freeze
-  DEFAULT_PER_PAGE = 10.freeze
+  DEFAULT_PAGE = 1
+  DEFAULT_PER_PAGE = 10
   DEFAULT_ORDER = 'asc'.freeze
   ORDER_LIST = [DEFAULT_ORDER, 'desc'].freeze
 
