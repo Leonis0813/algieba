@@ -76,7 +76,7 @@ describe '辞書情報APIのテスト', type: :request do
   end
 
   describe '辞書情報を作成する' do
-    body = {phrase: content[1 .. -1], condition: 'include', categories: ['algieba']}
+    body = {phrase: content[1..-1], condition: 'include', categories: ['algieba']}
     include_context '辞書情報を作成する', body
     it_behaves_like '辞書情報作成時のレスポンスが正しいこと', body.except(:categories)
   end
@@ -88,7 +88,7 @@ describe '辞書情報APIのテスト', type: :request do
 
   describe 'contentを指定して辞書情報を検索する' do
     include_context '辞書情報を検索する', {content: content}
-    it_behaves_like '辞書情報検索時のレスポンスが正しいこと', [content, content[1 .. -1]]
+    it_behaves_like '辞書情報検索時のレスポンスが正しいこと', [content, content[1..-1]]
   end
 
   describe 'phraseを指定して辞書情報を検索する' do
@@ -98,7 +98,7 @@ describe '辞書情報APIのテスト', type: :request do
 
   describe 'conditionを指定して辞書情報を検索する' do
     include_context '辞書情報を検索する', {condition: 'include'}
-    it_behaves_like '辞書情報検索時のレスポンスが正しいこと', [content[1 .. -1]]
+    it_behaves_like '辞書情報検索時のレスポンスが正しいこと', [content[1..-1]]
   end
 
   describe 'phrase,conditionを指定して辞書情報を検索する' do
