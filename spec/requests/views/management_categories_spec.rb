@@ -32,16 +32,9 @@ describe 'カテゴリ管理画面のテスト', type: :request do
       end
     end
 
-    it '件数情報が正しいこと' do
-      element = @wait.until do
-        @driver.find_element(:xpath, '//div[@class="col-lg-8"]/div/h4')
-      end
-      is_asserted_by { element.text.strip == '1件中1〜1件を表示' }
-    end
-
     it 'テーブルに検索結果が表示されていること' do
-      xpath = "//td[@class='name'][text()='テスト1']"
-      is_asserted_by { @wait.until { @driver.find_element(:xpath, xpath) } }
+      names = @driver.find_elements(:xpath, '//td[@class="name"]')
+      is_asserted_by { names.all? {|name| name.text.strip.include?('1') } }
     end
   end
 end
