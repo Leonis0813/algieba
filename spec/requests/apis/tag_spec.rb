@@ -53,7 +53,7 @@ describe 'タグ情報APIのテスト', type: :request do
   after(:all) { delete_payments }
 
   describe 'タグ情報を作成する' do
-    body = {name: Time.now.to_i.to_s}
+    body = {name: SecureRandom.hex(5)}
     include_context 'タグ情報を作成する', body
     before(:all) { @tag_id = @response_body['tag_id'] }
     it_behaves_like 'タグ情報作成時のレスポンスが正しいこと', body

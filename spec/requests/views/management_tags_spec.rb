@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 describe 'タグ管理画面のテスト', type: :request do
-  new_tag_name = Time.now.to_i.to_s
+  new_tag_name = SecureRandom.hex(5)
   content = 'システムテスト用データ'
 
   shared_context '登録前の件数を確認する' do
