@@ -3,7 +3,6 @@
 require 'rails_helper'
 
 describe '辞書管理画面のテスト', type: :request do
-  alert_xpath = '//div[contains(@class, "bootbox-alert")]'
   default_input = {
     phrase: Time.zone.now.strftime('%F %T.%6N'),
     condition: 'include',
