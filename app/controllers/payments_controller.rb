@@ -1,6 +1,7 @@
 class PaymentsController < ApplicationController
   def index
-    @search_form = PaymentQuery.new(index_param)
+    attribute = {per_page: Kaminari.config.default_per_page}.merge(index_param)
+    @search_form = PaymentQuery.new(attribute)
 
     if @search_form.valid?
       @payments = scope_param.keys.inject(Payment.all) do |payments, key|
