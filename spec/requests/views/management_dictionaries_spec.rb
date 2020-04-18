@@ -146,8 +146,9 @@ describe '辞書管理画面のテスト', type: :request do
 
   describe '辞書情報を検索する' do
     before(:all) do
+      xpath = '//li/a[@href="#search-form"]'
       @wait.until do
-        res = @driver.find_element(:xpath, '//li/a[@href="#search-form"]').click rescue false
+        res = @driver.find_element(:xpath, xpath).click rescue false
         res.nil?
       end
       phrase_input = @wait.until { @driver.find_element(:id, 'phrase_include') }
