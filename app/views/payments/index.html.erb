@@ -145,7 +145,7 @@
         <label for='per_page'>
           <%= t('views.management.common.pagination.label') %>
         </label>
-        <input type='text' id='per_page' class='form-control' name='per_page' value='<%= @per_page %>' size='10'>
+        <input type='text' id='per_page' class='form-control' name='per_page' value='<%= @search_form.per_page %>' size='10'>
       </form>
     </div>
     <%= paginate @payments %>
