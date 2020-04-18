@@ -171,7 +171,9 @@ describe '収支管理画面のテスト', type: :request do
       end
 
       it 'カレンダーが表示されていること' do
-        is_asserted_by { @driver.find_element(:class, 'bootstrap-datetimepicker-widget') }
+        is_asserted_by do
+          @driver.find_element(:class, 'bootstrap-datetimepicker-widget')
+        end
       end
     end
 
@@ -280,7 +282,9 @@ describe '収支管理画面のテスト', type: :request do
       end
 
       after(:all) do
-        button = @wait.until { @driver.find_element(:xpath, '//div/button[text()="OK"]') }
+        button = @wait.until do
+          @driver.find_element(:xpath, '//div/button[text()="OK"]')
+        end
         button.click
         @wait.until { @driver.find_element(:class, 'bootbox-alert') rescue true }
         @driver.find_element(:name, 'price_upper').clear
@@ -329,7 +333,9 @@ describe '収支管理画面のテスト', type: :request do
       end
 
       after(:all) do
-        button = @wait.until { @driver.find_element(:xpath, '//div/button[text()="OK"]') }
+        button = @wait.until do
+          @driver.find_element(:xpath, '//div/button[text()="OK"]')
+        end
         button.click
         @wait.until { @driver.find_element(:class, 'bootbox-alert') rescue true }
       end
