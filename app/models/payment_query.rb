@@ -1,10 +1,12 @@
 class PaymentQuery < Query
-  attribute_names = %i[payment_type date_before date_after content_equal content_include
-                       category tag price_upper price_lower sort]
-  attr_accessor(*attribute_names)
+  DEFAULT_SORT = 'payment_id'.freeze
+  SORT_LIST = [DEFAULT_SORT, 'date', 'price'].freeze
+
+  attr_accessor :payment_type, :date_before, :date_after, :content_equal,
+                :content_include, :category, :tag, :price_upper, :price_lower, :sort
 
   validates :payment_type,
-            inclusion: {in: %w[income expense], message: 'invalid'},
+            inclusion: {in: Payment::PAYMENT_TYPE_LIST, message: 'invalid'},
             allow_nil: true
   validates :price_upper, :price_lower,
             numericality: {
@@ -13,10 +15,15 @@ class PaymentQuery < Query
               message: 'invalid',
             },
             allow_nil: true
-  validates :sort, inclusion: {in: %w[payment_id date price], message: 'invalid'}
+  validates :sort, inclusion: {in: SORT_LIST, message: 'invalid'}
 
   validate :date_valid?
   validate :period_valid?
+
+  def initialize(attributes = {})
+    super
+    self.sort ||= DEFAULT_SORT
+  end
 
   def date_valid?
     return unless date_before or date_after
@@ -40,9 +47,5 @@ class PaymentQuery < Query
 
     errors.add(:date_before, 'invalid')
     errors.add(:date_after, 'invalid')
-  end
-
-  def attributes
-    super.merge(self.class.attribute_names.map {|name| [name, send(name)] }.to_h)
   end
 end

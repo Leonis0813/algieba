@@ -9,7 +9,7 @@ module Api
       @tag = Tag.new(create_param)
       begin
         if @tag.save
-          render status: :created, template: 'tags/tag'
+          render status: :created
         else
           error_codes = @tag.errors.messages.keys.map do |key|
             "invalid_param_#{key}"
@@ -32,19 +32,19 @@ module Api
         raise BadRequest, 'invalid_param_payment_ids'
       end
 
-      tag.payments += payments
-      tag.save!
+      request_tag.payments += payments
+      request_tag.save!
       head :ok
     end
 
     private
 
     def check_request_tag
-      raise NotFound unless tag
+      raise NotFound unless request_tag
     end
 
-    def tag
-      @tag ||= Tag.find_by(request.path_parameters.slice(:tag_id))
+    def request_tag
+      @request_tag ||= Tag.find_by(request.path_parameters.slice(:tag_id))
     end
 
     def create_param

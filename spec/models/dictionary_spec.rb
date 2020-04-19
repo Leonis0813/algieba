@@ -7,7 +7,7 @@ describe Dictionary, type: :model do
     describe '正常系' do
       valid_attribute = {
         dictionary_id: ['0' * 32],
-        phrase: 'phrase',
+        phrase: %w[phrase],
         condition: %w[equal include],
       }
 

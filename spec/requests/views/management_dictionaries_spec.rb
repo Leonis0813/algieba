@@ -2,8 +2,7 @@
 
 require 'rails_helper'
 
-describe 'ブラウザから辞書を登録する', type: :request do
-  alert_xpath = '//div[contains(@class, "bootbox-alert")]'
+describe '辞書管理画面のテスト', type: :request do
   default_input = {
     phrase: Time.zone.now.strftime('%F %T.%6N'),
     condition: 'include',
@@ -49,6 +48,15 @@ describe 'ブラウザから辞書を登録する', type: :request do
     end
   end
 
+  shared_context '検索ボタンを押す' do
+    before(:all) do
+      @wait.until do
+        res = @driver.find_element(:id, 'btn-dictionary-search').click rescue false
+        res.nil?
+      end
+    end
+  end
+
   shared_examples '登録に成功していること' do
     it '件数が増えていること' do
       element = @wait.until do
@@ -76,7 +84,7 @@ describe 'ブラウザから辞書を登録する', type: :request do
     category: 'test',
     price: 100,
   }
-  include_context 'POST /api/payments', body
+  include_context '収支情報を作成する', body
   include_context 'Webdriverを起動する'
   include_context 'Cookieをセットする'
 
@@ -133,6 +141,35 @@ describe 'ブラウザから辞書を登録する', type: :request do
           @driver.find_element(:xpath, "//input[@value='#{new_category_name}']")
         end
       end
+    end
+  end
+
+  describe '辞書情報を検索する' do
+    before(:all) do
+      xpath = '//li/a[@href="#search-form"]'
+      @wait.until do
+        res = @driver.find_element(:xpath, xpath).click rescue false
+        res.nil?
+      end
+      phrase_input = @wait.until { @driver.find_element(:id, 'phrase_include') }
+      phrase_input.clear
+      phrase_input.send_keys(default_input[:phrase])
+    end
+    include_context '検索ボタンを押す'
+
+    it '件数情報が正しいこと' do
+      element = @wait.until do
+        @driver.find_element(:xpath, '//div[@class="col-lg-8"]/div/h4')
+      end
+      is_asserted_by { element.text.strip == '2件中1〜2件を表示' }
+    end
+
+    it 'テーブルに検索結果が表示されていること' do
+      xpath = "//td[@class='phrase'][@title='#{default_input[:phrase]}']"
+      phrase = @wait.until { @driver.find_element(:xpath, xpath) }
+
+      is_asserted_by { phrase.present? }
+      is_asserted_by { phrase.text == default_input[:phrase].truncate(20) }
     end
   end
 end

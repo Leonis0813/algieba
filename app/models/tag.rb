@@ -5,7 +5,7 @@ class Tag < ApplicationRecord
   validates :tag_id, :name,
             presence: {message: 'absent'}
   validates :tag_id,
-            format: {with: /\A[0-9a-f]{32}\z/, message: 'invalid'},
+            format: {with: ID_FORMAT, message: 'invalid'},
             allow_nil: true
   validates :name,
             length: {maximum: 10, message: 'invalid'},

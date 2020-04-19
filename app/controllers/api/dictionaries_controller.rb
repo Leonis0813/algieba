@@ -1,19 +1,16 @@
 module Api
   class DictionariesController < ApplicationController
     def create
-      attributes = params.permit(:phrase, :condition, categories: [])
-      absent_keys = create_params - attributes.keys.map(&:to_sym)
-      error_codes = absent_keys.map {|key| "absent_param_#{key}" }
-      raise BadRequest, error_codes unless absent_keys.empty?
+      check_absent_param(create_params, %i[phrase condition categories])
 
-      @dictionary = Dictionary.new(attributes.except(:categories))
-      @dictionary.categories << attributes[:categories].map do |category_name|
+      @dictionary = Dictionary.new(create_params.except(:categories))
+      @dictionary.categories << create_params[:categories].map do |category_name|
         Category.find_or_initialize_by(name: category_name)
       end
 
       begin
         if @dictionary.save
-          render status: :created, template: 'dictionaries/dictionary'
+          render status: :created
         else
           error_codes = @dictionary.errors.messages.keys.map do |key|
             "invalid_param_#{key}"
@@ -26,29 +23,36 @@ module Api
     end
 
     def index
-      query = params.permit(*index_params)
-      @dictionaries = if query.empty?
+      @dictionaries = if index_params.empty?
                         Dictionary.all.order(:condition)
                       else
-                        dictionaries = Dictionary.where(query.except(:content))
-                        if query.key?(:content)
+                        dictionaries = Dictionary.where(index_params.except(:content))
+                        if index_params.key?(:content)
                           dictionaries = dictionaries.select do |dictionary|
-                            query[:content].include?(dictionary.phrase)
+                            index_params[:content].include?(dictionary.phrase)
                           end
                         end
                         dictionaries.sort_by(&:condition)
                       end
-      render status: :ok, template: 'dictionaries/dictionaries'
+      render status: :ok
     end
 
     private
 
     def create_params
-      %i[phrase condition categories]
+      @create_params ||= request.request_parameters.slice(
+        :phrase,
+        :condition,
+        :categories,
+      )
     end
 
     def index_params
-      %i[condition content phrase]
+      @index_params ||= request.query_parameters.slice(
+        :phrase,
+        :condition,
+        :content,
+      )
     end
   end
 end
