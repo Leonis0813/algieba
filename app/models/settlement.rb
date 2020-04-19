@@ -39,7 +39,7 @@ class Settlement
             allow_nil: true,
             if: -> { aggregation_type == AGGREGATION_TYPE_PERIOD }
   validates :payment_type,
-            inclusion: {in: Payment::PAYMENT_TYPES, message: 'invalid'},
+            inclusion: {in: Payment::PAYMENT_TYPE_LIST, message: 'invalid'},
             allow_nil: true,
             if: -> { aggregation_type == AGGREGATION_TYPE_CATEGORY }
 

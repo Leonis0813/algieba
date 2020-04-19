@@ -1,10 +1,21 @@
 module Api
   class CategoriesController < ApplicationController
     def index
-      query = params.permit(:keyword)
-      @categories = query.empty? ? Category.all : Category.where(name: query[:keyword])
+      @categories = if index_params.empty?
+                      Category.all
+                    else
+                      Category.where(name: index_params[:keyword])
+                    end
 
-      render status: :ok, template: 'categories/categories'
+      render status: :ok
+    end
+
+    private
+
+    def index_params
+      @index_params ||= request.query_parameters.slice(
+        :keyword,
+      )
     end
   end
 end

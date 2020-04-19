@@ -8,7 +8,9 @@ class TagsController < ApplicationController
         value ? tags.send(key, value) : tags
       end
       @tag = Tag.new
-      @tags = @tags.order(:name).page(params[:page]).per(per_page)
+      @tags = @tags.order(:name)
+                   .page(@search_form.page)
+                   .per(@search_form.per_page)
       render status: :ok
     else
       error_codes = @search_form.errors.messages.keys.map {|key| "invalid_param_#{key}" }
@@ -31,14 +33,5 @@ class TagsController < ApplicationController
       :page,
       :per_page,
     )
-  end
-
-  def per_page
-    return @per_page if @per_page
-
-    per_page = index_param[:per_page] || Kaminari.config.default_per_page
-    raise BadRequest, 'invalid_param_per_page' unless per_page.to_s.match?('\A\d*\z')
-
-    @per_page = per_page.to_i
   end
 end
