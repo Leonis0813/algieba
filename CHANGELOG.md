@@ -1,5 +1,6 @@
 # 4.5.2 (2020/04/19)
 - [REFACTOR] models, controllers, and views
+- [UPDATE] gems
 
 # 4.5.1 (2020/04/03)
 - [FIX] confirmation dialog texts for dictionary registration
