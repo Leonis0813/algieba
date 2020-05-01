@@ -11,6 +11,7 @@ $ ->
           $('#' + id).empty()
           $('#' + id).prop('disabled', false)
           return
+        )
         return
     })
     return
