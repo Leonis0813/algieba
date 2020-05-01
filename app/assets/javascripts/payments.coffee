@@ -134,8 +134,6 @@ $ ->
               label: I18n.t('views.management.payments.dialog.dictionary.cancel'),
               className: 'btn-default',
               callback: ->
-                $("#payment_categories").empty()
-                $('#payment_categories').prop('disabled', false)
                 location.reload()
                 return
             },
@@ -155,8 +153,6 @@ $ ->
                   contentType: 'application/json',
                   dataType: 'json',
                 }).always((xhr, status, error) ->
-                  $("#payment_categories").empty()
-                  $('#payment_categories').prop('disabled', false)
                   location.reload()
                   return
                 )
@@ -165,8 +161,6 @@ $ ->
           }
         })
         return
-      $("#payment_categories").empty()
-      $('#payment_categories').prop('disabled', false)
       location.reload()
       return
     )
@@ -175,6 +169,7 @@ $ ->
   $('#new_payment').on 'ajax:error', (event, xhr, status, error) ->
     $("#payment_categories").empty()
     $('#payment_categories').prop('disabled', false)
+    $("#payment_tags").empty()
     $('#payment_tags').prop('disabled', false)
     errorCodes = []
     $.each($.parseJSON(xhr.responseText).errors, (i, error) ->
