@@ -175,6 +175,7 @@ $ ->
   $('#new_payment').on 'ajax:error', (event, xhr, status, error) ->
     $("#payment_categories").empty()
     $('#payment_categories').prop('disabled', false)
+    $('#payment_tags').prop('disabled', false)
     errorCodes = []
     $.each($.parseJSON(xhr.responseText).errors, (i, error) ->
       attribute = error.error_code.match(/^.+_param_(.+)/)[1]
