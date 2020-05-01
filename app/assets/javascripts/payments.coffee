@@ -1,11 +1,17 @@
 $ ->
-  showErrorDialog = (errorCodes)->
+  showErrorDialog = (errorCodes, disabledFormIds = []) ->
     param = {error_codes: errorCodes.join(', ')}
     bootbox.alert({
       title: I18n.t('views.js.form.error.title'),
       message: '<div class="text-center alert alert-danger">' +
       I18n.t('views.js.form.error.message', param) +
       '</div>',
+      callback: () ->
+        $.each(disabledFormIds, (i, id) ->
+          $('#' + id).empty()
+          $('#' + id).prop('disabled', false)
+          return
+        return
     })
     return
 
@@ -167,17 +173,13 @@ $ ->
     return
 
   $('#new_payment').on 'ajax:error', (event, xhr, status, error) ->
-    $("#payment_categories").empty()
-    $('#payment_categories').prop('disabled', false)
-    $("#payment_tags").empty()
-    $('#payment_tags').prop('disabled', false)
     errorCodes = []
     $.each($.parseJSON(xhr.responseText).errors, (i, error) ->
       attribute = error.error_code.match(/^.+_param_(.+)/)[1]
       errorCodes.push(I18n.t("views.management.payments.attribute.#{attribute}"))
       return
     )
-    showErrorDialog(errorCodes)
+    showErrorDialog(errorCodes, ['payment_categories', 'payment_tags'])
     return
 
   $('#btn-payment-search').on 'click', ->
