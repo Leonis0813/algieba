@@ -1,3 +1,6 @@
+# 4.5.4 (2020/05/02)
+- [UPDATE] gems
+
 # 4.5.3 (2020/05/01)
 - [FIX] disabled attribute of payment tag form
 - [UPDATE] gems
