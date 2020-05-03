@@ -55,6 +55,11 @@ form {
   width: 80%;
 }
 
+.form-assign-tag-index {
+  width: 95%;
+  margin-left: auto;
+}
+
 .price-form {
   display: inline;
   width: 40%;
@@ -66,6 +71,10 @@ form {
 
 .btn-submit {
   width: 100%;
+}
+
+#header_checkbox {
+  width: 6%;
 }
 
 #header_payment_type {
@@ -100,4 +109,5 @@ form {
 
 #payment_table {
   table-layout: fixed;
+  padding-left: 0px;
 }

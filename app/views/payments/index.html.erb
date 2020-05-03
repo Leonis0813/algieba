@@ -5,14 +5,13 @@
   <div class='col-lg-4'>
     <ul class='nav nav-tabs'>
       <li class='active'>
-        <a href='#new-payment' data-toggle='tab'>
-          <%= t("#{i18n_path}.form.tab.create") %>
-        </a>
+        <%= link_to t("#{i18n_path}.form.tab.create"), '#new-payment', 'data-toggle' => 'tab' %>
       </li>
       <li>
-        <a href='#search-form' data-toggle='tab'>
-          <%= t("#{i18n_path}.form.tab.index") %>
-        </a>
+        <%= link_to t("#{i18n_path}.form.tab.index"), '#search-form', 'data-toggle' => 'tab' %>
+      </li>
+      <li>
+        <%= link_to t("#{i18n_path}.form.tab.assign_tag"), '#assign-tag-form', 'data-toggle' => 'tab' %>
       </li>
     </ul>
 
@@ -128,6 +127,49 @@
           <%= f.submit t("#{i18n_path}.form.index.submit"), attribute %>
         <% end %>
       </div>
+
+      <div id='assign-tag-form' class='well tab-pane'>
+        <h3>
+          <%= t("#{i18n_path}.form.assign_tag.title") %>
+        </h3>
+
+        <%= label_tag '検索フォーム' %>
+        <div class='form-assign-tag-index'>
+          <div class='form-group'>
+            <%= label_tag :content, t("#{i18n_path}.attribute.content") %>
+            <%= text_field_tag :content, '', :class => 'form-control' %>
+            <% options = {
+                t("#{i18n_path}.form.assign_tag.content.include") => 'include',
+                t("#{i18n_path}.form.assign_tag.content.equal") => 'equal',
+            } %>
+            <% selected_value = @search_form.content_equal ? 'equal' : 'include' %>
+            <%= select_tag :content_type, options_for_select(options, selected_value), :class => 'form-control', :id => 'content-type' %>
+          </div>
+
+          <div class='form-group'>
+            <%= label_tag :category, t("#{i18n_path}.attribute.categories") %><br>
+            <%= text_field_tag :category, '', {:class => 'form-control category-form', :name => 'category'} %>
+            <span class='category-list' data-names='<%= category_names %>'>
+              <%= button_tag(:type => 'button', :class => 'btn btn-default btn-sm') do %>
+                <span class='glyphicon glyphicon-list' />
+              <% end %>
+            </span>
+          </div>
+        </div>
+
+        <div class='form-group'>
+          <%= label_tag :tag, t("#{i18n_path}.attribute.tags") %><br>
+          <%= text_field_tag :tag, '', readonly: true, class: 'form-control tag-form', name: 'tag' %>
+          <span class='tag-list' data-names='<%= tag_names %>'>
+            <%= button_tag(type: 'button', class: 'btn btn-default btn-sm') do %>
+              <span class='glyphicon glyphicon-list' />
+            <% end %>
+          </span>
+        </div>
+
+        <% attribute = {id: 'btn-payment-assign-tag', class: 'btn btn-primary btn-submit'} %>
+        <%= submit_tag t("#{i18n_path}.form.assign_tag.submit"), attribute %>
+      </div>
     </div>
   </div>
 
@@ -152,7 +194,7 @@
     <table id='payment_table' class='table table-hover' style='max-width:300px'>
       <thead>
         <tr>
-          <th width='6%'>
+          <th id='header_checkbox' style='border: none'>
             <input type='checkbox' id='checkbox-all' />
           </th>
           <% %w[payment_type date content categories tags price].each do |attribute| %>

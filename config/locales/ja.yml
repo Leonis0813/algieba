@@ -23,6 +23,7 @@ ja:
           tab:
             create: &create '登録'
             index: &index '検索'
+            assign_tag: 'タグ設定'
           create:
             title: '収支情報を入力してください'
             payment_type:
@@ -42,6 +43,12 @@ ja:
               income: *income
               expense: *expense
             submit: &index_submit '検索'
+          assign_tag:
+            title: '設定する収支情報を選択してください'
+            content:
+              include: *include
+              equal: *equal
+            submit: '設定'
         dialog:
           dictionary:
             submit: '登録'
