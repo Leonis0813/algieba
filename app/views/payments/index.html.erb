@@ -158,8 +158,8 @@
         </div>
 
         <div class='form-group'>
-          <%= label_tag :tag, t("#{i18n_path}.attribute.tags") %><br>
-          <%= text_field_tag :tag, '', readonly: true, class: 'form-control tag-form', name: 'tag' %>
+          <%= label_tag :assigned_tag, t("#{i18n_path}.attribute.tags") %><br>
+          <%= text_field_tag :assigned_tag, '', readonly: true, class: 'form-control tag-form', name: 'tag' %>
           <span class='tag-list' data-names='<%= tag_names %>'>
             <%= button_tag(type: 'button', class: 'btn btn-default btn-sm') do %>
               <span class='glyphicon glyphicon-list' />

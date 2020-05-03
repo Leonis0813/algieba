@@ -216,6 +216,31 @@ $ ->
     )
     return
 
+  $('#btn-payment-assign-tag').on 'click', ->
+    checkedInputs = $('#payment_table > tbody > tr > td.checkbox > input:checked')
+    $.each(checkedInputs, (i, input) ->
+      paymentId = input.closest('tr').id
+      newTagName = $('#assigned_tag').val()
+      $.ajax({
+        url: '/algieba/api/payments/' + paymentId,
+        dataType: 'json',
+      }).done((payment) ->
+        tagNames = $.map(payment.tags, (tag) ->
+          return tag.name
+        )
+        tagNames.push(newTagName)
+        $.ajax({
+          type: 'PUT',
+          url: '/algieba/api/payments/' + paymentId,
+          data: JSON.stringify({tags: tagNames}),
+          contentType: 'application/json',
+          dataType: 'json',
+        })
+        return
+      )
+    )
+    return
+
   $('#per_page_form').on 'submit', ->
     query = location.search.replace(/&?per_page=\d+/, '').substring(1)
     per_page = $('#per_page').val()
@@ -255,6 +280,11 @@ $ ->
     ]
   })
 
+  $('#checkbox-all').on 'change', ->
+    checked = $(@).prop('checked')
+    $('.assign').prop('checked', checked)
+    return
+
   $('.delete').on 'click', ->
     id = $(@).children('button').attr('value')
     bootbox.confirm({
@@ -279,10 +309,5 @@ $ ->
             return
           )
     })
-    return
-
-  $('#checkbox-all').on 'change', ->
-    checked = $(@).prop('checked')
-    $('.assign').prop('checked', checked)
     return
   return
