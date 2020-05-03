@@ -1,4 +1,19 @@
-$ ->
+ $ ->
+  showCategoryPrompt = (button, callback) ->
+    categories = $.map(button.data('names'), (value) ->
+      return {text: value, value: value}
+    )
+    categoryForm = button.parent().find('.category-form')
+    bootbox.prompt({
+      title: I18n.t('views.js.category-list.title'),
+      inputType: 'checkbox',
+      inputOptions: categories,
+      callback: (results) ->
+        callback(categoryForm, results)
+        return
+    })
+    return
+
   showErrorDialog = (errorCodes, disabledFormIds = []) ->
     param = {error_codes: errorCodes.join(', ')}
     bootbox.alert({
@@ -51,19 +66,11 @@ $ ->
     return
 
   $('.category-list').on 'click', ->
-    categories = $.map($(@).data('names'), (value) ->
-      return {text: value, value: value}
+    showCategoryPrompt($(@), (categoryForm, results) ->
+      if results
+        categoryForm.val(results.join(','))
+        return
     )
-    category_form = $(@).parent().find('.category-form')
-    bootbox.prompt({
-      title: I18n.t('views.js.category-list.title'),
-      inputType: 'checkbox',
-      inputOptions: categories,
-      callback: (results) ->
-        if results
-          category_form.val(results.join(','))
-          return
-    })
     return
 
   $('.tag-list').on 'click', ->
@@ -216,8 +223,56 @@ $ ->
     )
     return
 
+  $('#assign_tag_index_content').on 'input', ->
+    data = {}
+    categoryNames = $('#assign_tag_index_category').val()
+    if categoryNames != ''
+      data['category'] = categoryNames
+    if $(@).val() != ''
+      data['content_' + $('#content-type').val()] = $(@).val()
+    $.ajax({
+      url: '/algieba/management/payments',
+      data: data,
+      dataType: 'script',
+    })
+    return
+
+  $('#assign_tag_index_content_type').on 'change', ->
+    data = {}
+    categoryNames = $('#assign_tag_index_category').val()
+    if categoryNames != ''
+      data['category'] = categoryNames
+    if $('#assign_tag_index_content').val() != ''
+      data['content_' + $(@).val()] = $('#assign_tag_index_content').val()
+    $.ajax({
+      url: '/algieba/management/payments',
+      data: data,
+      dataType: 'script',
+    })
+    return
+
+  $('#btn-category-list').on 'click', ->
+    showCategoryPrompt($(@), (categoryForm, results) ->
+      if results
+        categoryForm.val(results.join(','))
+        data = {}
+        unless $.isEmptyObject(results)
+          data['category'] = $('#assign_tag_index_category').val()
+        if $('#assign_tag_index_content').val() != ''
+          data['content_' + $('#content-type').val()] = $('#assign_tag_index_content').val()
+        $.ajax({
+          url: '/algieba/management/payments',
+          data: data,
+          dataType: 'script',
+        })
+        return
+    )
+    return
+
   $('#btn-payment-assign-tag').on 'click', ->
     checkedInputs = $('#payment_table > tbody > tr > td.checkbox > input:checked')
+    done = []
+    fail = []
     $.each(checkedInputs, (i, input) ->
       paymentId = input.closest('tr').id
       newTagName = $('#assigned_tag').val()
@@ -235,7 +290,15 @@ $ ->
           data: JSON.stringify({tags: tagNames}),
           contentType: 'application/json',
           dataType: 'json',
-        })
+        }).done((payment) ->
+          done.push(paymentId)
+          if done.length + fail.length == checkedInputs.length
+            location.reload()
+        ).fail((xhr, status, error) ->
+          fail.push(paymentId)
+          if done.length + fail.length == checkedInputs.length
+            location.reload()
+        )
         return
       )
     )

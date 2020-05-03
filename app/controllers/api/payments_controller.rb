@@ -48,7 +48,13 @@ module Api
         end
       end
 
-      if request_payment.update(update_params.except(:categories))
+      if update_params[:tags]
+        request_payment.tags = update_params[:tags].map do |tag_name|
+          Tag.find_or_create_by(name: tag_name)
+        end
+      end
+
+      if request_payment.update(update_params.except(:categories, :tags))
         @payment = request_payment.reload
         render status: :ok
       else

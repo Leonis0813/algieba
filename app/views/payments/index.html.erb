@@ -136,21 +136,21 @@
         <%= label_tag '検索フォーム' %>
         <div class='form-assign-tag-index'>
           <div class='form-group'>
-            <%= label_tag :content, t("#{i18n_path}.attribute.content") %>
-            <%= text_field_tag :content, '', :class => 'form-control' %>
+            <%= label_tag :assign_tag_index_content, t("#{i18n_path}.attribute.content") %>
+            <%= text_field_tag :assign_tag_index_content, '', :class => 'form-control' %>
             <% options = {
                 t("#{i18n_path}.form.assign_tag.content.include") => 'include',
                 t("#{i18n_path}.form.assign_tag.content.equal") => 'equal',
             } %>
             <% selected_value = @search_form.content_equal ? 'equal' : 'include' %>
-            <%= select_tag :content_type, options_for_select(options, selected_value), :class => 'form-control', :id => 'content-type' %>
+            <%= select_tag :assign_tag_index_content_type, options_for_select(options, selected_value), :class => 'form-control' %>
           </div>
 
           <div class='form-group'>
-            <%= label_tag :category, t("#{i18n_path}.attribute.categories") %><br>
-            <%= text_field_tag :category, '', {:class => 'form-control category-form', :name => 'category'} %>
-            <span class='category-list' data-names='<%= category_names %>'>
-              <%= button_tag(:type => 'button', :class => 'btn btn-default btn-sm') do %>
+            <%= label_tag :assign_tag_index_category, t("#{i18n_path}.attribute.categories") %><br>
+            <%= text_field_tag :assign_tag_index_category, '', readonly: true, class: 'form-control category-form', name: 'category' %>
+            <span id='btn-category-list' data-names='<%= category_names %>'>
+              <%= button_tag(type: 'button', class: 'btn btn-default btn-sm') do %>
                 <span class='glyphicon glyphicon-list' />
               <% end %>
             </span>

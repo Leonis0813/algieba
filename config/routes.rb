@@ -16,7 +16,7 @@ Rails.application.routes.draw do
 
   scope :management do
     get '/', to: redirect(top)
-    resources :payments, only: %i[index], format: 'html'
+    resources :payments, only: %i[index]
     resources :categories, only: %i[index], format: 'html'
     resources :dictionaries, only: %i[index], format: 'html'
     resources :tags, only: %i[index], format: 'html'
