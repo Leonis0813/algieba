@@ -246,11 +246,11 @@ $ ->
     paging: false,
     info: false,
     filter: false,
-    order: [[1, "desc"]],
+    order: [[2, "desc"]],
     columnDefs: [
       {
-        "targets": [0, 6],
-        "sorting": false,
+        "targets": [0, 1, 7],
+        "orderable": false,
       },
     ]
   })
@@ -279,5 +279,10 @@ $ ->
             return
           )
     })
+    return
+
+  $('#checkbox-all').on 'change', ->
+    checked = $(@).prop('checked')
+    $('.assign').prop('checked', checked)
     return
   return

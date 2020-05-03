@@ -68,16 +68,16 @@ form {
   width: 100%;
 }
 
-#header_payment_type, #header_price{
+#header_payment_type {
   width: 10%;
 }
 
 #header_date {
-  width: 15%;
+  width: 13%;
 }
 
 #header_content {
-  width: 35%;
+  width: 24%;
 }
 
 #header_categories {
@@ -85,7 +85,11 @@ form {
 }
 
 #header_tags {
-  width: 15%;
+  width: 20%;
+}
+
+#header_price {
+  width: 12%;
 }
 
 .content, .categories {

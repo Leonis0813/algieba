@@ -152,6 +152,9 @@
     <table id='payment_table' class='table table-hover' style='max-width:300px'>
       <thead>
         <tr>
+          <th width='6%'>
+            <input type='checkbox' id='checkbox-all' />
+          </th>
           <% %w[payment_type date content categories tags price].each do |attribute| %>
             <th id='<%= "header_#{attribute}" %>'>
               <%= t("#{i18n_path}.attribute.#{attribute}") %>
