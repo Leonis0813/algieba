@@ -139,7 +139,7 @@ describe '収支管理画面のテスト', type: :request do
         @wait.until do
           res =
             @driver.find_element(:xpath, '//div/button[text()="OK"]').click rescue false
-          res.nil? ? true : false
+          res.nil?
         end
       end
 
