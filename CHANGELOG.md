@@ -1,3 +1,7 @@
+# 4.6.0 (2020/05/09)
+- [UPDATE] payment view to add tag assignment button
+- [REMOVE] API to assign tag
+
 # 4.5.3 (2020/05/01)
 - [FIX] disabled attribute of payment tag form
 - [UPDATE] gems
