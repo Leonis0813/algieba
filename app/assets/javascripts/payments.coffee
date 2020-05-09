@@ -1,19 +1,4 @@
 $ ->
-  showCategoryPrompt = (button, callback) ->
-    categories = $.map(button.data('names'), (value) ->
-      return {text: value, value: value}
-    )
-    categoryForm = button.parent().find('.category-form')
-    bootbox.prompt({
-      title: I18n.t('views.js.category-list.title'),
-      inputType: 'checkbox',
-      inputOptions: categories,
-      callback: (results) ->
-        callback(categoryForm, results)
-        return
-    })
-    return
-
   showErrorDialog = (errorCodes, disabledFormIds = []) ->
     param = {error_codes: errorCodes.join(', ')}
     bootbox.alert({
@@ -66,11 +51,19 @@ $ ->
     return
 
   $('.category-list').on 'click', ->
-    showCategoryPrompt($(@), (categoryForm, results) ->
-      if results
-        categoryForm.val(results.join(','))
-        return
+    categories = $.map($(@).data('names'), (value) ->
+      return {text: value, value: value}
     )
+    category_form = $(@).parent().find('.category-form')
+    bootbox.prompt({
+      title: I18n.t('views.js.category-list.title'),
+      inputType: 'checkbox',
+      inputOptions: categories,
+      callback: (results) ->
+        if results
+          category_form.val(results.join(','))
+          return
+    })
     return
 
   $('.tag-list').on 'click', ->
