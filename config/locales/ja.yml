@@ -110,13 +110,19 @@ ja:
         title: 'タグを選択してください'
       form:
         error:
-          title: 'エラー'
+          title: &title 'エラー'
           message: "%{error_codes} が不正です"
       pagination:
         error:
-          title: 'エラー'
+          title: *title
           message: '表示件数には数値を入力してください'
       delete:
         message: '本当に削除しますか？'
         confirm: 'はい'
         cancel: 'いいえ'
+      tag:
+        prompt:
+          title: '設定するタグを選択してください'
+        error:
+          title: *title
+          message: '収支情報が選択されていません'

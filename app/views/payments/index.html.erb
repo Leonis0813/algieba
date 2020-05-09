@@ -10,9 +10,6 @@
       <li>
         <%= link_to t("#{i18n_path}.form.tab.index"), '#search-form', 'data-toggle' => 'tab' %>
       </li>
-      <li>
-        <%= link_to t("#{i18n_path}.form.tab.assign_tag"), '#assign-tag-form', 'data-toggle' => 'tab' %>
-      </li>
     </ul>
 
     <div class='tab-content'>
@@ -127,49 +124,6 @@
           <%= f.submit t("#{i18n_path}.form.index.submit"), attribute %>
         <% end %>
       </div>
-
-      <div id='assign-tag-form' class='well tab-pane'>
-        <h3>
-          <%= t("#{i18n_path}.form.assign_tag.title") %>
-        </h3>
-
-        <%= label_tag '検索フォーム' %>
-        <div class='form-assign-tag-index'>
-          <div class='form-group'>
-            <%= label_tag :assign_tag_index_content, t("#{i18n_path}.attribute.content") %>
-            <%= text_field_tag :assign_tag_index_content, '', :class => 'form-control' %>
-            <% options = {
-                t("#{i18n_path}.form.assign_tag.content.include") => 'include',
-                t("#{i18n_path}.form.assign_tag.content.equal") => 'equal',
-            } %>
-            <% selected_value = @search_form.content_equal ? 'equal' : 'include' %>
-            <%= select_tag :assign_tag_index_content_type, options_for_select(options, selected_value), :class => 'form-control' %>
-          </div>
-
-          <div class='form-group'>
-            <%= label_tag :assign_tag_index_category, t("#{i18n_path}.attribute.categories") %><br>
-            <%= text_field_tag :assign_tag_index_category, '', readonly: true, class: 'form-control category-form', name: 'category' %>
-            <span id='btn-category-list' data-names='<%= category_names %>'>
-              <%= button_tag(type: 'button', class: 'btn btn-default btn-sm') do %>
-                <span class='glyphicon glyphicon-list' />
-              <% end %>
-            </span>
-          </div>
-        </div>
-
-        <div class='form-group'>
-          <%= label_tag :assigned_tag, t("#{i18n_path}.attribute.tags") %><br>
-          <%= text_field_tag :assigned_tag, '', readonly: true, class: 'form-control tag-form', name: 'tag' %>
-          <span class='tag-list' data-names='<%= tag_names %>'>
-            <%= button_tag(type: 'button', class: 'btn btn-default btn-sm') do %>
-              <span class='glyphicon glyphicon-list' />
-            <% end %>
-          </span>
-        </div>
-
-        <% attribute = {id: 'btn-payment-assign-tag', class: 'btn btn-primary btn-submit'} %>
-        <%= submit_tag t("#{i18n_path}.form.assign_tag.submit"), attribute %>
-      </div>
     </div>
   </div>
 
@@ -183,6 +137,9 @@
       <h4 style='padding: 0px 10px;display: inline'>
         <%= t('views.management.common.pagination.info', info) %>
       </h4>
+      <button id='btn-assign-tag' class='btn btn-default pull-right' data-names='<%= tag_names %>'>
+        <span class='glyphicon glyphicon-tag'>
+      </button>
       <form style='padding: 0px 10px;display: inline' id='per_page_form' class='form-inline pull-right' onSubmit='return false;'>
         <label for='per_page'>
           <%= t('views.management.common.pagination.label') %>

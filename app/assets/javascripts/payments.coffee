@@ -1,4 +1,4 @@
- $ ->
+$ ->
   showCategoryPrompt = (button, callback) ->
     categories = $.map(button.data('names'), (value) ->
       return {text: value, value: value}
@@ -223,85 +223,59 @@
     )
     return
 
-  $('#assign_tag_index_content').on 'input', ->
-    data = {}
-    categoryNames = $('#assign_tag_index_category').val()
-    if categoryNames != ''
-      data['category'] = categoryNames
-    if $(@).val() != ''
-      data['content_' + $('#content-type').val()] = $(@).val()
-    $.ajax({
-      url: '/algieba/management/payments',
-      data: data,
-      dataType: 'script',
-    })
-    return
+  $('#btn-assign-tag').on 'click', ->
+    checkedInputs = $('td.checkbox > input:checked')
+    if checkedInputs.length == 0
+      bootbox.alert({
+        title: I18n.t('views.js.tag.error.title'),
+        message: '<div class="text-center alert alert-danger">' +
+        I18n.t('views.js.tag.error.message') +
+        '</div>',
+      })
+      return
 
-  $('#assign_tag_index_content_type').on 'change', ->
-    data = {}
-    categoryNames = $('#assign_tag_index_category').val()
-    if categoryNames != ''
-      data['category'] = categoryNames
-    if $('#assign_tag_index_content').val() != ''
-      data['content_' + $(@).val()] = $('#assign_tag_index_content').val()
-    $.ajax({
-      url: '/algieba/management/payments',
-      data: data,
-      dataType: 'script',
-    })
-    return
-
-  $('#btn-category-list').on 'click', ->
-    showCategoryPrompt($(@), (categoryForm, results) ->
-      if results
-        categoryForm.val(results.join(','))
-        data = {}
-        unless $.isEmptyObject(results)
-          data['category'] = $('#assign_tag_index_category').val()
-        if $('#assign_tag_index_content').val() != ''
-          data['content_' + $('#content-type').val()] = $('#assign_tag_index_content').val()
-        $.ajax({
-          url: '/algieba/management/payments',
-          data: data,
-          dataType: 'script',
-        })
-        return
+    tags = $.map($(@).data('names'), (value) ->
+      return {text: value, value: value}
     )
-    return
-
-  $('#btn-payment-assign-tag').on 'click', ->
-    checkedInputs = $('#payment_table > tbody > tr > td.checkbox > input:checked')
-    done = []
-    fail = []
-    $.each(checkedInputs, (i, input) ->
-      paymentId = input.closest('tr').id
-      newTagName = $('#assigned_tag').val()
-      $.ajax({
-        url: '/algieba/api/payments/' + paymentId,
-        dataType: 'json',
-      }).done((payment) ->
-        tagNames = $.map(payment.tags, (tag) ->
-          return tag.name
-        )
-        tagNames.push(newTagName)
-        $.ajax({
-          type: 'PUT',
-          url: '/algieba/api/payments/' + paymentId,
-          data: JSON.stringify({tags: tagNames}),
-          contentType: 'application/json',
-          dataType: 'json',
-        }).done((payment) ->
-          done.push(paymentId)
-          if done.length + fail.length == checkedInputs.length
-            location.reload()
-        ).fail((xhr, status, error) ->
-          fail.push(paymentId)
-          if done.length + fail.length == checkedInputs.length
-            location.reload()
+    bootbox.prompt({
+      title: I18n.t('views.js.tag.prompt.title'),
+      inputType: 'select',
+      inputOptions: tags,
+      callback: (newTagName) ->
+        if newTagName == null
+          return
+        done = []
+        fail = []
+        $.each(checkedInputs, (i, input) ->
+          paymentId = input.closest('tr').id
+          $.ajax({
+            url: '/algieba/api/payments/' + paymentId,
+            dataType: 'json',
+          }).done((payment) ->
+            tagNames = $.map(payment.tags, (tag) ->
+              return tag.name
+            )
+            tagNames.push(newTagName)
+            $.ajax({
+              type: 'PUT',
+              url: '/algieba/api/payments/' + paymentId,
+              data: JSON.stringify({tags: tagNames}),
+              contentType: 'application/json',
+              dataType: 'json',
+            }).done((payment) ->
+              done.push(paymentId)
+              if done.length + fail.length == checkedInputs.length
+                location.reload()
+            ).fail((xhr, status, error) ->
+              fail.push(paymentId)
+              if done.length + fail.length == checkedInputs.length
+                location.reload()
+            )
+            return
+          )
         )
         return
-      )
-    )
+    })
     return
 
   $('#per_page_form').on 'submit', ->
