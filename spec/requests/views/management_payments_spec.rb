@@ -6,6 +6,7 @@ describe '収支管理画面のテスト', type: :request do
   now = Time.now.to_i
   new_phrase = "test at #{now}"
   new_category = "新カテゴリ_#{now}"
+  tag_name = SecureRandom.hex(5)
   per_page = Kaminari.config.default_per_page
   default_inputs = {
     date: '1000-01-01',
@@ -109,6 +110,8 @@ describe '収支管理画面のテスト', type: :request do
     end
   end
 
+  include_context 'タグ情報を作成する', {name: tag_name}
+
   after(:all) { delete_payments }
 
   include_context 'Webdriverを起動する'
@@ -136,7 +139,7 @@ describe '収支管理画面のテスト', type: :request do
         @wait.until do
           res =
             @driver.find_element(:xpath, '//div/button[text()="OK"]').click rescue false
-          res.nil? ? true : false
+          res.nil?
         end
       end
 
@@ -360,6 +363,45 @@ describe '収支管理画面のテスト', type: :request do
       it_behaves_like 'フォームに値がセットされていること',
                       name: 'price_lower', value: '10000'
       it_behaves_like 'フォームに値がセットされていること', name: 'per_page', value: '20'
+    end
+
+    describe 'タグを設定する' do
+      before(:all) do
+        @wait.until do
+          res = @driver.find_element(:id, 'checkbox-all').click rescue false
+          res.nil? ? true : false
+        end
+
+        @wait.until do
+          res = @driver.find_element(:id, 'btn-assign-tag').click rescue false
+          res.nil? ? true : false
+        end
+
+        xpath = '//form[@class="bootbox-form"]/select'
+        @wait.until do
+          res = @driver.find_element(:xpath, xpath).click rescue false
+          res.nil? ? true : false
+        end
+
+        xpath += "/option[@value='#{tag_name}']"
+        @wait.until do
+          res = @driver.find_element(:xpath, xpath).click rescue false
+          res.nil? ? true : false
+        end
+
+        xpath = '//button[@data-bb-handler="confirm"]'
+        @wait.until do
+          res = @driver.find_element(:xpath, xpath).click rescue false
+          res.nil? ? true : false
+        end
+      end
+
+      it 'タグが設定されていること' do
+        @wait.until do
+          tds = @driver.find_elements(:xpath, '//td[contains(@class, "tag")]')
+          tds.all? {|td| td.attribute('title').include?(tag_name) } rescue false
+        end
+      end
     end
   end
 end

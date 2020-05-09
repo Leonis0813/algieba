@@ -216,6 +216,61 @@ $ ->
     )
     return
 
+  $('#btn-assign-tag').on 'click', ->
+    checkedInputs = $('td.checkbox > input:checked')
+    if checkedInputs.length == 0
+      bootbox.alert({
+        title: I18n.t('views.js.tag.error.title'),
+        message: '<div class="text-center alert alert-danger">' +
+        I18n.t('views.js.tag.error.message') +
+        '</div>',
+      })
+      return
+
+    tags = $.map($(@).data('names'), (value) ->
+      return {text: value, value: value}
+    )
+    bootbox.prompt({
+      title: I18n.t('views.js.tag.prompt.title'),
+      inputType: 'select',
+      inputOptions: tags,
+      callback: (newTagName) ->
+        if newTagName == null
+          return
+        done = []
+        fail = []
+        $.each(checkedInputs, (i, input) ->
+          paymentId = input.closest('tr').id
+          $.ajax({
+            url: '/algieba/api/payments/' + paymentId,
+            dataType: 'json',
+          }).done((payment) ->
+            tagNames = $.map(payment.tags, (tag) ->
+              return tag.name
+            )
+            tagNames.push(newTagName)
+            $.ajax({
+              type: 'PUT',
+              url: '/algieba/api/payments/' + paymentId,
+              data: JSON.stringify({tags: tagNames}),
+              contentType: 'application/json',
+              dataType: 'json',
+            }).done((payment) ->
+              done.push(paymentId)
+              if done.length + fail.length == checkedInputs.length
+                location.reload()
+            ).fail((xhr, status, error) ->
+              fail.push(paymentId)
+              if done.length + fail.length == checkedInputs.length
+                location.reload()
+            )
+            return
+          )
+        )
+        return
+    })
+    return
+
   $('#per_page_form').on 'submit', ->
     query = location.search.replace(/&?per_page=\d+/, '').substring(1)
     per_page = $('#per_page').val()
@@ -246,14 +301,19 @@ $ ->
     paging: false,
     info: false,
     filter: false,
-    order: [[1, "desc"]],
+    order: [[2, "desc"]],
     columnDefs: [
       {
-        "targets": [0, 6],
-        "sorting": false,
+        "targets": [0, 1, 7],
+        "orderable": false,
       },
     ]
   })
+
+  $('#checkbox-all').on 'change', ->
+    checked = $(@).prop('checked')
+    $('.assign').prop('checked', checked)
+    return
 
   $('.delete').on 'click', ->
     id = $(@).children('button').attr('value')

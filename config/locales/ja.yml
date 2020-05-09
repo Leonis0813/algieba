@@ -23,6 +23,7 @@ ja:
           tab:
             create: &create '登録'
             index: &index '検索'
+            assign_tag: 'タグ設定'
           create:
             title: '収支情報を入力してください'
             payment_type:
@@ -42,6 +43,12 @@ ja:
               income: *income
               expense: *expense
             submit: &index_submit '検索'
+          assign_tag:
+            title: '設定する収支情報を選択してください'
+            content:
+              include: *include
+              equal: *equal
+            submit: '設定'
         dialog:
           dictionary:
             submit: '登録'
@@ -103,13 +110,19 @@ ja:
         title: 'タグを選択してください'
       form:
         error:
-          title: 'エラー'
+          title: &title 'エラー'
           message: "%{error_codes} が不正です"
       pagination:
         error:
-          title: 'エラー'
+          title: *title
           message: '表示件数には数値を入力してください'
       delete:
         message: '本当に削除しますか？'
         confirm: 'はい'
         cancel: 'いいえ'
+      tag:
+        prompt:
+          title: '設定するタグを選択してください'
+        error:
+          title: *title
+          message: '収支情報が選択されていません'
