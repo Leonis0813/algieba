@@ -11,16 +11,6 @@ describe 'タグ情報APIのテスト', type: :request do
     price: 100,
   }
 
-  shared_context 'タグを収支情報に設定する' do
-    before(:all) do
-      url = "#{base_url}/api/tags/#{@tag_id}/payments"
-      header = app_auth_header.merge(content_type_json)
-      res = http_client.post(url, @body.to_json, header)
-      @response_status = res.status
-      @response_body = JSON.parse(res.body) rescue res.body
-    end
-  end
-
   shared_examples 'タグ情報作成時のレスポンスが正しいこと' do |expected_body|
     it_behaves_like 'ステータスコードが正しいこと', 201
 
@@ -48,11 +38,5 @@ describe 'タグ情報APIのテスト', type: :request do
     include_context 'タグ情報を作成する', body
     before(:all) { @tag_id = @response_body['tag_id'] }
     it_behaves_like 'タグ情報作成時のレスポンスが正しいこと', body
-
-    describe 'タグを収支情報に設定する' do
-      before(:all) { @body = {payment_ids: @payment_ids} }
-      include_context 'タグを収支情報に設定する'
-      it_behaves_like 'レスポンスが正しいこと', body: ''
-    end
   end
 end
