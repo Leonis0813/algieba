@@ -34,6 +34,15 @@ shared_context 'カテゴリ情報を検索する' do |query|
   end
 end
 
+shared_context 'タグ情報を作成する' do |body|
+  before(:all) do
+    header = app_auth_header.merge(content_type_json)
+    res = http_client.post("#{base_url}/api/tags", body.to_json, header)
+    @response_status = res.status
+    @response_body = JSON.parse(res.body) rescue res.body
+  end
+end
+
 shared_context 'Webdriverを起動する' do
   before(:all) do
     @driver ||= Selenium::WebDriver.for :firefox

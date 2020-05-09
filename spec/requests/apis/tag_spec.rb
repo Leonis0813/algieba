@@ -11,15 +11,6 @@ describe 'タグ情報APIのテスト', type: :request do
     price: 100,
   }
 
-  shared_context 'タグ情報を作成する' do |body|
-    before(:all) do
-      header = app_auth_header.merge(content_type_json)
-      res = http_client.post("#{base_url}/api/tags", body.to_json, header)
-      @response_status = res.status
-      @response_body = JSON.parse(res.body) rescue res.body
-    end
-  end
-
   shared_context 'タグを収支情報に設定する' do
     before(:all) do
       url = "#{base_url}/api/tags/#{@tag_id}/payments"
