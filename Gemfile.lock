@@ -42,7 +42,7 @@ GEM
       public_suffix (>= 2.0.2, < 5.0)
     arel (7.1.4)
     ast (2.4.0)
-    better_html (1.0.14)
+    better_html (1.0.15)
       actionview (>= 4.0)
       activesupport (>= 4.0)
       ast (~> 2.0)
