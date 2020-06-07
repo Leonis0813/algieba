@@ -14,7 +14,7 @@ module Api
       if @payment.save
         render status: :created
       else
-        raise BadRequest, @payment
+        raise BadRequest, @payment, 'payment'
       end
     end
 
@@ -32,8 +32,7 @@ module Api
         end.order(query.sort => query.order).page(query.page).per(query.per_page)
         render status: :ok
       else
-        error_codes = query.errors.messages.keys.map {|key| "invalid_param_#{key}" }
-        raise BadRequest, error_codes
+        raise BadRequest, query.errors.messages
       end
     end
 
@@ -54,10 +53,7 @@ module Api
         @payment = request_payment.reload
         render status: :ok
       else
-        error_codes = request_payment.errors.messages.keys.map do |key|
-          "invalid_param_#{key}"
-        end
-        raise BadRequest, error_codes
+        raise BadRequest, request_payment.errors.messages, 'payment'
       end
     end
 

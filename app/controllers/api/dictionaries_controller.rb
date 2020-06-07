@@ -9,7 +9,7 @@ module Api
       if @dictionary.save
         render status: :created
       else
-        raise BadRequest, @dictionary
+        raise BadRequest, @dictionary, 'dictionary'
       end
     end
 

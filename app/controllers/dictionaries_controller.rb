@@ -11,8 +11,7 @@ class DictionariesController < ApplicationController
 
       render status: :ok
     else
-      error_codes = @search_form.errors.messages.keys.map {|key| "invalid_param_#{key}" }
-      raise BadRequest, error_codes
+      raise BadRequest, @search_form.errors.messages
     end
   end
 

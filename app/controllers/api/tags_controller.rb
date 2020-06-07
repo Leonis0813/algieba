@@ -6,7 +6,7 @@ module Api
       if @tag.save
         render status: :created
       else
-        raise BadRequest, @tag
+        raise BadRequest, @tag.errors.messages, 'tag'
       end
     end
 
