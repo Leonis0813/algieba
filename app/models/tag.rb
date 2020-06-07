@@ -10,6 +10,8 @@ class Tag < ApplicationRecord
   validates :name,
             length: {maximum: 10, message: MESSAGE_INVALID},
             allow_nil: true
+  validates :tag_id, :name,
+            uniqueness: {message: MESSAGE_DUPLICATED}
 
   scope :name_include, ->(name) { where('name REGEXP ?', ".*#{name}.*") }
 

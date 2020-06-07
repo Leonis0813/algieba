@@ -12,6 +12,10 @@ class Dictionary < ApplicationRecord
   validates :condition,
             inclusion: {in: CONDITION_LIST, message: MESSAGE_INVALID},
             allow_nil: true
+  validates :dictionary_id,
+            uniqueness: {message: MESSAGE_DUPLICATED}
+  validates :phrase,
+            uniqueness: {scope: 'condition', message: MESSAGE_DUPLICATED}
 
   scope :phrase_include, ->(phrase) { where('phrase REGEXP ?', ".*#{phrase}.*") }
 

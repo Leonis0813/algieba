@@ -27,6 +27,8 @@ class Payment < ApplicationRecord
               message: MESSAGE_INVALID,
             },
             allow_nil: true
+  validates :payment_id,
+            uniqueness: {message: MESSAGE_DUPLICATED}
 
   scope :payment_type, ->(payment_type) { where(payment_type: payment_type) }
   scope :date_before, ->(date) { where('date <= ?', date) }
