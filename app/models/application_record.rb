@@ -5,4 +5,5 @@ class ApplicationRecord < ActiveRecord::Base
   MESSAGE_ABSENT = 'absent_parameter'.freeze
   MESSAGE_INVALID = 'invalid_parameter'.freeze
   MESSAGE_DUPLICATED = 'duplicated_resource'.freeze
+  MESSAGE_SAME_VALUE = 'include_same_value'.freeze
 end
