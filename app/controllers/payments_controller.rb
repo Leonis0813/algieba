@@ -2,20 +2,18 @@ class PaymentsController < ApplicationController
   def index
     attribute = {per_page: Kaminari.config.default_per_page}.merge(index_param)
     @search_form = PaymentQuery.new(attribute)
+    raise BadRequest, @search_form.errors.messages unless @search_form.valid?
 
-    if @search_form.valid?
-      @payments = scope_param.keys.inject(Payment.all) do |payments, key|
-        value = @search_form.send(key)
-        value ? payments.send(key, value) : payments
-      end
-      @payment = Payment.new
-      @payments = @payments.order(date: :desc)
-                           .page(@search_form.page)
-                           .per(@search_form.per_page)
-      render status: :ok
-    else
-      raise BadRequest, @search_form.errors.messages
+    @payment = Payment.new
+    @payments = scope_param.keys.inject(Payment.all) do |payments, key|
+      value = @search_form.send(key)
+      value ? payments.send(key, value) : payments
     end
+    @payments = @payments.order(date: :desc)
+                         .page(@search_form.page)
+                         .per(@search_form.per_page)
+
+    render status: :ok
   end
 
   private

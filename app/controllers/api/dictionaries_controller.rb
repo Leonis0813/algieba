@@ -6,11 +6,9 @@ module Api
         Category.find_or_initialize_by(name: name)
       end
 
-      if @dictionary.save
-        render status: :created
-      else
-        raise BadRequest, @dictionary, 'dictionary'
-      end
+      raise BadRequest, @dictionary.error.messages, 'dictionary' unless @dictionary.save
+
+      render status: :created
     end
 
     def index

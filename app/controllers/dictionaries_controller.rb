@@ -1,18 +1,15 @@
 class DictionariesController < ApplicationController
   def index
     @search_form = DictionaryQuery.new(index_param)
+    raise BadRequest, @search_form.errors.messages unless @search_form.valid?
 
-    if @search_form.valid?
-      @dictionaries = scope_param.keys.inject(Dictionary.all) do |dictionaries, key|
-        value = @search_form.send(key)
-        value ? dictionaries.send(key, value) : dictionaries
-      end.order(:phrase).page(@search_form.page).per(@search_form.per_page)
-      @dictionary = Dictionary.new
+    @dictionary = Dictionary.new
+    @dictionaries = scope_param.keys.inject(Dictionary.all) do |dictionaries, key|
+      value = @search_form.send(key)
+      value ? dictionaries.send(key, value) : dictionaries
+    end.order(:phrase).page(@search_form.page).per(@search_form.per_page)
 
-      render status: :ok
-    else
-      raise BadRequest, @search_form.errors.messages
-    end
+    render status: :ok
   end
 
   private

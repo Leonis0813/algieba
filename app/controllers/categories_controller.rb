@@ -1,17 +1,14 @@
 class CategoriesController < ApplicationController
   def index
     @search_form = CategoryQuery.new(index_param)
+    raise BadRequest, @search_form.errors.messages unless @search_form.valid?
 
-    if @search_form.valid?
-      @categories = scope_param.keys.inject(Category.all) do |categories, key|
-        value = @search_form.send(key)
-        value ? categories.send(key, value) : categories
-      end.order(:name).page(@search_form.page).per(@search_form.per_page)
+    @categories = scope_param.keys.inject(Category.all) do |categories, key|
+      value = @search_form.send(key)
+      value ? categories.send(key, value) : categories
+    end.order(:name).page(@search_form.page).per(@search_form.per_page)
 
-      render status: :ok
-    else
-      raise BadRequest, @search_form.errors.messages
-    end
+    render status: :ok
   end
 
   private

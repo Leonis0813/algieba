@@ -1,20 +1,18 @@
 class TagsController < ApplicationController
   def index
     @search_form = TagQuery.new(index_param)
+    raise BadRequest, @search_form.errors.messages unless @search_form.valid?
 
-    if @search_form.valid?
-      @tags = scope_param.keys.inject(Tag.all) do |tags, key|
-        value = @search_form.send(key)
-        value ? tags.send(key, value) : tags
-      end
-      @tag = Tag.new
-      @tags = @tags.order(:name)
-                   .page(@search_form.page)
-                   .per(@search_form.per_page)
-      render status: :ok
-    else
-      raise BadRequest, @search_form.errors.messages
+    @tag = Tag.new
+    @tags = scope_param.keys.inject(Tag.all) do |tags, key|
+      value = @search_form.send(key)
+      value ? tags.send(key, value) : tags
     end
+    @tags = @tags.order(:name)
+                 .page(@search_form.page)
+                 .per(@search_form.per_page)
+
+    render status: :ok
   end
 
   private

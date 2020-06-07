@@ -11,11 +11,9 @@ module Api
         Tag.find_or_initialize_by(name: name)
       end
 
-      if @payment.save
-        render status: :created
-      else
-        raise BadRequest, @payment, 'payment'
-      end
+      raise BadRequest, @payment.errors.messages, 'payment' unless @payment.save
+
+      render status: :created
     end
 
     def show
@@ -25,15 +23,13 @@ module Api
 
     def index
       query = PaymentQuery.new(index_params)
-      if query.valid?
-        @payments = scope_params.keys.inject(Payment.all) do |payments, key|
-          value = query.send(key)
-          value ? payments.send(key, value) : payments
-        end.order(query.sort => query.order).page(query.page).per(query.per_page)
-        render status: :ok
-      else
-        raise BadRequest, query.errors.messages
-      end
+      raise BadRequest, query.errors.messages unless query.valid?
+
+      @payments = scope_params.keys.inject(Payment.all) do |payments, key|
+        value = query.send(key)
+        value ? payments.send(key, value) : payments
+      end.order(query.sort => query.order).page(query.page).per(query.per_page)
+      render status: :ok
     end
 
     def update
@@ -49,12 +45,12 @@ module Api
         end
       end
 
-      if request_payment.update(update_params.except(:categories, :tags))
-        @payment = request_payment.reload
-        render status: :ok
-      else
+      unless request_payment.update(update_params.except(:categories, :tags))
         raise BadRequest, request_payment.errors.messages, 'payment'
       end
+
+      @payment = request_payment.reload
+      render status: :ok
     end
 
     def destroy
