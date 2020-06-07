@@ -5,12 +5,12 @@ class Dictionary < ApplicationRecord
   has_many :categories, through: :category_dictionaries
 
   validates :dictionary_id, :phrase, :condition, :categories,
-            presence: {message: 'absent_parameter'}
+            presence: {message: MESSAGE_ABSENT}
   validates :dictionary_id,
-            format: {with: ID_FORMAT, message: 'invalid_parameter'},
+            format: {with: ID_FORMAT, message: MESSAGE_INVALID},
             allow_nil: true
   validates :condition,
-            inclusion: {in: CONDITION_LIST, message: 'invalid_parameter'},
+            inclusion: {in: CONDITION_LIST, message: MESSAGE_INVALID},
             allow_nil: true
 
   scope :phrase_include, ->(phrase) { where('phrase REGEXP ?', ".*#{phrase}.*") }

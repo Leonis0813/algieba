@@ -12,19 +12,19 @@ class Payment < ApplicationRecord
   has_many :tags, through: :payment_tags
 
   validates :payment_id, :payment_type, :content, :price, :categories,
-            presence: {message: 'absent_parameter'}
-  validates :date, presence: {message: 'invalid_parameter'}
+            presence: {message: MESSAGE_ABSENT}
+  validates :date, presence: {message: MESSAGE_INVALID}
   validates :payment_id,
-            format: {with: ID_FORMAT, message: 'invalid_parameter'},
+            format: {with: ID_FORMAT, message: MESSAGE_INVALID},
             allow_nil: true
   validates :payment_type,
-            inclusion: {in: PAYMENT_TYPE_LIST, message: 'invalid_parameter'},
+            inclusion: {in: PAYMENT_TYPE_LIST, message: MESSAGE_INVALID},
             allow_nil: true
   validates :price,
             numericality: {
               only_integer: true,
               greater_than_or_equal_to: 0,
-              message: 'invalid_parameter',
+              message: MESSAGE_INVALID,
             },
             allow_nil: true
 
