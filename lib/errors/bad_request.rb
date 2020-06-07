@@ -1,9 +1,9 @@
 class BadRequest < StandardError
   attr_accessor :errors
 
-  def initialize(error_codes)
-    @errors = Array.wrap(error_codes).sort.map do |error_code|
-      {error_code: error_code}
+  def initialize(model)
+    @errors = model.errors.messages.map do |parameter, message|
+      {error_code: message, parameter: parameter, resource: model.class.to_s.downcase}
     end
   end
 end

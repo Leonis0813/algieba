@@ -3,12 +3,12 @@ class Tag < ApplicationRecord
   has_many :payments, through: :payment_tags
 
   validates :tag_id, :name,
-            presence: {message: 'absent'}
+            presence: {message: 'absent_parameter'}
   validates :tag_id,
-            format: {with: ID_FORMAT, message: 'invalid'},
+            format: {with: ID_FORMAT, message: 'invalid_parameter'},
             allow_nil: true
   validates :name,
-            length: {maximum: 10, message: 'invalid'},
+            length: {maximum: 10, message: 'invalid_parameter'},
             allow_nil: true
 
   scope :name_include, ->(name) { where('name REGEXP ?', ".*#{name}.*") }

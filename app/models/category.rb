@@ -5,9 +5,9 @@ class Category < ApplicationRecord
   has_many :dictionaries, through: :category_dictionaries
 
   validates :category_id, :name,
-            presence: {message: 'absent'}
+            presence: {message: 'absent_parameter'}
   validates :category_id,
-            format: {with: ID_FORMAT, message: 'invalid'},
+            format: {with: ID_FORMAT, message: 'invalid_parameter'},
             allow_nil: true
 
   scope :name_include, ->(name) { where('name REGEXP ?', ".*#{name}.*") }

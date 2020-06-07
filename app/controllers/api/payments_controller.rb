@@ -3,22 +3,18 @@ module Api
     before_action :check_request_payment, only: %i[show update destroy]
 
     def create
-      required_param_keys = %i[payment_type date content categories price]
-      check_absent_param(create_params, required_param_keys)
-
       @payment = Payment.new(create_params.except(:categories, :tags))
-      @payment.categories = create_params[:categories].map do |category_name|
-        Category.find_or_initialize_by(name: category_name)
+      @payment.categories = Array.wrap(create_params[:categories]).map do |name|
+        Category.find_or_initialize_by(name: name)
       end
-      @payment.tags = Array.wrap(create_params[:tags]).map do |tag_name|
-        Tag.find_or_initialize_by(name: tag_name)
+      @payment.tags = Array.wrap(create_params[:tags]).map do |name|
+        Tag.find_or_initialize_by(name: name)
       end
 
       if @payment.save
         render status: :created
       else
-        error_codes = @payment.errors.messages.keys.map {|key| "invalid_param_#{key}" }
-        raise BadRequest, error_codes
+        raise BadRequest, @payment
       end
     end
 

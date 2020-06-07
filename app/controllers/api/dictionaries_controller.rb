@@ -1,24 +1,15 @@
 module Api
   class DictionariesController < ApplicationController
     def create
-      check_absent_param(create_params, %i[phrase condition categories])
-
       @dictionary = Dictionary.new(create_params.except(:categories))
-      @dictionary.categories << create_params[:categories].map do |category_name|
-        Category.find_or_initialize_by(name: category_name)
+      @dictionary.categories << Array.wrap(create_params[:categories]).map do |name|
+        Category.find_or_initialize_by(name: name)
       end
 
-      begin
-        if @dictionary.save
-          render status: :created
-        else
-          error_codes = @dictionary.errors.messages.keys.map do |key|
-            "invalid_param_#{key}"
-          end
-          raise BadRequest, error_codes
-        end
-      rescue ActiveRecord::RecordNotUnique
-        raise Duplicated, 'dictionary'
+      if @dictionary.save
+        render status: :created
+      else
+        raise BadRequest, @dictionary
       end
     end
 
