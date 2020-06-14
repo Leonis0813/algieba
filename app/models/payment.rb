@@ -13,13 +13,15 @@ class Payment < ApplicationRecord
 
   validates :payment_id, :payment_type, :content, :price, :categories,
             presence: {message: MESSAGE_ABSENT}
-  validates :date, presence: {message: MESSAGE_INVALID}
   validates :payment_id,
             format: {with: ID_FORMAT, message: MESSAGE_INVALID},
+            uniqueness: {message: MESSAGE_DUPLICATED},
             allow_nil: true
   validates :payment_type,
             inclusion: {in: PAYMENT_TYPE_LIST, message: MESSAGE_INVALID},
             allow_nil: true
+  validates :date,
+            presence: {message: MESSAGE_INVALID}
   validates :price,
             numericality: {
               only_integer: true,
@@ -27,8 +29,6 @@ class Payment < ApplicationRecord
               message: MESSAGE_INVALID,
             },
             allow_nil: true
-  validates :payment_id,
-            uniqueness: {message: MESSAGE_DUPLICATED}
   validate :array_parameters
 
   scope :payment_type, ->(payment_type) { where(payment_type: payment_type) }

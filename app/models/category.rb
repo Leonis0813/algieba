@@ -8,8 +8,9 @@ class Category < ApplicationRecord
             presence: {message: MESSAGE_ABSENT}
   validates :category_id,
             format: {with: ID_FORMAT, message: MESSAGE_INVALID},
+            uniqueness: {message: MESSAGE_DUPLICATED},
             allow_nil: true
-  validates :category_id, :name,
+  validates :name,
             uniqueness: {message: MESSAGE_DUPLICATED}
 
   scope :name_include, ->(name) { where('name REGEXP ?', ".*#{name}.*") }

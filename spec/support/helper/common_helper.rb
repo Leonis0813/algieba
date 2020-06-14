@@ -55,5 +55,13 @@ module CommonHelper
     end.flatten
   end
 
-  module_function :client, :app_auth_header, :generate_test_case
+  def generate_combinations(keys)
+    [].tap do |combinations|
+      keys.size.times do |i|
+        combinations << keys.combination(i + 1).to_a
+      end
+    end.flatten(1)
+  end
+
+  module_function :client, :app_auth_header, :generate_test_case, :generate_combinations
 end

@@ -36,3 +36,15 @@ shared_examples '不正な値を指定した場合のテスト' do |invalid_attr
     end
   end
 end
+
+shared_examples 'エラーメッセージが正しいこと' do |error_keys, message|
+  it "#{error_keys.join(',')}がエラーになっていること" do
+    is_asserted_by { @object.errors.messages.keys.sort == error_keys.sort }
+  end
+
+  error_keys.each do |key|
+    it "#{key}のエラーメッセージが正しいこと" do
+      is_asserted_by { @object.errors.messages[key] == [message] }
+    end
+  end
+end
