@@ -2,7 +2,7 @@ module Api
   class TagsController < ApplicationController
     def create
       @tag = Tag.new(create_param)
-      raise BadRequest, @tag.errors.messages, 'tag' unless @tag.save
+      raise BadRequest, messages: @tag.errors.messages, resource: 'tag' unless @tag.save
 
       render status: :created
     end

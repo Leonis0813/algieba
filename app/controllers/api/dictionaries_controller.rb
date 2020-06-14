@@ -6,7 +6,7 @@ module Api
         Category.find_or_initialize_by(name: name)
       end
 
-      raise BadRequest, @dictionary.error.messages, 'dictionary' unless @dictionary.save
+      raise BadRequest, messages: @dictionary.error.messages, resource: 'dictionary' unless @dictionary.save
 
       render status: :created
     end

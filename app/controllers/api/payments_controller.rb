@@ -11,7 +11,7 @@ module Api
         Tag.find_or_initialize_by(name: name)
       end
 
-      raise BadRequest, @payment.errors.messages, 'payment' unless @payment.save
+      raise BadRequest, messages: @payment.errors.messages, resource: 'payment' unless @payment.save
 
       render status: :created
     end
@@ -23,7 +23,7 @@ module Api
 
     def index
       query = PaymentQuery.new(index_params)
-      raise BadRequest, query.errors.messages unless query.valid?
+      raise BadRequest, messages: query.errors.messages unless query.valid?
 
       @payments = scope_params.keys.inject(Payment.all) do |payments, key|
         value = query.send(key)
@@ -46,7 +46,7 @@ module Api
       end
 
       unless request_payment.update(update_params.except(:categories, :tags))
-        raise BadRequest, request_payment.errors.messages, 'payment'
+        raise BadRequest, messages: request_payment.errors.messages, 'payment'
       end
 
       @payment = request_payment.reload

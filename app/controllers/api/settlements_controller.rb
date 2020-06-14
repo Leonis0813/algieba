@@ -21,7 +21,7 @@ module Api
     def check_query_param(query, param)
       return if query.valid?
 
-      raise BadRequest, query.errors.messages
+      raise BadRequest, messages: query.errors.messages
     end
   end
 end

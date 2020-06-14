@@ -1,7 +1,7 @@
 class CategoriesController < ApplicationController
   def index
     @search_form = CategoryQuery.new(index_param)
-    raise BadRequest, @search_form.errors.messages unless @search_form.valid?
+    raise BadRequest, messages: @search_form.errors.messages unless @search_form.valid?
 
     @categories = scope_param.keys.inject(Category.all) do |categories, key|
       value = @search_form.send(key)

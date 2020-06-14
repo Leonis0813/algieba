@@ -1,7 +1,7 @@
 class TagsController < ApplicationController
   def index
     @search_form = TagQuery.new(index_param)
-    raise BadRequest, @search_form.errors.messages unless @search_form.valid?
+    raise BadRequest, messages: @search_form.errors.messages unless @search_form.valid?
 
     @tag = Tag.new
     @tags = scope_param.keys.inject(Tag.all) do |tags, key|

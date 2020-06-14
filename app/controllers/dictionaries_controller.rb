@@ -1,7 +1,7 @@
 class DictionariesController < ApplicationController
   def index
     @search_form = DictionaryQuery.new(index_param)
-    raise BadRequest, @search_form.errors.messages unless @search_form.valid?
+    raise BadRequest, messages: @search_form.errors.messages unless @search_form.valid?
 
     @dictionary = Dictionary.new
     @dictionaries = scope_param.keys.inject(Dictionary.all) do |dictionaries, key|

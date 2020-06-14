@@ -2,7 +2,7 @@ class PaymentsController < ApplicationController
   def index
     attribute = {per_page: Kaminari.config.default_per_page}.merge(index_param)
     @search_form = PaymentQuery.new(attribute)
-    raise BadRequest, @search_form.errors.messages unless @search_form.valid?
+    raise BadRequest, messages: @search_form.errors.messages unless @search_form.valid?
 
     @payment = Payment.new
     @payments = scope_param.keys.inject(Payment.all) do |payments, key|
