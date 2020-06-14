@@ -46,7 +46,7 @@ module Api
       end
 
       unless request_payment.update(update_params.except(:categories, :tags))
-        raise BadRequest, messages: request_payment.errors.messages, 'payment'
+        raise BadRequest, messages: request_payment.errors.messages, resource: 'payment'
       end
 
       @payment = request_payment.reload

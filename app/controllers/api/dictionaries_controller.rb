@@ -5,8 +5,7 @@ module Api
       @dictionary.categories << Array.wrap(create_params[:categories]).map do |name|
         Category.find_or_initialize_by(name: name)
       end
-
-      raise BadRequest, messages: @dictionary.error.messages, resource: 'dictionary' unless @dictionary.save
+      raise BadRequest, messages: @dictionary.errors.messages, resource: 'dictionary' unless @dictionary.save
 
       render status: :created
     end
