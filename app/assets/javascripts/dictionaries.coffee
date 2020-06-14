@@ -1,11 +1,11 @@
 $ ->
   $('#btn-create-dictionary').on 'click', ->
-    category_string = $('#dictionary_categories').val()
-    data = {
-      phrase: if !$('#phrase').val() then null else $('#phrase').val(),
-      condition: $('#condition option:selected').val(),
-      categories: if !category_string then null else category_string.split(','),
-    }
+    data = {condition: $('#condition option:selected').val()}
+    if $('#phrase').val()
+      data['phrase'] = $('#phrase').val()
+    if $('#dictionary_categories').val()
+      data['categories'] = $('#dictionary_categories').val().split(',')
+
     $.ajax({
       type: 'POST',
       url: '/algieba/api/dictionaries',
@@ -14,14 +14,9 @@ $ ->
       dataType: 'json',
     }).done((data) ->
       location.reload()
+      return
     ).fail((xhr, status, error) ->
-      errorCodes = []
-      $.each($.parseJSON(xhr.responseText).errors, (i, error)->
-        attribute = error.error_code.match(/.+_param_(.+)/)[1]
-        errorCodes.push(I18n.t("views.dictionary.create.#{attribute}"))
-        return
-      )
-      showErrorDialog(errorCodes)
+      showErrorDialog($.parseJSON(xhr.responseText).errors)
       return
     )
     return

@@ -1,21 +1,4 @@
 $ ->
-  showErrorDialog = (errorCodes, disabledFormIds = []) ->
-    param = {error_codes: errorCodes.join(', ')}
-    bootbox.alert({
-      title: I18n.t('views.js.form.error.title'),
-      message: '<div class="text-center alert alert-danger">' +
-      I18n.t('views.js.form.error.message', param) +
-      '</div>',
-      callback: () ->
-        $.each(disabledFormIds, (i, id) ->
-          $('#' + id).empty()
-          $('#' + id).prop('disabled', false)
-          return
-        )
-        return
-    })
-    return
-
   $('.date-form').datetimepicker({
     format: I18n.t('views.js.datepicker.format'),
     locale: I18n.locale,
@@ -174,13 +157,8 @@ $ ->
     return
 
   $('#new_payment').on 'ajax:error', (event, xhr, status, error) ->
-    errorCodes = []
-    $.each($.parseJSON(xhr.responseText).errors, (i, error) ->
-      attribute = error.error_code.match(/^.+_param_(.+)/)[1]
-      errorCodes.push(I18n.t("views.management.payments.attribute.#{attribute}"))
-      return
-    )
-    showErrorDialog(errorCodes, ['payment_categories', 'payment_tags'])
+    errors = $.parseJSON(xhr.responseText).errors
+    showErrorDialog(errors, ['payment_categories', 'payment_tags'])
     return
 
   $('#btn-payment-search').on 'click', ->
@@ -205,13 +183,7 @@ $ ->
       location.href = '/algieba/management/payments?' + $.param(queries)
       return
     ).fail((xhr, status, error) ->
-      errorCodes = []
-      $.each($.parseJSON(xhr.responseText).errors, (i, error) ->
-        attribute = error.error_code.match(/invalid_param_(.+)_.*$/)[1]
-        errorCodes.push(I18n.t("views.management.payments.attribute.#{attribute}"))
-        return
-      )
-      showErrorDialog($.unique(errorCodes))
+      showErrorDialog($.parseJSON(xhr.responseText).errors)
       return
     )
     return
