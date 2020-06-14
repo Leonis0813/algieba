@@ -29,6 +29,7 @@ class Payment < ApplicationRecord
             allow_nil: true
   validates :payment_id,
             uniqueness: {message: MESSAGE_DUPLICATED}
+  validate :array_parameters
 
   scope :payment_type, ->(payment_type) { where(payment_type: payment_type) }
   scope :date_before, ->(date) { where('date <= ?', date) }
@@ -46,5 +47,15 @@ class Payment < ApplicationRecord
 
   after_initialize if: :new_record? do |payment|
     payment.payment_id = SecureRandom.hex
+  end
+
+  private
+
+  def array_parameters
+    category_names = self.categories.map(&:name)
+    errors.add(:categories, MESSAGE_SAME_VALUE) if category_names.uniq.size != category_names.size
+
+    tag_names = self.tags.map(&:name)
+    errors.add(:tags, MESSAGE_SAME_VALUE) if tag_names.uniq.size != tag_names.size
   end
 end

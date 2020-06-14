@@ -16,10 +16,17 @@ class Dictionary < ApplicationRecord
             uniqueness: {message: MESSAGE_DUPLICATED}
   validates :phrase,
             uniqueness: {scope: 'condition', message: MESSAGE_DUPLICATED}
+  validate :array_parameters
 
   scope :phrase_include, ->(phrase) { where('phrase REGEXP ?', ".*#{phrase}.*") }
 
   after_initialize if: :new_record? do |dictionary|
     dictionary.dictionary_id = SecureRandom.hex
   end
+
+  private
+
+  def array_parameters
+    category_names = self.categories.map(&:name)
+    errors.add(:categories, MESSAGE_SAME_VALUE) if category_names.uniq.size != category_names.size
 end
