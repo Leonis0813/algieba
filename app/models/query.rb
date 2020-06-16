@@ -12,9 +12,10 @@ class Query
             numericality: {
               only_integer: true,
               greater_than_or_equal_to: 1,
-              message: 'invalid',
+              message: ApplicationRecord::MESSAGE_INVALID,
             }
-  validates :order, inclusion: {in: ORDER_LIST, message: 'invalid'}
+  validates :order,
+            inclusion: {in: ORDER_LIST, message: ApplicationRecord::MESSAGE_INVALID}
 
   def initialize(attributes = {})
     super

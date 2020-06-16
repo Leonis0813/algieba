@@ -27,8 +27,17 @@ describe(*target, type: :model) do
       price_lower: [-1],
       sort: %w[invalid],
     }
+    test_cases = CommonHelper.generate_test_case(invalid_attribute)
+    test_cases.each do |test_case|
+      context "#{test_case.keys.join(',')}が不正な場合" do
+        before(:all) do
+          @object = build(:payment_query, test_case)
+          @object.validate
+        end
 
-    it_behaves_like '不正な値を指定した場合のテスト', invalid_attribute
+        it_behaves_like 'エラーメッセージが正しいこと', test_case.keys, 'invalid_parameter'
+      end
+    end
 
     invalid_period = {
       date_before: %w[1000-01-01 1000/01/01 01-01-1000 01/01/1000 10000101],
@@ -41,7 +50,7 @@ describe(*target, type: :model) do
         query.validate
         is_asserted_by { not query.errors.empty? }
 
-        expected_messages = params.map {|key, _| [key, ['invalid']] }.to_h
+        expected_messages = params.map {|key, _| [key, ['invalid_parameter']] }.to_h
         is_asserted_by { query.errors.messages == expected_messages }
       end
     end

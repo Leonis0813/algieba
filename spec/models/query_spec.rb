@@ -21,7 +21,16 @@ describe(*target, type: :model) do
       per_page: [0],
       order: %w[invalid],
     }
+    test_cases = CommonHelper.generate_test_case(invalid_attribute)
+    test_cases.each do |test_case|
+      context "#{test_case.keys.join(',')}が不正な場合" do
+        before(:all) do
+          @object = build(:query, test_case)
+          @object.validate
+        end
 
-    it_behaves_like '不正な値を指定した場合のテスト', invalid_attribute
+        it_behaves_like 'エラーメッセージが正しいこと', test_case.keys, 'invalid_parameter'
+      end
+    end
   end
 end
