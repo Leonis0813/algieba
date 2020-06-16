@@ -1,6 +1,8 @@
 class Settlement
   include ActiveModel::Model
 
+  MESSAGE_ABSENT = ApplicationRecord::MESSAGE_ABSENT
+  MESSAGE_INVALID = ApplicationRecord::MESSAGE_INVALID
   AGGREGATION_TYPE_CATEGORY = 'category'.freeze
   AGGREGATION_TYPE_PERIOD = 'period'.freeze
   AGGREGATION_TYPES = [
@@ -24,22 +26,22 @@ class Settlement
 
   attr_accessor :aggregation_type, :interval, :payment_type
 
-  validates :aggregation_type, presence: {message: 'absent'}
+  validates :aggregation_type, presence: {message: MESSAGE_ABSENT}
   validates :interval,
-            presence: {message: 'absent'},
+            presence: {message: MESSAGE_ABSENT},
             if: -> { aggregation_type == AGGREGATION_TYPE_PERIOD }
   validates :payment_type,
-            presence: {message: 'absent'},
+            presence: {message: MESSAGE_ABSENT},
             if: -> { aggregation_type == AGGREGATION_TYPE_CATEGORY }
   validates :aggregation_type,
-            inclusion: {in: AGGREGATION_TYPES, message: 'invalid'},
+            inclusion: {in: AGGREGATION_TYPES, message: MESSAGE_INVALID},
             allow_nil: true
   validates :interval,
-            inclusion: {in: INTERVALS, message: 'invalid'},
+            inclusion: {in: INTERVALS, message: MESSAGE_INVALID},
             allow_nil: true,
             if: -> { aggregation_type == AGGREGATION_TYPE_PERIOD }
   validates :payment_type,
-            inclusion: {in: Payment::PAYMENT_TYPE_LIST, message: 'invalid'},
+            inclusion: {in: Payment::PAYMENT_TYPE_LIST, message: MESSAGE_INVALID},
             allow_nil: true,
             if: -> { aggregation_type == AGGREGATION_TYPE_CATEGORY }
 

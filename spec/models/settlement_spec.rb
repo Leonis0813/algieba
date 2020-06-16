@@ -15,39 +15,36 @@ describe Settlement, type: :model do
     end
 
     describe '異常系' do
-      it_behaves_like '必須パラメーターがない場合のテスト', %i[aggregation_type]
+      context 'aggregation_typeが指定されていない場合' do
+          before(:all) do
+            @object = build(:settlement, {aggregation_type: nil})
+            @object.validate
+          end
+
+          it_behaves_like 'エラーメッセージが正しいこと', %i[aggregation_type], 'absent_parameter'
+      end
 
       context 'aggregation_typeが不正な場合' do
         before(:all) do
-          attribute = build(:settlement).attributes
-          object = Settlement.new(attribute.merge('aggregation_type' => 'invalid'))
-          object.validate
-          @errors = object.errors
+          @object = build(:settlement, {aggregation_type: 'invalid'})
+          @object.validate
         end
 
-        it 'invalidエラーになること' do
-          is_asserted_by { @errors.present? }
-          is_asserted_by { @errors.messages[:aggregation_type].include?('invalid') }
-        end
+        it_behaves_like 'エラーメッセージが正しいこと', %i[aggregation_type], 'invalid_parameter'
       end
 
       [
         %w[category payment_type],
         %w[period interval],
       ].each do |aggregation_type, param|
-        context "aggregation_typeが#{aggregation_type}の場合" do
+        context "aggregation_typeが#{aggregation_type}で#{param}がない場合" do
           before(:all) do
-            attribute = build(:settlement).attributes.except(param)
-            attribute['aggregation_type'] = aggregation_type
-            object = Settlement.new(attribute)
-            object.validate
-            @errors = object.errors
+            attribute = {aggregation_type: aggregation_type, param => nil}
+            @object = build(:settlement, attribute)
+            @object.validate
           end
 
-          it 'absentエラーになること' do
-            is_asserted_by { @errors.present? }
-            is_asserted_by { @errors.messages[param.to_sym].include?('absent') }
-          end
+          it_behaves_like 'エラーメッセージが正しいこと', [param.to_sym], 'absent_parameter'
         end
       end
     end
