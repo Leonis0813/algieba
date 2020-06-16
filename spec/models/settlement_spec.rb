@@ -16,21 +16,25 @@ describe Settlement, type: :model do
 
     describe '異常系' do
       context 'aggregation_typeが指定されていない場合' do
-          before(:all) do
-            @object = build(:settlement, {aggregation_type: nil})
-            @object.validate
-          end
+        expected_error = {aggregation_type: 'absent_parameter'}
 
-          it_behaves_like 'エラーメッセージが正しいこと', %i[aggregation_type], 'absent_parameter'
+        before(:all) do
+          @object = build(:settlement, {aggregation_type: nil})
+          @object.validate
+        end
+
+        it_behaves_like 'エラーメッセージが正しいこと', expected_error
       end
 
       context 'aggregation_typeが不正な場合' do
+        expected_error = {aggregation_type: 'invalid_parameter'}
+
         before(:all) do
           @object = build(:settlement, {aggregation_type: 'invalid'})
           @object.validate
         end
 
-        it_behaves_like 'エラーメッセージが正しいこと', %i[aggregation_type], 'invalid_parameter'
+        it_behaves_like 'エラーメッセージが正しいこと', expected_error
       end
 
       [
@@ -38,13 +42,15 @@ describe Settlement, type: :model do
         %w[period interval],
       ].each do |aggregation_type, param|
         context "aggregation_typeが#{aggregation_type}で#{param}がない場合" do
+          expected_error = {param.to_sym => 'absent_parameter'}
+
           before(:all) do
             attribute = {aggregation_type: aggregation_type, param => nil}
             @object = build(:settlement, attribute)
             @object.validate
           end
 
-          it_behaves_like 'エラーメッセージが正しいこと', [param.to_sym], 'absent_parameter'
+          it_behaves_like 'エラーメッセージが正しいこと', expected_error
         end
       end
     end

@@ -22,12 +22,14 @@ describe Payment, type: :model do
 
       CommonHelper.generate_combinations(attribute_names).each do |keys|
         context "#{keys.join(',')}が指定されていない場合" do
+          expected_error = keys.map {|key| [key, 'absent_parameter'] }.to_h
+
           before(:all) do
             @object = build(:payment, keys.map {|key| [key, blank_value[key]] }.to_h)
             @object.validate
           end
 
-          it_behaves_like 'エラーメッセージが正しいこと', keys, 'absent_parameter'
+          it_behaves_like 'エラーメッセージが正しいこと', expected_error
         end
       end
 
@@ -40,16 +42,22 @@ describe Payment, type: :model do
       test_cases = CommonHelper.generate_test_case(invalid_attribute)
       test_cases.each do |test_case|
         context "#{test_case.keys.join(',')}が不正な場合" do
+          expected_error = test_case.keys.map do |key|
+            [key, 'invalid_parameter']
+          end.to_h
+
           before(:all) do
             @object = build(:payment, test_case)
             @object.validate
           end
 
-          it_behaves_like 'エラーメッセージが正しいこと', test_case.keys, 'invalid_parameter'
+          it_behaves_like 'エラーメッセージが正しいこと', expected_error
         end
       end
 
       context 'payment_idが重複している場合' do
+        expected_error = {payment_id: 'duplicated_resource'}
+
         include_context 'トランザクション作成'
         before(:all) do
           payment = create(:payment)
@@ -57,11 +65,13 @@ describe Payment, type: :model do
           @object.validate
         end
 
-        it_behaves_like 'エラーメッセージが正しいこと', [:payment_id], 'duplicated_resource'
+        it_behaves_like 'エラーメッセージが正しいこと', expected_error
       end
 
       [[:categories], [:tags], [:categories, :tags]].each do |keys|
         context "#{keys.join(',')}に同じ値が含まれている場合" do
+          expected_error = keys.map {|key| [key, 'include_same_value'] }.to_h
+
           before(:all) do
             attributes = {}
             keys.each do |key|
@@ -74,8 +84,34 @@ describe Payment, type: :model do
             @object.validate
           end
 
-          it_behaves_like 'エラーメッセージが正しいこと', keys, 'include_same_value'
+          it_behaves_like 'エラーメッセージが正しいこと', expected_error
         end
+      end
+
+      context '複合エラーの場合' do
+        expected_error = {
+          payment_id: 'duplicated_resource',
+          payment_type: 'invalid_parameter',
+          categories: 'absent_parameter',
+          tags: 'include_same_value',
+        }
+
+        include_context 'トランザクション作成'
+        before(:all) do
+          tag = build(:tag)
+          other_tag = build(:tag, {name: tag.name})
+          payment = create(:payment)
+          attribute = {
+            payment_id: payment.payment_id,
+            payment_type: 'invalid',
+            categories: [],
+            tags: [tag, other_tag],
+          }
+          @object = build(:payment, attribute)
+          @object.validate
+        end
+
+        it_behaves_like 'エラーメッセージが正しいこと', expected_error
       end
     end
   end

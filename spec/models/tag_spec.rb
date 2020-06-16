@@ -18,12 +18,14 @@ describe Tag, type: :model do
 
       combinations.each do |keys|
         context "#{keys.join(',')}が指定されていない場合" do
+          expected_error = keys.map {|key| [key, 'absent_parameter'] }.to_h
+
           before(:all) do
             @object = build(:tag, keys.map {|key| [key, nil] }.to_h)
             @object.validate
           end
 
-          it_behaves_like 'エラーメッセージが正しいこと', keys, 'absent_parameter'
+          it_behaves_like 'エラーメッセージが正しいこと', expected_error
         end
       end
 
@@ -34,17 +36,23 @@ describe Tag, type: :model do
       test_cases = CommonHelper.generate_test_case(invalid_attribute)
       test_cases.each do |test_case|
         context "#{test_case.keys.join(',')}が不正な場合" do
+          expected_error = test_case.keys.map do |key|
+            [key, 'invalid_parameter']
+          end.to_h
+
           before(:all) do
             @object = build(:tag, test_case)
             @object.validate
           end
 
-          it_behaves_like 'エラーメッセージが正しいこと', test_case.keys, 'invalid_parameter'
+          it_behaves_like 'エラーメッセージが正しいこと', expected_error
         end
       end
 
       combinations.each do |keys|
         context "#{keys.join(',')}が重複している場合" do
+          expected_error = keys.map {|key| [key, 'duplicated_resource'] }.to_h
+
           include_context 'トランザクション作成'
           before(:all) do
             tag = create(:tag)
@@ -52,8 +60,19 @@ describe Tag, type: :model do
             @object.validate
           end
 
-          it_behaves_like 'エラーメッセージが正しいこと', keys, 'duplicated_resource'
+          it_behaves_like 'エラーメッセージが正しいこと', expected_error
         end
+      end
+
+      context '複合エラーの場合' do
+        expected_error = {tag_id: 'absent_parameter', name: 'invalid_parameter'}
+
+        before(:all) do
+          @object = build(:tag, {tag_id: nil, name: '0' * 11})
+          @object.validate
+        end
+
+        it_behaves_like 'エラーメッセージが正しいこと', expected_error
       end
     end
   end

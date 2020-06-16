@@ -10,13 +10,13 @@ shared_examples '正常な値を指定した場合のテスト' do |valid_attrib
   end
 end
 
-shared_examples 'エラーメッセージが正しいこと' do |error_keys, message|
-  it "#{error_keys.join(',')}がエラーになっていること" do
-    is_asserted_by { @object.errors.messages.keys.sort == error_keys.sort }
+shared_examples 'エラーメッセージが正しいこと' do |expected_error|
+  it "#{expected_error.keys.join(',')}がエラーになっていること" do
+    is_asserted_by { @object.errors.messages.keys.sort == expected_error.keys.sort }
   end
 
-  error_keys.each do |key|
-    it "#{key}のエラーメッセージが正しいこと" do
+  expected_error.each do |key, message|
+    it "#{key}のエラーメッセージが#{message}であること" do
       is_asserted_by { @object.errors.messages[key] == [message] }
     end
   end

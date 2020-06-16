@@ -21,12 +21,14 @@ describe Dictionary, type: :model do
 
       combinations.each do |keys|
         context "#{keys.join(',')}が指定されていない場合" do
+          expected_error = keys.map {|key| [key, 'absent_parameter'] }.to_h
+
           before(:all) do
             @object = build(:dictionary, keys.map {|key| [key, blank_value[key]] }.to_h)
             @object.validate
           end
 
-          it_behaves_like 'エラーメッセージが正しいこと', keys, 'absent_parameter'
+          it_behaves_like 'エラーメッセージが正しいこと', expected_error
         end
       end
 
@@ -37,12 +39,16 @@ describe Dictionary, type: :model do
       test_cases = CommonHelper.generate_test_case(invalid_attribute)
       test_cases.each do |test_case|
         context "#{test_case.keys.join(',')}が不正な場合" do
+          expected_error = test_case.keys.map do |key|
+            [key, 'invalid_parameter']
+          end.to_h
+
           before(:all) do
             @object = build(:dictionary, test_case)
             @object.validate
           end
 
-          it_behaves_like 'エラーメッセージが正しいこと', test_case.keys, 'invalid_parameter'
+          it_behaves_like 'エラーメッセージが正しいこと', expected_error
         end
       end
 
@@ -54,6 +60,8 @@ describe Dictionary, type: :model do
         error_keys = keys - [:condition]
 
         context "#{keys.join(',')}が重複している場合" do
+          expected_error = error_keys.map {|key| [key, 'duplicated_resource'] }.to_h
+
           include_context 'トランザクション作成'
           before(:all) do
             dictionary = create(:dictionary)
@@ -61,11 +69,13 @@ describe Dictionary, type: :model do
             @object.validate
           end
 
-          it_behaves_like 'エラーメッセージが正しいこと', error_keys, 'duplicated_resource'
+          it_behaves_like 'エラーメッセージが正しいこと', expected_error
         end
       end
 
       context 'categoriesに同じ名前が含まれている場合' do
+        expected_error = {categories: 'include_same_value'}
+
         before(:all) do
           category = build(:category)
           other_category = build(:category, {name: category.name})
@@ -73,7 +83,32 @@ describe Dictionary, type: :model do
           @object.validate
         end
 
-        it_behaves_like 'エラーメッセージが正しいこと', [:categories], 'include_same_value'
+        it_behaves_like 'エラーメッセージが正しいこと', expected_error
+      end
+
+      context '複合エラーの場合' do
+        expected_error = {
+          dictionary_id: 'absent_parameter',
+          phrase: 'duplicated_resource',
+          categories: 'include_same_value',
+        }
+
+        include_context 'トランザクション作成'
+        before(:all) do
+          category = build(:category)
+          other_category = build(:category, {name: category.name})
+          dictionary = create(:dictionary)
+          attribute = {
+            dictionary_id: nil,
+            phrase: dictionary.phrase,
+            condition: dictionary.condition,
+            categories: [category, other_category],
+          }
+          @object = build(:dictionary, attribute)
+          @object.validate
+        end
+
+        it_behaves_like 'エラーメッセージが正しいこと', expected_error
       end
     end
   end
