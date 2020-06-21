@@ -7,29 +7,29 @@ class Payment < ApplicationRecord
   ].freeze
 
   has_many :category_payments, dependent: :destroy
-  has_many :categories, through: :category_payments
+  has_many :categories, through: :category_payments, validate: false
   has_many :payment_tags, dependent: :destroy
-  has_many :tags, through: :payment_tags
+  has_many :tags, through: :payment_tags, validate: false
 
-  validates :payment_id, :payment_type, :content, :price, :categories,
-            presence: {message: MESSAGE_ABSENT}
   validates :payment_id,
-            format: {with: ID_FORMAT, message: MESSAGE_INVALID},
-            uniqueness: {message: MESSAGE_DUPLICATED},
-            allow_nil: true
+            string: {format: ID_FORMAT},
+            uniqueness: {message: MESSAGE_DUPLICATED}
   validates :payment_type,
-            inclusion: {in: PAYMENT_TYPE_LIST, message: MESSAGE_INVALID},
-            allow_nil: true
+            string: {enum: PAYMENT_TYPE_LIST}
   validates :date,
-            presence: {message: MESSAGE_INVALID}
+            date: true
+  validates :content,
+            string: true
   validates :price,
-            numericality: {
-              only_integer: true,
-              greater_than_or_equal_to: 0,
-              message: MESSAGE_INVALID,
-            },
-            allow_nil: true
-  validate :array_parameters
+            integer: {greater_than: 0}
+  validates :categories,
+            presence: {message: ApplicationValidator::ERROR_MESSAGE[:absent]},
+            associated: {message: ApplicationValidator::ERROR_MESSAGE[:invalid]},
+            collection: {unique: %w[name]}
+  validates :tags,
+            associated: {message: ApplicationValidator::ERROR_MESSAGE[:invalid]},
+            collection: {unique: %w[name]},
+            allow_blank: true
 
   scope :payment_type, ->(payment_type) { where(payment_type: payment_type) }
   scope :date_before, ->(date) { where('date <= ?', date) }
@@ -47,15 +47,5 @@ class Payment < ApplicationRecord
 
   after_initialize if: :new_record? do |payment|
     payment.payment_id = SecureRandom.hex
-  end
-
-  private
-
-  def array_parameters
-    category_names = self.categories.map(&:name)
-    errors.add(:categories, MESSAGE_SAME_VALUE) if category_names.uniq.size != category_names.size
-
-    tag_names = self.tags.map(&:name)
-    errors.add(:tags, MESSAGE_SAME_VALUE) if tag_names.uniq.size != tag_names.size
   end
 end

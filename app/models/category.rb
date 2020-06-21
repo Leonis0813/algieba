@@ -4,14 +4,15 @@ class Category < ApplicationRecord
   has_many :category_dictionaries, dependent: :destroy
   has_many :dictionaries, through: :category_dictionaries
 
-  validates :category_id, :name,
-            presence: {message: MESSAGE_ABSENT}
   validates :category_id,
-            format: {with: ID_FORMAT, message: MESSAGE_INVALID},
-            uniqueness: {message: MESSAGE_DUPLICATED},
-            allow_nil: true
-  validates :name,
+            string: {format: ID_FORMAT},
             uniqueness: {message: MESSAGE_DUPLICATED}
+  validates :name,
+            string: true,
+            uniqueness: {message: MESSAGE_DUPLICATED}
+  validates :description,
+            string: true,
+            allow_nil: true
 
   scope :name_include, ->(name) { where('name REGEXP ?', ".*#{name}.*") }
 

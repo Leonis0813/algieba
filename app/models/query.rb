@@ -9,13 +9,9 @@ class Query
   attr_accessor :page, :per_page, :order
 
   validates :page, :per_page,
-            numericality: {
-              only_integer: true,
-              greater_than_or_equal_to: 1,
-              message: ApplicationRecord::MESSAGE_INVALID,
-            }
+            integer: {greater_than: 0}
   validates :order,
-            inclusion: {in: ORDER_LIST, message: ApplicationRecord::MESSAGE_INVALID}
+            string: {enum: ORDER_LIST}
 
   def initialize(attributes = {})
     super

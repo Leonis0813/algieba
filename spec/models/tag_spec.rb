@@ -30,18 +30,15 @@ describe Tag, type: :model do
       end
 
       invalid_attribute = {
-        tag_id: ['0' * 33, 'g' * 32],
-        name: ['0' * 11],
+        tag_id: ['0' * 33, 'g' * 32, 1, [1], {id: 1}, true],
+        name: ['0' * 11, 1, ['test'], {name: 'test'}, true],
       }
-      test_cases = CommonHelper.generate_test_case(invalid_attribute)
-      test_cases.each do |test_case|
-        context "#{test_case.keys.join(',')}が不正な場合" do
-          expected_error = test_case.keys.map do |key|
-            [key, 'invalid_parameter']
-          end.to_h
+      CommonHelper.generate_test_case(invalid_attribute).each do |attribute|
+        context "#{attribute.keys.join(',')}が不正な場合" do
+          expected_error = attribute.keys.map {|key| [key, 'invalid_parameter'] }.to_h
 
           before(:all) do
-            @object = build(:tag, test_case)
+            @object = build(:tag, attribute)
             @object.validate
           end
 

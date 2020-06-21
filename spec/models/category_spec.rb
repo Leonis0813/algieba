@@ -31,17 +31,16 @@ describe Category, type: :model do
       end
 
       invalid_attribute = {
-        category_id: ['0' * 33, 'g' * 32],
+        category_id: ['0' * 33, 'g' * 32, 1, [1], {id: 1}, true],
+        name: [1, [1], {id: 1}, true],
+        description: [1, [1], {id: 1}, true],
       }
-      test_cases = CommonHelper.generate_test_case(invalid_attribute)
-      test_cases.each do |test_case|
-        expected_error = test_case.keys.map do |key|
-          [key, 'invalid_parameter']
-        end.to_h
+      CommonHelper.generate_test_case(invalid_attribute).each do |attribute|
+        expected_error = attribute.keys.map {|key| [key, 'invalid_parameter'] }.to_h
 
-        context "#{test_case.keys.join(',')}が不正な場合" do
+        context "#{attribute.keys.join(',')}が不正な場合" do
           before(:all) do
-            @object = build(:category, test_case)
+            @object = build(:category, attribute)
             @object.validate
           end
 

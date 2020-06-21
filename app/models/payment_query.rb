@@ -1,5 +1,5 @@
 class PaymentQuery < Query
-  MESSAGE_INVALID = ApplicationRecord::MESSAGE_INVALID
+  MESSAGE_INVALID = ApplicationValidator::ERROR_MESSAGE[:invalid]
   DEFAULT_SORT = 'payment_id'.freeze
   SORT_LIST = [DEFAULT_SORT, 'date', 'price'].freeze
 
@@ -7,37 +7,28 @@ class PaymentQuery < Query
                 :content_include, :category, :tag, :price_upper, :price_lower, :sort
 
   validates :payment_type,
-            inclusion: {in: Payment::PAYMENT_TYPE_LIST, message: MESSAGE_INVALID},
+            string: {enum: Payment::PAYMENT_TYPE_LIST},
+            allow_nil: true
+  validates :date_before, :date_after,
+            date: true,
+            allow_nil: true
+  validates :content_equal, :content_include, :category, :tag,
+            string: true,
             allow_nil: true
   validates :price_upper, :price_lower,
-            numericality: {
-              only_integer: true,
-              greater_than_or_equal_to: 0,
-              message: MESSAGE_INVALID,
-            },
+            integer: {greater_than_or_equal_to: 0},
             allow_nil: true
-  validates :sort, inclusion: {in: SORT_LIST, message: MESSAGE_INVALID}
+  validates :sort,
+            string: {enum: SORT_LIST}
 
-  validate :date_valid?
-  validate :period_valid?
+  validate :period
 
   def initialize(attributes = {})
     super
     self.sort ||= DEFAULT_SORT
   end
 
-  def date_valid?
-    return unless date_before or date_after
-
-    [
-      [:date_before, date_before],
-      [:date_after, date_after],
-    ].each do |date_symbol, date_value|
-      Date.parse(date_value) if date_value rescue errors.add(date_symbol, MESSAGE_INVALID)
-    end
-  end
-
-  def period_valid?
+  def period
     if errors.messages.include?(:date_before) or errors.messages.include?(:date_after)
       return
     end

@@ -33,18 +33,20 @@ describe Dictionary, type: :model do
       end
 
       invalid_attribute = {
-        dictionary_id: ['0' * 33, 'g' * 32],
+        dictionary_id: ['0' * 33, 'g' * 32, 1, [1], {id: 1}, true],
+        phrase: [1, ['test'], {phrase: 'test'}, true],
         condition: %w[invalid],
+        categories: [{category_id: nil}, {category_id: '0' * 33}, {category_id: '1' * 32}],
       }
-      test_cases = CommonHelper.generate_test_case(invalid_attribute)
-      test_cases.each do |test_case|
-        context "#{test_case.keys.join(',')}が不正な場合" do
-          expected_error = test_case.keys.map do |key|
-            [key, 'invalid_parameter']
-          end.to_h
+      CommonHelper.generate_test_case(invalid_attribute).each do |attribute|
+        context "#{attribute.keys.join(',')}が不正な場合" do
+          expected_error = attribute.keys.map {|key| [key, 'invalid_parameter'] }.to_h
 
+          include_context 'トランザクション作成'
           before(:all) do
-            @object = build(:dictionary, test_case)
+            create(:category, {category_id: '1' * 32})
+            @object = build(:dictionary, attribute.except(:categories))
+            @object.categories << build(:category, attribute[:categories] || {})
             @object.validate
           end
 

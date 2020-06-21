@@ -9,8 +9,8 @@ describe Payment, type: :model do
         payment_id: ['0' * 32],
         payment_type: %w[income expense],
         date: %w[1000-01-01 1000/01/01 01-01-1000 01/01/1000 10000101],
-        content: 'モジュールテスト用データ',
-        price: 0,
+        content: %w[モジュールテスト用データ],
+        price: [1],
       }
 
       it_behaves_like '正常な値を指定した場合のテスト', valid_attribute
@@ -34,20 +34,25 @@ describe Payment, type: :model do
       end
 
       invalid_attribute = {
-        payment_id: ['0' * 33, 'g' * 32],
-        payment_type: 'invalid',
-        date: %w[invalid 1000-13-01 1000-01-00 1000-13-00],
-        price: [-1],
+        payment_id: ['0' * 33, 'g' * 32, 1, [1], {id: 1}, true],
+        payment_type: [1, 'invalid', ['income'], {type: 'income'}, true],
+        date: [1, 'invalid', '1000-13-01', ['1000-01-01'], {date: '1000-01-01'}, true],
+        content: [1, ['test'], {content: 'test'}, true],
+        price: [0, '1', [1], {price: 1}, true],
+        categories: [{category_id: nil}, {category_id: '0' * 33}, {category_id: '1' * 32}],
+        tags: [{tag_id: nil}, {tag_id: '0' * 33}, {tag_id: '1' * 32}],
       }
-      test_cases = CommonHelper.generate_test_case(invalid_attribute)
-      test_cases.each do |test_case|
-        context "#{test_case.keys.join(',')}が不正な場合" do
-          expected_error = test_case.keys.map do |key|
-            [key, 'invalid_parameter']
-          end.to_h
+      CommonHelper.generate_test_case(invalid_attribute).each do |attribute|
+        context "#{attribute.keys.join(',')}が不正な場合" do
+          expected_error = attribute.keys.map {|key| [key, 'invalid_parameter'] }.to_h
 
+          include_context 'トランザクション作成'
           before(:all) do
-            @object = build(:payment, test_case)
+            create(:category, {category_id: '1' * 32})
+            create(:tag, {tag_id: '1' * 32})
+            @object = build(:payment, attribute.except(:categories, :tags))
+            @object.categories << build(:category, attribute[:categories] || {})
+            @object.tags << build(:tag, attribute[:tags] || {})
             @object.validate
           end
 

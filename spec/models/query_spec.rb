@@ -7,8 +7,8 @@ target = [Query, '#validates']
 describe(*target, type: :model) do
   describe '正常系' do
     valid_attribute = {
-      page: 2,
-      per_page: 50,
+      page: [2],
+      per_page: [50],
       order: %w[asc desc],
     }
 
@@ -17,19 +17,16 @@ describe(*target, type: :model) do
 
   describe '異常系' do
     invalid_attribute = {
-      page: [0],
-      per_page: [0],
-      order: %w[invalid],
+      page: [0, '1', [1], {page: 1}, true],
+      per_page: [0, '1', [1], {per_page: 1}, true],
+      order: ['invalid', 1, ['asc'], {order: 'asc'}, true],
     }
-    test_cases = CommonHelper.generate_test_case(invalid_attribute)
-    test_cases.each do |test_case|
-      context "#{test_case.keys.join(',')}が不正な場合" do
-        expected_error = test_case.keys.map do |key|
-          [key, 'invalid_parameter']
-        end.to_h
+    CommonHelper.generate_test_case(invalid_attribute).each do |attribute|
+      context "#{attribute.keys.join(',')}が不正な場合" do
+        expected_error = attribute.keys.map {|key| [key, 'invalid_parameter'] }.to_h
 
         before(:all) do
-          @object = build(:query, test_case)
+          @object = build(:query, attribute)
           @object.validate
         end
 
