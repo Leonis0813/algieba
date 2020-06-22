@@ -1,6 +1,6 @@
 class PaymentsController < ApplicationController
   def index
-    attribute = {per_page: Kaminari.config.default_per_page}.merge(index_param)
+    attribute = {per_page: Kaminari.config.default_per_page.to_s}.merge(index_param)
     @search_form = PaymentQuery.new(attribute)
     raise BadRequest, messages: @search_form.errors.messages unless @search_form.valid?
 

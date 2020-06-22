@@ -16,30 +16,37 @@ describe CategoriesController, type: :controller do
   before(:all) { create(:category) }
 
   describe '正常系' do
-    [
-      {name_include: '機能テスト'},
-      {page: 1},
-      {per_page: 10},
-      {name_include: '機能テスト', page: 1, per_page: 10},
-      {},
-    ].each do |query|
-      description = query.empty? ? '何も指定しない場合' : "#{query.keys.join(',')}を指定する場合"
+    valid_attribute = {
+      name_include: %w[機能テスト],
+      page: [1, 10],
+      per_page: [1, 10],
+    }
 
-      context description do
+    CommonHelper.generate_test_case(valid_attribute).each do |query|
+      context "#{query.keys.join(',')}を指定する場合" do
         include_context 'カテゴリ情報を検索する', query
         it_behaves_like 'ステータスコードが正しいこと', 200
       end
     end
+
+    context '何も指定しない場合' do
+      include_context 'カテゴリ情報を検索する'
+      it_behaves_like 'ステータスコードが正しいこと', 200
+    end
   end
 
   describe '異常系' do
-    [
-      {page: 'invalid'},
-      {per_page: 'invalid'},
-      {page: 'invalid', per_page: 'invalid'},
-    ].each do |query|
+    invalid_attribute = {
+      page: [0, 'invalid', [1], {page: 1}],
+      per_page: [0, 'invalid', [1], {per_page: 1}],
+      name_include: [['test'], {name: 'test'}],
+    }
+
+    CommonHelper.generate_test_case(invalid_attribute).each do |query|
       context "#{query.keys.join(',')}が不正な場合" do
-        errors = query.keys.sort.map {|key| {'error_code' => "invalid_param_#{key}"} }
+        errors = query.keys.map do |key|
+          {'error_code' => 'invalid_parameter', 'parameter' => key.to_s, 'resource' => nil}
+        end
         include_context 'カテゴリ情報を検索する', query
         it_behaves_like 'レスポンスが正しいこと', status: 400, body: {'errors' => errors}
       end
