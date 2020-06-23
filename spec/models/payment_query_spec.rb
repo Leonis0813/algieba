@@ -14,8 +14,8 @@ describe(*target, type: :model) do
       content_include: ['test', nil],
       category: ['test', nil],
       tag: ['test', nil],
-      price_upper: [0, nil],
-      price_lower: [0, nil],
+      price_upper: ['0', nil],
+      price_lower: ['0', nil],
       sort: %w[payment_id date price],
     }
 
@@ -25,12 +25,17 @@ describe(*target, type: :model) do
   describe '異常系' do
     invalid_attribute = {
       payment_type: ['invalid', 1, ['income'], {payment_type: 'income'}, true],
-      date_before: %w[invalid 1000-13-01 1000-01-00 1000-13-00],
-      date_after: %w[invalid 1000-13-01 1000-01-00 1000-13-00],
-      price_upper: [-1],
-      price_lower: [-1],
-      sort: %w[invalid],
+      date_before: ['invalid', 1, ['1000-01-01'], {date: '1000-01-01'}, true],
+      date_after: ['invalid', 1, ['1000-01-01'], {date: '1000-01-01'}, true],
+      content_equal: [1, ['test'], {content: 'test'}, true],
+      content_include: [1, ['test'], {content: 'test'}, true],
+      category: [1, ['test'], {category: 'test'}, true],
+      tag: [1, ['test'], {tag: 'test'}, true],
+      price_upper: ['-1', 0, [0], {price: 0}, true],
+      price_lower: ['-1', 0, [0], {price: 0}, true],
+      sort: ['invalid', 1, ['date'], {sort: 'date'}, true],
     }
+
     CommonHelper.generate_test_case(invalid_attribute).each do |attribute|
       expected_error = attribute.keys.map {|key| [key, 'invalid_parameter'] }.to_h
 

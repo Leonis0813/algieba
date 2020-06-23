@@ -40,7 +40,9 @@ module CommonHelper
         end
       end
 
-      test_cases << params.map {|key, values| [key, values.first] }.to_h
+      if params.keys.size > 1
+        test_cases << params.map {|key, values| [key, values.first] }.to_h
+      end
     end
   end
 
