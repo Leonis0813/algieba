@@ -46,6 +46,7 @@ group :development, :test do
   gem 'headless'
   gem 'httpclient'
   gem 'pry'
+  gem 'pry-byebug'
   gem 'rspec-power_assert'
   gem 'rspec-rails'
   gem 'selenium-webdriver', '3.142.4'
