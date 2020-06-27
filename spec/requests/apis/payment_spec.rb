@@ -46,7 +46,18 @@ describe '収支情報APIのテスト', type: :request do
   end
 
   describe '不正な収支情報を作成する' do
-    errors = [{'error_code' => 'absent_param_content'}]
+    errors = [
+      {
+        'error_code' => 'invalid_parameter',
+        'parameter' => 'date',
+        'resource' => 'payment',
+      },
+      {
+        'error_code' => 'absent_parameter',
+        'parameter' => 'content',
+        'resource' => 'payment',
+      },
+    ]
     include_context '収支情報を作成する', invalid_payment
     it_behaves_like 'レスポンスが正しいこと', status: 400, body: {'errors' => errors}
   end

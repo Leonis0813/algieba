@@ -13,8 +13,6 @@ describe Api::PaymentsController, type: :controller do
   end
 
   describe '正常系' do
-    base_payment = PaymentHelper.test_payment[:income].except(:id)
-
     shared_examples 'レスポンスが正しいこと' do |body: nil|
       it_behaves_like 'ステータスコードが正しいこと', 201
 
