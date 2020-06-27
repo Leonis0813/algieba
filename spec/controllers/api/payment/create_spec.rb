@@ -215,6 +215,25 @@ describe Api::PaymentsController, type: :controller do
       it_behaves_like 'レスポンスが正しいこと', status: 400, body: {'errors' => errors}
     end
 
+    context 'categoriesに同じ値が含まれている場合' do
+      errors = [
+        {
+          'error_code' => 'include_same_value',
+          'parameter' => 'categories',
+          'resource' => 'payment',
+        }
+      ]
+      before(:all) do
+        payment = build(:payment)
+        @body = payment.slice(:payment_type, :content, :price).merge(
+          date: payment.date.strftime('%F'),
+          categories: %w[test test],
+        )
+      end
+      include_context '収支情報を登録する'
+      it_behaves_like 'レスポンスが正しいこと', status: 400, body: {'errors' => errors}
+    end
+
     [['0' * 11], [{tag: 'test'}]].each do |tags|
       context 'tagsが不正な場合' do
         errors = [
@@ -235,6 +254,56 @@ describe Api::PaymentsController, type: :controller do
         include_context '収支情報を登録する'
         it_behaves_like 'レスポンスが正しいこと', status: 400, body: {'errors' => errors}
       end
+    end
+
+    context 'tagsに同じ値が指定されている場合' do
+      errors = [
+        {
+          'error_code' => 'include_same_value',
+          'parameter' => 'tags',
+          'resource' => 'payment',
+        }
+      ]
+      before(:all) do
+        payment = build(:payment)
+        @body = payment.slice(:payment_type, :content, :price).merge(
+          date: payment.date.strftime('%F'),
+          categories: %w[test],
+          tags: %w[test test],
+        )
+      end
+      include_context '収支情報を登録する'
+      it_behaves_like 'レスポンスが正しいこと', status: 400, body: {'errors' => errors}
+    end
+
+    context '複合エラーの場合' do
+      errors = [
+        {
+          'error_code' => 'absent_parameter',
+          'parameter' => 'payment_type',
+          'resource' => 'payment',
+        },
+        {
+          'error_code' => 'invalid_parameter',
+          'parameter' => 'date',
+          'resource' => 'payment',
+        },
+        {
+          'error_code' => 'include_same_value',
+          'parameter' => 'tags',
+          'resource' => 'payment',
+        },
+      ]
+      before(:all) do
+        payment = build(:payment)
+        @body = payment.slice(:content, :price).merge(
+          date: 'invalid',
+          categories: %w[test],
+          tags: %w[test test],
+        )
+      end
+      include_context '収支情報を登録する'
+      it_behaves_like 'レスポンスが正しいこと', status: 400, body: {'errors' => errors}
     end
   end
 end

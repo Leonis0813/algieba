@@ -136,6 +136,20 @@ describe Api::PaymentsController, type: :controller do
       it_behaves_like 'レスポンスが正しいこと', status: 400, body: {'errors' => errors}
     end
 
+    context 'categoriesが同じ値が指定されている場合' do
+      errors = [
+        {
+          'error_code' => 'duplicated_resource',
+          'parameter' => 'name',
+          'resource' => 'category',
+        }
+      ]
+      include_context 'トランザクション作成'
+      before(:all) { @payment = create(:payment) }
+      include_context '収支情報を更新する', body: {categories: %w[test test]}
+      it_behaves_like 'レスポンスが正しいこと', status: 400, body: {'errors' => errors}
+    end
+
     context 'tagsが不正な場合' do
       errors = [
         {
@@ -147,6 +161,20 @@ describe Api::PaymentsController, type: :controller do
       include_context 'トランザクション作成'
       before(:all) { @payment = create(:payment) }
       include_context '収支情報を更新する', body: {tags: [{tag: 'test'}]}
+      it_behaves_like 'レスポンスが正しいこと', status: 400, body: {'errors' => errors}
+    end
+
+    context 'tagsに同じ値が指定されている場合' do
+      errors = [
+        {
+          'error_code' => 'duplicated_resource',
+          'parameter' => 'name',
+          'resource' => 'tag',
+        }
+      ]
+      include_context 'トランザクション作成'
+      before(:all) { @payment = create(:payment) }
+      include_context '収支情報を更新する', body: {tags: %w[test test]}
       it_behaves_like 'レスポンスが正しいこと', status: 400, body: {'errors' => errors}
     end
 

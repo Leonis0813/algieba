@@ -54,6 +54,9 @@ module Api
         rescue ActiveRecord::RecordInvalid
           messages = {categories: [ApplicationValidator::ERROR_MESSAGE[:invalid]]}
           raise BadRequest, messages: messages, resource: 'payment'
+        rescue ActiveRecord::RecordNotUnique
+          messages = {name: [ApplicationValidator::ERROR_MESSAGE[:duplicated]]}
+          raise BadRequest, messages: messages, resource: 'category'
         end
       end
 
@@ -65,6 +68,9 @@ module Api
         rescue ActiveRecord::RecordInvalid
           messages = {tags: [ApplicationValidator::ERROR_MESSAGE[:invalid]]}
           raise BadRequest, messages: messages, resource: 'payment'
+        rescue ActiveRecord::RecordNotUnique
+          messages = {name: [ApplicationValidator::ERROR_MESSAGE[:duplicated]]}
+          raise BadRequest, messages: messages, resource: 'tag'
         end
       end
 

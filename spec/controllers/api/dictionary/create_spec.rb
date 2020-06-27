@@ -168,5 +168,53 @@ describe Api::DictionariesController, type: :controller do
         is_asserted_by { Dictionary.where(query).count == 1 }
       end
     end
+
+    context '同じ名前のカテゴリが指定されている場合' do
+      params = default_params.merge(categories: %w[test test])
+      body = {
+        'errors' => [
+          {
+            'error_code' => 'include_same_value',
+            'parameter' => 'categories',
+            'resource' => 'dictionary',
+          },
+        ],
+      }
+
+      include_context '辞書情報を登録する', params
+
+      it_behaves_like 'レスポンスが正しいこと', status: 400, body: body
+      it_behaves_like 'DBに辞書情報が追加されていないこと', params.except(:categories)
+    end
+
+    context '複合エラーの場合' do
+      params = {
+        condition: 'invalid',
+        categories: %w[test test],
+      }
+      body = {
+        'errors' => [
+          {
+            'error_code' => 'absent_parameter',
+            'parameter' => 'phrase',
+            'resource' => 'dictionary',
+          },
+          {
+            'error_code' => 'invalid_parameter',
+            'parameter' => 'condition',
+            'resource' => 'dictionary',
+          },
+          {
+            'error_code' => 'include_same_value',
+            'parameter' => 'categories',
+            'resource' => 'dictionary',
+          },
+        ],
+      }
+
+      include_context '辞書情報を登録する', params
+
+      it_behaves_like 'レスポンスが正しいこと', status: 400, body: body
+    end
   end
 end
