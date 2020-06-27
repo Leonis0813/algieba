@@ -17,10 +17,14 @@ describe Api::DictionariesController, type: :controller do
   include_context 'トランザクション作成'
 
   before(:all) do
-    create(:dictionary) {|dictionary| dictionary.categories.create(name: 'include') }
-    create(:dictionary, phrase: 'test2', condition: 'equal') do |dictionary|
-      dictionary.categories.create(name: 'equal')
-    end
+    attribute = {phrase: 'test', categories: [build(:category, name: 'include')]}
+    create(:dictionary, attribute)
+    attribute = {
+      phrase: 'test2',
+      condition: 'equal',
+      categories: [build(:category, name: 'equal')]
+    }
+    create(:dictionary, attribute)
   end
 
   describe '正常系' do

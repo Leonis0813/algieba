@@ -6,7 +6,7 @@ class StringValidator < ApplicationValidator
               value
             end
 
-    if value.nil?
+    if value.blank?
       record.errors.add(attribute, ERROR_MESSAGE[:absent])
       return
     end

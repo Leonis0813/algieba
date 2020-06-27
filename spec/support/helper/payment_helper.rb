@@ -8,8 +8,8 @@ module PaymentHelper
         payment_type: 'income',
         date: '1000-01-01',
         content: '機能テスト用データ1',
-        categories: ['algieba'],
-        tags: ['test_data'],
+        categories: ['income'],
+        tags: ['income'],
         price: 1000,
       },
       expense: {
@@ -17,8 +17,8 @@ module PaymentHelper
         payment_type: 'expense',
         date: '1000-01-05',
         content: '機能テスト用データ2',
-        categories: ['algieba'],
-        tags: ['test_data'],
+        categories: ['expense'],
+        tags: ['expense'],
         price: 100,
       },
     }

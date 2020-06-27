@@ -5,28 +5,25 @@ require 'rails_helper'
 describe Api::PaymentsController, type: :controller do
   shared_context '収支情報を取得する' do |payment_id|
     before(:all) do
-      payment_id ||= @payment_id
+      payment_id ||= @payment.payment_id
       res = client.get("/api/payments/#{payment_id}")
       @response_status = res.status
       @response_body = JSON.parse(res.body) rescue res.body
     end
   end
 
-  include_context '収支情報を登録する'
+  include_context 'トランザクション作成'
+  before(:all) { @payment = create(:payment) }
 
   describe '正常系' do
-    payment = PaymentHelper.test_payment[:income]
     before(:all) do
-      categories = payment[:categories].map do |category_name|
-        Category.find_by(name: category_name).slice(:category_id, :name, :description)
+      categories = @payment.categories.map do |category|
+        category.slice(:category_id, :name, :description)
       end
-      tags = payment[:tags].map do |tag_name|
-        Tag.find_by(name: tag_name).slice(:tag_id, :name)
-      end
+      tags = @payment.tags.map {|tag| tag.slice(:tag_id, :name) }
 
-      @payment_id = Payment.find(payment[:id]).payment_id
-      @body = payment.except(:id).merge(
-        payment_id: @payment_id,
+      @body = @payment.slice(:payment_id, :payment_type, :content, :price).merge(
+        date: @payment.date.strftime('%F'),
         categories: categories,
         tags: tags,
       ).deep_stringify_keys

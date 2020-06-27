@@ -12,7 +12,8 @@ describe Api::PaymentsController, type: :controller do
     end
   end
 
-  include_context '収支情報を登録する'
+  include_context 'トランザクション作成'
+  before(:all) { create(:payment) }
 
   describe '正常系' do
     before(:all) { @payment_id = Payment.first.payment_id }

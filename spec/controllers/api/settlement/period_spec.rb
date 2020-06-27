@@ -11,7 +11,16 @@ describe Api::SettlementsController, type: :controller do
     end
   end
 
-  include_context '収支情報を登録する'
+  include_context 'トランザクション作成'
+  before(:all) do
+    category = create(:category, {name: 'algieba'})
+    [
+      {payment_type: 'income', date: '1000-01-01', price: 1000},
+      {payment_type: 'expense', date: '1000-01-05', price: 100},
+    ].each do |attribute|
+      create(:payment, attribute.merge(categories: [category]))
+    end
+  end
 
   describe '正常系' do
     [
@@ -40,14 +49,30 @@ describe Api::SettlementsController, type: :controller do
   describe '異常系' do
     [[nil, 'absent'], %w[invalid_interval invalid]].each do |interval, message|
       context "#{interval || 'nil'}を指定する場合" do
-        body = {'errors' => [{'error_code' => "#{message}_param_interval"}]}
+        body = {
+          'errors' => [
+            {
+              'error_code' => "#{message}_parameter",
+              'parameter' => 'interval',
+              'resource' => nil,
+            },
+          ],
+        }
         include_context '収支を計算する', interval: interval
         it_behaves_like 'レスポンスが正しいこと', status: 400, body: body
       end
     end
 
     context 'interval パラメーターがない場合' do
-      body = {'errors' => [{'error_code' => 'absent_param_interval'}]}
+      body = {
+        'errors' => [
+          {
+            'error_code' => 'absent_parameter',
+            'parameter' => 'interval',
+            'resource' => nil,
+          },
+        ],
+      }
       include_context '収支を計算する'
       it_behaves_like 'レスポンスが正しいこと', status: 400, body: body
     end

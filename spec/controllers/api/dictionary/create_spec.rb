@@ -107,7 +107,15 @@ describe Api::DictionariesController, type: :controller do
   describe '異常系' do
     %i[phrase condition categories].each do |absent_key|
       context "#{absent_key}がない場合" do
-        body = {'errors' => [{'error_code' => "absent_param_#{absent_key}"}]}
+        body = {
+          'errors' => [
+            {
+              'error_code' => 'absent_parameter',
+              'parameter' => absent_key.to_s,
+              'resource' => 'dictionary',
+            },
+          ],
+        }
         include_context '辞書情報を登録する', default_params.except(absent_key)
 
         it_behaves_like 'レスポンスが正しいこと', status: 400, body: body
@@ -118,8 +126,16 @@ describe Api::DictionariesController, type: :controller do
 
     %i[phrase condition].each do |invalid_key|
       context "#{invalid_key}が不正な場合" do
-        params = default_params.merge(invalid_key => nil)
-        body = {'errors' => [{'error_code' => "invalid_param_#{invalid_key}"}]}
+        params = default_params.merge(invalid_key => ['invalid'])
+        body = {
+          'errors' => [
+            {
+              'error_code' => 'invalid_parameter',
+              'parameter' => invalid_key.to_s,
+              'resource' => 'dictionary',
+            },
+          ],
+        }
         include_context '辞書情報を登録する', params
 
         it_behaves_like 'レスポンスが正しいこと', status: 400, body: body
@@ -128,7 +144,15 @@ describe Api::DictionariesController, type: :controller do
     end
 
     context '既に同じ辞書が登録されている場合' do
-      body = {'errors' => [{'error_code' => 'duplicated_dictionary'}]}
+      body = {
+        'errors' => [
+          {
+            'error_code' => 'duplicated_resource',
+            'parameter' => 'phrase',
+            'resource' => 'dictionary',
+          },
+        ],
+      }
       include_context 'トランザクション作成'
       before(:all) do
         dictionary = Dictionary.new(default_params.except(:categories))

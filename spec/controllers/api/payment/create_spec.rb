@@ -3,9 +3,10 @@
 require 'rails_helper'
 
 describe Api::PaymentsController, type: :controller do
-  shared_context '収支情報を登録する' do |params|
+  shared_context '収支情報を登録する' do |body: nil|
     before(:all) do
-      res = client.post('/api/payments', params)
+      body ||= @body
+      res = client.post('/api/payments', body)
       @response_status = res.status
       @response_body = JSON.parse(res.body) rescue res.body
     end
@@ -14,10 +15,11 @@ describe Api::PaymentsController, type: :controller do
   describe '正常系' do
     base_payment = PaymentHelper.test_payment[:income].except(:id)
 
-    shared_examples 'レスポンスが正しいこと' do |body|
+    shared_examples 'レスポンスが正しいこと' do |body: nil|
       it_behaves_like 'ステータスコードが正しいこと', 201
 
       it 'レスポンスボディが正しいこと' do
+        body ||= @expected_body
         is_asserted_by { @response_body.keys.sort == PaymentHelper.response_keys }
 
         body.except(:payment_id, :categories, :tags).each do |key, value|
@@ -46,98 +48,193 @@ describe Api::PaymentsController, type: :controller do
       end
     end
 
+    valid_attribute = {
+      payment_type: %w[income expense],
+      date: %w[1000-01-02],
+      content: %w[テスト],
+      categories: [%w[test]],
+      tags: [%w[test]],
+      price: [1, 10],
+    }
+
+    CommonHelper.generate_test_case(valid_attribute).each do |body|
+      context "#{body}を指定する場合" do
+        include_context 'トランザクション作成'
+        before(:all) do
+          payment = build(:payment)
+          categories = payment.categories.map(&:name)
+          tags = payment.tags.map(&:name)
+          @body = payment.slice(:payment_type, :content, :price).merge(
+            date: payment.date.strftime('%F'),
+            categories: categories,
+            tags: tags,
+          ).merge(body)
+
+          response_categories = (body[:categories] || categories).map do |category_name|
+            {name: category_name, description: nil}
+          end
+          response_tags = (body[:tags] || tags).map do |tag_name|
+            {name: tag_name}
+          end
+          @expected_body = @body.except(:categories, :tags).merge(
+            categories: response_categories,
+            tags: response_tags,
+          ).deep_stringify_keys
+        end
+
+        include_context '収支情報を登録する'
+        it_behaves_like 'レスポンスが正しいこと'
+      end
+    end
+
     [
-      ['カテゴリが既に存在している場合', {}],
-      ['カテゴリが存在しない場合', {categories: ['not_exist']}],
-      ['複数のカテゴリを指定した場合', {categories: %w[algieba other_category]}],
+      ['カテゴリが既に存在している場合', %w[algieba]],
+      ['複数のカテゴリを指定した場合', %w[algieba other_category]],
     ].each do |description, categories|
       context description do
-        body = base_payment.merge(categories)
-        response_categories = body[:categories].map do |category_name|
-          {name: category_name, description: nil}
-        end
-        response_tags = body[:tags].map {|tag_name| {name: tag_name} }
-        expected_response = body.merge(
-          categories: response_categories,
-          tags: response_tags,
-        ).except(:id)
-
         include_context 'トランザクション作成'
-        include_context '収支情報を登録する', body
-        it_behaves_like 'レスポンスが正しいこと', expected_response
+        before(:all) do
+          category = create(:category, name: 'algieba')
+          payment = build(:payment)
+          @body = payment.slice(:payment_type, :content, :price).merge(
+            date: payment.date.strftime('%F'),
+            categories: categories,
+          )
+
+          response_categories = categories.map do |category_name|
+            {name: category_name, description: nil}
+          end
+          @expected_body = @body.except(:categories, :tags).merge(
+            categories: response_categories,
+            tags: [],
+          )
+        end
+        include_context '収支情報を登録する'
+        it_behaves_like 'レスポンスが正しいこと'
       end
     end
 
     [
-      ['タグが既に存在している場合', {}],
-      ['タグが存在しない場合', {tags: ['not_exist']}],
-      ['複数のタグを指定した場合', {tags: %w[algieba other_tag]}],
+      ['タグが既に存在している場合', %w[algieba]],
+      ['複数のタグを指定した場合', %w[algieba other_tag]],
     ].each do |description, tags|
       context description do
-        body = base_payment.merge(tags)
-        response_categories = body[:categories].map do |category_name|
-          {name: category_name, description: nil}
-        end
-        response_tags = body[:tags].map {|tag_name| {name: tag_name} }
-        expected_response = body.merge(
-          categories: response_categories,
-          tags: response_tags,
-        ).except(:id)
-
         include_context 'トランザクション作成'
-        include_context '収支情報を登録する', body
-        it_behaves_like 'レスポンスが正しいこと', expected_response
-      end
-    end
+        before(:all) do
+          tag = create(:tag, name: 'algieba')
+          payment = build(:payment)
+          @body = payment.slice(:payment_type, :content, :price).merge(
+            date: payment.date.strftime('%F'),
+            categories: payment.categories.map(&:name),
+            tags: tags
+          )
 
-    context 'タグを指定しない場合' do
-      body = base_payment.except(:tags)
-      response_categories = body[:categories].map do |category_name|
-        {name: category_name, description: nil}
+          response_categories = payment.categories.map do |category|
+            {name: category.name, description: nil}
+          end
+          response_tags = tags.map {|tag_name| {name: tag_name} }
+          @expected_body = @body.except(:categories, :tags).merge(
+            categories: response_categories,
+            tags: response_tags,
+          )
+        end
+        include_context '収支情報を登録する'
+        it_behaves_like 'レスポンスが正しいこと'
       end
-      expected_response = body.merge(
-        categories: response_categories,
-        tags: [],
-      ).except(:id)
-
-      include_context 'トランザクション作成'
-      include_context '収支情報を登録する', body
-      it_behaves_like 'レスポンスが正しいこと', expected_response
     end
   end
 
   describe '異常系' do
-    payment_params = (PaymentHelper.response_keys - %w[payment_id tags]).map(&:to_sym)
-    test_cases = [].tap do |tests|
-      (payment_params.size - 1).times do |i|
-        tests << payment_params.combination(i + 1).to_a
-      end
-    end.flatten(1)
+    required_keys = %i[payment_type date content price categories]
 
-    test_cases.each do |absent_keys|
+    CommonHelper.generate_combinations(required_keys).each do |absent_keys|
       context "#{absent_keys.join(',')}がない場合" do
-        selected_keys = payment_params - absent_keys
-        income = PaymentHelper.test_payment[:income].slice(*selected_keys)
-        errors = absent_keys.sort.map {|key| {'error_code' => "absent_param_#{key}"} }
-        include_context 'トランザクション作成'
-        include_context '収支情報を登録する', income
+        errors = absent_keys.map do |key|
+          {
+            'error_code' => 'absent_parameter',
+            'parameter' => key.to_s,
+            'resource' => 'payment',
+          }
+        end
+
+        before(:all) do
+          payment = build(:payment)
+          @body = payment.slice(:payment_type, :content, :price).merge(
+            date: payment.date.strftime('%F'),
+            categories: payment.categories.map(&:name),
+            tags: payment.tags.map(&:name),
+          ).except(*absent_keys)
+        end
+        include_context '収支情報を登録する'
         it_behaves_like 'レスポンスが正しいこと', status: 400, body: {'errors' => errors}
       end
     end
 
-    [
-      {payment_type: 'invalid_type'},
-      {date: 'invalid_date'},
-      {price: 'invalid_price'},
-      {payment_type: 'invalid_type', date: 'invalid_date', price: 'invalid_price'},
-    ].each do |invalid_param|
-      context "#{invalid_param.keys.join(',')}が不正な場合" do
-        expense = PaymentHelper.test_payment[:expense].merge(invalid_param)
-        errors = invalid_param.keys.sort.map do |key|
-          {'error_code' => "invalid_param_#{key}"}
+    invalid_attribute = {
+      payment_type: [1, 'invalid', ['income'], {type: 'income'}, true],
+      date: [1, 'invalid', '1000-13-01', ['1000-01-01'], {date: '1000-01-01'}, true],
+      content: [['test'], {content: 'test'}], # add cases after removing capybara
+      price: [[1], {price: 1}], # add cases after removing capybara
+    }
+    CommonHelper.generate_test_case(invalid_attribute).each do |body|
+      context "#{body.keys.join(',')}が不正な場合" do
+        errors = body.keys.map do |key|
+          {
+            'error_code' => 'invalid_parameter',
+            'parameter' => key.to_s,
+            'resource' => 'payment',
+          }
         end
-        include_context 'トランザクション作成'
-        include_context '収支情報を登録する', expense
+        before(:all) do
+          payment = build(:payment)
+          @body = payment.slice(:payment_type, :content, :price).merge(
+            date: payment.date.strftime('%F'),
+            categories: payment.categories.map(&:name),
+            tags: payment.tags.map(&:name),
+          ).merge(body)
+        end
+        include_context '収支情報を登録する'
+        it_behaves_like 'レスポンスが正しいこと', status: 400, body: {'errors' => errors}
+      end
+    end
+
+    context 'categoriesが不正な場合' do
+      errors = [
+        {
+          'error_code' => 'invalid_parameter',
+          'parameter' => 'categories',
+          'resource' => 'payment',
+        }
+      ]
+      before(:all) do
+        payment = build(:payment)
+        @body = payment.slice(:payment_type, :content, :price).merge(
+          date: payment.date.strftime('%F'),
+          categories: [{category: 'test'}],
+        )
+      end
+      include_context '収支情報を登録する'
+      it_behaves_like 'レスポンスが正しいこと', status: 400, body: {'errors' => errors}
+    end
+
+    [['0' * 11], [{tag: 'test'}]].each do |tags|
+      context 'tagsが不正な場合' do
+        errors = [
+          {
+            'error_code' => 'invalid_parameter',
+            'parameter' => 'tags',
+            'resource' => 'payment',
+          }
+        ]
+        before(:all) do
+          payment = build(:payment)
+          @body = payment.slice(:payment_type, :content, :price).merge(
+            date: payment.date.strftime('%F'),
+            categories: %w[test],
+            tags: tags,
+          )
+        end
+        include_context '収支情報を登録する'
         it_behaves_like 'レスポンスが正しいこと', status: 400, body: {'errors' => errors}
       end
     end

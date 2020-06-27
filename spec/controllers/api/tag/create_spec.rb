@@ -46,7 +46,15 @@ describe Api::TagsController, type: :controller do
   describe '異常系' do
     %i[name].each do |absent_key|
       context "#{absent_key}がない場合" do
-        body = {'errors' => [{'error_code' => "absent_param_#{absent_key}"}]}
+        body = {
+          'errors' => [
+            {
+              'error_code' => 'absent_parameter',
+              'parameter' => absent_key.to_s,
+              'resource' => 'tag',
+            },
+          ],
+        }
         include_context 'タグ情報を登録する', default_params.except(absent_key)
 
         it_behaves_like 'レスポンスが正しいこと', status: 400, body: body
@@ -60,7 +68,15 @@ describe Api::TagsController, type: :controller do
     ].each do |invalid_key, value|
       context "#{invalid_key}が不正な場合" do
         params = default_params.merge(invalid_key => value)
-        body = {'errors' => [{'error_code' => "invalid_param_#{invalid_key}"}]}
+        body = {
+          'errors' => [
+            {
+              'error_code' => 'invalid_parameter',
+              'parameter' => invalid_key.to_s,
+              'resource' => 'tag',
+            },
+          ],
+        }
         include_context 'タグ情報を登録する', params
 
         it_behaves_like 'レスポンスが正しいこと', status: 400, body: body
@@ -69,7 +85,15 @@ describe Api::TagsController, type: :controller do
     end
 
     context '既に同じタグが登録されている場合' do
-      body = {'errors' => [{'error_code' => 'duplicated_tag'}]}
+      body = {
+        'errors' => [
+          {
+            'error_code' => 'duplicated_resource',
+            'parameter' => 'name',
+            'resource' => 'tag',
+          },
+        ],
+      }
       include_context 'トランザクション作成'
       before(:all) { create(:tag, default_params) }
       include_context 'タグ情報を登録する'

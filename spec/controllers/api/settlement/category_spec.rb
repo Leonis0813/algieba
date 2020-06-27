@@ -11,7 +11,16 @@ describe Api::SettlementsController, type: :controller do
     end
   end
 
-  include_context '収支情報を登録する'
+  include_context 'トランザクション作成'
+  before(:all) do
+    category = create(:category, {name: 'algieba'})
+    [
+      {payment_type: 'income', price: 1000},
+      {payment_type: 'expense', price: 100},
+    ].each do |attribute|
+      create(:payment, attribute.merge(categories: [category]))
+    end
+  end
 
   describe '正常系' do
     [
@@ -28,14 +37,30 @@ describe Api::SettlementsController, type: :controller do
   describe '異常系' do
     [[nil, 'absent'], %w[invalid invalid]].each do |payment_type, message|
       context "#{payment_type || 'nil'}を指定する場合" do
-        body = {'errors' => [{'error_code' => "#{message}_param_payment_type"}]}
+        body = {
+          'errors' => [
+            {
+              'error_code' => "#{message}_parameter",
+              'parameter' => 'payment_type',
+              'resource' => nil,
+            },
+          ],
+        }
         include_context '収支を計算する', payment_type: payment_type
         it_behaves_like 'レスポンスが正しいこと', status: 400, body: body
       end
     end
 
     context 'payment_type パラメーターがない場合' do
-      body = {'errors' => [{'error_code' => 'absent_param_payment_type'}]}
+      body = {
+        'errors' => [
+          {
+            'error_code' => 'absent_parameter',
+            'parameter' => 'payment_type',
+            'resource' => nil,
+          },
+        ],
+      }
       include_context '収支を計算する'
       it_behaves_like 'レスポンスが正しいこと', status: 400, body: body
     end

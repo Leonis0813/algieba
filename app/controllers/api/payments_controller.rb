@@ -3,12 +3,25 @@ module Api
     before_action :check_request_payment, only: %i[show update destroy]
 
     def create
-      @payment = Payment.new(create_params.except(:categories, :tags))
+      # remove after removing capybara
+      price = create_params[:price].to_i rescue create_params[:price] if create_params[:price]
+      @payment = Payment.new(create_params.except(:categories, :tags).merge(price: price))
       @payment.categories = Array.wrap(create_params[:categories]).map do |name|
-        Category.find_or_initialize_by(name: name)
+        category = Category.find_by(name: name.to_s) || Category.new(name: name)
+        if category.invalid?
+          messages = {categories: [ApplicationValidator::ERROR_MESSAGE[:invalid]]}
+          raise BadRequest, messages: messages, resource: 'payment'
+        end
+        category
       end
+
       @payment.tags = Array.wrap(create_params[:tags]).map do |name|
-        Tag.find_or_initialize_by(name: name)
+        tag = Tag.find_by(name: name.to_s) || Tag.new(name: name)
+        if tag.invalid?
+          messages = {tags: [ApplicationValidator::ERROR_MESSAGE[:invalid]]}
+          raise BadRequest, messages: messages, resource: 'payment'
+        end
+        tag
       end
 
       raise BadRequest, messages: @payment.errors.messages, resource: 'payment' unless @payment.save
@@ -34,14 +47,24 @@ module Api
 
     def update
       if update_params[:categories]
-        request_payment.categories = update_params[:categories].map do |category_name|
-          Category.find_or_create_by(name: category_name)
+        begin
+          request_payment.categories = update_params[:categories].map do |category_name|
+            Category.find_by(name: category_name.to_s) || Category.create!(name: category_name)
+          end
+        rescue ActiveRecord::RecordInvalid
+          messages = {categories: [ApplicationValidator::ERROR_MESSAGE[:invalid]]}
+          raise BadRequest, messages: messages, resource: 'payment'
         end
       end
 
       if update_params[:tags]
-        request_payment.tags = update_params[:tags].map do |tag_name|
-          Tag.find_or_create_by(name: tag_name)
+        begin
+          request_payment.tags = update_params[:tags].map do |tag_name|
+            Tag.find_by(name: tag_name.to_s) || Tag.create!(name: tag_name)
+          end
+        rescue ActiveRecord::RecordInvalid
+          messages = {tags: [ApplicationValidator::ERROR_MESSAGE[:invalid]]}
+          raise BadRequest, messages: messages, resource: 'payment'
         end
       end
 
