@@ -30,7 +30,7 @@ class StringValidator < ApplicationValidator
       record.errors.add(attribute, ERROR_MESSAGE[:invalid])
     end
 
-    return if length?(options[:length])
+    return if length?(options[:length], value)
 
     record.errors.add(attribute, ERROR_MESSAGE[:invalid])
   end
