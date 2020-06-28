@@ -16,6 +16,12 @@ class StringValidator < ApplicationValidator
       return
     end
 
+    check_options(record, attribute, value)
+  end
+
+  private
+
+  def check_options(record, attribute, value)
     unless format?(options[:format], value)
       record.errors.add(attribute, ERROR_MESSAGE[:invalid])
     end
@@ -24,12 +30,10 @@ class StringValidator < ApplicationValidator
       record.errors.add(attribute, ERROR_MESSAGE[:invalid])
     end
 
-    unless length?(options[:length])
-      record.errors.add(attribute, ERROR_MESSAGE[:invalid])
-    end
-  end
+    return if length?(options[:length])
 
-  private
+    record.errors.add(attribute, ERROR_MESSAGE[:invalid])
+  end
 
   def format?(format, value)
     return true if format.nil?
