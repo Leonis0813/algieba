@@ -16,19 +16,40 @@ class StringValidator < ApplicationValidator
       return
     end
 
-    format = options[:format]
-    if format.present? and not value.match?(format)
+    unless format?(options[:format], value)
       record.errors.add(attribute, ERROR_MESSAGE[:invalid])
     end
 
-    enum = options[:enum]
-    if enum.present? and not enum.include?(value)
+    unless enum?(options[:enum], value)
       record.errors.add(attribute, ERROR_MESSAGE[:invalid])
     end
 
-    length = options[:length]
-    if length.present? and not value.size <= length[:maximum]
+    unless length?(options[:length])
       record.errors.add(attribute, ERROR_MESSAGE[:invalid])
+    end
+  end
+
+  private
+
+  def format?(format, value)
+    return true if format.nil?
+
+    value.match?(format)
+  end
+
+  def enum?(enum, value)
+    return true if enum.nil?
+
+    enum.include?(value)
+  end
+
+  def length?(length, value)
+    return true length.nil?
+
+    if length[:maximum].present?
+      value.size <= length[:maximum]
+    else
+      true
     end
   end
 end

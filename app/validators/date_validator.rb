@@ -16,8 +16,8 @@ class DateValidator < ApplicationValidator
       return
     end
 
-    if value.is_a?(String)
-      Date.parse(value) rescue record.errors.add(attribute, ERROR_MESSAGE[:invalid])
-    end
+    return unless value.is_a?(String)
+
+    Date.parse(value) rescue record.errors.add(attribute, ERROR_MESSAGE[:invalid])
   end
 end

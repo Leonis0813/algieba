@@ -22,7 +22,7 @@ describe Api::DictionariesController, type: :controller do
     attribute = {
       phrase: 'test2',
       condition: 'equal',
-      categories: [build(:category, name: 'equal')]
+      categories: [build(:category, name: 'equal')],
     }
     create(:dictionary, attribute)
   end

@@ -16,14 +16,27 @@ class IntegerValidator < ApplicationValidator
       return
     end
 
-    greater_than = options[:greater_than]
-    if greater_than.present? and not value > greater_than
+    unless greater_than?(options[:greater_than], value)
       record.errors.add(attribute, ERROR_MESSAGE[:invalid])
+      return
     end
 
-    greater_than_or_equal_to = options[:greater_than_or_equal_to]
-    if greater_than_or_equal_to.present? and not value >= greater_than_or_equal_to
+    unless greater_than_or_equal_to?(options[:greater_than_or_equal_to], value)
       record.errors.add(attribute, ERROR_MESSAGE[:invalid])
     end
+  end
+
+  private
+
+  def greater_than?(greater_than, value)
+    return true if greater_than.nil?
+
+    value > greater_than
+  end
+
+  def greater_than_or_equal_to?(greater_than_or_equal_to, value)
+    return true if greater_than_or_equal_to.nil?
+
+    value >= greater_than_or_equal_to
   end
 end

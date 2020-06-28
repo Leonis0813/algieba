@@ -4,8 +4,11 @@ module Api
 
     def create
       # remove after removing capybara
-      price = create_params[:price].to_i rescue create_params[:price] if create_params[:price]
-      @payment = Payment.new(create_params.except(:categories, :tags).merge(price: price))
+      price = if create_params[:price]
+                create_params[:price].to_i rescue create_params[:price]
+              end
+      attribute = create_params.except(:categories, :tags).merge(price: price)
+      @payment = Payment.new(attribute)
       @payment.categories = Array.wrap(create_params[:categories]).map do |name|
         category = Category.find_by(name: name.to_s) || Category.new(name: name)
         if category.invalid?
@@ -24,7 +27,9 @@ module Api
         tag
       end
 
-      raise BadRequest, messages: @payment.errors.messages, resource: 'payment' unless @payment.save
+      unless @payment.save
+        raise BadRequest, messages: @payment.errors.messages, resource: 'payment'
+      end
 
       render status: :created
     end
@@ -49,7 +54,8 @@ module Api
       if update_params[:categories]
         begin
           request_payment.categories = update_params[:categories].map do |category_name|
-            Category.find_by(name: category_name.to_s) || Category.create!(name: category_name)
+            Category.find_by(name: category_name.to_s) ||
+              Category.create!(name: category_name)
           end
         rescue ActiveRecord::RecordInvalid
           messages = {categories: [ApplicationValidator::ERROR_MESSAGE[:invalid]]}

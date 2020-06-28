@@ -59,7 +59,11 @@ describe PaymentsController, type: :controller do
     CommonHelper.generate_test_case(invalid_attribute).each do |query|
       context "#{query.keys.join(',')}が不正な場合" do
         errors = query.keys.map do |key|
-          {'error_code' => 'invalid_parameter', 'parameter' => key.to_s, 'resource' => nil}
+          {
+            'error_code' => 'invalid_parameter',
+            'parameter' => key.to_s,
+            'resource' => nil,
+          }
         end
         include_context '収支情報を検索する', query
         it_behaves_like 'レスポンスが正しいこと', status: 400, body: {'errors' => errors}

@@ -36,7 +36,11 @@ describe Dictionary, type: :model do
         dictionary_id: ['0' * 33, 'g' * 32, 1, [1], {id: 1}, true],
         phrase: [1, ['test'], {phrase: 'test'}, true],
         condition: %w[invalid],
-        categories: [{category_id: nil}, {category_id: '0' * 33}, {category_id: '1' * 32}],
+        categories: [
+          {category_id: nil},
+          {category_id: '0' * 33},
+          {category_id: '1' * 32},
+        ],
       }
       CommonHelper.generate_test_case(invalid_attribute).each do |attribute|
         context "#{attribute.keys.join(',')}が不正な場合" do
@@ -55,9 +59,9 @@ describe Dictionary, type: :model do
       end
 
       [
-        [:dictionary_id],
-        [:phrase, :condition],
-        [:dictionary_id, :phrase, :condition],
+        %i[dictionary_id],
+        %i[phrase condition],
+        %i[dictionary_id phrase condition],
       ].each do |keys|
         error_keys = keys - [:condition]
 

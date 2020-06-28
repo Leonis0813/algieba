@@ -4,7 +4,7 @@ class CollectionValidator < ApplicationValidator
       values = value.map {|object| object.send(attribute_name) }
       if values.uniq.size != values.size
         record.errors.add(attribute, ERROR_MESSAGE[:same_value])
-        return
+        break
       end
     end
   end

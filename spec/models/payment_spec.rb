@@ -39,7 +39,11 @@ describe Payment, type: :model do
         date: [1, 'invalid', '1000-13-01', ['1000-01-01'], {date: '1000-01-01'}, true],
         content: [1, ['test'], {content: 'test'}, true],
         price: [0, '1', [1], {price: 1}, true],
-        categories: [{category_id: nil}, {category_id: '0' * 33}, {category_id: '1' * 32}],
+        categories: [
+          {category_id: nil},
+          {category_id: '0' * 33},
+          {category_id: '1' * 32},
+        ],
         tags: [{tag_id: nil}, {tag_id: '0' * 33}, {tag_id: '1' * 32}],
       }
       CommonHelper.generate_test_case(invalid_attribute).each do |attribute|
@@ -73,7 +77,11 @@ describe Payment, type: :model do
         it_behaves_like 'エラーメッセージが正しいこと', expected_error
       end
 
-      [[:categories], [:tags], [:categories, :tags]].each do |keys|
+      [
+        %i[categories],
+        %i[tags],
+        %i[categories tags],
+      ].each do |keys|
         context "#{keys.join(',')}に同じ値が含まれている場合" do
           expected_error = keys.map {|key| [key, 'include_same_value'] }.to_h
 

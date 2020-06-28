@@ -63,7 +63,7 @@ describe Api::PaymentsController, type: :controller do
           date: @payment.date.strftime('%F'),
           categories: categories,
           tags: tags,
-          ).deep_stringify_keys
+        ).deep_stringify_keys
       end
 
       it_behaves_like 'レスポンスが正しいこと'
@@ -128,7 +128,7 @@ describe Api::PaymentsController, type: :controller do
           'error_code' => 'invalid_parameter',
           'parameter' => 'categories',
           'resource' => 'payment',
-        }
+        },
       ]
       include_context 'トランザクション作成'
       before(:all) { @payment = create(:payment) }
@@ -142,7 +142,7 @@ describe Api::PaymentsController, type: :controller do
           'error_code' => 'duplicated_resource',
           'parameter' => 'name',
           'resource' => 'category',
-        }
+        },
       ]
       include_context 'トランザクション作成'
       before(:all) { @payment = create(:payment) }
@@ -156,7 +156,7 @@ describe Api::PaymentsController, type: :controller do
           'error_code' => 'invalid_parameter',
           'parameter' => 'tags',
           'resource' => 'payment',
-        }
+        },
       ]
       include_context 'トランザクション作成'
       before(:all) { @payment = create(:payment) }
@@ -170,7 +170,7 @@ describe Api::PaymentsController, type: :controller do
           'error_code' => 'duplicated_resource',
           'parameter' => 'name',
           'resource' => 'tag',
-        }
+        },
       ]
       include_context 'トランザクション作成'
       before(:all) { @payment = create(:payment) }

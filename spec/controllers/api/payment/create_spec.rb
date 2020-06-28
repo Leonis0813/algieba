@@ -92,7 +92,7 @@ describe Api::PaymentsController, type: :controller do
       context description do
         include_context 'トランザクション作成'
         before(:all) do
-          category = create(:category, name: 'algieba')
+          create(:category, name: 'algieba')
           payment = build(:payment)
           @body = payment.slice(:payment_type, :content, :price).merge(
             date: payment.date.strftime('%F'),
@@ -119,12 +119,12 @@ describe Api::PaymentsController, type: :controller do
       context description do
         include_context 'トランザクション作成'
         before(:all) do
-          tag = create(:tag, name: 'algieba')
+          create(:tag, name: 'algieba')
           payment = build(:payment)
           @body = payment.slice(:payment_type, :content, :price).merge(
             date: payment.date.strftime('%F'),
             categories: payment.categories.map(&:name),
-            tags: tags
+            tags: tags,
           )
 
           response_categories = payment.categories.map do |category|
@@ -202,7 +202,7 @@ describe Api::PaymentsController, type: :controller do
           'error_code' => 'invalid_parameter',
           'parameter' => 'categories',
           'resource' => 'payment',
-        }
+        },
       ]
       before(:all) do
         payment = build(:payment)
@@ -221,7 +221,7 @@ describe Api::PaymentsController, type: :controller do
           'error_code' => 'include_same_value',
           'parameter' => 'categories',
           'resource' => 'payment',
-        }
+        },
       ]
       before(:all) do
         payment = build(:payment)
@@ -241,7 +241,7 @@ describe Api::PaymentsController, type: :controller do
             'error_code' => 'invalid_parameter',
             'parameter' => 'tags',
             'resource' => 'payment',
-          }
+          },
         ]
         before(:all) do
           payment = build(:payment)
@@ -262,7 +262,7 @@ describe Api::PaymentsController, type: :controller do
           'error_code' => 'include_same_value',
           'parameter' => 'tags',
           'resource' => 'payment',
-        }
+        },
       ]
       before(:all) do
         payment = build(:payment)
