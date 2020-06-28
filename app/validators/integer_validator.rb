@@ -21,9 +21,9 @@ class IntegerValidator < ApplicationValidator
       return
     end
 
-    unless greater_than_or_equal_to?(options[:greater_than_or_equal_to], value)
-      record.errors.add(attribute, ERROR_MESSAGE[:invalid])
-    end
+    return if greater_than_or_equal_to?(options[:greater_than_or_equal_to], value)
+
+    record.errors.add(attribute, ERROR_MESSAGE[:invalid])
   end
 
   private

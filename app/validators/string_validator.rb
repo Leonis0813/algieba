@@ -44,7 +44,7 @@ class StringValidator < ApplicationValidator
   end
 
   def length?(length, value)
-    return true length.nil?
+    return true if length.nil?
 
     if length[:maximum].present?
       value.size <= length[:maximum]
