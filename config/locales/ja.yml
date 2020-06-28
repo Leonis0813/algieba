@@ -112,7 +112,7 @@ ja:
         error:
           title: &title 'エラー'
           index:
-            message: "%{parameter}が不正です"
+            message: "%{parameter} が不正です"
             parameter:
               date_before: *date
               date_after: *date
