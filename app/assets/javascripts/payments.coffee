@@ -183,7 +183,28 @@ $ ->
       location.href = '/algieba/management/payments?' + $.param(queries)
       return
     ).fail((xhr, status, error) ->
-      showErrorDialog($.parseJSON(xhr.responseText).errors)
+      errors = $.parseJSON(xhr.responseText).errors
+      messages = []
+      $.each(errors, (i, error) ->
+        i18nPath = "views.js.form.error.index.parameter"
+        params = {parameter: I18n.t("#{i18nPath}.#{error.parameter}")}
+        messages.push(I18n.t('views.js.form.error.index.message', params))
+        return
+      )
+
+      li = ''
+      $.each($.unique(messages), (i, message) ->
+        li += "<li>#{message}</li>"
+      )
+
+      bootbox.alert({
+        title: I18n.t('views.js.form.error.title'),
+        message: '<div class="text-center alert alert-danger">' +
+        '<ul>' +
+        li +
+        '</ul>' +
+        '</div>',
+      })
       return
     )
     return

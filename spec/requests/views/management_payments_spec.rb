@@ -144,7 +144,7 @@ describe '収支管理画面のテスト', type: :request do
       end
 
       it_behaves_like '正しくエラーダイアログが表示されていること',
-                      message: '金額 が不正です'
+                      message: '金額が不正な収支が入力されています'
       it_behaves_like '収支情報の数が正しいこと', per_page
     end
 

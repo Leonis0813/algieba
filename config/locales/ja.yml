@@ -13,11 +13,11 @@ ja:
           label: '表示件数'
       payments:
         attribute: &attribute_payments
-          date: '日付'
+          date: &date '日付'
           content: &content '内容'
           categories: &categories 'カテゴリ'
           tags: 'タグ'
-          price: '金額'
+          price: &price '金額'
           payment_type: '種類'
         form:
           tab:
@@ -111,6 +111,13 @@ ja:
       form:
         error:
           title: &title 'エラー'
+          index:
+            message: "%{parameter}が不正です"
+            parameter:
+              date_before: *date
+              date_after: *date
+              price_upper: *price
+              price_lower: *price
           message:
             absent_parameter: "%{parameter}が入力されていません"
             invalid_parameter: "%{parameter}が不正な%{resource}が入力されています"
