@@ -5,14 +5,10 @@
   <div class='col-lg-4'>
     <ul class='nav nav-tabs'>
       <li class='active'>
-        <a href='#new-payment' data-toggle='tab'>
-          <%= t("#{i18n_path}.form.tab.create") %>
-        </a>
+        <%= link_to t("#{i18n_path}.form.tab.create"), '#new-payment', 'data-toggle' => 'tab' %>
       </li>
       <li>
-        <a href='#search-form' data-toggle='tab'>
-          <%= t("#{i18n_path}.form.tab.index") %>
-        </a>
+        <%= link_to t("#{i18n_path}.form.tab.index"), '#search-form', 'data-toggle' => 'tab' %>
       </li>
     </ul>
 
@@ -141,17 +137,23 @@
       <h4 style='padding: 0px 10px;display: inline'>
         <%= t('views.management.common.pagination.info', info) %>
       </h4>
+      <button id='btn-assign-tag' class='btn btn-default pull-right' data-names='<%= tag_names %>'>
+        <span class='glyphicon glyphicon-tag'>
+      </button>
       <form style='padding: 0px 10px;display: inline' id='per_page_form' class='form-inline pull-right' onSubmit='return false;'>
         <label for='per_page'>
           <%= t('views.management.common.pagination.label') %>
         </label>
-        <input type='text' id='per_page' class='form-control' name='per_page' value='<%= @per_page %>' size='10'>
+        <input type='text' id='per_page' class='form-control' name='per_page' value='<%= @search_form.per_page %>' size='10'>
       </form>
     </div>
     <%= paginate @payments %>
     <table id='payment_table' class='table table-hover' style='max-width:300px'>
       <thead>
         <tr>
+          <th id='header_checkbox' style='border: none'>
+            <input type='checkbox' id='checkbox-all'>
+          </th>
           <% %w[payment_type date content categories tags price].each do |attribute| %>
             <th id='<%= "header_#{attribute}" %>'>
               <%= t("#{i18n_path}.attribute.#{attribute}") %>

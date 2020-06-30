@@ -9,6 +9,15 @@ shared_context 'POST /api/payments' do |body|
   end
 end
 
+shared_context '収支情報を作成する' do |body|
+  before(:all) do
+    header = app_auth_header.merge(content_type_json)
+    res = http_client.post("#{base_url}/api/payments", body.to_json, header)
+    @response_status = res.status
+    @response_body = JSON.parse(res.body) rescue res.body
+  end
+end
+
 shared_context 'GET /api/payments' do |params = {}|
   before(:all) do
     res = http_client.get("#{base_url}/api/payments", params, app_auth_header)
@@ -17,10 +26,34 @@ shared_context 'GET /api/payments' do |params = {}|
   end
 end
 
+shared_context 'カテゴリ情報を検索する' do |query|
+  before(:all) do
+    res = http_client.get("#{base_url}/api/categories", query, app_auth_header)
+    @response_status = res.status
+    @response_body = JSON.parse(res.body) rescue res.body
+  end
+end
+
+shared_context 'タグ情報を作成する' do |body|
+  before(:all) do
+    header = app_auth_header.merge(content_type_json)
+    res = http_client.post("#{base_url}/api/tags", body.to_json, header)
+    @response_status = res.status
+    @response_body = JSON.parse(res.body) rescue res.body
+  end
+end
+
 shared_context 'Webdriverを起動する' do
   before(:all) do
-    @driver ||= Selenium::WebDriver.for :firefox
-    @wait ||= Selenium::WebDriver::Wait.new(timeout: 30)
+    @headless = Headless.new
+    @headless.start
+    @driver = Selenium::WebDriver.for :firefox
+    @wait = Selenium::WebDriver::Wait.new(timeout: 30)
+  end
+
+  after(:all) do
+    @driver.quit
+    @headless.destroy
   end
 end
 

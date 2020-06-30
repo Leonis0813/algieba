@@ -37,6 +37,7 @@ describe 'payments/index', type: :view do
                     total: expected[:total] || 0,
                     from: expected[:from] || 0,
                     to: expected[:to] || 0
+    it_behaves_like 'タグ設定ボタンが表示されていること'
   end
 
   shared_examples '登録フォームが表示されていること' do
@@ -264,6 +265,14 @@ describe 'payments/index', type: :view do
     end
   end
 
+  shared_examples 'タグ設定ボタンが表示されていること' do
+    it do
+      button_xpath = "#{payment_list_xpath}/div/button[@id='btn-assign-tag']" \
+                     '/span[@class="glyphicon glyphicon-tag"]'
+      is_asserted_by { @html.xpath(button_xpath).present? }
+    end
+  end
+
   shared_examples 'ページングが表示されていないこと' do
     it do
       paging = @html.xpath("#{payment_list_xpath}/span/nav[@class='pagination']")
@@ -327,7 +336,7 @@ describe 'payments/index', type: :view do
   shared_examples 'テーブルのヘッダーが表示されていること' do
     table_header_xpath = "#{payment_list_xpath}//table[@id='payment_table']/thead/tr/th"
 
-    %w[種類 日付 内容 カテゴリ タグ 金額].each_with_index do |text, i|
+    %w[種類 日付 内容 カテゴリ タグ 金額].each.with_index(1) do |text, i|
       it "#{text}のヘッダーが表示されていること" do
         headers = @html.xpath(table_header_xpath)
         is_asserted_by { headers[i].present? }
@@ -348,7 +357,7 @@ describe 'payments/index', type: :view do
 
     it '背景色が正しいこと', if: expected_size > 0 do
       @table_rows.each do |tr|
-        payment_type = tr.search('td').first
+        payment_type = tr.search('td.payment_type').first
         color_class = payment_type.attribute('class').value
         payment_type_class = payment_type.children.attribute('class').value
 

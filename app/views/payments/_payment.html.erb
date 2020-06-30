@@ -1,6 +1,9 @@
 <% td_class = payment.payment_type == 'income' ? 'success' : 'danger' %>
 <% icon = payment.payment_type == 'income' ? 'glyphicon-plus-sign' : 'glyphicon-minus-sign' %>
-<tr>
+<tr id='<%= payment.payment_id %>'>
+  <td class='checkbox'>
+    <input type='checkbox' class='assign'>
+  </td>
   <td class='payment_type <%= td_class %>'><span class="glyphicon <%= icon %>" /></td>
   <td class='date <%= td_class %>'><%= payment.date %></td>
   <td class='content <%= td_class %>' title='<%= payment.content %>'><%= payment.content %></td>

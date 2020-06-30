@@ -5,7 +5,7 @@ module Api
       settlement.aggregation_type = Settlement::AGGREGATION_TYPE_CATEGORY
       check_query_param(settlement, :payment_type)
       @settlements = settlement.calculate
-      render status: :ok, template: 'settlements/category'
+      render status: :ok
     end
 
     def period
@@ -13,7 +13,7 @@ module Api
       settlement.aggregation_type = Settlement::AGGREGATION_TYPE_PERIOD
       check_query_param(settlement, :interval)
       @settlements = settlement.calculate
-      render status: :ok, template: 'settlements/period'
+      render status: :ok
     end
 
     private

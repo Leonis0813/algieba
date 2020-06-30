@@ -1,5 +1,5 @@
 $ ->
-  $('#btn-create-tag').on 'click', ->
+  $('#btn-tag-create').on 'click', ->
     data = {
       name: $('#name').val()
     }

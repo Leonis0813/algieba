@@ -7,9 +7,7 @@ Rails.application.routes.draw do
     resources :categories, only: %i[index]
     resources :dictionaries, only: %i[create index]
     resources :payments, except: %i[new edit], param: :payment_id
-    resources :tags, only: %i[create] do
-      post 'payments' => 'tags#assign_payments', param: :tag_id
-    end
+    resources :tags, only: %i[create]
     resource :settlements, only: [] do
       get 'category' => 'settlements#category'
       get 'period' => 'settlements#period'
@@ -18,7 +16,7 @@ Rails.application.routes.draw do
 
   scope :management do
     get '/', to: redirect(top)
-    resources :payments, only: %i[index], format: 'html'
+    resources :payments, only: %i[index]
     resources :categories, only: %i[index], format: 'html'
     resources :dictionaries, only: %i[index], format: 'html'
     resources :tags, only: %i[index], format: 'html'

@@ -1,6 +1,7 @@
 class PaymentsController < ApplicationController
   def index
-    @search_form = PaymentQuery.new(index_param)
+    attribute = {per_page: Kaminari.config.default_per_page}.merge(index_param)
+    @search_form = PaymentQuery.new(attribute)
 
     if @search_form.valid?
       @payments = scope_param.keys.inject(Payment.all) do |payments, key|
@@ -8,7 +9,9 @@ class PaymentsController < ApplicationController
         value ? payments.send(key, value) : payments
       end
       @payment = Payment.new
-      @payments = @payments.order(date: :desc).page(params[:page]).per(per_page)
+      @payments = @payments.order(date: :desc)
+                           .page(@search_form.page)
+                           .per(@search_form.per_page)
       render status: :ok
     else
       error_codes = @search_form.errors.messages.keys.map {|key| "invalid_param_#{key}" }
@@ -43,14 +46,5 @@ class PaymentsController < ApplicationController
       :sort,
       :order,
     )
-  end
-
-  def per_page
-    return @per_page if @per_page
-
-    per_page = index_param[:per_page] || Kaminari.config.default_per_page
-    raise BadRequest, 'invalid_param_per_page' unless per_page.to_s.match?('\A\d*\z')
-
-    @per_page = per_page.to_i
   end
 end

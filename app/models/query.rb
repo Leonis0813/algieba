@@ -1,8 +1,12 @@
 class Query
   include ActiveModel::Model
 
-  attribute_names = %i[page per_page sort order]
-  attr_accessor(*attribute_names)
+  DEFAULT_PAGE = 1
+  DEFAULT_PER_PAGE = 10
+  DEFAULT_ORDER = 'asc'.freeze
+  ORDER_LIST = [DEFAULT_ORDER, 'desc'].freeze
+
+  attr_accessor :page, :per_page, :order
 
   validates :page, :per_page,
             numericality: {
@@ -10,17 +14,12 @@ class Query
               greater_than_or_equal_to: 1,
               message: 'invalid',
             }
-  validates :order, inclusion: {in: %w[asc desc], message: 'invalid'}
+  validates :order, inclusion: {in: ORDER_LIST, message: 'invalid'}
 
   def initialize(attributes = {})
     super
-    self.page ||= 1
-    self.per_page ||= 10
-    self.sort ||= 'payment_id'
-    self.order ||= 'asc'
-  end
-
-  def attributes
-    self.class.attribute_names.map {|name| [name, send(name)] }.to_h
+    self.page ||= DEFAULT_PAGE
+    self.per_page ||= DEFAULT_PER_PAGE
+    self.order ||= DEFAULT_ORDER
   end
 end

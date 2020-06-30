@@ -45,7 +45,7 @@ form {
   width: 40%;
 }
 
-#content-type, #condition, #dialog-condition {
+#content-type, #assign_tag_index_content_type, #condition, #dialog-condition {
   width: 50%;
   margin: 5px 0px;
 }
@@ -53,6 +53,11 @@ form {
 .category-form, .tag-form {
   display: inline;
   width: 80%;
+}
+
+.form-assign-tag-index {
+  width: 95%;
+  margin-left: auto;
 }
 
 .price-form {
@@ -68,16 +73,20 @@ form {
   width: 100%;
 }
 
-#header_payment_type, #header_price{
+#header_checkbox {
+  width: 6%;
+}
+
+#header_payment_type {
   width: 10%;
 }
 
 #header_date {
-  width: 15%;
+  width: 13%;
 }
 
 #header_content {
-  width: 35%;
+  width: 24%;
 }
 
 #header_categories {
@@ -85,7 +94,11 @@ form {
 }
 
 #header_tags {
-  width: 15%;
+  width: 20%;
+}
+
+#header_price {
+  width: 12%;
 }
 
 .content, .categories {
@@ -96,4 +109,5 @@ form {
 
 #payment_table {
   table-layout: fixed;
+  padding-left: 0px;
 }

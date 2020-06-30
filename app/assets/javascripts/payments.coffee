@@ -1,11 +1,18 @@
 $ ->
-  showErrorDialog = (errorCodes)->
+  showErrorDialog = (errorCodes, disabledFormIds = []) ->
     param = {error_codes: errorCodes.join(', ')}
     bootbox.alert({
       title: I18n.t('views.js.form.error.title'),
       message: '<div class="text-center alert alert-danger">' +
       I18n.t('views.js.form.error.message', param) +
       '</div>',
+      callback: () ->
+        $.each(disabledFormIds, (i, id) ->
+          $('#' + id).empty()
+          $('#' + id).prop('disabled', false)
+          return
+        )
+        return
     })
     return
 
@@ -94,10 +101,10 @@ $ ->
     return
 
   $('#new_payment').on 'ajax:success', (event, payment, status) ->
-    query = $.param({phrase: payment.content, condition: 'equal'})
     $.ajax({
       type: 'GET',
-      url: '/algieba/api/dictionaries?' + query
+      url: '/algieba/api/dictionaries',
+      data: {phrase: payment.content}
     }).done((data) ->
       if (data.dictionaries.length == 0)
         category_names = $.map(payment.categories, (category) ->
@@ -107,23 +114,23 @@ $ ->
           title: '以下の情報を辞書に登録しますか？',
           message: '<div class="form-group">' +
           '<label for="phrase">' +
-          I18n.t('views.dictionary.create.phrase') +
+          I18n.t('views.management.dictionaries.attribute.phrase') +
           '</label>' +
           '<input value="' +
           payment.content +
           '" id="dialog-phrase" class="form-control">' +
           '<select id="dialog-condition" class="form-control">' +
           '<option value="include">' +
-          I18n.t('views.dictionary.create.include') +
+          I18n.t('views.management.dictionaries.form.create.condition.include') +
           '</option>' +
           '<option selected value="equal">' +
-          I18n.t('views.dictionary.create.equal') +
+          I18n.t('views.management.dictionaries.form.create.condition.equal') +
           '</option>' +
           '</select>' +
           '</div>' +
           '<div class="form-group">' +
           '<label for="categories">' +
-          I18n.t('views.dictionary.create.categories') +
+          I18n.t('views.management.dictionaries.attribute.categories') +
           '</label><br />' +
           '<input class="form-control" value="' +
           category_names +
@@ -131,16 +138,14 @@ $ ->
           '</div>',
           buttons: {
             cancel: {
-              label: I18n.t('views.dictionary.create.cancel'),
+              label: I18n.t('views.management.payments.dialog.dictionary.cancel'),
               className: 'btn-default',
               callback: ->
-                $("#payment_categories").empty()
-                $('#payment_categories').prop('disabled', false)
                 location.reload()
                 return
             },
             ok: {
-              label: I18n.t('views.dictionary.create.submit'),
+              label: I18n.t('views.management.payments.dialog.dictionary.submit'),
               className: 'btn-primary',
               callback: ->
                 data = {
@@ -155,8 +160,6 @@ $ ->
                   contentType: 'application/json',
                   dataType: 'json',
                 }).always((xhr, status, error) ->
-                  $("#payment_categories").empty()
-                  $('#payment_categories').prop('disabled', false)
                   location.reload()
                   return
                 )
@@ -165,23 +168,19 @@ $ ->
           }
         })
         return
-      $("#payment_categories").empty()
-      $('#payment_categories').prop('disabled', false)
       location.reload()
       return
     )
     return
 
   $('#new_payment').on 'ajax:error', (event, xhr, status, error) ->
-    $("#payment_categories").empty()
-    $('#payment_categories').prop('disabled', false)
     errorCodes = []
     $.each($.parseJSON(xhr.responseText).errors, (i, error) ->
       attribute = error.error_code.match(/^.+_param_(.+)/)[1]
       errorCodes.push(I18n.t("views.management.payments.attribute.#{attribute}"))
       return
     )
-    showErrorDialog(errorCodes)
+    showErrorDialog(errorCodes, ['payment_categories', 'payment_tags'])
     return
 
   $('#btn-payment-search').on 'click', ->
@@ -217,6 +216,61 @@ $ ->
     )
     return
 
+  $('#btn-assign-tag').on 'click', ->
+    checkedInputs = $('td.checkbox > input:checked')
+    if checkedInputs.length == 0
+      bootbox.alert({
+        title: I18n.t('views.js.tag.error.title'),
+        message: '<div class="text-center alert alert-danger">' +
+        I18n.t('views.js.tag.error.message') +
+        '</div>',
+      })
+      return
+
+    tags = $.map($(@).data('names'), (value) ->
+      return {text: value, value: value}
+    )
+    bootbox.prompt({
+      title: I18n.t('views.js.tag.prompt.title'),
+      inputType: 'select',
+      inputOptions: tags,
+      callback: (newTagName) ->
+        if newTagName == null
+          return
+        done = []
+        fail = []
+        $.each(checkedInputs, (i, input) ->
+          paymentId = input.closest('tr').id
+          $.ajax({
+            url: '/algieba/api/payments/' + paymentId,
+            dataType: 'json',
+          }).done((payment) ->
+            tagNames = $.map(payment.tags, (tag) ->
+              return tag.name
+            )
+            tagNames.push(newTagName)
+            $.ajax({
+              type: 'PUT',
+              url: '/algieba/api/payments/' + paymentId,
+              data: JSON.stringify({tags: tagNames}),
+              contentType: 'application/json',
+              dataType: 'json',
+            }).done((payment) ->
+              done.push(paymentId)
+              if done.length + fail.length == checkedInputs.length
+                location.reload()
+            ).fail((xhr, status, error) ->
+              fail.push(paymentId)
+              if done.length + fail.length == checkedInputs.length
+                location.reload()
+            )
+            return
+          )
+        )
+        return
+    })
+    return
+
   $('#per_page_form').on 'submit', ->
     query = location.search.replace(/&?per_page=\d+/, '').substring(1)
     per_page = $('#per_page').val()
@@ -247,14 +301,19 @@ $ ->
     paging: false,
     info: false,
     filter: false,
-    order: [[1, "desc"]],
+    order: [[2, "desc"]],
     columnDefs: [
       {
-        "targets": [0, 6],
-        "sorting": false,
+        "targets": [0, 1, 7],
+        "orderable": false,
       },
     ]
   })
+
+  $('#checkbox-all').on 'change', ->
+    checked = $(@).prop('checked')
+    $('.assign').prop('checked', checked)
+    return
 
   $('.delete').on 'click', ->
     id = $(@).children('button').attr('value')

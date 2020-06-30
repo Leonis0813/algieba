@@ -1,3 +1,20 @@
+# 4.6.0 (2020/05/09)
+- [UPDATE] payment view to add tag assignment button
+- [REMOVE] API to assign tag
+
+# 4.5.3 (2020/05/01)
+- [FIX] disabled attribute of payment tag form
+- [UPDATE] gems
+
+# 4.5.2 (2020/04/19)
+- [REFACTOR] models, controllers, and views
+- [UPDATE] gems
+
+# 4.5.1 (2020/04/03)
+- [FIX] confirmation dialog texts for dictionary registration
+- [FIX] displaying condition of confirmation dialog for dictionary registration
+- [UPDATE] gems
+
 # 4.5.0 (2020/03/07)
 - [ADD] view to manage tags and categories
 - [UPDATE] whole view design
