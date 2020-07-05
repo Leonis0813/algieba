@@ -37,6 +37,7 @@ class DictionariesController < ApplicationController
       properties: {
         phrase_include: {
           type: :string,
+          minLength: 1,
         },
         page: {
           type: :string,

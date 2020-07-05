@@ -57,6 +57,7 @@ module Api
         properties: {
           phrase: {
             type: :string,
+            minLength: 1,
           },
           condition: {
             type: :string,
@@ -66,8 +67,10 @@ module Api
             type: :array,
             items: {
               type: :string,
-              uniqueItems: true,
+              minLength: 1,
             },
+            minItems: 1,
+            uniqueItems: true,
           },
         },
       }
@@ -79,6 +82,7 @@ module Api
         properties: {
           phrase: {
             type: :string,
+            minLength: 1,
           },
           condition: {
             type: :string,
@@ -86,6 +90,7 @@ module Api
           },
           content: {
             type: :string,
+            minLength: 1,
           },
         },
       }

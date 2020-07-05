@@ -40,6 +40,7 @@ class TagsController < ApplicationController
       properties: {
         name_include: {
           type: :string,
+          minLength: 1,
         },
         page: {
           type: :string,

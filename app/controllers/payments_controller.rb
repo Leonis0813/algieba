@@ -65,15 +65,19 @@ class PaymentsController < ApplicationController
         },
         content_equal: {
           type: :string,
+          minLength: 1,
         },
         content_include: {
           type: :string,
+          minLength: 1,
         },
         category: {
           type: :string,
+          minLength: 1,
         },
         tag: {
           type: :string,
+          minLength: 1,
         },
         price_upper: {
           type: :string,

@@ -26,6 +26,7 @@ module Api
         properties: {
           keyword: {
             type: :string,
+            minLength: 1,
           },
         },
       }

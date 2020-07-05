@@ -171,6 +171,7 @@ module Api
           },
           content: {
             type: :string,
+            minLength: 1,
           },
           price: {
             type: :integer,
@@ -180,15 +181,18 @@ module Api
             type: :array,
             items: {
               type: :string,
-              uniqueItems: true,
+              minLength: 1,
             },
+            minItems: 1,
+            uniqueItems: true,
           },
           tags: {
             type: :array,
             items: {
               type: :string,
-              uniqueItems: true,
+              minLength: 1,
             },
+            uniqueItems: true,
           },
         },
       }
@@ -212,12 +216,15 @@ module Api
           },
           content_equal: {
             type: :string,
+            minLength: 1,
           },
           content_include: {
             type: :string,
+            minLength: 1,
           },
           category: {
             type: :string,
+            minLength: 1,
           },
           price_upper: {
             type: :string,
@@ -261,6 +268,7 @@ module Api
           },
           content: {
             type: :string,
+            minLength: 1,
           },
           price: {
             type: :integer,
@@ -270,15 +278,18 @@ module Api
             type: :array,
             items: {
               type: :string,
-              uniqueItems: true,
+              minLength: 1,
             },
+            minItems: 1,
+            uniqueItems: true,
           },
           tags: {
             type: :array,
             items: {
               type: :string,
-              uniqueItems: true,
+              minLength: 1,
             },
+            uniqueItems: true,
           },
         },
       }
