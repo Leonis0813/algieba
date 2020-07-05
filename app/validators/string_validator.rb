@@ -16,24 +16,16 @@ class StringValidator < ApplicationValidator
       return
     end
 
-    check_options(record, attribute, value)
-  end
-
-  private
-
-  def check_options(record, attribute, value)
     unless format?(options[:format], value)
       record.errors.add(attribute, ERROR_MESSAGE[:invalid])
     end
 
-    unless enum?(options[:enum], value)
-      record.errors.add(attribute, ERROR_MESSAGE[:invalid])
-    end
-
-    return if length?(options[:length], value)
+    return if enum?(options[:enum], value)
 
     record.errors.add(attribute, ERROR_MESSAGE[:invalid])
   end
+
+  private
 
   def format?(format, value)
     return true if format.nil?
@@ -45,15 +37,5 @@ class StringValidator < ApplicationValidator
     return true if enum.nil?
 
     enum.include?(value)
-  end
-
-  def length?(length, value)
-    return true if length.nil?
-
-    if length[:maximum].present?
-      value.size <= length[:maximum]
-    else
-      true
-    end
   end
 end
