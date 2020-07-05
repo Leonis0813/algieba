@@ -1,6 +1,8 @@
 class PaymentsController < ApplicationController
   def index
     attribute = {per_page: Kaminari.config.default_per_page.to_s}.merge(index_param)
+    check_schema(index_schema, attribute)
+
     @search_form = PaymentQuery.new(attribute)
     raise BadRequest, messages: @search_form.errors.messages unless @search_form.valid?
 
@@ -43,5 +45,61 @@ class PaymentsController < ApplicationController
       :sort,
       :order,
     )
+  end
+
+  def index_schema
+    @index_schema ||= {
+      type: :object,
+      properties: {
+        payment_type: {
+          type: :string,
+          enum: Payment::PAYMENT_TYPE_LIST,
+        },
+        date_before: {
+          type: :string,
+          format: :date,
+        },
+        date_after: {
+          type: :string,
+          format: :date,
+        },
+        content_equal: {
+          type: :string,
+        },
+        content_include: {
+          type: :string,
+        },
+        category: {
+          type: :string,
+        },
+        tag: {
+          type: :string,
+        },
+        price_upper: {
+          type: :string,
+          pattern: '^([1-9][0-9]*|0)$',
+        },
+        price_lower: {
+          type: :string,
+          pattern: '^([1-9][0-9]*|0)$',
+        },
+        page: {
+          type: :string,
+          pattern: '^[1-9][0-9]*$',
+        },
+        per_page: {
+          type: :string,
+          pattern: '^[1-9][0-9]*$',
+        },
+        sort: {
+          type: :string,
+          enum: PaymentQuery::SORT_LIST,
+        },
+        order: {
+          type: :string,
+          enum: Query::ORDER_LIST,
+        },
+      },
+    }
   end
 end

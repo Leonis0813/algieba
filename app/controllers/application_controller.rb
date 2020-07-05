@@ -14,4 +14,33 @@ class ApplicationController < ActionController::Base
   rescue_from InternalServerError do
     head :internal_server_error
   end
+
+  def check_schema(schema, request_parameter, resource: nil)
+    errors = JSON::Validator.fully_validate(
+      schema,
+      request_parameter,
+      errors_as_objects: true,
+    )
+    return if errors.empty?
+
+    messages = errors.map do |error|
+      parameter = case error[:failed_attribute]
+                  when 'Required'
+                    error[:message].scan(/required property of '(.*)'/).first.first
+                  else
+                    error[:fragment].split('/').second
+                  end
+
+      error_code = case error[:failed_attribute]
+                   when 'Required'
+                     ApplicationValidator::ERROR_MESSAGE[:absent]
+                   else
+                     ApplicationValidator::ERROR_MESSAGE[:invalid]
+                   end
+
+      [parameter, [error_code]]
+    end.to_h
+
+    raise BadRequest, messages: messages, resource: resource
+  end
 end

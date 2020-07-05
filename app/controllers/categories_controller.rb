@@ -1,5 +1,7 @@
 class CategoriesController < ApplicationController
   def index
+    check_schema(index_schema, index_param)
+
     @search_form = CategoryQuery.new(index_param)
     raise BadRequest, messages: @search_form.errors.messages unless @search_form.valid?
 
@@ -26,5 +28,24 @@ class CategoriesController < ApplicationController
       :page,
       :per_page,
     )
+  end
+
+  def index_schema
+    @index_schema ||= {
+      type: :object,
+      properties: {
+        name_include: {
+          type: :string,
+        },
+        page: {
+          type: :string,
+          pattern: '^[1-9][0-9]*$',
+        },
+        per_page: {
+          type: :string,
+          pattern: '^[1-9][0-9]*$',
+        },
+      },
+    }
   end
 end
