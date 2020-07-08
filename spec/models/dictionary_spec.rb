@@ -5,37 +5,31 @@ require 'rails_helper'
 describe Dictionary, type: :model do
   describe '#validates' do
     describe '正常系' do
-      valid_attribute = {
-        dictionary_id: ['0' * 32],
-        phrase: %w[phrase],
-        condition: %w[equal include],
-      }
+      valid_attribute = {dictionary_id: ['0' * 32]}
 
-      it_behaves_like '正常な値を指定した場合のテスト', valid_attribute
+      CommonHelper.generate_test_case(valid_attribute).each do |attribute|
+        context "#{attribute}を指定した場合" do
+          before(:all) { @object = build(:dictionary, attribute) }
+
+          it_behaves_like 'バリデーションエラーにならないこと'
+        end
+      end
     end
 
     describe '異常系' do
-      attribute_names = %i[dictionary_id phrase condition categories]
-      blank_value = {categories: []}
-      combinations = CommonHelper.generate_combinations(attribute_names)
+      context 'dictionary_idが指定されていない場合' do
+        expected_error = {dictionary_id: 'absent_parameter'}
 
-      combinations.each do |keys|
-        context "#{keys.join(',')}が指定されていない場合" do
-          expected_error = keys.map {|key| [key, 'absent_parameter'] }.to_h
-
-          before(:all) do
-            @object = build(:dictionary, keys.map {|key| [key, blank_value[key]] }.to_h)
-            @object.validate
-          end
-
-          it_behaves_like 'エラーメッセージが正しいこと', expected_error
+        before(:all) do
+          @object = build(:dictionary, dictionary_id: nil)
+          @object.validate
         end
+
+        it_behaves_like 'エラーメッセージが正しいこと', expected_error
       end
 
       invalid_attribute = {
         dictionary_id: ['0' * 33, 'g' * 32, 1, [1], {id: 1}, true],
-        phrase: [1, ['test'], {phrase: 'test'}, true],
-        condition: %w[invalid],
         categories: [
           {category_id: nil},
           {category_id: '0' * 33},
@@ -79,36 +73,21 @@ describe Dictionary, type: :model do
         end
       end
 
-      context 'categoriesに同じ名前が含まれている場合' do
-        expected_error = {categories: 'include_same_value'}
-
-        before(:all) do
-          category = build(:category)
-          other_category = build(:category, {name: category.name})
-          @object = build(:dictionary, {categories: [category, other_category]})
-          @object.validate
-        end
-
-        it_behaves_like 'エラーメッセージが正しいこと', expected_error
-      end
-
       context '複合エラーの場合' do
         expected_error = {
           dictionary_id: 'absent_parameter',
           phrase: 'duplicated_resource',
-          categories: 'include_same_value',
+          categories: 'invalid_parameter',
         }
 
         include_context 'トランザクション作成'
         before(:all) do
-          category = build(:category)
-          other_category = build(:category, {name: category.name})
           dictionary = create(:dictionary)
           attribute = {
             dictionary_id: nil,
             phrase: dictionary.phrase,
             condition: dictionary.condition,
-            categories: [category, other_category],
+            categories: [build(:category, category_id: nil)],
           }
           @object = build(:dictionary, attribute)
           @object.validate

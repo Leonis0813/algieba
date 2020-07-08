@@ -35,12 +35,12 @@ describe Api::SettlementsController, type: :controller do
   end
 
   describe '異常系' do
-    [[nil, 'absent'], %w[invalid invalid]].each do |payment_type, message|
+    [nil, 'invalid'].each do |payment_type|
       context "#{payment_type || 'nil'}を指定する場合" do
         body = {
           'errors' => [
             {
-              'error_code' => "#{message}_parameter",
+              'error_code' => 'invalid_parameter',
               'parameter' => 'payment_type',
               'resource' => nil,
             },

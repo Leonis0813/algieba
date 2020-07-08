@@ -10,7 +10,7 @@ class Dictionary < ApplicationRecord
   validates :phrase,
             uniqueness: {scope: 'condition', message: MESSAGE_DUPLICATED}
   validates :categories,
-            associated: {message: ApplicationValidator::ERROR_MESSAGE[:invalid]},
+            associated: {message: ApplicationValidator::ERROR_MESSAGE[:invalid]}
 
   scope :phrase_include, ->(phrase) { where('phrase REGEXP ?', ".*#{phrase}.*") }
 
