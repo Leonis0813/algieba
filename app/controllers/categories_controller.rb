@@ -34,18 +34,9 @@ class CategoriesController < ApplicationController
     @index_schema ||= {
       type: :object,
       properties: {
-        name_include: {
-          type: :string,
-          minLength: 1,
-        },
-        page: {
-          type: :string,
-          pattern: '^[1-9][0-9]*$',
-        },
-        per_page: {
-          type: :string,
-          pattern: '^[1-9][0-9]*$',
-        },
+        name_include: {type: :string, minLength: 1},
+        page: {type: :string, pattern: '^[1-9][0-9]*$'},
+        per_page: {type: :string, pattern: '^[1-9][0-9]*$'},
       },
     }
   end

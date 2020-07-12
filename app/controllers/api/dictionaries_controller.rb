@@ -55,20 +55,11 @@ module Api
         type: :object,
         required: %i[phrase condition categories],
         properties: {
-          phrase: {
-            type: :string,
-            minLength: 1,
-          },
-          condition: {
-            type: :string,
-            enum: Dictionary::CONDITION_LIST,
-          },
+          phrase: {type: :string, minLength: 1},
+          condition: {type: :string, enum: Dictionary::CONDITION_LIST},
           categories: {
             type: :array,
-            items: {
-              type: :string,
-              minLength: 1,
-            },
+            items: {type: :string, minLength: 1},
             minItems: 1,
             uniqueItems: true,
           },
@@ -80,18 +71,9 @@ module Api
       @index_schema ||= {
         type: :object,
         properties: {
-          phrase: {
-            type: :string,
-            minLength: 1,
-          },
-          condition: {
-            type: :string,
-            enum: Dictionary::CONDITION_LIST,
-          },
-          content: {
-            type: :string,
-            minLength: 1,
-          },
+          phrase: {type: :string, minLength: 1},
+          condition: {type: :string, enum: Dictionary::CONDITION_LIST},
+          content: {type: :string, minLength: 1},
         },
       }
     end

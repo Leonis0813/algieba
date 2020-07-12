@@ -35,18 +35,9 @@ class DictionariesController < ApplicationController
     @index_schema ||= {
       type: :object,
       properties: {
-        phrase_include: {
-          type: :string,
-          minLength: 1,
-        },
-        page: {
-          type: :string,
-          pattern: '^[1-9][0-9]*$',
-        },
-        per_page: {
-          type: :string,
-          pattern: '^[1-9][0-9]*$',
-        },
+        phrase_include: {type: :string, minLength: 1},
+        page: {type: :string, pattern: '^[1-9][0-9]*$'},
+        per_page: {type: :string, pattern: '^[1-9][0-9]*$'},
       },
     }
   end

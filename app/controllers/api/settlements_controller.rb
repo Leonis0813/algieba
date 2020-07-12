@@ -43,10 +43,7 @@ module Api
         type: :object,
         required: %i[payment_type],
         properties: {
-          payment_type: {
-            type: :string,
-            enum: Payment::PAYMENT_TYPE_LIST,
-          },
+          payment_type: {type: :string, enum: Payment::PAYMENT_TYPE_LIST},
         },
       }
     end
@@ -56,10 +53,7 @@ module Api
         type: :object,
         required: %i[interval],
         properties: {
-          interval: {
-            type: :string,
-            enum: Settlement::INTERVALS,
-          },
+          interval: {type: :string, enum: Settlement::INTERVALS},
         },
       }
     end

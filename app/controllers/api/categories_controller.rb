@@ -24,10 +24,7 @@ module Api
       @index_schema ||= {
         type: :object,
         properties: {
-          keyword: {
-            type: :string,
-            minLength: 1,
-          },
+          keyword: {type: :string, minLength: 1},
         },
       }
     end

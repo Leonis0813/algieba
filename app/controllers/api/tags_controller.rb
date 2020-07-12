@@ -20,11 +20,7 @@ module Api
         type: :object,
         required: %i[name],
         properties: {
-          name: {
-            type: :string,
-            minLength: 1,
-            maxLength: 10,
-          },
+          name: {type: :string, minLength: 1, maxLength: 10},
         },
       }
     end
