@@ -29,7 +29,7 @@ describe Api::PaymentsController, type: :controller do
           date: @payment.date.strftime('%F'),
           categories: categories,
           tags: tags,
-          ).deep_stringify_keys
+        ).deep_stringify_keys
       end
       include_context '収支情報を取得する'
       it_behaves_like 'レスポンスが正しいこと'

@@ -158,38 +158,19 @@ module Api
         type: :object,
         required: %i[payment_type date content price categories],
         properties: {
-          payment_type: {
-            type: :string,
-            enum: Payment::PAYMENT_TYPE_LIST,
-          },
-          date: {
-            type: :string,
-            format: :date,
-          },
-          content: {
-            type: :string,
-            minLength: 1,
-          },
-          price: {
-            type: :integer,
-            minimum: 1,
-          },
+          payment_type: {type: :string, enum: Payment::PAYMENT_TYPE_LIST},
+          date: {type: :string, format: :date},
+          content: {type: :string, minLength: 1},
+          price: {type: :integer, minimum: 1},
           categories: {
             type: :array,
-            items: {
-              type: :string,
-              minLength: 1,
-            },
+            items: {type: :string, minLength: 1},
             minItems: 1,
             uniqueItems: true,
           },
           tags: {
             type: :array,
-            items: {
-              type: :string,
-              minLength: 1,
-              maxLength: 10,
-            },
+            items: {type: :string, minLength: 1, maxLength: 10},
             uniqueItems: true,
           },
         },
@@ -200,54 +181,18 @@ module Api
       @index_schema ||= {
         type: :object,
         properties: {
-          payment_type: {
-            type: :string,
-            enum: Payment::PAYMENT_TYPE_LIST,
-          },
-          date_before: {
-            type: :string,
-            format: :date,
-          },
-          date_after: {
-            type: :string,
-            format: :date,
-          },
-          content_equal: {
-            type: :string,
-            minLength: 1,
-          },
-          content_include: {
-            type: :string,
-            minLength: 1,
-          },
-          category: {
-            type: :string,
-            minLength: 1,
-          },
-          price_upper: {
-            type: :string,
-            pattern: '^([1-9][0-9]*|0)$',
-          },
-          price_lower: {
-            type: :string,
-            pattern: '^([1-9][0-9]*|0)$',
-          },
-          page: {
-            type: :string,
-            pattern: '^[1-9][0-9]*$',
-          },
-          per_page: {
-            type: :string,
-            pattern: '^[1-9][0-9]*$',
-          },
-          sort: {
-            type: :string,
-            enum: PaymentQuery::SORT_LIST,
-          },
-          order: {
-            type: :string,
-            enum: Query::ORDER_LIST,
-          },
+          payment_type: {type: :string, enum: Payment::PAYMENT_TYPE_LIST},
+          date_before: {type: :string, format: :date},
+          date_after: {type: :string, format: :date},
+          content_equal: {type: :string, minLength: 1},
+          content_include: {type: :string, minLength: 1},
+          category: {type: :string, minLength: 1},
+          price_upper: {type: :string, pattern: '^([1-9][0-9]*|0)$'},
+          price_lower: {type: :string, pattern: '^([1-9][0-9]*|0)$'},
+          page: {type: :string, pattern: '^[1-9][0-9]*$'},
+          per_page: {type: :string, pattern: '^[1-9][0-9]*$'},
+          sort: {type: :string, enum: PaymentQuery::SORT_LIST},
+          order: {type: :string, enum: Query::ORDER_LIST},
         },
       }
     end
@@ -256,38 +201,19 @@ module Api
       @update_schema ||= {
         type: :object,
         properties: {
-          payment_type: {
-            type: :string,
-            enum: Payment::PAYMENT_TYPE_LIST,
-          },
-          date: {
-            type: :string,
-            format: :date,
-          },
-          content: {
-            type: :string,
-            minLength: 1,
-          },
-          price: {
-            type: :integer,
-            minimum: 1,
-          },
+          payment_type: {type: :string, enum: Payment::PAYMENT_TYPE_LIST},
+          date: {type: :string, format: :date},
+          content: {type: :string, minLength: 1},
+          price: {type: :integer, minimum: 1},
           categories: {
             type: :array,
-            items: {
-              type: :string,
-              minLength: 1,
-            },
+            items: {type: :string, minLength: 1},
             minItems: 1,
             uniqueItems: true,
           },
           tags: {
             type: :array,
-            items: {
-              type: :string,
-              minLength: 1,
-              maxLength: 10,
-            },
+            items: {type: :string, minLength: 1, maxLength: 10},
             uniqueItems: true,
           },
         },

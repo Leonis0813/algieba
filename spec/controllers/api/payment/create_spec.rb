@@ -216,7 +216,8 @@ describe Api::PaymentsController, type: :controller do
               'parameter' => key.to_s,
               'resource' => 'payment',
             }
-          end.sort_by {|error| [error['error_code'], error['parameter']] }
+          end
+          errors.sort_by! {|error| [error['error_code'], error['parameter']] }
           body = {'errors' => errors}
 
           before(:all) do
@@ -273,7 +274,8 @@ describe Api::PaymentsController, type: :controller do
               'parameter' => key.to_s,
               'resource' => 'payment',
             }
-          end.sort_by {|error| [error['error_code'], error['parameter']] }
+          end
+          errors.sort_by! {|error| [error['error_code'], error['parameter']] }
           body = {'errors' => errors}
 
           before(:all) do

@@ -199,7 +199,8 @@ describe Api::PaymentsController, type: :controller do
               'parameter' => key.to_s,
               'resource' => 'payment',
             }
-          end.sort_by {|error| [error['error_code'], error['parameter']] }
+          end
+          errors.sort_by! {|error| [error['error_code'], error['parameter']] }
           response_body = {'errors' => errors}
 
           include_context 'トランザクション作成'

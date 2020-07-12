@@ -83,7 +83,7 @@ describe Api::PaymentsController, type: :controller do
                 date: payment.date.strftime('%F'),
                 categories: categories,
                 tags: tags,
-                )
+              )
             end
             @body = {payments: expected_payments}.deep_stringify_keys
           end
@@ -104,7 +104,7 @@ describe Api::PaymentsController, type: :controller do
               date: payment.date.strftime('%F'),
               categories: categories,
               tags: tags,
-              )
+            )
           end
           @body = {payments: expected_payments}.deep_stringify_keys
         end
@@ -137,11 +137,12 @@ describe Api::PaymentsController, type: :controller do
               'parameter' => key.to_s,
               'resource' => nil,
             }
-          end.sort_by {|error| [error['error_code'], error['parameter']] }
+          end
+          errors.sort_by! {|error| [error['error_code'], error['parameter']] }
           body = {'errors' => errors}
 
           include_context '収支情報を検索する', params
-        it_behaves_like 'レスポンスが正しいこと', status: 400, body: body
+          it_behaves_like 'レスポンスが正しいこと', status: 400, body: body
         end
       end
     end

@@ -47,7 +47,8 @@ describe DictionariesController, type: :controller do
               'parameter' => key.to_s,
               'resource' => nil,
             }
-          end.sort_by {|error| [error['error_code'], error['parameter']] }
+          end
+          errors.sort_by! {|error| [error['error_code'], error['parameter']] }
           body = {'errors' => errors}
 
           include_context '辞書情報を検索する', params

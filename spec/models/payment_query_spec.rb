@@ -18,7 +18,6 @@ describe PaymentQuery, type: :model do
       end
     end
 
-
     describe '異常系' do
       invalid_attribute = {
         sort: ['invalid', 1, ['date'], {sort: 'date'}, true],

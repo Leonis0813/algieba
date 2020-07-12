@@ -108,7 +108,7 @@ describe Api::DictionariesController, type: :controller do
             {name: category_name, description: nil},
             {name: 'test2', description: nil},
           ],
-          )
+        )
         include_context 'トランザクション作成'
         include_context '辞書情報を登録する',
                         default_params.merge(categories: category_names)
@@ -166,7 +166,8 @@ describe Api::DictionariesController, type: :controller do
               'parameter' => key.to_s,
               'resource' => 'dictionary',
             }
-          end.sort_by {|error| [error['error_code'], error['parameter']] }
+          end
+          errors.sort_by! {|error| [error['error_code'], error['parameter']] }
           body = {'errors' => errors}
 
           include_context '辞書情報を登録する', params
