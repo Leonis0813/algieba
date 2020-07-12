@@ -19,7 +19,7 @@ describe Api::CategoriesController, type: :controller do
 
     describe '正常系' do
       %w[algieba not_exist].each do |keyword|
-        context "#{keyword}を指定した場合", :wip do
+        context "#{keyword}を指定した場合" do
           before(:all) do
             @body = {
               categories: Category.where(name: keyword).order(:name).map do |category|
@@ -27,7 +27,7 @@ describe Api::CategoriesController, type: :controller do
               end,
             }.deep_stringify_keys
           end
-          include_context 'カテゴリを検索する', keyword: 1
+          include_context 'カテゴリを検索する', keyword: keyword
           it_behaves_like 'レスポンスが正しいこと'
         end
       end
