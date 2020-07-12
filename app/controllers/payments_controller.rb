@@ -1,6 +1,6 @@
 class PaymentsController < ApplicationController
   def index
-    attribute = {per_page: Kaminari.config.default_per_page.to_s}.merge(index_param)
+    attribute = {'per_page' => Kaminari.config.default_per_page.to_s}.merge(index_param)
     check_schema(index_schema, attribute)
 
     @search_form = PaymentQuery.new(attribute)

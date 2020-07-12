@@ -34,6 +34,8 @@ class ApplicationController < ActionController::Base
       error_code = case error[:failed_attribute]
                    when 'Required'
                      ApplicationValidator::ERROR_MESSAGE[:absent]
+                   when 'UniqueItems'
+                     ApplicationValidator::ERROR_MESSAGE[:same_value]
                    else
                      ApplicationValidator::ERROR_MESSAGE[:invalid]
                    end

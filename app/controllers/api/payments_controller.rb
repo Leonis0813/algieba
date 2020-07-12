@@ -4,11 +4,8 @@ module Api
 
     def create
       check_schema(create_schema, create_params, resource: 'payment')
-      # remove after removing capybara
-      price = if create_params[:price]
-                create_params[:price].to_i rescue create_params[:price]
-              end
-      attribute = create_params.except(:categories, :tags).merge(price: price)
+
+      attribute = create_params.except(:categories, :tags)
       @payment = Payment.new(attribute)
       @payment.categories = Array.wrap(create_params[:categories]).map do |name|
         category = Category.find_by(name: name.to_s) || Category.new(name: name)
@@ -191,6 +188,7 @@ module Api
             items: {
               type: :string,
               minLength: 1,
+              maxLength: 10,
             },
             uniqueItems: true,
           },
@@ -288,6 +286,7 @@ module Api
             items: {
               type: :string,
               minLength: 1,
+              maxLength: 10,
             },
             uniqueItems: true,
           },

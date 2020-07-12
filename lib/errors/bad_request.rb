@@ -7,5 +7,6 @@ class BadRequest < StandardError
         {error_code: error_code, parameter: parameter, resource: resource}
       end
     end.flatten
+    @errors.sort_by! {|error| [error[:error_code], error[:parameter]] }
   end
 end
