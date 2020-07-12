@@ -51,58 +51,19 @@ class PaymentsController < ApplicationController
     @index_schema ||= {
       type: :object,
       properties: {
-        payment_type: {
-          type: :string,
-          enum: Payment::PAYMENT_TYPE_LIST,
-        },
-        date_before: {
-          type: :string,
-          format: :date,
-        },
-        date_after: {
-          type: :string,
-          format: :date,
-        },
-        content_equal: {
-          type: :string,
-          minLength: 1,
-        },
-        content_include: {
-          type: :string,
-          minLength: 1,
-        },
-        category: {
-          type: :string,
-          minLength: 1,
-        },
-        tag: {
-          type: :string,
-          minLength: 1,
-        },
-        price_upper: {
-          type: :string,
-          pattern: '^([1-9][0-9]*|0)$',
-        },
-        price_lower: {
-          type: :string,
-          pattern: '^([1-9][0-9]*|0)$',
-        },
-        page: {
-          type: :string,
-          pattern: '^[1-9][0-9]*$',
-        },
-        per_page: {
-          type: :string,
-          pattern: '^[1-9][0-9]*$',
-        },
-        sort: {
-          type: :string,
-          enum: PaymentQuery::SORT_LIST,
-        },
-        order: {
-          type: :string,
-          enum: Query::ORDER_LIST,
-        },
+        payment_type: {type: :string, enum: Payment::PAYMENT_TYPE_LIST},
+        date_before: {type: :string, format: :date},
+        date_after: {type: :string, format: :date},
+        content_equal: {type: :string, minLength: 1},
+        content_include: {type: :string, minLength: 1},
+        category: {type: :string, minLength: 1},
+        tag: {type: :string, minLength: 1},
+        price_upper: {type: :string, pattern: '^([1-9][0-9]*|0)$'},
+        price_lower: {type: :string, pattern: '^([1-9][0-9]*|0)$'},
+        page: {type: :string, pattern: '^[1-9][0-9]*$'},
+        per_page: {type: :string, pattern: '^[1-9][0-9]*$'},
+        sort: {type: :string, enum: PaymentQuery::SORT_LIST},
+        order: {type: :string, enum: Query::ORDER_LIST},
       },
     }
   end
