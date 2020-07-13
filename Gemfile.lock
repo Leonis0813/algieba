@@ -184,7 +184,7 @@ GEM
       ruby-progressbar (~> 1.4)
     git (1.7.0)
       rchardet (~> 1.8)
-    gitlab (4.16.0)
+    gitlab (4.16.1)
       httparty (~> 0.14, >= 0.14.0)
       terminal-table (~> 1.5, >= 1.5.1)
     globalid (0.4.2)
