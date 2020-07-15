@@ -20,7 +20,7 @@
         <h4>
           <span style='color: red'>* </span>は必須項目です
         </h4>
-        <%= form_for @payment, url: api_payments_path, remote: true do |f| %>
+        <%= form_for @payment, url: api_payments_path do |f| %>
           <div class='form-group'>
             <%= f.label :date, t("#{i18n_path}.attribute.date"), class: 'required' %><br>
             <%= f.text_field :date, class: 'form-control date-form', name: 'date' %>

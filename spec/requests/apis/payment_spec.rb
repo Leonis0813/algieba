@@ -48,13 +48,13 @@ describe '収支情報APIのテスト', type: :request do
   describe '不正な収支情報を作成する' do
     errors = [
       {
-        'error_code' => 'invalid_parameter',
-        'parameter' => 'date',
+        'error_code' => 'absent_parameter',
+        'parameter' => 'content',
         'resource' => 'payment',
       },
       {
-        'error_code' => 'absent_parameter',
-        'parameter' => 'content',
+        'error_code' => 'invalid_parameter',
+        'parameter' => 'date',
         'resource' => 'payment',
       },
     ]
