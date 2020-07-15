@@ -139,13 +139,19 @@ $ ->
     return
 
   $('#new_payment').on 'submit', ->
+    categories = $.grep($('#payment_categories').val().split(','), (name, index) ->
+      return name != ''
+    )
+    tags = $.grep($('#payment_tags').val().split(','), (name, index) ->
+      return name != ''
+    )
     data = {
       payment_type: $(@).find('input[name="payment_type"]:checked').first().val(),
       date: $('#payment_date').val(),
       content: $('#payment_content').val()
       price: parseInt($('#payment_price').val()),
-      categories: $('#payment_categories').val().split(','),
-      tags: $('#payment_tags').val().split(),
+      categories: categories,
+      tags: tags,
     }
     $.ajax({
       type: 'POST',
