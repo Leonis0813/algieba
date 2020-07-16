@@ -1,4 +1,4 @@
-$ ->
+ $ ->
   confirmDictionary = (payment) ->
     $.ajax({
       type: 'GET',
@@ -139,20 +139,23 @@ $ ->
     return
 
   $('#new_payment').on 'submit', ->
-    categories = $.grep($('#payment_categories').val().split(','), (name, index) ->
-      return name != ''
-    )
-    tags = $.grep($('#payment_tags').val().split(','), (name, index) ->
-      return name != ''
-    )
-    data = {
-      payment_type: $(@).find('input[name="payment_type"]:checked').first().val(),
-      date: $('#payment_date').val(),
-      content: $('#payment_content').val()
-      price: parseInt($('#payment_price').val()),
-      categories: categories,
-      tags: tags,
-    }
+    data = {payment_type: $(@).find('input[name="payment_type"]:checked').first().val()}
+    if ($('#payment_date').val() != '')
+      data['date'] = $('#payment_date').val()
+    if ($('#payment_content').val() != '')
+      data['content'] = $('#payment_content').val()
+    if ($('#payment_price').val() != '')
+      data['price'] = parseInt($('#payment_price').val())
+    if ($('#payment_categories').val() != '')
+      categories = $.grep($('#payment_categories').val().split(','), (name, index) ->
+        return name != ''
+      )
+      data['categories'] = categories
+    if ($('#payment_tags').val() != '')
+      tags = $.grep($('#payment_tags').val().split(','), (name, index) ->
+        return name != ''
+      )
+      data['tags'] = tags
     $.ajax({
       type: 'POST',
       url: '/algieba/api/payments',
