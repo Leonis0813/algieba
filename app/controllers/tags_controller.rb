@@ -1,5 +1,7 @@
 class TagsController < ApplicationController
   def index
+    check_schema(index_schema, index_param)
+
     @search_form = TagQuery.new(index_param)
     raise BadRequest, messages: @search_form.errors.messages unless @search_form.valid?
 
@@ -30,5 +32,16 @@ class TagsController < ApplicationController
       :page,
       :per_page,
     )
+  end
+
+  def index_schema
+    @index_schema ||= {
+      type: :object,
+      properties: {
+        name_include: {type: :string, minLength: 1},
+        page: {type: :string, pattern: '^[1-9][0-9]*$'},
+        per_page: {type: :string, pattern: '^[1-9][0-9]*$'},
+      },
+    }
   end
 end

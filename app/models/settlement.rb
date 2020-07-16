@@ -24,15 +24,6 @@ class Settlement
 
   attr_accessor :aggregation_type, :interval, :payment_type
 
-  validates :aggregation_type,
-            string: {enum: AGGREGATION_TYPES}
-  validates :interval,
-            string: {enum: INTERVALS},
-            if: -> { aggregation_type == AGGREGATION_TYPE_PERIOD }
-  validates :payment_type,
-            string: {enum: Payment::PAYMENT_TYPE_LIST},
-            if: -> { aggregation_type == AGGREGATION_TYPE_CATEGORY }
-
   def calculate
     return [] unless Payment.exists?
 

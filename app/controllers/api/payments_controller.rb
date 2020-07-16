@@ -3,11 +3,9 @@ module Api
     before_action :check_request_payment, only: %i[show update destroy]
 
     def create
-      # remove after removing capybara
-      price = if create_params[:price]
-                create_params[:price].to_i rescue create_params[:price]
-              end
-      attribute = create_params.except(:categories, :tags).merge(price: price)
+      check_schema(create_schema, create_params, resource: 'payment')
+
+      attribute = create_params.except(:categories, :tags)
       @payment = Payment.new(attribute)
       @payment.categories = Array.wrap(create_params[:categories]).map do |name|
         category = Category.find_by(name: name.to_s) || Category.new(name: name)
@@ -40,6 +38,8 @@ module Api
     end
 
     def index
+      check_schema(index_schema, index_params)
+
       query = PaymentQuery.new(index_params)
       raise BadRequest, messages: query.errors.messages unless query.valid?
 
@@ -51,6 +51,8 @@ module Api
     end
 
     def update
+      check_schema(update_schema, update_params, resource: 'payment')
+
       if update_params[:categories]
         begin
           request_payment.categories = update_params[:categories].map do |category_name|
@@ -149,6 +151,73 @@ module Api
         :sort,
         :order,
       )
+    end
+
+    def create_schema
+      @create_schema ||= {
+        type: :object,
+        required: %i[payment_type date content price categories],
+        properties: {
+          payment_type: {type: :string, enum: Payment::PAYMENT_TYPE_LIST},
+          date: {type: :string, format: :date},
+          content: {type: :string, minLength: 1},
+          price: {type: :integer, minimum: 1},
+          categories: {
+            type: :array,
+            items: {type: :string, minLength: 1},
+            minItems: 1,
+            uniqueItems: true,
+          },
+          tags: {
+            type: :array,
+            items: {type: :string, minLength: 1, maxLength: 10},
+            uniqueItems: true,
+          },
+        },
+      }
+    end
+
+    def index_schema
+      @index_schema ||= {
+        type: :object,
+        properties: {
+          payment_type: {type: :string, enum: Payment::PAYMENT_TYPE_LIST},
+          date_before: {type: :string, format: :date},
+          date_after: {type: :string, format: :date},
+          content_equal: {type: :string, minLength: 1},
+          content_include: {type: :string, minLength: 1},
+          category: {type: :string, minLength: 1},
+          price_upper: {type: :string, pattern: '^([1-9][0-9]*|0)$'},
+          price_lower: {type: :string, pattern: '^([1-9][0-9]*|0)$'},
+          page: {type: :string, pattern: '^[1-9][0-9]*$'},
+          per_page: {type: :string, pattern: '^[1-9][0-9]*$'},
+          sort: {type: :string, enum: PaymentQuery::SORT_LIST},
+          order: {type: :string, enum: Query::ORDER_LIST},
+        },
+      }
+    end
+
+    def update_schema
+      @update_schema ||= {
+        type: :object,
+        properties: {
+          payment_type: {type: :string, enum: Payment::PAYMENT_TYPE_LIST},
+          date: {type: :string, format: :date},
+          content: {type: :string, minLength: 1},
+          price: {type: :integer, minimum: 1},
+          categories: {
+            type: :array,
+            items: {type: :string, minLength: 1},
+            minItems: 1,
+            uniqueItems: true,
+          },
+          tags: {
+            type: :array,
+            items: {type: :string, minLength: 1, maxLength: 10},
+            uniqueItems: true,
+          },
+        },
+      }
     end
   end
 end

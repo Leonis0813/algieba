@@ -214,6 +214,8 @@ GEM
       railties (>= 4.2.0)
       thor (>= 0.14, < 2.0)
     json (2.3.0)
+    json-schema (2.8.1)
+      addressable (>= 2.4)
     kaminari (1.2.0)
       activesupport (>= 4.1.0)
       kaminari-actionview (= 1.2.0)
@@ -481,6 +483,7 @@ DEPENDENCIES
   jbuilder
   jquery-datatables-rails
   jquery-rails
+  json-schema
   kaminari
   less-rails
   momentjs-rails

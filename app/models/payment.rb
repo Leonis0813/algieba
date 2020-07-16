@@ -14,21 +14,10 @@ class Payment < ApplicationRecord
   validates :payment_id,
             string: {format: ID_FORMAT},
             uniqueness: {message: MESSAGE_DUPLICATED}
-  validates :payment_type,
-            string: {enum: PAYMENT_TYPE_LIST}
-  validates :date,
-            date: true
-  validates :content,
-            string: true
-  validates :price,
-            integer: {greater_than: 0}
   validates :categories,
-            presence: {message: ApplicationValidator::ERROR_MESSAGE[:absent]},
-            associated: {message: ApplicationValidator::ERROR_MESSAGE[:invalid]},
-            collection: {unique: %w[name]}
+            associated: {message: ApplicationValidator::ERROR_MESSAGE[:invalid]}
   validates :tags,
             associated: {message: ApplicationValidator::ERROR_MESSAGE[:invalid]},
-            collection: {unique: %w[name]},
             allow_blank: true
 
   scope :payment_type, ->(payment_type) { where(payment_type: payment_type) }

@@ -1,6 +1,8 @@
 module Api
   class DictionariesController < ApplicationController
     def create
+      check_schema(create_schema, create_params, resource: 'dictionary')
+
       @dictionary = Dictionary.new(create_params.except(:categories))
       @dictionary.categories << Array.wrap(create_params[:categories]).map do |name|
         Category.find_or_initialize_by(name: name)
@@ -14,6 +16,8 @@ module Api
     end
 
     def index
+      check_schema(index_schema, index_params)
+
       @dictionaries = if index_params.empty?
                         Dictionary.all.order(:condition)
                       else
@@ -44,6 +48,34 @@ module Api
         :condition,
         :content,
       )
+    end
+
+    def create_schema
+      @create_schema ||= {
+        type: :object,
+        required: %i[phrase condition categories],
+        properties: {
+          phrase: {type: :string, minLength: 1},
+          condition: {type: :string, enum: Dictionary::CONDITION_LIST},
+          categories: {
+            type: :array,
+            items: {type: :string, minLength: 1},
+            minItems: 1,
+            uniqueItems: true,
+          },
+        },
+      }
+    end
+
+    def index_schema
+      @index_schema ||= {
+        type: :object,
+        properties: {
+          phrase: {type: :string, minLength: 1},
+          condition: {type: :string, enum: Dictionary::CONDITION_LIST},
+          content: {type: :string, minLength: 1},
+        },
+      }
     end
   end
 end

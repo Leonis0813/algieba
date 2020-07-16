@@ -2,23 +2,10 @@ class PaymentQuery < Query
   MESSAGE_INVALID = ApplicationValidator::ERROR_MESSAGE[:invalid]
   DEFAULT_SORT = 'payment_id'.freeze
   SORT_LIST = [DEFAULT_SORT, 'date', 'price'].freeze
-  PRICE_FORMAT = /\A[1-9]\d*|0\z/.freeze
 
   attr_accessor :payment_type, :date_before, :date_after, :content_equal,
                 :content_include, :category, :tag, :price_upper, :price_lower, :sort
 
-  validates :payment_type,
-            string: {enum: Payment::PAYMENT_TYPE_LIST},
-            allow_nil: true
-  validates :date_before, :date_after,
-            date: true,
-            allow_nil: true
-  validates :content_equal, :content_include, :category, :tag,
-            string: true,
-            allow_nil: true
-  validates :price_upper, :price_lower,
-            string: {format: PRICE_FORMAT},
-            allow_nil: true
   validates :sort,
             string: {enum: SORT_LIST}
 

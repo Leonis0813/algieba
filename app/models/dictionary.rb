@@ -8,14 +8,9 @@ class Dictionary < ApplicationRecord
             string: {format: ID_FORMAT},
             uniqueness: {message: MESSAGE_DUPLICATED}
   validates :phrase,
-            string: true,
             uniqueness: {scope: 'condition', message: MESSAGE_DUPLICATED}
-  validates :condition,
-            string: {enum: CONDITION_LIST}
   validates :categories,
-            presence: {message: ApplicationValidator::ERROR_MESSAGE[:absent]},
-            associated: {message: ApplicationValidator::ERROR_MESSAGE[:invalid]},
-            collection: {unique: %w[name]}
+            associated: {message: ApplicationValidator::ERROR_MESSAGE[:invalid]}
 
   scope :phrase_include, ->(phrase) { where('phrase REGEXP ?', ".*#{phrase}.*") }
 

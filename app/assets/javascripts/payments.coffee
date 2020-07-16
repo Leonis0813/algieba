@@ -1,93 +1,9 @@
 $ ->
-  $('.date-form').datetimepicker({
-    format: I18n.t('views.js.datepicker.format'),
-    locale: I18n.locale,
-    dayViewHeaderFormat: I18n.t('views.js.datepicker.dayViewHeaderFormat')
-  })
-
-  $('#payment_content').on 'focusout', ->
-    query = {content: $('#payment_content').val()}
-    $.ajax({
-      type: 'GET',
-      url: '/algieba/api/dictionaries?' + $.param(query)
-    }).done((data) ->
-      if data.dictionaries.length > 0
-        dictionaries = $.grep(data.dictionaries, (dictionary) ->
-          return dictionary.condition == 'equal'
-        )
-        if dictionaries.length == 0
-          dictionaries = data.dictionaries
-          dictionaries.sort((a, b) ->
-            if a.phrase.length > b.phrase.length
-              return -1
-            if a.phrase.length < b.phrase.length
-              return 1
-            return 0
-          )
-        category_names = $.map(dictionaries[0].categories, (category) ->
-          return category.name
-        )
-        $('#payment_categories').val(category_names.join(','))
-        return
-      return
-    )
-    return
-
-  $('.category-list').on 'click', ->
-    categories = $.map($(@).data('names'), (value) ->
-      return {text: value, value: value}
-    )
-    category_form = $(@).parent().find('.category-form')
-    bootbox.prompt({
-      title: I18n.t('views.js.category-list.title'),
-      inputType: 'checkbox',
-      inputOptions: categories,
-      callback: (results) ->
-        if results
-          category_form.val(results.join(','))
-          return
-    })
-    return
-
-  $('.tag-list').on 'click', ->
-    tags = $.map($(@).data('names'), (value) ->
-      return {text: value, value: value}
-    )
-    tag_form = $(@).parent().find('.tag-form')
-    bootbox.prompt({
-      title: I18n.t('views.js.tag-list.title'),
-      inputType: 'checkbox',
-      inputOptions: tags,
-      callback: (results) ->
-        if results
-          tag_form.val(results.join(','))
-          return
-    })
-    return
-
-  $('#new_payment').on 'submit', ->
-    category_array = $('#payment_categories').val().split(',')
-    $.each(category_array, (i, e)->
-      input = '<input type="hidden" name="categories[]" value="' + e + '">'
-      $('#payment_categories').append(input)
-      return
-    )
-    if $('#payment_tags').val() != ''
-      tag_array = $('#payment_tags').val().split(',')
-      $.each(tag_array, (i, e)->
-        input = '<input type="hidden" name="tags[]" value="' + e + '">'
-        $('#payment_tags').append(input)
-        return
-      )
-    $('#payment_categories').prop('disabled', true)
-    $('#payment_tags').prop('disabled', true)
-    return
-
-  $('#new_payment').on 'ajax:success', (event, payment, status) ->
+  confirmDictionary = (payment) ->
     $.ajax({
       type: 'GET',
       url: '/algieba/api/dictionaries',
-      data: {phrase: payment.content}
+      data: {content: payment.content}
     }).done((data) ->
       if (data.dictionaries.length == 0)
         category_names = $.map(payment.categories, (category) ->
@@ -156,10 +72,106 @@ $ ->
     )
     return
 
-  $('#new_payment').on 'ajax:error', (event, xhr, status, error) ->
-    errors = $.parseJSON(xhr.responseText).errors
-    showErrorDialog(errors, ['payment_categories', 'payment_tags'])
+  $('.date-form').datetimepicker({
+    format: I18n.t('views.js.datepicker.format'),
+    locale: I18n.locale,
+    dayViewHeaderFormat: I18n.t('views.js.datepicker.dayViewHeaderFormat')
+  })
+
+  $('#payment_content').on 'focusout', ->
+    query = {content: $('#payment_content').val()}
+    $.ajax({
+      type: 'GET',
+      url: '/algieba/api/dictionaries?' + $.param(query)
+    }).done((data) ->
+      if data.dictionaries.length > 0
+        dictionaries = $.grep(data.dictionaries, (dictionary) ->
+          return dictionary.condition == 'equal'
+        )
+        if dictionaries.length == 0
+          dictionaries = data.dictionaries
+          dictionaries.sort((a, b) ->
+            if a.phrase.length > b.phrase.length
+              return -1
+            if a.phrase.length < b.phrase.length
+              return 1
+            return 0
+          )
+        category_names = $.map(dictionaries[0].categories, (category) ->
+          return category.name
+        )
+        $('#payment_categories').val(category_names.join(','))
+        return
+      return
+    )
     return
+
+  $('.category-list').on 'click', ->
+    categories = $.map($(@).data('names'), (value) ->
+      return {text: value, value: value}
+    )
+    category_form = $(@).parent().find('.category-form')
+    bootbox.prompt({
+      title: I18n.t('views.js.category-list.title'),
+      inputType: 'checkbox',
+      inputOptions: categories,
+      callback: (results) ->
+        if results
+          category_form.val(results.join(','))
+          return
+    })
+    return
+
+  $('.tag-list').on 'click', ->
+    tags = $.map($(@).data('names'), (value) ->
+      return {text: value, value: value}
+    )
+    tag_form = $(@).parent().find('.tag-form')
+    bootbox.prompt({
+      title: I18n.t('views.js.tag-list.title'),
+      inputType: 'checkbox',
+      inputOptions: tags,
+      callback: (results) ->
+        if results
+          tag_form.val(results.join(','))
+          return
+    })
+    return
+
+  $('#new_payment').on 'submit', ->
+    data = {payment_type: $(@).find('input[name="payment_type"]:checked').first().val()}
+    if ($('#payment_date').val() != '')
+      data['date'] = $('#payment_date').val()
+    if ($('#payment_content').val() != '')
+      data['content'] = $('#payment_content').val()
+    if ($('#payment_price').val() != '')
+      data['price'] = parseInt($('#payment_price').val())
+    if ($('#payment_categories').val() != '')
+      categories = $.grep($('#payment_categories').val().split(','), (name, index) ->
+        return name != ''
+      )
+      data['categories'] = categories
+    if ($('#payment_tags').val() != '')
+      tags = $.grep($('#payment_tags').val().split(','), (name, index) ->
+        return name != ''
+      )
+      data['tags'] = tags
+    $.ajax({
+      type: 'POST',
+      url: '/algieba/api/payments',
+      data: JSON.stringify(data),
+      contentType: 'application/json',
+      dataType: 'json',
+    }).done((data) ->
+      confirmDictionary(data)
+      console.log(data)
+      return
+    ).fail((xhr, status, error) ->
+      errors = $.parseJSON(xhr.responseText).errors
+      showErrorDialog(errors)
+      return
+    )
+    return false
 
   $('#btn-payment-search').on 'click', ->
     all_queries = $('#new_payment_query').serializeArray()

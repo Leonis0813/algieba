@@ -3,59 +3,6 @@
 require 'rails_helper'
 
 describe Settlement, type: :model do
-  describe '#validates' do
-    describe '正常系' do
-      valid_attribute = {
-        aggregation_type: %w[category period],
-        interval: %w[yearly monthly daily],
-        payment_type: %w[income expense],
-      }
-
-      it_behaves_like '正常な値を指定した場合のテスト', valid_attribute
-    end
-
-    describe '異常系' do
-      context 'aggregation_typeが指定されていない場合' do
-        expected_error = {aggregation_type: 'absent_parameter'}
-
-        before(:all) do
-          @object = build(:settlement, {aggregation_type: nil})
-          @object.validate
-        end
-
-        it_behaves_like 'エラーメッセージが正しいこと', expected_error
-      end
-
-      context 'aggregation_typeが不正な場合' do
-        expected_error = {aggregation_type: 'invalid_parameter'}
-
-        before(:all) do
-          @object = build(:settlement, {aggregation_type: 'invalid'})
-          @object.validate
-        end
-
-        it_behaves_like 'エラーメッセージが正しいこと', expected_error
-      end
-
-      [
-        %w[category payment_type],
-        %w[period interval],
-      ].each do |aggregation_type, param|
-        context "aggregation_typeが#{aggregation_type}で#{param}がない場合" do
-          expected_error = {param.to_sym => 'absent_parameter'}
-
-          before(:all) do
-            attribute = {aggregation_type: aggregation_type, param => nil}
-            @object = build(:settlement, attribute)
-            @object.validate
-          end
-
-          it_behaves_like 'エラーメッセージが正しいこと', expected_error
-        end
-      end
-    end
-  end
-
   describe '#calculate' do
     context '収支情報がない場合' do
       before(:all) { @settlements = build(:settlement).calculate }
@@ -68,11 +15,10 @@ describe Settlement, type: :model do
     context '収支情報がある場合' do
       include_context 'トランザクション作成'
       before(:all) do
-        build(:payment)
-        build(:payment, payment_type: 'expense', date: '1000-02-02')
-        build(:payment, date: '1000-01-03', price: 100)
-        payment = build(:payment)
-        payment.categories = [build(:category, name: 'other')]
+        create(:payment)
+        create(:payment, payment_type: 'expense', date: '1000-02-02')
+        create(:payment, date: '1000-01-03', price: 100)
+        create(:payment, categories: [build(:category, name: 'other')])
       end
 
       [
