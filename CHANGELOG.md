@@ -1,6 +1,7 @@
 # 4.7.0 (2020/07/16)
 - [UPDATE] API error spec
 - [UPDATE] error dialog on management views
+- [UPDATE] gems
 
 # 4.6.0 (2020/05/09)
 - [UPDATE] payment view to add tag assignment button
