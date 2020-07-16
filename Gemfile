@@ -37,8 +37,6 @@ end
 
 group :development, :test do
   gem 'byebug'
-  gem 'capybara'
-  gem 'capybara-mechanize'
   gem 'danger'
   gem 'danger-simplecov_json'
   gem 'database_cleaner'
