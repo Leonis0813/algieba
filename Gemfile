@@ -28,7 +28,7 @@ group :development do
   gem 'pronto-coffeelint', require: false
   gem 'pronto-erb_lint', require: false
   gem 'pronto-rubocop', require: false
-  gem 'rubocop'
+  gem 'rubocop', '0.86.0'
   gem 'rubocop-performance'
   gem 'rubocop-rails'
   gem 'rugged', '~> 0.28.0'
