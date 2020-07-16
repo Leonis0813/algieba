@@ -1,4 +1,4 @@
- $ ->
+$ ->
   confirmDictionary = (payment) ->
     $.ajax({
       type: 'GET',
