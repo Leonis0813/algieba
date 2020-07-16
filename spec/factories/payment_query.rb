@@ -6,8 +6,8 @@ FactoryBot.define do
     content_equal { 'test' }
     content_include { 'test' }
     category { 'test' }
-    price_upper { 0 }
-    price_lower { 0 }
+    price_upper { '0' }
+    price_lower { '0' }
     order { 'asc' }
   end
 end

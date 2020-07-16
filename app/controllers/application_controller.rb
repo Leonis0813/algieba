@@ -3,10 +3,6 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :null_session
 
-  rescue_from Duplicated do |e|
-    render status: :bad_request, json: {errors: e.errors}
-  end
-
   rescue_from BadRequest do |e|
     render status: :bad_request, json: {errors: e.errors}
   end
@@ -19,11 +15,34 @@ class ApplicationController < ActionController::Base
     head :internal_server_error
   end
 
-  def check_absent_param(request_param, required_param_keys)
-    absent_keys = required_param_keys - request_param.keys.map(&:to_sym)
-    return if absent_keys.empty?
+  def check_schema(schema, request_parameter, resource: nil)
+    errors = JSON::Validator.fully_validate(
+      schema,
+      request_parameter,
+      errors_as_objects: true,
+    )
+    return if errors.empty?
 
-    error_codes = absent_keys.map {|key| "absent_param_#{key}" }
-    raise BadRequest, error_codes
+    messages = errors.map do |error|
+      parameter = case error[:failed_attribute]
+                  when 'Required'
+                    error[:message].scan(/required property of '(.*)'/).first.first
+                  else
+                    error[:fragment].split('/').second
+                  end
+
+      error_code = case error[:failed_attribute]
+                   when 'Required'
+                     ApplicationValidator::ERROR_MESSAGE[:absent]
+                   when 'UniqueItems'
+                     ApplicationValidator::ERROR_MESSAGE[:same_value]
+                   else
+                     ApplicationValidator::ERROR_MESSAGE[:invalid]
+                   end
+
+      [parameter, [error_code]]
+    end.to_h
+
+    raise BadRequest, messages: messages, resource: resource
   end
 end

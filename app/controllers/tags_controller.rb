@@ -1,21 +1,20 @@
 class TagsController < ApplicationController
   def index
-    @search_form = TagQuery.new(index_param)
+    check_schema(index_schema, index_param)
 
-    if @search_form.valid?
-      @tags = scope_param.keys.inject(Tag.all) do |tags, key|
-        value = @search_form.send(key)
-        value ? tags.send(key, value) : tags
-      end
-      @tag = Tag.new
-      @tags = @tags.order(:name)
-                   .page(@search_form.page)
-                   .per(@search_form.per_page)
-      render status: :ok
-    else
-      error_codes = @search_form.errors.messages.keys.map {|key| "invalid_param_#{key}" }
-      raise BadRequest, error_codes
+    @search_form = TagQuery.new(index_param)
+    raise BadRequest, messages: @search_form.errors.messages unless @search_form.valid?
+
+    @tag = Tag.new
+    @tags = scope_param.keys.inject(Tag.all) do |tags, key|
+      value = @search_form.send(key)
+      value ? tags.send(key, value) : tags
     end
+    @tags = @tags.order(:name)
+                 .page(@search_form.page)
+                 .per(@search_form.per_page)
+
+    render status: :ok
   end
 
   private
@@ -33,5 +32,16 @@ class TagsController < ApplicationController
       :page,
       :per_page,
     )
+  end
+
+  def index_schema
+    @index_schema ||= {
+      type: :object,
+      properties: {
+        name_include: {type: :string, minLength: 1},
+        page: {type: :string, pattern: '^[1-9][0-9]*$'},
+        per_page: {type: :string, pattern: '^[1-9][0-9]*$'},
+      },
+    }
   end
 end
