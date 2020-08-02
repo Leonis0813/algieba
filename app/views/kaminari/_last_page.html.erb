@@ -4,15 +4,12 @@
     current_page:  a page object for the currently displayed page
     total_pages:   total number of pages
     per_page:      number of items to fetch per page
-    remote:        data-remote
--%>
-<%
-text = t('views.management.common.pagination.last')
-parsed_url = URI.parse(url)
-query = URI.decode_www_form(parsed_url.query).to_h
-parsed_url.query = query.except('_').to_query
-url = parsed_url.to_s
-%>
+    remote:        data-remote %>
+<% text = t('views.management.common.pagination.last')
+   parsed_url = URI.parse(url)
+   query = URI.decode_www_form(parsed_url.query).to_h
+   parsed_url.query = query.except('_').to_query
+   url = parsed_url.to_s %>
 <li>
   <span class="last">
     <%= link_to_unless current_page.last?, text, url, remote: remote %>
