@@ -1,0 +1,3 @@
+$('#page-info').html("<%= j(render(partial: 'layouts/page_info', locals: {resources: @tags})) %>");
+$('#paginate').html("<%= j(paginate(@tags)) %>");
+$('tbody').html("<%= j(render(@tags)) %>");

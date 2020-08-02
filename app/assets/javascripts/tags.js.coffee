@@ -1,16 +1,8 @@
 $ ->
-  $('#btn-tag-create').on 'click', ->
-    $.ajax({
-      type: 'POST',
-      url: '/algieba/api/tags',
-      data: JSON.stringify({name: $('#name').val()}),
-      contentType: 'application/json',
-      dataType: 'json',
-    }).done((data) ->
-      location.reload()
-      return
-    ).fail((xhr, status, error) ->
-      showErrorDialog($.parseJSON(xhr.responseText).errors)
-      return
-    )
-    return
+  $('#form-tag-create').on 'submit', ->
+    params = {}
+    if $('#name').val()
+      params['name'] = $('#name').val()
+    createResource('tags', params)
+    return false
+  return

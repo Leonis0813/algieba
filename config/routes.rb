@@ -19,7 +19,7 @@ Rails.application.routes.draw do
     resources :payments, only: %i[index]
     resources :categories, only: %i[index], format: 'html'
     resources :dictionaries, only: %i[index], format: 'html'
-    resources :tags, only: %i[index], format: 'html'
+    resources :tags, only: %i[index]
   end
 
   resources :statistics, only: %i[index], format: 'html'

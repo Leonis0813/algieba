@@ -27,3 +27,26 @@ $ ->
         return
     })
     return
+
+  window.reloadTable = ->
+    $.ajax({
+      url: location.href,
+      dataType: 'script',
+    })
+    return
+
+  window.createResource = (resource_name, params) ->
+    $.ajax({
+      type: 'POST',
+      url: "/algieba/api/#{resource_name}",
+      data: JSON.stringify(params),
+      contentType: 'application/json',
+      dataType: 'json',
+    }).done((data) ->
+      reloadTable()
+      return
+    ).fail((xhr, status, error) ->
+      showErrorDialog($.parseJSON(xhr.responseText).errors)
+      return
+    )
+    return
