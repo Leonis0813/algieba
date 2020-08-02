@@ -7,11 +7,11 @@
     remote:        data-remote
 -%>
 <%
-  text = t('views.management.common.pagination.next')
-  parsed_url = URI.parse(url)
-  query = URI::decode_www_form(parsed_url.query).to_h
-  parsed_url.query = query.except('_').to_query
-  url = parsed_url.to_s
+text = t('views.management.common.pagination.next')
+parsed_url = URI.parse(url)
+query = URI.decode_www_form(parsed_url.query).to_h
+parsed_url.query = query.except('_').to_query
+url = parsed_url.to_s
 %>
 <li>
   <span class="next">

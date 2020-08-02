@@ -7,13 +7,13 @@
     remote:        data-remote
 -%>
 <%
-  text = t('views.management.common.pagination.first')
-  parsed_url = URI.parse(url)
-  if parsed_url.query.present?
-    query = URI::decode_www_form(parsed_url.query).to_h
-    parsed_url.query = query.except('_').to_query
-  end
-  url = parsed_url.to_s
+text = t('views.management.common.pagination.first')
+parsed_url = URI.parse(url)
+if parsed_url.query.present?
+  query = URI.decode_www_form(parsed_url.query).to_h
+  parsed_url.query = query.except('_').to_query
+end
+url = parsed_url.to_s
 %>
 <li>
   <span class="first">

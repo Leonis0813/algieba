@@ -7,6 +7,14 @@
     per_page:      number of items to fetch per page
     remote:        data-remote
 -%>
+<%
+parsed_url = URI.parse(url)
+if parsed_url.query.present?
+  query = URI.decode_www_form(parsed_url.query).to_h
+  parsed_url.query = query.except('_').to_query
+end
+url = parsed_url.to_s
+%>
 <li>
   <span class="page<%= ' current' if page.current? %>">
     <%= link_to_unless page.current?, page, url, {:remote => remote, :rel => page.next? ? 'next' : page.prev? ? 'prev' : nil} %>

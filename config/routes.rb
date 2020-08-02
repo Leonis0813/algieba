@@ -18,7 +18,7 @@ Rails.application.routes.draw do
     get '/', to: redirect(top)
     resources :payments, only: %i[index]
     resources :categories, only: %i[index], format: 'html'
-    resources :dictionaries, only: %i[index], format: 'html'
+    resources :dictionaries, only: %i[index]
     resources :tags, only: %i[index]
   end
 
