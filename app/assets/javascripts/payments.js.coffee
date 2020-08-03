@@ -3,71 +3,15 @@ $ ->
     $.ajax({
       type: 'GET',
       url: '/algieba/api/dictionaries',
-      data: {content: payment.content}
+      data: {content: payment.content},
     }).done((data) ->
       if (data.dictionaries.length == 0)
-        category_names = $.map(payment.categories, (category) ->
+        categoryNames = $.map(payment.categories, (category) ->
           return category.name
         ).join(',')
-        bootbox.dialog({
-          title: '以下の情報を辞書に登録しますか？',
-          message: '<div class="form-group">' +
-          '<label for="phrase">' +
-          I18n.t('views.management.dictionaries.attribute.phrase') +
-          '</label>' +
-          '<input value="' +
-          payment.content +
-          '" id="dialog-phrase" class="form-control">' +
-          '<select id="dialog-condition" class="form-control">' +
-          '<option value="include">' +
-          I18n.t('views.management.dictionaries.form.create.condition.include') +
-          '</option>' +
-          '<option selected value="equal">' +
-          I18n.t('views.management.dictionaries.form.create.condition.equal') +
-          '</option>' +
-          '</select>' +
-          '</div>' +
-          '<div class="form-group">' +
-          '<label for="categories">' +
-          I18n.t('views.management.dictionaries.attribute.categories') +
-          '</label><br />' +
-          '<input class="form-control" value="' +
-          category_names +
-          '" id="dialog-categories" disabled>' +
-          '</div>',
-          buttons: {
-            cancel: {
-              label: I18n.t('views.management.payments.dialog.dictionary.cancel'),
-              className: 'btn-default',
-              callback: ->
-                location.reload()
-                return
-            },
-            ok: {
-              label: I18n.t('views.management.payments.dialog.dictionary.submit'),
-              className: 'btn-primary',
-              callback: ->
-                data = {
-                  phrase: $('#dialog-phrase').val(),
-                  condition: $('#dialog-condition option:selected').val(),
-                  categories: $('#dialog-categories').val().split(','),
-                }
-                $.ajax({
-                  type: 'POST',
-                  url: '/algieba/api/dictionaries',
-                  data: JSON.stringify(data),
-                  contentType: 'application/json',
-                  dataType: 'json',
-                }).always((xhr, status, error) ->
-                  location.reload()
-                  return
-                )
-                return
-            }
-          }
-        })
-        return
-      location.reload()
+        $('#dialog-phrase').val(payment.content)
+        $('#dialog-categories').val(categoryNames)
+        $('#dialog-dictionary').modal('show')
       return
     )
     return
@@ -138,40 +82,63 @@ $ ->
     })
     return
 
-  $('#new_payment').on 'submit', ->
-    data = {payment_type: $(@).find('input[name="payment_type"]:checked').first().val()}
-    if ($('#payment_date').val() != '')
-      data['date'] = $('#payment_date').val()
-    if ($('#payment_content').val() != '')
-      data['content'] = $('#payment_content').val()
-    if ($('#payment_price').val() != '')
-      data['price'] = parseInt($('#payment_price').val())
-    if ($('#payment_categories').val() != '')
-      categories = $.grep($('#payment_categories').val().split(','), (name, index) ->
+  $('#form-payment-create').on 'submit', ->
+    params = {payment_type: $(@).find('input[name="payment_type"]:checked').first().val()}
+    if $('#payment_date').val()
+      params['date'] = $('#payment_date').val()
+    if $('#payment_content').val()
+      params['content'] = $('#payment_content').val()
+    if $('#payment_price').val()
+      params['price'] = parseInt($('#payment_price').val())
+    if $('#payment_categories').val()
+      params['categories'] = $.grep($('#payment_categories').val().split(','), (name, index) ->
         return name != ''
       )
-      data['categories'] = categories
-    if ($('#payment_tags').val() != '')
-      tags = $.grep($('#payment_tags').val().split(','), (name, index) ->
+    if $('#payment_tags').val()
+      params['tags'] = $.grep($('#payment_tags').val().split(','), (name, index) ->
         return name != ''
       )
-      data['tags'] = tags
     $.ajax({
       type: 'POST',
       url: '/algieba/api/payments',
-      data: JSON.stringify(data),
+      data: JSON.stringify(params),
       contentType: 'application/json',
       dataType: 'json',
     }).done((data) ->
+      reloadTable()
       confirmDictionary(data)
-      console.log(data)
       return
     ).fail((xhr, status, error) ->
-      errors = $.parseJSON(xhr.responseText).errors
-      showErrorDialog(errors)
+      showErrorDialog($.parseJSON(xhr.responseText).errors)
       return
     )
     return false
+
+  $('#btn-modal-submit').on 'click', ->
+    params = {
+      phrase: $('#dialog-phrase').val(),
+      condition: $('#dialog-condition option:selected').val(),
+      categories: $('#dialog-categories').val().split(','),
+    }
+    $.ajax({
+      type: 'POST',
+      url: '/algieba/api/dictionaries',
+      data: JSON.stringify(params),
+      contentType: 'application/json',
+      dataType: 'json',
+    }).done((data) ->
+      $('#dialog-dictionary').modal('hide')
+      bootbox.alert({
+        message: '<div class="text-center alert alert-success alert-dictionary">' +
+        '登録に成功しました' +
+        '</div>',
+      })
+      return
+    ).fail((xhr, status, error) ->
+      $('#dialog-dictionary').modal('hide')
+      return
+    )
+    return
 
   $('#btn-payment-search').on 'click', ->
     all_queries = $('#new_payment_query').serializeArray()
@@ -320,8 +287,8 @@ $ ->
     $('.assign').prop('checked', checked)
     return
 
-  $('.delete').on 'click', ->
-    id = $(@).children('button').attr('value')
+  $('tbody').on 'click', 'tr > td.delete', ->
+    id = $(event.target).parent().val()
     bootbox.confirm({
       message: I18n.t('views.js.delete.message'),
       buttons: {
@@ -340,7 +307,7 @@ $ ->
             type: 'DELETE',
             url: '/algieba/api/payments/' + id
           }).done((data) ->
-            location.reload()
+            reloadTable()
             return
           )
     })

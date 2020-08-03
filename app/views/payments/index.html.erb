@@ -20,7 +20,7 @@
         <h4>
           <span style='color: red'>* </span>は必須項目です
         </h4>
-        <%= form_for @payment, url: api_payments_path do |f| %>
+        <%= form_for @payment, url: api_payments_path, html: {id: 'form-payment-create'} do |f| %>
           <div class='form-group'>
             <%= f.label :date, t("#{i18n_path}.attribute.date"), class: 'required' %><br>
             <%= f.text_field :date, class: 'form-control date-form', name: 'date' %>
@@ -129,14 +129,9 @@
 
   <div class='col-lg-8'>
     <div>
-      <% info = {
-           total_count: @payments.total_count,
-           from: @payments.total_count.zero? ? 0 : @payments.offset_value + 1,
-           to: @payments.offset_value + @payments.size,
-         } %>
-      <h4 style='padding: 0px 10px;display: inline'>
-        <%= t('views.management.common.pagination.info', info) %>
-      </h4>
+      <span id='page-info'>
+        <%= render partial: 'layouts/page_info', locals: {resources: @payments} %>
+      </span>
       <button id='btn-assign-tag' class='btn btn-default pull-right' data-names='<%= tag_names %>'>
         <span class='glyphicon glyphicon-tag'>
       </button>
@@ -147,7 +142,9 @@
         <input type='text' id='per_page' class='form-control' name='per_page' value='<%= @search_form.per_page %>' size='10'>
       </form>
     </div>
-    <%= paginate @payments %>
+    <span id ='paginate'>
+      <%= paginate @payments %>
+    </span>
     <table id='payment_table' class='table table-hover' style='max-width:300px'>
       <thead>
         <tr>
@@ -166,5 +163,41 @@
         <%= render @payments %>
       </tbody>
     </table>
+  </div>
+</div>
+
+<div class='modal fade' id='dialog-dictionary' tabindex='-1' role='dialog' aria-hidden='true'>
+  <div class='modal-dialog'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>
+          &times;
+        </button>
+        <h4>
+          以下の情報を辞書に登録しますか？
+        </h4>
+      </div>
+      <div class='modal-body'>
+        <div class='bootbox-body'>
+          <div class='form-group'>
+            <label for='phrase'>フレーズ</label>
+            <input id='dialog-phrase' class='form-control'>
+            <select id='dialog-condition' class='form-control'>
+              <option value='include'>を含む</option>
+              <option selected value='equal'>と一致する</option>
+            </select>
+          </div>
+          <div class='form-group'>
+            <label for='categories'>カテゴリ</label>
+            <br>
+            <input id='dialog-categories' class='form-control' disabled>
+          </div>
+        </div>
+      </div>
+      <div class='modal-footer'>
+        <button class='btn btn-default' data-dismiss='modal'>キャンセル</button>
+        <button id='btn-modal-submit' class='btn btn-primary'>登録</button>
+      </div>
+    </div>
   </div>
 </div>
