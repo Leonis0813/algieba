@@ -83,7 +83,8 @@ $ ->
     return
 
   $('#form-payment-create').on 'submit', ->
-    params = {payment_type: $(@).find('input[name="payment_type"]:checked').first().val()}
+    paymentType = $(@).find('input[name="payment_type"]:checked').first().val()
+    params = {payment_type: paymentType}
     if $('#payment_date').val()
       params['date'] = $('#payment_date').val()
     if $('#payment_content').val()
@@ -91,7 +92,8 @@ $ ->
     if $('#payment_price').val()
       params['price'] = parseInt($('#payment_price').val())
     if $('#payment_categories').val()
-      params['categories'] = $.grep($('#payment_categories').val().split(','), (name, index) ->
+      categoryNames = $('#payment_categories').val().split(',')
+      params['categories'] = $.grep(categoryNames, (name, index) ->
         return name != ''
       )
     if $('#payment_tags').val()
