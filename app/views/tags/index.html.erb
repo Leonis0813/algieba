@@ -29,7 +29,7 @@
         <%= form_for @tag, url: api_tags_path, html: {id: 'form-tag-create'} do |f| %>
           <div class='form-group'>
             <%= label_tag :name, t("#{i18n_path}.attribute.name") %>
-            <%= text_field_tag :name, '', class: 'form-control' %>
+            <%= text_field_tag :name, '', class: 'form-control form-create' %>
           </div>
 
           <% attribute = {id: 'btn-tag-create', class: 'btn btn-primary btn-submit'} %>

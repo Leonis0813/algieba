@@ -24,7 +24,7 @@
         <%= form_for @dictionary, url: api_dictionaries_path, html: {id: 'form-dictionary-create'} do |f| %>
           <div class='form-group'>
             <%= label_tag :phrase, t("#{i18n_path}.attribute.phrase") %>
-            <%= text_field_tag :phrase, '', class: 'form-control' %>
+            <%= text_field_tag :phrase, '', class: 'form-control form-create' %>
             <% options = %w[include equal].map do |condition|
                  [t("#{i18n_path}.form.create.condition.#{condition}"), condition]
                end.to_h %>
@@ -34,8 +34,8 @@
 
           <div class='form-group'>
             <%= f.label :categories, t("#{i18n_path}.attribute.categories") %><br>
-            <%= f.text_field :categories, class: 'form-control category-form', name: 'category', value: nil %>
-            <span class='category-list' data-names='<%= Category.pluck(:name).sort %>'>
+            <%= f.text_field :categories, class: 'form-control form-create category-form', name: 'category', value: nil %>
+            <span class='category-list' data-names='<%= Category.pluck(:name).sort.join(',') %>'>
               <%= button_tag(type: 'button', class: 'btn btn-default btn-sm') do %>
                 <span class='glyphicon glyphicon-list' />
               <% end %>
