@@ -33,7 +33,7 @@
             <%= f.label :categories, t("#{i18n_path}.attribute.categories"), class: 'required' %><br>
             <% params = {value: nil, class: 'form-control category-form', name: 'categories'} %>
             <%= f.text_field :categories, params %>
-            <span class='category-list' data-names='<%= category_names %>'>
+            <span class='category-list' data-names='<%= category_names.join(',') %>'>
               <%= button_tag(:type => 'button', :class => 'btn btn-default btn-sm') do %>
                 <span class='glyphicon glyphicon-list' />
               <% end %>

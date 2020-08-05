@@ -23,7 +23,7 @@ describe '収支管理画面のテスト', type: :request do
         element.clear
         element.send_keys(value.to_s)
       end
-      xpath = '//form[@id="new_payment"]//span[@class="category-list"]/button'
+      xpath = '//form[@id="form-payment-create"]//span[@class="category-list"]/button'
       @driver.find_element(:xpath, xpath).click
 
       inputs[:categories].each do |category|

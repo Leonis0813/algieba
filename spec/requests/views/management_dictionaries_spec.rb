@@ -120,7 +120,7 @@ describe '辞書管理画面のテスト', type: :request do
 
   describe 'カテゴリ一覧を確認する' do
     before(:all) do
-      xpath = '//form[@id="new_dictionary"]//span[@class="category-list"]/button'
+      xpath = '//form[@id="form-dictionary-create"]//span[@class="category-list"]/button'
       @wait.until do
         res = @driver.find_element(:xpath, xpath).click rescue false
         res.nil?
