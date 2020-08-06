@@ -53,7 +53,7 @@ describe '収支管理画面のテスト', type: :request do
 
   shared_context '登録ボタンを押す' do
     before(:all) do
-      xpath = '//form[@id="new_payment"]/input[@value="登録"]'
+      xpath = '//form[@id="form-payment-create"]/input[@value="登録"]'
       @wait.until do
         res = @driver.find_element(:xpath, xpath).click rescue false
         res.nil? ? true : false
@@ -63,7 +63,8 @@ describe '収支管理画面のテスト', type: :request do
 
   shared_context '辞書登録をキャンセルする' do
     before(:all) do
-      xpath = '//button[@data-bb-handler="cancel"]'
+      xpath = '//div[@id="dialog-dictionary"]//div[@class="modal-footer"]' \
+              '/button[@data-dismiss="modal"]'
       @wait.until do
         res = @driver.find_element(:xpath, xpath).click rescue false
         res.nil? ? true : false
@@ -82,14 +83,23 @@ describe '収支管理画面のテスト', type: :request do
     category: nil
   |
     it do
-      xpath = "//input[@id='dialog-phrase'][@value='#{phrase}']"
-      is_asserted_by { @wait.until { @driver.find_element(:xpath, xpath) } }
+      is_asserted_by do
+        @wait.until do
+          input_phrase = @driver.find_element(:xpath, '//input[@id="dialog-phrase"]')
+          input_phrase.attribute('value') == phrase
+        end
+      end
 
       xpath = '//select[@id="dialog-condition"]/option[@selected][@value="equal"]'
       is_asserted_by { @wait.until { @driver.find_element(:xpath, xpath) } }
 
-      xpath = "//input[@id='dialog-categories'][@value='#{category}'][@disabled]"
-      is_asserted_by { @wait.until { @driver.find_element(:xpath, xpath) } }
+      xpath = "//input[@id='dialog-categories'][@disabled]"
+      is_asserted_by do
+        @wait.until do
+          input_categories = @driver.find_element(:xpath, xpath)
+          input_categories.attribute('value') == category
+        end
+      end
     end
   end
 
@@ -132,7 +142,8 @@ describe '収支管理画面のテスト', type: :request do
       include_context '収支情報を入力する', inputs, 'income'
       include_context '登録ボタンを押す'
       before(:all) do
-        @wait.until { @driver.find_element(:class, 'modal-body').displayed? }
+        xpath = '//div[@class="modal-header"]/h4[text()="エラー"]'
+        @wait.until { @driver.find_element(:xpath, xpath).displayed? }
       end
 
       after(:all) do
@@ -170,7 +181,10 @@ describe '収支管理画面のテスト', type: :request do
     describe 'カレンダーを表示する' do
       before(:all) do
         @wait.until { @driver.find_element(:id, 'payment_date').displayed? }
-        @driver.find_element(:id, 'payment_date').click
+        @wait.until do
+          res = @driver.find_element(:id, 'payment_date').click rescue false
+          res.nil? ? true : false
+        end
       end
 
       it 'カレンダーが表示されていること' do
@@ -200,10 +214,18 @@ describe '収支管理画面のテスト', type: :request do
 
     describe '辞書を登録する' do
       before(:all) do
+        xpath = '//button[@id="btn-modal-submit"]'
+        @wait.until do
+          res = @driver.find_element(:xpath, xpath).click rescue false
+          res.nil?
+        end
+      end
+
+      after(:all) do
         xpath = '//button[@data-bb-handler="ok"]'
         @wait.until do
           res = @driver.find_element(:xpath, xpath).click rescue false
-          res.nil? ? true : false
+          res.nil?
         end
       end
 
@@ -213,7 +235,11 @@ describe '収支管理画面のテスト', type: :request do
 
     describe 'カテゴリ一覧を確認する' do
       before(:all) do
-        @driver.find_element(:xpath, '//form//span[@class="category-list"]/button').click
+        xpath = '//form//span[@class="category-list"]/button'
+        @wait.until do
+          res = @driver.find_element(:xpath, xpath).click rescue false
+          res.nil?
+        end
         @wait.until { @driver.find_element(:class, 'bootbox-prompt').displayed? }
       end
 

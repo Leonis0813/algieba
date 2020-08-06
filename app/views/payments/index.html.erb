@@ -88,7 +88,7 @@
           <div class='form-group'>
             <%= f.label :category, t("#{i18n_path}.attribute.categories") %><br>
             <%= f.text_field :category, {:class => 'form-control category-form', :name => 'category'} %>
-            <span class='category-list' data-names='<%= category_names %>'>
+            <span class='category-list' data-names='<%= category_names.join(',') %>'>
               <%= button_tag(:type => 'button', :class => 'btn btn-default btn-sm') do %>
                 <span class='glyphicon glyphicon-list' />
               <% end %>
