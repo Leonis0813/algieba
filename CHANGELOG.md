@@ -1,3 +1,6 @@
+# 4.7.1 (2020/08/10)
+- [UPDATE] management views to render by ajax
+
 # 4.7.0 (2020/07/16)
 - [UPDATE] API error spec
 - [UPDATE] error dialog on management views
