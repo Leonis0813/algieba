@@ -125,7 +125,7 @@ describe '収支管理画面のテスト', type: :request do
   after(:all) { delete_payments }
 
   include_context 'Webdriverを起動する'
-#  include_context 'Cookieをセットする'
+  include_context 'Cookieをセットする'
 
   describe '管理画面を開く' do
     before(:all) { @driver.get(base_url) }
