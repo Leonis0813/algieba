@@ -1,4 +1,29 @@
 $ ->
+  window.deletePayment = (payment_id) ->
+    bootbox.confirm({
+      message: I18n.t('views.js.delete.message'),
+      buttons: {
+        confirm: {
+          label: I18n.t('views.js.delete.confirm'),
+          className: 'btn-success'
+        },
+        cancel: {
+          label: I18n.t('views.js.delete.cancel'),
+          className: 'btn-danger'
+        }
+      },
+      callback: (result) ->
+        if result == true
+          $.ajax({
+            type: 'DELETE',
+            url: "/algieba/api/payments/#{payment_id}",
+          }).done((data) ->
+            reloadTable()
+            return
+          )
+    })
+    return false
+
   confirmDictionary = (payment) ->
     $.ajax({
       type: 'GET',
@@ -271,31 +296,5 @@ $ ->
   $('#checkbox-all').on 'change', ->
     checked = $(@).prop('checked')
     $('.assign').prop('checked', checked)
-    return
-
-  $('tbody').on 'click', 'tr > td.delete', ->
-    id = $(event.target).parent().val()
-    bootbox.confirm({
-      message: I18n.t('views.js.delete.message'),
-      buttons: {
-        confirm: {
-          label: I18n.t('views.js.delete.confirm'),
-          className: 'btn-success'
-        },
-        cancel: {
-          label: I18n.t('views.js.delete.cancel'),
-          className: 'btn-danger'
-        }
-      },
-      callback: (result) ->
-        if result == true
-          $.ajax({
-            type: 'DELETE',
-            url: '/algieba/api/payments/' + id
-          }).done((data) ->
-            reloadTable()
-            return
-          )
-    })
     return
   return

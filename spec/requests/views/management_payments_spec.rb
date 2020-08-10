@@ -125,7 +125,7 @@ describe '収支管理画面のテスト', type: :request do
   after(:all) { delete_payments }
 
   include_context 'Webdriverを起動する'
-  include_context 'Cookieをセットする'
+#  include_context 'Cookieをセットする'
 
   describe '管理画面を開く' do
     before(:all) { @driver.get(base_url) }
@@ -260,8 +260,9 @@ describe '収支管理画面のテスト', type: :request do
     describe '収支情報を削除する' do
       before(:all) do
         @wait.until { (not @driver.find_element(:class, 'modal-backdrop')) rescue true }
-        @driver.find_element(:xpath, '//td[@class="delete"]/button').click
-        @wait.until { @driver.find_element(:class, 'bootbox-confirm').displayed? }
+        @driver.find_element(:xpath, '//td[@class="delete"]/button/span').click
+        xpath = '//div[contains(@class, "bootbox-confirm")]'
+        @wait.until { @driver.find_element(:xpath, xpath).displayed? }
       end
 
       it 'ダイアログのタイトルが正しいこと' do

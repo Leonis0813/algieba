@@ -48,7 +48,7 @@ shared_context 'Webdriverを起動する' do
     @headless = Headless.new
     @headless.start
     @driver = Selenium::WebDriver.for :firefox
-    @wait = Selenium::WebDriver::Wait.new(timeout: 30)
+    @wait = Selenium::WebDriver::Wait.new(timeout: 10)
   end
 
   after(:all) do
@@ -107,9 +107,8 @@ end
 shared_examples '表示されている件数が正しいこと' do |total, from, to|
   it_is_asserted_by do
     text = "#{total}件中#{from}〜#{to}件を表示"
-    @wait.until do
-      @driver.find_element(:xpath, '//div[@class="col-lg-8"]/div/span/h4').text == text
-    end
+    xpath = '//div[@class="col-lg-8"]/div/span/h4'
+    @wait.until { @driver.find_element(:xpath, xpath).text == text rescue false }
   end
 end
 
