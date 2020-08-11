@@ -19,7 +19,7 @@ describe 'タグ管理画面のテスト', type: :request do
     it '件数が増えていること' do
       is_asserted_by do
         @wait.until do
-          @driver.find_element(:xpath, '//div[@class="col-lg-8"]/div/span/h4')
+          element = @driver.find_element(:xpath, '//div[@class="col-lg-8"]/div/span/h4')
           after_total_count = element.text.match(/(.*)件中/)[1].to_i
           after_total_count == @before_total_count + 1
         end
