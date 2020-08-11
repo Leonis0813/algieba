@@ -1,5 +1,6 @@
 # 4.7.1 (2020/08/11)
 - [UPDATE] management views to render by ajax
+- [UPDATE] gems
 
 # 4.7.0 (2020/07/16)
 - [UPDATE] API error spec
