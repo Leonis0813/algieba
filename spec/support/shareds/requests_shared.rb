@@ -48,7 +48,7 @@ shared_context 'Webdriverを起動する' do
     @headless = Headless.new
     @headless.start
     @driver = Selenium::WebDriver.for :firefox
-    @wait = Selenium::WebDriver::Wait.new(timeout: 10)
+    @wait = Selenium::WebDriver::Wait.new(timeout: 30)
   end
 
   after(:all) do
