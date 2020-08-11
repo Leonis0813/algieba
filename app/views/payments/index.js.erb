@@ -1,0 +1,4 @@
+$('#page-info').html("<%= j(render(partial: 'layouts/page_info', locals: {resources: @payments})) %>");
+$('#paginate').html("<%= j(paginate(@payments)) %>");
+$('tbody').html("<%= j(render(@payments)) %>");
+$('.category-list')[0].dataset.names = "<%= Category.pluck(:name).sort.join(',') %>"

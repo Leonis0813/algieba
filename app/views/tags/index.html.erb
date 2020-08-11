@@ -26,10 +26,10 @@
         <h3>
           <%= t("#{i18n_path}.form.create.title") %>
         </h3>
-        <%= form_for @tag, url: api_tags_path, html: {onClick: 'return false;'} do |f| %>
+        <%= form_for @tag, url: api_tags_path, html: {id: 'form-tag-create'} do |f| %>
           <div class='form-group'>
             <%= label_tag :name, t("#{i18n_path}.attribute.name") %>
-            <%= text_field_tag :name, '', class: 'form-control' %>
+            <%= text_field_tag :name, '', class: 'form-control form-create' %>
           </div>
 
           <% attribute = {id: 'btn-tag-create', class: 'btn btn-primary btn-submit'} %>
@@ -79,14 +79,9 @@
 
   <div class='col-lg-8'>
     <div>
-      <% info = {
-           total_count: @tags.total_count,
-           from: @tags.total_count.zero? ? 0 : @tags.offset_value + 1,
-           to: @tags.offset_value + @tags.size,
-         } %>
-      <h4 style='padding: 0px 10px;display: inline'>
-        <%= t('views.management.common.pagination.info', info) %>
-      </h4>
+      <span id='page-info'>
+        <%= render partial: 'layouts/page_info', locals: {resources: @tags} %>
+      </span>
       <form style='padding: 0px 10px;display: inline' id='per_page_form' class='form-inline pull-right' onSubmit='return false;'>
         <label for='per_page'>
           <%= t('views.management.common.pagination.label') %>
@@ -94,7 +89,9 @@
         <input type='text' id='per_page' class='form-control' name='per_page' value='<%= @per_page %>' size='10'>
       </form>
     </div>
-    <%= paginate @tags %>
+    <span id='paginate'>
+      <%= paginate @tags %>
+    </span>
     <table id='table-tag' class='table table-hover'>
       <thead>
         <tr>
