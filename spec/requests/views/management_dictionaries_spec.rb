@@ -13,7 +13,7 @@ describe '辞書管理画面のテスト', type: :request do
   shared_context '登録前の件数を確認する' do
     before(:all) do
       element = @wait.until do
-        @driver.find_element(:xpath, '//div[@class="col-lg-8"]/div/h4')
+        @driver.find_element(:xpath, '//div[@class="col-lg-8"]/div/span/h4')
       end
       @before_total_count = element.text.match(/(.*)件中/)[1].to_i
     end
@@ -59,18 +59,19 @@ describe '辞書管理画面のテスト', type: :request do
 
   shared_examples '登録に成功していること' do
     it '件数が増えていること' do
-      element = @wait.until do
-        @driver.find_element(:xpath, '//div[@class="col-lg-8"]/div/h4')
+      is_asserted_by do
+        @wait.until do
+          element = @driver.find_element(:xpath, '//div[@class="col-lg-8"]/div/span/h4')
+          after_total_count = element.text.match(/(.*)件中/)[1].to_i
+          after_total_count == @before_total_count + 1
+        end
       end
-      after_total_count = element.text.match(/(.*)件中/)[1].to_i
-
-      is_asserted_by { after_total_count == @before_total_count + 1 }
     end
   end
 
   shared_examples '入力フォームが全て空であること' do
     %w[phrase dictionary_categories].each do |id|
-      it_is_asserted_by { @driver.find_element(:id, id).text == '' }
+      it_is_asserted_by { @driver.find_element(:id, id).attribute('value').blank? }
     end
   end
 
@@ -120,7 +121,7 @@ describe '辞書管理画面のテスト', type: :request do
 
   describe 'カテゴリ一覧を確認する' do
     before(:all) do
-      xpath = '//form[@id="new_dictionary"]//span[@class="category-list"]/button'
+      xpath = '//form[@id="form-dictionary-create"]//span[@class="category-list"]/button'
       @wait.until do
         res = @driver.find_element(:xpath, xpath).click rescue false
         res.nil?
@@ -159,7 +160,7 @@ describe '辞書管理画面のテスト', type: :request do
 
     it '件数情報が正しいこと' do
       element = @wait.until do
-        @driver.find_element(:xpath, '//div[@class="col-lg-8"]/div/h4')
+        @driver.find_element(:xpath, '//div[@class="col-lg-8"]/div/span/h4')
       end
       is_asserted_by { element.text.strip == '2件中1〜2件を表示' }
     end

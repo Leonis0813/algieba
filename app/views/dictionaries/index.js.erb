@@ -1,0 +1,4 @@
+$('#page-info').html("<%= j(render(partial: 'layouts/page_info', locals: {resources: @dictionaries})) %>");
+$('#paginate').html("<%= j(paginate(@dictionaries)) %>");
+$('tbody').html("<%= j(render(@dictionaries)) %>");
+$('.category-list')[0].dataset.names = "<%= Category.pluck(:name).sort.join(',') %>"

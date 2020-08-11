@@ -27,3 +27,43 @@ $ ->
         return
     })
     return
+
+  window.reloadTable = ->
+    $.ajax({
+      url: location.href,
+      dataType: 'script',
+    })
+    return
+
+  window.createResource = (resource_name, params) ->
+    $.ajax({
+      type: 'POST',
+      url: "/algieba/api/#{resource_name}",
+      data: JSON.stringify(params),
+      contentType: 'application/json',
+      dataType: 'json',
+    }).done((data) ->
+      $('.form-create').val('')
+      reloadTable()
+      return
+    ).fail((xhr, status, error) ->
+      showErrorDialog($.parseJSON(xhr.responseText).errors)
+      return
+    )
+    return
+
+  $('.category-list').on 'click', ->
+    categories = $.map($(@)[0].dataset.names.split(','), (value) ->
+      return {text: value, value: value}
+    )
+    category_form = $(@).parent().find('.category-form')
+    bootbox.prompt({
+      title: I18n.t('views.js.category-list.title'),
+      inputType: 'checkbox',
+      inputOptions: categories,
+      callback: (results) ->
+        if results
+          category_form.val(results.join(','))
+          return
+    })
+    return

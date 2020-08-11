@@ -51,7 +51,7 @@ describe 'payments/index', type: :view do
 
     form_base_xpath = [
       register_form_xpath,
-      'form[@id="new_payment"]',
+      'form[@id="form-payment-create"]',
       'div[@class="form-group"]',
     ].join('/')
 
@@ -135,7 +135,8 @@ describe 'payments/index', type: :view do
     end
 
     it '登録ボタンが表示されていること' do
-      xpath = "#{register_form_xpath}/form[@id='new_payment']/input[@value='登録']"
+      xpath = "#{register_form_xpath}/form[@id='form-payment-create']/" \
+              'input[@value="登録"]'
       is_asserted_by { @html.xpath(xpath).present? }
     end
   end
@@ -259,7 +260,7 @@ describe 'payments/index', type: :view do
 
   shared_examples '件数情報が表示されていること' do |total: 0, from: 0, to: 0|
     it do
-      info = @html.xpath("#{payment_list_xpath}/div/h4")
+      info = @html.xpath("#{payment_list_xpath}/div/span[@id='page-info']/h4")
       is_asserted_by { info.present? }
       is_asserted_by { info.text.strip == "#{total}件中#{from}〜#{to}件を表示" }
     end
@@ -281,7 +282,7 @@ describe 'payments/index', type: :view do
   end
 
   shared_examples 'ページングが表示されていること' do
-    paging_xpath = "#{payment_list_xpath}/nav[@class='pagination']"
+    paging_xpath = "#{payment_list_xpath}/span[@id='paginate']/nav[@class='pagination']"
 
     it 'ページングボタンが表示されていること' do
       is_asserted_by { @html.xpath(paging_xpath).present? }

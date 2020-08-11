@@ -13,8 +13,6 @@ class TagsController < ApplicationController
     @tags = @tags.order(:name)
                  .page(@search_form.page)
                  .per(@search_form.per_page)
-
-    render status: :ok
   end
 
   private

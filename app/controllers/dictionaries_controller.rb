@@ -10,8 +10,6 @@ class DictionariesController < ApplicationController
       value = @search_form.send(key)
       value ? dictionaries.send(key, value) : dictionaries
     end.order(:phrase).page(@search_form.page).per(@search_form.per_page)
-
-    render status: :ok
   end
 
   private
