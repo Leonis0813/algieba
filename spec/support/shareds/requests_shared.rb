@@ -114,6 +114,8 @@ end
 
 shared_examples '収支情報の数が正しいこと' do |expected_size|
   it_is_asserted_by do
-    @driver.find_elements(:xpath, '//table/tbody/tr').size == expected_size
+    @wait.until do
+      @driver.find_elements(:xpath, '//table/tbody/tr').size == expected_size
+    end
   end
 end

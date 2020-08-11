@@ -17,12 +17,13 @@ describe 'タグ管理画面のテスト', type: :request do
 
   shared_examples '登録に成功していること' do
     it '件数が増えていること' do
-      element = @wait.until do
-        @driver.find_element(:xpath, '//div[@class="col-lg-8"]/div/span/h4')
+      is_asserted_by do
+        @wait.until do
+          @driver.find_element(:xpath, '//div[@class="col-lg-8"]/div/span/h4')
+          after_total_count = element.text.match(/(.*)件中/)[1].to_i
+          after_total_count == @before_total_count + 1
+        end
       end
-      after_total_count = element.text.match(/(.*)件中/)[1].to_i
-
-      is_asserted_by { after_total_count == @before_total_count + 1 }
     end
   end
 
