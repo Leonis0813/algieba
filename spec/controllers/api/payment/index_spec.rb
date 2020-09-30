@@ -3,122 +3,147 @@
 require 'rails_helper'
 
 describe Api::PaymentsController, type: :controller do
+  render_views
   category_keys = CategoryHelper.response_keys
 
-  shared_context '収支情報を検索する' do |query = {}|
+  describe '#index' do
+    shared_context '収支情報を検索する' do |params = {}|
+      before do
+        get(:index, params: params, format: :json)
+        @response_status = response.status
+        @response_body = JSON.parse(response.body) rescue response.body
+      end
+    end
+
+    include_context 'トランザクション作成'
     before(:all) do
-      res = client.get('/api/payments', query)
-      @response_status = res.status
-      @response_body = JSON.parse(res.body) rescue res.body
+      attribute = {
+        payment_id: '0' * 32,
+        content: '収入',
+        date: '1000-01-05',
+        categories: [build(:category, name: 'income')],
+        tags: [build(:tag, name: 'income')],
+        price: 10000,
+      }
+      @income = create(:payment, attribute)
+
+      attribute = {
+        payment_id: '1' * 32,
+        payment_type: 'expense',
+        content: '支出',
+        categories: [build(:category, name: 'expense')],
+        tags: [build(:tag, name: 'expense')],
+      }
+      @expense = create(:payment, attribute)
+
+      expectations = {
+        payment_type: [[@income], [@expense]],
+        date_before: [[@expense]],
+        date_after: [[@income]],
+        content_equal: [[@income]],
+        content_include: [[@income]],
+        category: [[@income]],
+        price_upper: [[@income, @expense], [@income]],
+        price_lower: [[], [@expense]],
+        sort: [[@income, @expense], [@expense, @income], [@expense, @income]],
+        page: [[@income, @expense], []],
+        per_page: [[@income], [@income, @expense]],
+        order: [[@income, @expense], [@expense, @income]],
+      }
+      @expectations = generate_test_case(expectations)
     end
-  end
 
-  include_context '収支情報を登録する'
-  before(:all) do
-    PaymentHelper.test_payment.values.each do |attribute|
-      Payment.find(attribute[:id]).update!(payment_id: attribute[:id].to_s * 32)
-    end
-  end
+    describe '正常系' do
+      valid_attribute = {
+        payment_type: %w[income expense],
+        date_before: %w[1000-01-02],
+        date_after: %w[1000-01-02],
+        content_equal: %w[収入],
+        content_include: %w[収],
+        category: %w[income],
+        price_upper: %w[0 5000],
+        price_lower: %w[0 5000],
+        sort: %w[payment_id date price],
+        page: %w[1 10],
+        per_page: %w[1 10],
+        order: %w[asc desc],
+      }
 
-  describe '正常系' do
-    [
-      [{payment_type: 'income'}, [:income]],
-      [{date_before: '1000-01-01'}, [:income]],
-      [{date_after: '1000-01-05'}, [:expense]],
-      [{content_equal: '機能テスト用データ1'}, [:income]],
-      [{content_include: '機能テスト'}, %i[income expense]],
-      [{category: 'algieba'}, %i[income expense]],
-      [{price_upper: 100}, %i[income expense]],
-      [{price_lower: 100}, [:expense]],
-      [{page: 1}, %i[income expense]],
-      [{per_page: 1}, [:income]],
-      [{sort: 'date'}, %i[income expense]],
-      [{order: 'desc'}, %i[expense income]],
-      [
-        {
-          payment_type: 'income',
-          date_before: '1000-01-10',
-          date_after: '1000-01-01',
-          content_equal: '機能テスト用データ1',
-          content_include: '機能テスト',
-          category: 'algieba',
-          price_upper: 100,
-          price_lower: 1000,
-          page: 1,
-          per_page: 1,
-          sort: 'price',
-          order: 'asc',
-        },
-        [:income],
-      ],
-      [{}, %i[income expense]],
-    ].each do |query, expected_payment_types|
-      description = query.empty? ? '何も指定しない場合' : "#{query.keys.join(',')}を指定する場合"
+      CommonHelper.generate_test_case(valid_attribute).each_with_index do |params, i|
+        context "#{params.keys.join(',')}を指定する場合" do
+          before(:all) do
+            expectations = @expectations[i].values.inject(:&)
+            expected_payments = expectations.map do |payment|
+              categories = payment.categories.map do |category|
+                category.slice(*category_keys)
+              end
+              tags = payment.tags.map {|tag| tag.slice(:tag_id, :name) }
 
-      context description do
+              payment.slice(:payment_id, :payment_type, :content, :price).merge(
+                date: payment.date.strftime('%F'),
+                categories: categories,
+                tags: tags,
+              )
+            end
+            @body = {payments: expected_payments}.deep_stringify_keys
+          end
+          include_context '収支情報を検索する', params
+          it_behaves_like 'レスポンスが正しいこと'
+        end
+      end
+
+      describe '何も指定しない場合' do
         before(:all) do
-          expected_payments = expected_payment_types.map do |key|
-            payment = PaymentHelper.test_payment[key]
-            categories = payment[:categories].map do |category_name|
-              Category.find_by(name: category_name).slice(*category_keys)
+          expected_payments = [@income, @expense].map do |payment|
+            categories = payment.categories.map do |category|
+              category.slice(*category_keys)
             end
-            tags = payment[:tags].map do |tag_name|
-              Tag.find_by(name: tag_name).slice(:tag_id, :name)
-            end
-            payment.except(:id).merge(
-              payment_id: Payment.find(payment[:id]).payment_id,
+            tags = payment.tags.map {|tag| tag.slice(:tag_id, :name) }
+
+            payment.slice(:payment_id, :payment_type, :content, :price).merge(
+              date: payment.date.strftime('%F'),
               categories: categories,
               tags: tags,
             )
           end
           @body = {payments: expected_payments}.deep_stringify_keys
         end
-        include_context '収支情報を検索する', query
+        include_context '収支情報を検索する'
         it_behaves_like 'レスポンスが正しいこと'
       end
     end
 
-    [
-      {date_before: '0999-12-31'},
-      {date_after: '1000-12-31'},
-      {price_upper: 10000},
-      {price_lower: 1},
-      {page: 10},
-    ].each do |query|
-      describe "#{query.keys.join(',')}を指定する場合" do
-        include_context '収支情報を検索する', query
-        it_behaves_like 'レスポンスが正しいこと', body: {'payments' => []}
-      end
-    end
-  end
+    describe '異常系' do
+      invalid_attribute = {
+        payment_type: ['invalid', ['income'], {type: 'income'}],
+        date_before: ['invalid', '1000-13-01', ['1000-01-01'], {date: '1000-01-01'}],
+        date_after: ['invalid', '1000-13-01', ['1000-01-01'], {date: '1000-01-01'}],
+        content_equal: ['', ['test'], {content: 'test'}],
+        content_include: ['', ['test'], {content: 'test'}],
+        category: ['', ['test'], {category: 'test'}],
+        price_upper: ['', '-1', ['0'], {price: '0'}],
+        price_lower: ['', '-1', ['0'], {price: '0'}],
+        sort: ['invalid', ['date'], {sort: 'date'}],
+        page: ['0', 'invalid', ['1'], {page: '1'}],
+        per_page: ['0', 'invalid', ['1'], {per_page: '1'}],
+        order: ['invalid', ['asc'], {order: 'asc'}],
+      }
 
-  describe '異常系' do
-    [
-      {payment_type: 'invalid_type'},
-      {date_before: 'invalid_date'},
-      {date_after: 'invalid_date'},
-      {price_upper: 'invalid_price'},
-      {price_lower: 'invalid_price'},
-      {page: 'invalid_page'},
-      {per_page: 'invalid_per_page'},
-      {sort: 'invalid_sort'},
-      {order: 'invalid_order'},
-      {
-        payment_type: 'invalid_type',
-        date_before: 'invalid_date',
-        date_after: 'invalid_date',
-        price_upper: 'invalid_price',
-        price_lower: 'invalid_price',
-        page: 'invalid_page',
-        per_page: 'invalid_per_page',
-        sort: 'invalid_sort',
-        order: 'invalid_order',
-      },
-    ].each do |query|
-      context "#{query.keys.join(',')}が不正な場合" do
-        errors = query.keys.sort.map {|key| {'error_code' => "invalid_param_#{key}"} }
-        include_context '収支情報を検索する', query
-        it_behaves_like 'レスポンスが正しいこと', status: 400, body: {'errors' => errors}
+      CommonHelper.generate_test_case(invalid_attribute).each do |params|
+        context "#{params.keys.join(',')}が不正な場合" do
+          errors = params.keys.map do |key|
+            {
+              'error_code' => 'invalid_parameter',
+              'parameter' => key.to_s,
+              'resource' => nil,
+            }
+          end
+          errors.sort_by! {|error| [error['error_code'], error['parameter']] }
+          body = {'errors' => errors}
+
+          include_context '収支情報を検索する', params
+          it_behaves_like 'レスポンスが正しいこと', status: 400, body: body
+        end
       end
     end
   end

@@ -21,10 +21,10 @@
         <h3>
           <%= t("#{i18n_path}.form.create.title") %>
         </h3>
-        <%= form_for @dictionary, url: api_dictionaries_path, html: {onClick: 'return false;'} do |f| %>
+        <%= form_for @dictionary, url: api_dictionaries_path, html: {id: 'form-dictionary-create'} do |f| %>
           <div class='form-group'>
             <%= label_tag :phrase, t("#{i18n_path}.attribute.phrase") %>
-            <%= text_field_tag :phrase, '', class: 'form-control' %>
+            <%= text_field_tag :phrase, '', class: 'form-control form-create' %>
             <% options = %w[include equal].map do |condition|
                  [t("#{i18n_path}.form.create.condition.#{condition}"), condition]
                end.to_h %>
@@ -34,8 +34,8 @@
 
           <div class='form-group'>
             <%= f.label :categories, t("#{i18n_path}.attribute.categories") %><br>
-            <%= f.text_field :categories, class: 'form-control category-form', name: 'category', value: nil %>
-            <span class='category-list' data-names='<%= Category.pluck(:name).sort %>'>
+            <%= f.text_field :categories, class: 'form-control form-create category-form', value: nil %>
+            <span class='category-list' data-names='<%= Category.pluck(:name).sort.join(',') %>'>
               <%= button_tag(type: 'button', class: 'btn btn-default btn-sm') do %>
                 <span class='glyphicon glyphicon-list' />
               <% end %>
@@ -66,14 +66,9 @@
 
   <div class='col-lg-8'>
     <div>
-      <% info = {
-           total_count: @dictionaries.total_count,
-           from: @dictionaries.total_count.zero? ? 0 : @dictionaries.offset_value + 1,
-           to: @dictionaries.offset_value + @dictionaries.size,
-         } %>
-      <h4 style='padding: 0px 10px;display: inline'>
-        <%= t('views.management.common.pagination.info', info) %>
-      </h4>
+      <span id='page-info'>
+        <%= render partial: 'layouts/page_info', locals: {resources: @dictionaries} %>
+      </span>
       <form style='padding: 0px 10px;display: inline' id='per_page_form' class='form-inline pull-right' onSubmit='return false;'>
         <label for='per_page'>
           <%= t('views.management.common.pagination.label') %>
@@ -81,7 +76,9 @@
         <input type='text' id='per_page' class='form-control' name='per_page' value='<%= @per_page %>' size='10'>
       </form>
     </div>
-    <%= paginate @dictionaries %>
+    <span id='paginate'>
+      <%= paginate @dictionaries %>
+    </span>
     <table id='table-dictionary' class='table table-hover'>
       <thead>
         <tr>

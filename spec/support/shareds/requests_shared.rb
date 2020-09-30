@@ -107,14 +107,15 @@ end
 shared_examples '表示されている件数が正しいこと' do |total, from, to|
   it_is_asserted_by do
     text = "#{total}件中#{from}〜#{to}件を表示"
-    @wait.until do
-      @driver.find_element(:xpath, '//div[@class="col-lg-8"]/div/h4').text == text
-    end
+    xpath = '//div[@class="col-lg-8"]/div/span/h4'
+    @wait.until { @driver.find_element(:xpath, xpath).text == text rescue false }
   end
 end
 
 shared_examples '収支情報の数が正しいこと' do |expected_size|
   it_is_asserted_by do
-    @driver.find_elements(:xpath, '//table/tbody/tr').size == expected_size
+    @wait.until do
+      @driver.find_elements(:xpath, '//table/tbody/tr').size == expected_size
+    end
   end
 end

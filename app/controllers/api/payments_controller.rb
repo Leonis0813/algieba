@@ -3,23 +3,33 @@ module Api
     before_action :check_request_payment, only: %i[show update destroy]
 
     def create
-      required_param_keys = %i[payment_type date content categories price]
-      check_absent_param(create_params, required_param_keys)
+      check_schema(create_schema, create_params, resource: 'payment')
 
-      @payment = Payment.new(create_params.except(:categories, :tags))
-      @payment.categories = create_params[:categories].map do |category_name|
-        Category.find_or_initialize_by(name: category_name)
-      end
-      @payment.tags = Array.wrap(create_params[:tags]).map do |tag_name|
-        Tag.find_or_initialize_by(name: tag_name)
+      attribute = create_params.except(:categories, :tags)
+      @payment = Payment.new(attribute)
+      @payment.categories = Array.wrap(create_params[:categories]).map do |name|
+        category = Category.find_by(name: name.to_s) || Category.new(name: name)
+        if category.invalid?
+          messages = {categories: [ApplicationValidator::ERROR_MESSAGE[:invalid]]}
+          raise BadRequest, messages: messages, resource: 'payment'
+        end
+        category
       end
 
-      if @payment.save
-        render status: :created
-      else
-        error_codes = @payment.errors.messages.keys.map {|key| "invalid_param_#{key}" }
-        raise BadRequest, error_codes
+      @payment.tags = Array.wrap(create_params[:tags]).map do |name|
+        tag = Tag.find_by(name: name.to_s) || Tag.new(name: name)
+        if tag.invalid?
+          messages = {tags: [ApplicationValidator::ERROR_MESSAGE[:invalid]]}
+          raise BadRequest, messages: messages, resource: 'payment'
+        end
+        tag
       end
+
+      unless @payment.save
+        raise BadRequest, messages: @payment.errors.messages, resource: 'payment'
+      end
+
+      render status: :created
     end
 
     def show
@@ -28,41 +38,56 @@ module Api
     end
 
     def index
+      check_schema(index_schema, index_params)
+
       query = PaymentQuery.new(index_params)
-      if query.valid?
-        @payments = scope_params.keys.inject(Payment.all) do |payments, key|
-          value = query.send(key)
-          value ? payments.send(key, value) : payments
-        end.order(query.sort => query.order).page(query.page).per(query.per_page)
-        render status: :ok
-      else
-        error_codes = query.errors.messages.keys.map {|key| "invalid_param_#{key}" }
-        raise BadRequest, error_codes
-      end
+      raise BadRequest, messages: query.errors.messages unless query.valid?
+
+      @payments = scope_params.keys.inject(Payment.all) do |payments, key|
+        value = query.send(key)
+        value ? payments.send(key, value) : payments
+      end.order(query.sort => query.order).page(query.page).per(query.per_page)
+      render status: :ok
     end
 
     def update
+      check_schema(update_schema, update_params, resource: 'payment')
+
       if update_params[:categories]
-        request_payment.categories = update_params[:categories].map do |category_name|
-          Category.find_or_create_by(name: category_name)
+        begin
+          request_payment.categories = update_params[:categories].map do |category_name|
+            Category.find_by(name: category_name.to_s) ||
+              Category.create!(name: category_name)
+          end
+        rescue ActiveRecord::RecordInvalid
+          messages = {categories: [ApplicationValidator::ERROR_MESSAGE[:invalid]]}
+          raise BadRequest, messages: messages, resource: 'payment'
+        rescue ActiveRecord::RecordNotUnique
+          messages = {name: [ApplicationValidator::ERROR_MESSAGE[:duplicated]]}
+          raise BadRequest, messages: messages, resource: 'category'
         end
       end
 
       if update_params[:tags]
-        request_payment.tags = update_params[:tags].map do |tag_name|
-          Tag.find_or_create_by(name: tag_name)
+        begin
+          request_payment.tags = update_params[:tags].map do |tag_name|
+            Tag.find_by(name: tag_name.to_s) || Tag.create!(name: tag_name)
+          end
+        rescue ActiveRecord::RecordInvalid
+          messages = {tags: [ApplicationValidator::ERROR_MESSAGE[:invalid]]}
+          raise BadRequest, messages: messages, resource: 'payment'
+        rescue ActiveRecord::RecordNotUnique
+          messages = {name: [ApplicationValidator::ERROR_MESSAGE[:duplicated]]}
+          raise BadRequest, messages: messages, resource: 'tag'
         end
       end
 
-      if request_payment.update(update_params.except(:categories, :tags))
-        @payment = request_payment.reload
-        render status: :ok
-      else
-        error_codes = request_payment.errors.messages.keys.map do |key|
-          "invalid_param_#{key}"
-        end
-        raise BadRequest, error_codes
+      unless request_payment.update(update_params.except(:categories, :tags))
+        raise BadRequest, messages: request_payment.errors.messages, resource: 'payment'
       end
+
+      @payment = request_payment.reload
+      render status: :ok
     end
 
     def destroy
@@ -126,6 +151,73 @@ module Api
         :sort,
         :order,
       )
+    end
+
+    def create_schema
+      @create_schema ||= {
+        type: :object,
+        required: %i[payment_type date content price categories],
+        properties: {
+          payment_type: {type: :string, enum: Payment::PAYMENT_TYPE_LIST},
+          date: {type: :string, format: :date},
+          content: {type: :string, minLength: 1},
+          price: {type: :integer, minimum: 1},
+          categories: {
+            type: :array,
+            items: {type: :string, minLength: 1},
+            minItems: 1,
+            uniqueItems: true,
+          },
+          tags: {
+            type: :array,
+            items: {type: :string, minLength: 1, maxLength: 10},
+            uniqueItems: true,
+          },
+        },
+      }
+    end
+
+    def index_schema
+      @index_schema ||= {
+        type: :object,
+        properties: {
+          payment_type: {type: :string, enum: Payment::PAYMENT_TYPE_LIST},
+          date_before: {type: :string, format: :date},
+          date_after: {type: :string, format: :date},
+          content_equal: {type: :string, minLength: 1},
+          content_include: {type: :string, minLength: 1},
+          category: {type: :string, minLength: 1},
+          price_upper: {type: :string, pattern: '^([1-9][0-9]*|0)$'},
+          price_lower: {type: :string, pattern: '^([1-9][0-9]*|0)$'},
+          page: {type: :string, pattern: '^[1-9][0-9]*$'},
+          per_page: {type: :string, pattern: '^[1-9][0-9]*$'},
+          sort: {type: :string, enum: PaymentQuery::SORT_LIST},
+          order: {type: :string, enum: Query::ORDER_LIST},
+        },
+      }
+    end
+
+    def update_schema
+      @update_schema ||= {
+        type: :object,
+        properties: {
+          payment_type: {type: :string, enum: Payment::PAYMENT_TYPE_LIST},
+          date: {type: :string, format: :date},
+          content: {type: :string, minLength: 1},
+          price: {type: :integer, minimum: 1},
+          categories: {
+            type: :array,
+            items: {type: :string, minLength: 1},
+            minItems: 1,
+            uniqueItems: true,
+          },
+          tags: {
+            type: :array,
+            items: {type: :string, minLength: 1, maxLength: 10},
+            uniqueItems: true,
+          },
+        },
+      }
     end
   end
 end

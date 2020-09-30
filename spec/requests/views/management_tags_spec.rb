@@ -9,7 +9,7 @@ describe 'タグ管理画面のテスト', type: :request do
   shared_context '登録前の件数を確認する' do
     before(:all) do
       element = @wait.until do
-        @driver.find_element(:xpath, '//div[@class="col-lg-8"]/div/h4')
+        @driver.find_element(:xpath, '//div[@class="col-lg-8"]/div/span/h4')
       end
       @before_total_count = element.text.match(/(.*)件中/)[1].to_i
     end
@@ -17,17 +17,18 @@ describe 'タグ管理画面のテスト', type: :request do
 
   shared_examples '登録に成功していること' do
     it '件数が増えていること' do
-      element = @wait.until do
-        @driver.find_element(:xpath, '//div[@class="col-lg-8"]/div/h4')
+      is_asserted_by do
+        @wait.until do
+          element = @driver.find_element(:xpath, '//div[@class="col-lg-8"]/div/span/h4')
+          after_total_count = element.text.match(/(.*)件中/)[1].to_i
+          after_total_count == @before_total_count + 1
+        end
       end
-      after_total_count = element.text.match(/(.*)件中/)[1].to_i
-
-      is_asserted_by { after_total_count == @before_total_count + 1 }
     end
   end
 
   shared_examples '入力フォームが全て空であること' do
-    it_is_asserted_by { @driver.find_element(:id, 'name').text == '' }
+    it_is_asserted_by { @driver.find_element(:id, 'name').attribute('value').blank? }
   end
 
   before(:all) { delete_payments }
@@ -86,7 +87,7 @@ describe 'タグ管理画面のテスト', type: :request do
 
     it '件数情報が正しいこと' do
       element = @wait.until do
-        @driver.find_element(:xpath, '//div[@class="col-lg-8"]/div/h4')
+        @driver.find_element(:xpath, '//div[@class="col-lg-8"]/div/span/h4')
       end
       is_asserted_by { element.text.strip == '1件中1〜1件を表示' }
     end

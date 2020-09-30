@@ -34,26 +34,25 @@ module CommonHelper
 
   def generate_test_case(params)
     [].tap do |test_cases|
-      tmp_test_cases = [].tap do |tests|
-        Array.wrap(params[params.keys.first]).each do |value|
-          tests << {params.keys.first => value}
+      params.each do |attribute_name, values|
+        values.each do |value|
+          test_cases << {attribute_name => value}
         end
-
-        params.keys[1..-1].each do |key|
-          tmp_tests = [].tap do |tmp_test|
-            tests.each do |test|
-              Array.wrap(params[key]).each do |value|
-                tmp_test << test.merge(key => value)
-              end
-            end
-          end
-          tests = tmp_tests
-        end
-        break tests
       end
-      test_cases << tmp_test_cases
-    end.flatten
+
+      if params.keys.size > 1
+        test_cases << params.map {|key, values| [key, values.first] }.to_h
+      end
+    end
   end
 
-  module_function :client, :app_auth_header, :generate_test_case
+  def generate_combinations(keys)
+    [].tap do |combinations|
+      keys.size.times do |i|
+        combinations << keys.combination(i + 1).to_a
+      end
+    end.flatten(1)
+  end
+
+  module_function :client, :app_auth_header, :generate_test_case, :generate_combinations
 end

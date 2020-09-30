@@ -7,26 +7,18 @@ class Payment < ApplicationRecord
   ].freeze
 
   has_many :category_payments, dependent: :destroy
-  has_many :categories, through: :category_payments
+  has_many :categories, through: :category_payments, validate: false
   has_many :payment_tags, dependent: :destroy
-  has_many :tags, through: :payment_tags
+  has_many :tags, through: :payment_tags, validate: false
 
-  validates :payment_id, :payment_type, :content, :price,
-            presence: {message: 'absent'}
-  validates :date, presence: {message: 'invalid'}
   validates :payment_id,
-            format: {with: ID_FORMAT, message: 'invalid'},
-            allow_nil: true
-  validates :payment_type,
-            inclusion: {in: PAYMENT_TYPE_LIST, message: 'invalid'},
-            allow_nil: true
-  validates :price,
-            numericality: {
-              only_integer: true,
-              greater_than_or_equal_to: 0,
-              message: 'invalid',
-            },
-            allow_nil: true
+            string: {format: ID_FORMAT},
+            uniqueness: {message: MESSAGE_DUPLICATED}
+  validates :categories,
+            associated: {message: ApplicationValidator::ERROR_MESSAGE[:invalid]}
+  validates :tags,
+            associated: {message: ApplicationValidator::ERROR_MESSAGE[:invalid]},
+            allow_blank: true
 
   scope :payment_type, ->(payment_type) { where(payment_type: payment_type) }
   scope :date_before, ->(date) { where('date <= ?', date) }

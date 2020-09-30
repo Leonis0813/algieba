@@ -2,16 +2,15 @@ class Dictionary < ApplicationRecord
   CONDITION_LIST = %w[equal include].freeze
 
   has_many :category_dictionaries, dependent: :destroy
-  has_many :categories, through: :category_dictionaries
+  has_many :categories, through: :category_dictionaries, validate: false
 
-  validates :dictionary_id, :phrase, :condition,
-            presence: {message: 'absent'}
   validates :dictionary_id,
-            format: {with: ID_FORMAT, message: 'invalid'},
-            allow_nil: true
-  validates :condition,
-            inclusion: {in: CONDITION_LIST, message: 'invalid'},
-            allow_nil: true
+            string: {format: ID_FORMAT},
+            uniqueness: {message: MESSAGE_DUPLICATED}
+  validates :phrase,
+            uniqueness: {scope: 'condition', message: MESSAGE_DUPLICATED}
+  validates :categories,
+            associated: {message: ApplicationValidator::ERROR_MESSAGE[:invalid]}
 
   scope :phrase_include, ->(phrase) { where('phrase REGEXP ?', ".*#{phrase}.*") }
 

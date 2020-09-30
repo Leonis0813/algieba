@@ -1,0 +1,8 @@
+<% info = {
+     total_count: resources.total_count,
+     from: resources.total_count.zero? ? 0 : resources.offset_value + 1,
+     to: resources.offset_value + resources.size,
+   } %>
+<h4 style='padding: 0px 10px;display: inline'>
+  <%= t('views.management.common.pagination.info', info) %>
+</h4>

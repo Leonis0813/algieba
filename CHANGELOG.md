@@ -1,3 +1,12 @@
+# 4.7.1 (2020/08/11)
+- [UPDATE] management views to render by ajax
+- [UPDATE] gems
+
+# 4.7.0 (2020/07/16)
+- [UPDATE] API error spec
+- [UPDATE] error dialog on management views
+- [UPDATE] gems
+
 # 4.6.0 (2020/05/09)
 - [UPDATE] payment view to add tag assignment button
 - [REMOVE] API to assign tag

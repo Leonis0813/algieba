@@ -1,28 +1,23 @@
 module Api
   class DictionariesController < ApplicationController
     def create
-      check_absent_param(create_params, %i[phrase condition categories])
+      check_schema(create_schema, create_params, resource: 'dictionary')
 
       @dictionary = Dictionary.new(create_params.except(:categories))
-      @dictionary.categories << create_params[:categories].map do |category_name|
-        Category.find_or_initialize_by(name: category_name)
+      @dictionary.categories << Array.wrap(create_params[:categories]).map do |name|
+        Category.find_or_initialize_by(name: name)
       end
 
-      begin
-        if @dictionary.save
-          render status: :created
-        else
-          error_codes = @dictionary.errors.messages.keys.map do |key|
-            "invalid_param_#{key}"
-          end
-          raise BadRequest, error_codes
-        end
-      rescue ActiveRecord::RecordNotUnique
-        raise Duplicated, 'dictionary'
+      unless @dictionary.save
+        raise BadRequest, messages: @dictionary.errors.messages, resource: 'dictionary'
       end
+
+      render status: :created
     end
 
     def index
+      check_schema(index_schema, index_params)
+
       @dictionaries = if index_params.empty?
                         Dictionary.all.order(:condition)
                       else
@@ -53,6 +48,34 @@ module Api
         :condition,
         :content,
       )
+    end
+
+    def create_schema
+      @create_schema ||= {
+        type: :object,
+        required: %i[phrase condition categories],
+        properties: {
+          phrase: {type: :string, minLength: 1},
+          condition: {type: :string, enum: Dictionary::CONDITION_LIST},
+          categories: {
+            type: :array,
+            items: {type: :string, minLength: 1},
+            minItems: 1,
+            uniqueItems: true,
+          },
+        },
+      }
+    end
+
+    def index_schema
+      @index_schema ||= {
+        type: :object,
+        properties: {
+          phrase: {type: :string, minLength: 1},
+          condition: {type: :string, enum: Dictionary::CONDITION_LIST},
+          content: {type: :string, minLength: 1},
+        },
+      }
     end
   end
 end

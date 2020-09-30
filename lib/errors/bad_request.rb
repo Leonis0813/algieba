@@ -1,9 +1,12 @@
 class BadRequest < StandardError
   attr_accessor :errors
 
-  def initialize(error_codes)
-    @errors = Array.wrap(error_codes).sort.map do |error_code|
-      {error_code: error_code}
-    end
+  def initialize(messages: {}, resource: nil)
+    @errors = messages.map do |parameter, error_codes|
+      error_codes.map do |error_code|
+        {error_code: error_code, parameter: parameter, resource: resource}
+      end
+    end.flatten
+    @errors.sort_by! {|error| [error[:error_code], error[:parameter]] }
   end
 end

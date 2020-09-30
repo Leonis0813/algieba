@@ -10,6 +10,9 @@ AllCops:
 Rails:
   Enabled: true
 
+Layout/LineLength:
+  Max: 89
+
 Layout/SpaceInsideBlockBraces:
   SpaceBeforeBlockParameters: false
 
@@ -23,9 +26,6 @@ Metrics/BlockLength:
   Exclude:
     - 'spec/**/*'
   Max: 40
-
-Metrics/LineLength:
-  Max: 89
 
 Metrics/MethodLength:
   Max: 40
