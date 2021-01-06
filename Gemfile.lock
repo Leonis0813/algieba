@@ -143,13 +143,13 @@ GEM
       dry-equalizer (~> 0.2)
       dry-initializer (~> 3.0)
       dry-schema (~> 1.5, >= 1.5.2)
-    erb_lint (0.0.35)
+    erb_lint (0.0.36)
       activesupport
       better_html (~> 1.0.7)
       html_tokenizer
       parser (>= 2.7.1.4)
       rainbow
-      rubocop (~> 0.79)
+      rubocop
       smart_properties
     erubi (1.10.0)
     erubis (2.7.0)
