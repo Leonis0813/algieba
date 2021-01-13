@@ -143,7 +143,7 @@ GEM
       dry-equalizer (~> 0.2)
       dry-initializer (~> 3.0)
       dry-schema (~> 1.5, >= 1.5.2)
-    erb_lint (0.0.36)
+    erb_lint (0.0.37)
       activesupport
       better_html (~> 1.0.7)
       html_tokenizer
@@ -165,7 +165,7 @@ GEM
       ruby2_keywords
     faraday-http-cache (2.2.0)
       faraday (>= 0.8)
-    faraday-net_http (1.0.0)
+    faraday-net_http (1.0.1)
     ffi (1.14.2)
     fuubar (2.5.1)
       rspec-core (~> 3.0)
