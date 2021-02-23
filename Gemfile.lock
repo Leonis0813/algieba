@@ -319,7 +319,7 @@ GEM
     rchardet (1.8.0)
     rdoc (6.3.0)
     ref (2.0.0)
-    regexp_parser (2.0.3)
+    regexp_parser (2.1.0)
     rexml (3.2.4)
     rspec (3.10.0)
       rspec-core (~> 3.10.0)
