@@ -1,3 +1,7 @@
+# 4.7.2 (2021/03/02)
+- [UPDATE] ruby version to 2.7.2
+- [UPDATE] gems
+
 # 4.7.1 (2020/08/11)
 - [UPDATE] management views to render by ajax
 - [UPDATE] gems
