@@ -185,7 +185,7 @@ GEM
     fuubar (2.5.1)
       rspec-core (~> 3.0)
       ruby-progressbar (~> 1.4)
-    git (1.9.0)
+    git (1.9.1)
       rchardet (~> 1.8)
     gitlab (4.17.0)
       httparty (~> 0.18)
