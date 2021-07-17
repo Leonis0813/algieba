@@ -1,3 +1,6 @@
+# 4.7.3 (2021/07/17)
+- [UPDATE] gems
+
 # 4.7.2 (2021/03/02)
 - [UPDATE] ruby version to 2.7.2
 - [UPDATE] gems
